@@ -58,7 +58,6 @@
 <script>
 import KeyBoard from '@/components/Tools/SimpleKeyboard.vue'
 import { UserStore } from '@/store';
-import Notifier from '@/api/NotifyHelper';
 export default {
   components: {
     KeyBoard,
@@ -113,10 +112,8 @@ export default {
         UserName: this.UserName,
         Password: this.Password
       })
-      debugger
       if (response_data.Success) {
         this.dialogVisible = false;
-        Notifier.Success(`Login Success`, 'bottom', 700);
       }
       else {
         this.message = response_data.Message;

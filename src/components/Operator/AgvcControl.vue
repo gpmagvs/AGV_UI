@@ -2,24 +2,38 @@
   <div class="agv-control">
     <div v-show="!enabled" class="disable-notify text-start my-2">{{$t('agv_control_notify_text') }}</div>
     <div class="d-flex flex-row">
-      <div style="width:200px">
+      <div class="information" style="width:260px">
         <el-form label-position="top">
-          <el-form-item label="Tag ID">
-            <b-form-input size="sm" disabled v-model="vms_data.Tag" :state="vms_data.Tag>0"></b-form-input>
-          </el-form-item>
-          <div class="row">
-            <el-form-item class="col-6" label="X">
-              <b-form-input size="sm" disabled v-model.number="vms_data.Pose.position.x"></b-form-input>
-            </el-form-item>
-            <el-form-item class="col-6" label="Y">
-              <b-form-input size="sm" disabled v-model.number="vms_data.Pose.position.y"></b-form-input>
+          <div class="row div-container mx-1 my-2">
+            <label class="text-start border-bottom">Tag ID</label>
+            <el-form-item class="my-2">
+              <b-form-input
+                size="sm"
+                disabled
+                v-model="vms_data.BCR_State_MoveBase.tagID"
+                :state="vms_data.BCR_State_MoveBase.tagID>0"
+              ></b-form-input>
             </el-form-item>
           </div>
-          <el-form-item label="Angles">
-            <b-form-input size="sm" disabled v-model.number="vms_data.Angle"></b-form-input>
-          </el-form-item>
+          <div class="row div-container mx-1 my-2">
+            <label class="text-start border-bottom">偏差值</label>
+            <el-form-item class="col-6" label="X">
+              <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.xValue"></b-form-input>
+            </el-form-item>
+            <el-form-item class="col-6" label="Y">
+              <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.yValue"></b-form-input>
+            </el-form-item>
+          </div>
 
-          <div class="row">
+          <div class="row div-container mx-1 my-2">
+            <label class="text-start border-bottom">角度</label>
+            <el-form-item class="my-2">
+              <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.theta"></b-form-input>
+            </el-form-item>
+          </div>
+
+          <div class="row div-container mx-1 my-2">
+            <label class="text-start border-bottom">速度資訊</label>
             <el-form-item class="col-6" label="Linear X">
               <b-form-input size="sm" disabled v-model.number="vms_data.LinearSpeed"></b-form-input>
             </el-form-item>
@@ -27,6 +41,7 @@
               <b-form-input size="sm" disabled v-model.number="vms_data.AngularSpeed"></b-form-input>
             </el-form-item>
           </div>
+          <!-- <b-button variant="primary" @click="FindTagBtnHandler">Auto Find Tag</b-button> -->
         </el-form>
       </div>
       <agvc_control_panel :enabled="enabled"></agvc_control_panel>
@@ -38,6 +53,7 @@
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData';
 import agvc_control_panel from './AgvcControlPanel'
+import { FindTagCenter } from '@/api/VMSAPI'
 
 export default {
   components: {
@@ -76,6 +92,10 @@ export default {
     },
   },
   methods: {
+    async FindTagBtnHandler() {
+      var response = await FindTagCenter();
+
+    }
   },
   mounted() {
     bus.on('/vms_data', (vms_data) => {
@@ -90,6 +110,18 @@ export default {
   .disable-notify {
     color: red;
     font-weight: bold;
+  }
+  .information {
+    .div-container {
+      // background-color: #f1f1f1;
+      border: 1px solid rgb(202, 202, 202);
+    }
+    label {
+      background-color: #f1f1f1;
+      color: rgb(48, 48, 48);
+      border-start-start-radius: 3px;
+      border-start-end-radius: 3px;
+    }
   }
 }
 </style>

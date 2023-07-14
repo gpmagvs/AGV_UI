@@ -105,13 +105,14 @@ export default {
     color: red;
   }
   .connected {
-    color: seagreen;
+    color: limegreen;
   }
   .connecting {
     color: yellow;
   }
   td div {
     text-align: left;
+    font-weight: bold;
   }
 }
 </style>

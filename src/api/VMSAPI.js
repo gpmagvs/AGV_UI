@@ -178,30 +178,48 @@ export const MapAPI = {
 }
 
 /**觸發Tray Reader 拍照 回傳 barcode  */
-export async function TriggerCSTReader(){
+export async function TriggerCSTReader() {
   try {
-    
-  var ret = await axios_entity.get(
-    'api/VMS/TriggerCSTReader'
-  )
-  return ret.data.barcode ;
+
+    var ret = await axios_entity.get(
+      'api/VMS/TriggerCSTReader'
+    )
+    return ret.data.barcode;
   } catch (error) {
-    
-  return "Network Error" ;
+
+    return "Network Error";
   }
 }
 
 
 /**停止Tray Reader 拍照*/
-export async function StopCSTReader(){
+export async function StopCSTReader() {
   try {
-    
-  var ret = await axios_entity.get(
-    'api/VMS/StopCSTReader'
-  )
-  return ret.data;
+
+    var ret = await axios_entity.get(
+      'api/VMS/StopCSTReader'
+    )
+    return ret.data;
   } catch (error) {
-    
-  return false;
+
+    return false;
+  }
+}
+
+
+/**FindTagCenter*/
+export async function FindTagCenter() {
+  try {
+
+    var ret = await axios_entity.get(
+      'api/VMS/FindTagCenter'
+    )
+    return ret.data;
+  }
+  catch (error) {
+    return {
+      confirm: false,
+      message: error
+    };
   }
 }

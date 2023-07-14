@@ -2,6 +2,7 @@
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
     <b-tabs pills @activate-tab="TabChangedHandler">
+      <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
           <status_card></status_card>
@@ -13,18 +14,20 @@
           <alarm_warn_table></alarm_warn_table>
         </div>
       </b-tab>
+      <!-- 操作 -->
       <b-tab :title="$t('operation')">
         <div class="mt-3 border p-1">
           <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
         </div>
       </b-tab>
+      <!-- 3D Model Display -->
       <b-tab v-if="IsGodMod" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
           <ForkAGV3D></ForkAGV3D>
         </div>
       </b-tab>
-
-      <b-tab v-if="true" title="CST Reader">
+      <!-- CST READER -->
+      <b-tab v-if="VMSData.Agv_Type!=2" title="CST Reader">
         <div class="mt-3 border p-1">
           <CSTReader></CSTReader>
         </div>
@@ -34,7 +37,7 @@
           <EQHandshakeView></EQHandshakeView>
         </div>
       </b-tab>
-
+      <!-- 本地任務派送 -->
       <b-tab v-if="IsGodMod" title="Task">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
@@ -81,8 +84,11 @@ export default {
   methods: {
     TabChangedHandler(currentTabs, previousTabs) {
       this.currentTabs = currentTabs;
-      if (currentTabs == 1)
+      if (currentTabs == previousTabs)
+        return;
+      if (currentTabs == 1) {
         bus.emit('/alarmtable_tab_click')
+      }
       this.$emit('OnTabChanged', this.currentTabs);
     },
   },

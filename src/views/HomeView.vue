@@ -8,10 +8,10 @@
         </div>
 
         <div
-          v-bind:class="VMSData.SubState.toLowerCase()"
+          v-bind:class="VMSData.SubState==''?'down':VMSData.SubState.toLowerCase()"
           class="agvc-name flex-fill"
           @click="where_r_u()"
-        >{{VMSData.CarName}}</div>
+        >{{VMSData.CarName==""?"AGV":VMSData.CarName}}</div>
         <div class="account-name flex-fill">{{UserName }}</div>
         <div
           @click="VersionTextClickHandle()"
@@ -30,29 +30,15 @@
         inactive_color="rgb(9, 76, 176)"
       ></jw_switch>
     </div>
-    <!-- Alarm and Notifies -->
-    <div
-      class="alarm-show p-1 fixed-top"
-      v-if="NewestAlarm!=undefined"
-      v-bind:class="NewestAlarm.Level=='Alarm'?'bg-danger':'bg-warning'"
-    >
-      <div class="agv-name-in-alarm px-2">{{VMSData.CarName}}</div>
-      <div class="flex-fill">{{ $i18n.locale=='zh-TW'? NewestAlarm.CN: NewestAlarm.Description }}</div>
-    </div>
 
     <div v-if="back_end_server_err" class="server-error py-1 border fixed-top">
       <div class="agv-name-in-alarm px-2">{{VMSData.CarName}}</div>
       <i class="bi bi-exclamation-diamond"></i>
       {{$t('backend_server_error')}}
     </div>
-    <div v-if="back_end_server_connecting" class="server-connecting py-1 border fixed-top">
-      <div class="agv-name-in-alarm px-2">{{VMSData.CarName}}</div>
-      <i class="bi bi-exclamation-diamond"></i>
-      {{$t('connecting')}}
-    </div>
     <!-- 電量至頂顯示 -->
     <div class="battery-fill-width px-0 mt-1 w-100">
-      <i v-if="VMSData.BatteryStatus.IsCharging" style="color:green" class="bi bi-battery-charging"></i>
+      <i v-if="VMSData.BatteryStatus.IsCharging" style="color:gold" class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'" :style="{color:'white'}"></i>
       <battery :showIcon="false" bHeight="1.2rem"></battery>
     </div>
@@ -64,7 +50,7 @@
             :disabled="back_end_server_err||VMSData.IsSystemIniting||VMSData.AlarmCodes.length!=0"
             @click="AGVInitialize()"
             class="mb-1 p-2"
-            v-bind:class="VMSData.SubState.toLowerCase()"
+            v-bind:class="VMSData.SubState==''?'down':VMSData.SubState.toLowerCase()"
             block
           >
             <b>{{$t('initialize') }}</b>
@@ -88,6 +74,7 @@
             <b>{{$t('buzzer_off') }}</b>
           </b-button>
           <b-button
+            v-if="VMSData.Agv_Type!=2"
             :disabled="back_end_server_err"
             @click="ShowRemoveCstDialog()"
             variant="light"
@@ -109,7 +96,7 @@
           <login ref="login"></login>
         </div>
         <!--模式切換Switch-->
-        <div class="modes px-2 text-start">
+        <div class="modes bg-light border rounded m-1 p-3 py-1 px-3 text-start">
           <div class="d-flex flex-row">
             <div class="mode-item-label py-2">Online Mode</div>
             <el-switch
@@ -141,32 +128,22 @@
             ></el-switch>
           </div>
         </div>
-        <div class="connection-status border rounded m-2 p-3 py-1">
+        <div class="connection-status bg-light border rounded m-1 p-3 py-1">
           <div class="state-title">{{$t('connection-states') }}</div>
           <connection_state></connection_state>
         </div>
-
-        <!-- <div class="battery border m-2 my-0 p-3 py-1">
-          <div class="state-title py-1">
-            {{$t('battery-level')}}
-            <img
-              v-if="VMSData.BatteryStatus.CircuitOpened"
-              class="circular_img mx-1"
-              src="@/assets/connect.png"
-              alt
-              height="16"
-            />
-            <img v-else class="circular_img mx-1" height="16" src="@/assets/disconnect.png" alt />
-            <el-tag v-show="VMSData.BatteryStatus.IsError" type="warning" effect="dark">異常</el-tag>
-          </div>
-          <battery></battery>
-        </div>-->
-        <div class="mileage border rounded m-2 p-3 py-1">
+        <!-- 當前座標資訊 -->
+        <div class="mileage bg-light border rounded m-1 p-3 py-1">
+          <div class="state-title">當前座標</div>
+          ({{VMSData.Pose.position.x.toFixed(2) }},{{VMSData.Pose.position.y.toFixed(2) }})
+        </div>
+        <!-- 里程 -->
+        <div class="mileage bg-light border rounded m-1 p-3 py-1">
           <div class="state-title">{{$t('mileage')}}</div>
           <mileage></mileage>
         </div>
         <!-- <div>{{ time }}</div> -->
-        <div class="border rounded m-2 p-3 py-1">
+        <div class="m-2 p-3 py-1">
           <emo :disabled="back_end_server_err"></emo>
         </div>
       </div>
@@ -671,7 +648,7 @@ export default {
     color: white;
     font-weight: bold;
     font-size: 24px;
-    top: 26px;
+    top: 28px;
   }
 }
 
@@ -761,7 +738,7 @@ export default {
   width: 250px;
   .state-title {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 18px;
   }
   .opt-buttons {
     font-weight: bold;

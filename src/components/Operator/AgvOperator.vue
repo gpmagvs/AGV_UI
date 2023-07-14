@@ -8,9 +8,7 @@
       </b-tab>
       <b-tab :disabled="agv_type==1" :title="$t('zaxis_up_down')">
         <div class="mt-1 p-1">
-          <ZAxisControl :enabled="operation_enabled_return" v-if="type=='jw'"></ZAxisControl>
-          <ZAxisControl_hao v-if="type=='hao'"></ZAxisControl_hao>
-          <!-- <alarm_warn_table></alarm_warn_table> -->
+          <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
         </div>
       </b-tab>
       <b-tab title="Input">

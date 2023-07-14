@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
+import bus from '@/event-bus';
 export default createStore({
   state: {
   },
@@ -17,6 +18,44 @@ export default createStore({
 
 
 
+/**系統訊息STORE */
+export var SystemMsgStore = createStore({
+  state: {
+    SysMessages: {
+      ReportIndex: -1,
+      Messages: []
+    }
+  },
+  getters: {
+    SysMessages: state => {
+      return state.SysMessages.Messages;
+    },
+    ReportIndex: state => {
+      return state.SysMessages.ReportIndex
+    },
+    LastReportIndex: state => {
+      var index = localStorage.getItem('sys_msg_report_index');
+      if (index)
+        return parseInt(index)
+      else
+        return -1;
+    }
+  },
+  mutations: {
+    updateStatus(state, data) {
+      if (state.SysMessages.ReportIndex != data.ReportIndex) {
+        localStorage.setItem('sys_msg_report_index', data.ReportIndex + '')
+      }
+      state.SysMessages = data
+    }
+  },
+  actions: {
+    Update({ commit }, data) {
+      commit('updateStatus', data)
+    }
+  }
+})
+
 /**AGV狀態STORE */
 export var AGVStatusStore = createStore({
   state: {
@@ -28,6 +67,9 @@ export var AGVStatusStore = createStore({
     },
     AGVName: state => {
       return state.AGVStatus.CarName;
+    },
+    AlarmCodes: state => {
+      return state.AGVStatus.AlarmCodes;
     }
 
   },

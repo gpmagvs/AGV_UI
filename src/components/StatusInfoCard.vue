@@ -59,8 +59,11 @@
           <tr align="justify">
             <td>{{$t('status')}}</td>
             <td class="val-column">
-              <b-button class="w-100 border" v-bind:class="vms_data.SubState.toLowerCase()">
-                <b>{{vms_data.SubState }}</b>
+              <b-button
+                class="w-100 border"
+                v-bind:class="vms_data.SubState==''?'down':vms_data.SubState.toLowerCase()"
+              >
+                <b>{{vms_data.SubState==''?'ERROR':vms_data.SubState }}</b>
               </b-button>
             </td>
             <td>Laser Mode</td>
@@ -92,12 +95,14 @@
             </td>
           </tr>
           <tr align="justify">
+            <!-- 動作名稱 -->
             <td>{{$t('action_name')}}</td>
             <td class="val-column">
               <b-form-input size="sm" disabled v-model="vms_data.ZAxisActionName"></b-form-input>
             </td>
-            <td>{{$t('carrier_id')}}</td>
-            <td class="val-column">
+            <!-- 載物ID -->
+            <td v-if="vms_data.Agv_Type!=2">{{$t('carrier_id')}}</td>
+            <td v-if="vms_data.Agv_Type!=2" class="val-column">
               <b-form-input
                 size="sm"
                 disabled

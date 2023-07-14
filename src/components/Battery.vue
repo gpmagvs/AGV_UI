@@ -9,12 +9,19 @@
         animated
         v-bind:class="battery_state_bg"
         :value="battery_level"
-        :label="`${((battery_level / max) * 100).toFixed(2)}%`"
+        :label="battery_level<=10? '':`${battery_level}%${battery_status.IsCharging?'(充電中)':''}`"
         v-bind:style="{
           fontSize:bHeight=='1rem'? '12px':'16px'
         }"
       ></b-progress-bar>
     </b-progress>
+    <div
+      class="bat_level_show_when_low"
+      v-if="battery_level<=10"
+      v-bind:style="{
+          fontSize:bHeight=='1rem'? '12px':'16px'
+        }"
+    >{{battery_level }}%{{battery_status.IsCharging?'(充電中)':''}}</div>
 
     <div v-if="battery_status.IsCharging" class="charge-current px-3">
       <div>{{ $t('charging_current') }}: {{ battery_status.ChargeCurrent }} mA</div>
@@ -59,7 +66,7 @@ export default {
     },
     battery_state_bg() {
       if (this.battery_status.IsCharging)
-        return "full-state"
+        return "charging"
 
       if (this.battery_level > this.Warning_Up_limit)
         return "full-state"
@@ -98,11 +105,21 @@ export default {
     margin-right: 4px;
   }
   .full-state {
-    background-color: rgb(78, 163, 255);
+    background-color: #007bff;
+  }
+  .charging {
+    background-color: limegreen;
   }
   .charge-current {
     font-size: 11px;
     font-weight: bold;
+  }
+  .bat_level_show_when_low {
+    font-weight: bold;
+    position: absolute;
+    right: 4px;
+    top: 34px;
+    color: #ff000091;
   }
 }
 </style>

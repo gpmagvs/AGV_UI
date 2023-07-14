@@ -1,6 +1,6 @@
 <template>
   <div class="emo-button" @click="EMO()">
-    <img src="@/assets/emo.png" width="140" />
+    <img src="@/assets/emo.png" width="100" />
   </div>
 </template>
 

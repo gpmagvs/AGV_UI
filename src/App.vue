@@ -1,4 +1,15 @@
 <template>
+  <div v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0" id="vcs-alarms" class="fixed-top">
+    <el-alert
+      v-for="alarm in CurrentAlarms"
+      :key="alarm.Time"
+      :type=" alarm.ELevel ==0? 'warning': 'error'"
+      :title="`${Timeformat(alarm.Time)}-[${alarm.Code}]`"
+      :description="`${alarm.Description}(${alarm.CN==''?alarm.Description:alarm.CN})`"
+      show-icon
+      :closable="false"
+    />
+  </div>
   <i
     @click="ToggleMenu"
     v-show="showMenuToggleIcon"
@@ -15,6 +26,10 @@
 <script>
 import bus from '@/event-bus.js'
 import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
+import { SystemMsgStore, AGVStatusStore } from '@/store'
+import { ElNotification } from 'element-plus'
+import moment from 'moment'
+
 export default {
   components: {
     SideMenuDrawer,
@@ -22,12 +37,25 @@ export default {
   data() {
     return {
       showMenuToggleIcon: false,
+
     }
   },
   methods: {
     ToggleMenu() {
       this.$refs.side_menu.Show();
+    },
+    Timeformat(time, format = 'yyyy-MM-DD HH:mm:ss') {
+      return moment(time).format(format)
     }
+  },
+  computed: {
+    CurrentSystemMsg() {
+      return SystemMsgStore.getters.SysMessages
+    },
+    CurrentAlarms() {
+      return AGVStatusStore.getters.AlarmCodes
+    }
+
   },
   mounted() {
 
@@ -42,6 +70,16 @@ export default {
     bus.on('idle', (arg) => {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
+    })
+    bus.on('system_msg_updated', (msg) => {
+      var _type = msg.Level == 0 ? 'info' : msg.Level == 1 ? 'warning' : 'error';
+      ElNotification({
+        title: 'System Message',
+        message: msg.Message,
+        type: _type,
+        position: 'bottom-right',
+        duration: msg.Level == 0 ? 3000 : 0,
+      });
     })
   },
 };
@@ -85,5 +123,27 @@ html {
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE 10+ */
   user-select: none;
+}
+#vcs-alarms {
+  // padding-top: 58px;
+  padding-left: 50%;
+
+  @media only screen and (min-width: 1024px) {
+    padding-left: 80%;
+  }
+
+  span {
+    // color: rgb(0, 123, 255);
+    color: rgb(182, 179, 179);
+  }
+  p {
+    text-align: left;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 0 auto;
+  }
+  .el-alert {
+    margin: 3px auto;
+  }
 }
 </style>

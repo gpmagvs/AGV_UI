@@ -28,7 +28,6 @@
     </div>
     <div class="w-100 border mt-1">
       <el-table
-        v-loading="table_loading"
         :data="alarms"
         row-key="Time"
         :row-class-name="tb_row_class"
@@ -77,7 +76,6 @@ export default {
       totalAlarmNum: 0,
       page: 1,
       page_size: 15,
-      table_loading: false,
       lang: 'zh-TW',
       clear_alarms_dialog_show: false,
 
@@ -107,14 +105,13 @@ export default {
       return moment(cellValue).format('yyyy/MM/DD HH:mm:ss');
     },
     async PageChangeHandler(page) {
+
       this.page = page;
       this.AlarmDownload();
     },
     async AlarmDownload() {
-      this.table_loading = true;
       this.totalAlarmNum = await AlarmTableAPI.TotalAlarmCount()
       this.alarms = await AlarmTableAPI.QueryByPage(this.page, this.page_size);
-      this.table_loading = false;
     },
     ClearAlarmAlert() {
       this.$swal.fire({
