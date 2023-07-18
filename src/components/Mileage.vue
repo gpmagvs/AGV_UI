@@ -36,7 +36,7 @@ export default {
 
 <style lang="scss">
 .mileage {
-  font-size: 30px;
+  font-size: 20px;
   span {
     font-size: smaller;
   }

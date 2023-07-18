@@ -16,7 +16,7 @@ class VMSData {
   Tag = -1
   Last_Visited_Tag = 1
   Last_Visit_MapPoint = { Name: 'UNKNOWN' }
-  BatteryStatus = new BatteryStatus()
+  BatteryStatus = new Array() < BatteryStatus > 0
   Mileage = 0
   Pose = {
     position: {

@@ -1,37 +1,12 @@
 <template>
   <div class="map-show border py-2 px-2 d-flex flex-row bg-light">
-    <div v-show="false" class="text-start m-3 py-3" style="width:117px">
-      <span>顯示方式</span>
-      <b-form-group
-        @change="NameDisplayChangeHandle"
-        class="w-100 px-3"
-        v-slot="{ ariaDescribedby }"
-      >
-        <b-form-radio
-          v-model="display_selected"
-          :aria-describedby="ariaDescribedby"
-          name="some-radios"
-          value="Tag"
-        >Tag</b-form-radio>
-        <b-form-radio
-          v-model="display_selected"
-          :aria-describedby="ariaDescribedby"
-          name="some-radios"
-          value="Index"
-        >Index</b-form-radio>
-      </b-form-group>
-      <span>AGV顯示</span>
-      <b-form-group @change="AGVDisplayChangeHandle" class="w-100 px-3">
-        <b-form-radio v-model="agv_display_mode_selected" value="hidden">隱藏</b-form-radio>
-        <b-form-radio v-model="agv_display_mode_selected" value="show">顯示</b-form-radio>
-      </b-form-group>
-    </div>
     <div class="w-100">
       <div class="w-100 d-flex flex-row justify-content-end">
         <span class="p-1">MAP</span>
         <div>
           <b-form-input v-model="map_name" disabled size="sm" :state="map_data.Name!=undefined"></b-form-input>
         </div>
+        <b-button varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button>
       </div>
       <div
         v-loading="loading"
@@ -267,7 +242,6 @@ export default {
 
       });
       bus.on('/nav_path_update', (dto) => {
-        console.info('/nav_path_update', dto);
         this.UpdateNavPathRender(dto.name, dto.tags)
       })
 
@@ -343,8 +317,11 @@ export default {
           Object.keys(map.Points).forEach(index => {
             var Graph = map.Points[index].Graph
             var _tagID = map.Points[index].TagNumber;
+            var _x = map.Points[index].X;
+            var _y = map.Points[index].Y;
             var _feature = new Feature({
               geometry: new Point([Graph.X * 1000, Graph.Y * -1000]),
+              // geometry: new Point([_x * -100000, _y * -100000]),
               //   name: Graph.Display,
               name: index,
             });
@@ -860,6 +837,8 @@ export default {
       this.AGVDisplayControl(this.agv_display_mode_selected == 'show');
     },
     UpdateNavPathRender(agv_name, tags) {
+      if (tags.length == 0)
+        return;
       var layerName = `agv_path_layer_${agv_name}`
       var layer = this.map.getLayers().getArray().find(layer => layer.get('id') == layerName);
       if (layer) {
@@ -964,10 +943,13 @@ export default {
 };
   </script>
   
-<style scoped>
+<style>
 .map-show {
 }
-
+.ol-zoom .ol-zoom-in,
+.ol-zoom .ol-zoom-out {
+  font-size: 2.5rem;
+}
 .map {
   height: 95%;
   width: 100%;

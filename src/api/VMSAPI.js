@@ -162,6 +162,9 @@ export const NavigationAPI = {
     )
     return ret.data
   },
+  async MoveTo(x, y, theta, point_id) {
+    await axios_entity.get(`api/LocalNav/MoveTo?x=${x}&y=${y}&theta=${theta}&point_id=${point_id}`)
+  }
 }
 
 export const MapAPI = {
@@ -222,4 +225,14 @@ export async function FindTagCenter() {
       message: error
     };
   }
+}
+
+export async function BatteryLockCtrl(battery_no, islock) {
+  var ret = await axios_entity.get(`api/VMS/BatteryLockCtrl?battery_no=${battery_no}&islock=${islock}`)
+}
+
+/**充電迴路DO開關 */
+export async function RechargeCircuit() {
+  var ret = await axios_entity.get(`api/VMS/RechargeCircuit`)
+  return ret.data //boolean 
 }

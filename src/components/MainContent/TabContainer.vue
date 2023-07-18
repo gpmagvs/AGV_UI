@@ -38,7 +38,7 @@
         </div>
       </b-tab>
       <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod" title="Task">
+      <b-tab v-if="IsGodMod|IsDevUser" title="Task">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
@@ -95,6 +95,9 @@ export default {
   computed: {
     IsGodMod() {
       return UserStore.getters.IsGodUser
+    },
+    IsDevUser() {
+      return UserStore.getters.IsDevUser
     }
   }
 }

@@ -2,6 +2,27 @@
   <div class="task-delivery">
     <div class="my-1 d-flex">
       <div>
+        <div v-if="IsGodUse" class="move item d-flex">
+          <div class="title">移動</div>
+          <label for="posex" title="X">X</label>
+          <div class="move-pose-input">
+            <el-input v-model="move_x" id="posex"></el-input>
+          </div>
+          <label for="posey" title="Y">Y</label>
+          <div class="move-pose-input">
+            <el-input v-model="move_y" id="posey"></el-input>
+          </div>
+
+          <label for="posey" title="Y">Theta</label>
+          <div class="move-pose-input">
+            <el-input v-model="move_theta" id="posey"></el-input>
+          </div>
+          <label for="posey" title="Y">Point ID</label>
+          <div class="move-pose-input">
+            <el-input v-model="move_point_id" id="posey"></el-input>
+          </div>
+          <b-button @click="MoveToBtnHandler" style="width:103px" variant="primary">移動</b-button>
+        </div>
         <div class="item">
           <div class="title">動作</div>
           <el-select v-model="selectedAction" placeholder="請選擇Action">
@@ -13,13 +34,9 @@
             <el-option label="充電" value="Charge"></el-option>
           </el-select>
           <div class="text-start mx-1">
-            <b-button
-              @click="TaskDeliveryBtnClickHandle"
-              style="width:103px"
-              variant="primary"
-              block
-            >派送任務</b-button>
+            <b-button @click="TaskDeliveryBtnClickHandle" variant="primary" block>派送任務</b-button>
           </div>
+          <!-- Move To Position -->
         </div>
 
         <!-- For Movable -->
@@ -63,6 +80,7 @@
     <MapShowVue
       :task_allocatable="true"
       @OnFeatureClicked="MapFeatureClickedHandle"
+      @DownloadMapDataClicked="DownloadMapData"
       class="flex-fill"
       style="height:600px"
       ref="map"
@@ -140,6 +158,7 @@
 import Notifier from '@/api/NotifyHelper';
 import { NavigationAPI } from '@/api/VMSAPI';
 import MapShowVue from './MapShow.vue';
+import { UserStore } from '@/store';
 export default {
   components: {
     MapShowVue,
@@ -151,6 +170,10 @@ export default {
       ShowTaskAllocateDrawer: false,
       SelectedFeature: undefined, //從map 點選的feature物件
       notify_text: '',
+      move_x: 1,
+      move_y: -1,
+      move_theta: 0,
+      move_point_id: 0,
       selectedAction: 'None', // 選擇的Action
       selectedTag: '', // 選擇的tag_id
       selectedCst: '', // 選擇的cst_id
@@ -187,6 +210,9 @@ export default {
     };
   },
   computed: {
+    IsGodUse() {
+      return UserStore.getters.IsGodUser;
+    },
     From_Lable_display() {
       if (this.selectedAction === 'None' | this.selectedAction === 'Park')
         return "目的地"
@@ -234,6 +260,20 @@ export default {
     }
   },
   methods: {
+    MoveToBtnHandler() {
+      this.$swal.fire({
+        title: 'AGV Move',
+        text: `確定要將AGV移動至(${this.move_x},${this.move_y}),Theta:${this.move_theta} ?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        customClass: 'my-sweetalert'
+      }).then((ret) => {
+        if (ret.isConfirmed) {
+          NavigationAPI.MoveTo(this.move_x, this.move_y, this.move_theta, this.move_point_id);
+        }
+      })
+    },
     TaskDeliveryBtnClickHandle() {
 
       if (this.selectedAction == 'Carry' && (this.selectedToTag == '' | this.selectedToTag == undefined)) {
@@ -390,6 +430,16 @@ export default {
 .task-delivery {
   padding: 10px;
   height: auto;
+
+  .move {
+    label,
+    .move-pose-input {
+      margin-inline: 5px;
+    }
+    .move-pose-input {
+      width: 100px;
+    }
+  }
   .item {
     display: flex;
     flex-direction: row;

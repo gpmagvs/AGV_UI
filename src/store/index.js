@@ -69,7 +69,11 @@ export var AGVStatusStore = createStore({
       return state.AGVStatus.CarName;
     },
     AlarmCodes: state => {
-      return state.AGVStatus.AlarmCodes;
+      return state.AGVStatus.AlarmCodes.filter(alarm => alarm.Code != 0);
+    },
+    /**是否為巡檢AGV */
+    IsInspectionAGV: state => {
+      return state.AGVStatus.Agv_Type == 2;
     }
 
   },
@@ -97,6 +101,9 @@ export var UserStore = createStore({
     },
     IsGodUser: state => {
       return state.UserState.Role == 3;
+    },
+    IsDevUser: state => {
+      return state.UserState.Role == 2;
     },
     CurrentUserRole: state => {
       return state.UserState.Role;

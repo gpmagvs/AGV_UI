@@ -37,10 +37,12 @@
       {{$t('backend_server_error')}}
     </div>
     <!-- 電量至頂顯示 -->
-    <div class="battery-fill-width px-0 mt-1 w-100">
-      <i v-if="VMSData.BatteryStatus.IsCharging" style="color:gold" class="bi bi-battery-charging"></i>
-      <i v-else :class="'bi bi-battery-full'" :style="{color:'white'}"></i>
-      <battery :showIcon="false" bHeight="1.2rem"></battery>
+    <div
+      class="battery-fill-width px-0 mt-1 w-100"
+      v-for="bat in VMSData.BatteryStatus"
+      :key="bat.BatteryID"
+    >
+      <battery :battery_status="bat" :showIcon="false" bHeight="1.2rem"></battery>
     </div>
     <div class="d-flex flex-row h-100">
       <!--Side 左側邊-->
@@ -133,9 +135,11 @@
           <connection_state></connection_state>
         </div>
         <!-- 當前座標資訊 -->
-        <div class="mileage bg-light border rounded m-1 p-3 py-1">
+        <div class="bg-light border rounded m-1 p-3 py-1">
           <div class="state-title">當前座標</div>
-          ({{VMSData.Pose.position.x.toFixed(2) }},{{VMSData.Pose.position.y.toFixed(2) }})
+          <span
+            style="font-size:18px"
+          >({{VMSData.Pose.position.x.toFixed(2) }},{{VMSData.Pose.position.y.toFixed(2) }})</span>
         </div>
         <!-- 里程 -->
         <div class="mileage bg-light border rounded m-1 p-3 py-1">
@@ -429,11 +433,12 @@ export default {
 
           if (this.VMSData.Tag != this.previous_tagID) {
             Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
-            bus.emit('/nav_path_update', {
+           
+          } 
+          bus.emit('/nav_path_update', {
               name: this.VMSData.CarName,
               tags: this.VMSData.NavInfo.PathPlan
             })
-          }
         }
         this.previous_tagID = this.VMSData.Tag;
         this.AGVPoseErrorHandler();

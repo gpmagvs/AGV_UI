@@ -1,5 +1,5 @@
 <template>
-  <div v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0" id="vcs-alarms" class="fixed-top">
+  <div v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0" id="vcs-alarms">
     <el-alert
       v-for="alarm in CurrentAlarms"
       :key="alarm.Time"
@@ -7,7 +7,6 @@
       :title="`${Timeformat(alarm.Time)}-[${alarm.Code}]`"
       :description="`${alarm.Description}(${alarm.CN==''?alarm.Description:alarm.CN})`"
       show-icon
-      :closable="false"
     />
   </div>
   <i
@@ -78,7 +77,7 @@ export default {
         message: msg.Message,
         type: _type,
         position: 'bottom-right',
-        duration: msg.Level == 0 ? 3000 : 0,
+        duration: 3000,
       });
     })
   },
@@ -125,12 +124,10 @@ html {
   user-select: none;
 }
 #vcs-alarms {
-  // padding-top: 58px;
-  padding-left: 50%;
-
-  @media only screen and (min-width: 1024px) {
-    padding-left: 80%;
-  }
+  position: absolute;
+  right: 5px;
+  z-index: 9999;
+  width: 50%;
 
   span {
     // color: rgb(0, 123, 255);

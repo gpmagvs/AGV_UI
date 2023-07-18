@@ -13,6 +13,7 @@
             min="0"
             max="16"
             text-align="center"
+            @click="()=>show_keyboard=true"
           ></b-form-input>
           <div class="updown-btns">
             <b-input-group-append>
@@ -30,10 +31,27 @@
         squared
         class="mx-1"
         variant="primary"
-        style="font-size:24px;font-weight: bold;"
       >Modify</b-button>
     </div>
-    <SimpleKeyboard v-show="enabled" keyboard_type="number" @onChange="onChange"></SimpleKeyboard>
+    <el-drawer v-model="show_keyboard" direction="btt" size="50%">
+      <SimpleKeyboard keyboard_type="number" @onChange="onChange"></SimpleKeyboard>
+    </el-drawer>
+
+    <div v-if="IsBatteryLockControlable" class="d-flex flex-row py-3">
+      <div class="item-label">電池鎖定</div>
+      <div class="battery py-1">
+        <div class="d-flex flex-row mb-1">
+          <label>電池 1</label>
+          <b-button @click="BatteryLockHandler(1,true)" squared variant="primary">Lock</b-button>
+          <b-button @click="BatteryLockHandler(1,false)" squared variant="danger">Unlock</b-button>
+        </div>
+        <div class="d-flex flex-row">
+          <label>電池 2</label>
+          <b-button @click="BatteryLockHandler(2,true)" squared variant="primary">Lock</b-button>
+          <b-button @click="BatteryLockHandler(2,false)" squared variant="danger">Unlock</b-button>
+        </div>
+      </div>
+    </div>
 
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">煞車功能</div>
@@ -79,9 +97,11 @@
 </template>
 
 <script>
-import { LaserMode, Braker, Reset_Mileage } from '@/api/VMSAPI.js'
+import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl } from '@/api/VMSAPI.js'
 import Notifier from '@/api/NotifyHelper';
 import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
+import { AGVStatusStore } from '@/store'
+
 export default {
   components: {
     SimpleKeyboard,
@@ -96,7 +116,13 @@ export default {
     return {
       laser_mode: 0,
       modifyLaserModeDialogShow: false,
+      show_keyboard: false
 
+    }
+  },
+  computed: {
+    IsBatteryLockControlable() {
+      return AGVStatusStore.getters.IsInspectionAGV
     }
   },
   methods: {
@@ -122,6 +148,9 @@ export default {
     async ResetMile() {
       await Reset_Mileage();
     },
+    async BatteryLockHandler(bat_no, islock) {
+      await BatteryLockCtrl(bat_no, islock)
+    },
     onChange(input) {
       if (input + "" == "") {
         this.laser_mode = 0;
@@ -138,6 +167,11 @@ export default {
 
 <style lang="scss" scoped>
 .manual_settings {
+  button {
+    font-size: 24px;
+    font-weight: bold;
+    width: 130px;
+  }
   height: 450px;
   .item-label {
     width: 160px;
@@ -158,6 +192,18 @@ export default {
       border: 1px solid rgb(255, 255, 255);
       background-color: rgb(0, 123, 255);
     }
+  }
+  .battery {
+    font-size: 25px;
+    label {
+      margin-right: 10px;
+    }
+    button {
+      margin: auto 5px;
+    }
+  }
+  .el-overlay {
+    background-color: transparent;
   }
 }
 </style>

@@ -9,3 +9,7 @@ ws.onmessage = (ev) => {
     bus.emit('system_msg_updated', sysmessage)
     //SystemMsgStore.dispatch('Update', sysmessage)
 }
+
+document.addEventListener('close', () => {
+    alert(1213)
+})

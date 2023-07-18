@@ -1,8 +1,18 @@
 <template>
   <div class="battery d-flex flex-row" :style="'height:'+bHeight">
-    <div v-if="showIcon">
-      <i v-if="battery_status.IsCharging" style="color:green" class="bi bi-battery-charging"></i>
-      <i v-else :class="'bi bi-battery-full'" :style="{color:IsLowBatteryLevel?'red':'black'}"></i>
+    <div>
+      <i
+        @click="RechargeCircuitControl"
+        v-if="battery_status.IsCharging"
+        style="color:limegreen"
+        class="bi bi-battery-charging"
+      ></i>
+      <i
+        @click="RechargeCircuitControl"
+        v-else
+        :class="'bi bi-battery-full'"
+        :style="{color:IsLowBatteryLevel?'red':'black'}"
+      ></i>
     </div>
     <b-progress class="flex-fill h-100" :max="max" animated>
       <b-progress-bar
@@ -30,14 +40,14 @@
 </template>
 
 <script>
-import { GetBatteryState } from '@/api/VMSAPI';
+import { GetBatteryState, RechargeCircuit } from '@/api/VMSAPI';
 import bus from '@/event-bus.js'
+import { AGVStatusStore } from '@/store'
 import BatteryStatus from '@/ViewModels/BatteryStatus';
 export default {
   data() {
     return {
       max: 100,
-      battery_status: new BatteryStatus()
     }
   },
   props: {
@@ -58,6 +68,12 @@ export default {
     showIcon: {
       type: Boolean,
       default: true
+    },
+    battery_status: {
+      type: Object,
+      default() {
+        return new BatteryStatus()
+      }
     }
   },
   computed: {
@@ -80,18 +96,21 @@ export default {
     },
     batHeight() {
       return this.bHeight;
+    },
+    IsHasRechareCircuit() {
+      return !AGVStatusStore.getters.IsInspectionAGV;
     }
   },
   mounted() {
-    // setInterval(async () => {
-    //   var betteryState = await GetBatteryState();
-    //   this.value = betteryState.batteryLevel;
-    // }, 1000);
-
-    bus.on('/battery', (battery_status) => {
-      this.battery_status = battery_status
-    })
   },
+
+  methods: {
+    async RechargeCircuitControl() {
+      if (!this.IsHasRechareCircuit)
+        return;
+      await RechargeCircuit()
+    }
+  }
 
 }
 </script>
@@ -102,7 +121,7 @@ export default {
     font-size: 1.5rem;
     position: relative;
     top: -11px;
-    margin-right: 4px;
+    margin: auto 4px;
   }
   .full-state {
     background-color: #007bff;
