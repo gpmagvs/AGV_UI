@@ -12,12 +12,12 @@
         </div>
       </b-tab>
       <b-tab title="Input">
-        <div class="mt-1 p-1">
+        <div class="table-container-div mt-1 p-1">
           <IOTable digital_type="input" :table_data="DIOTableData.Inputs"></IOTable>
         </div>
       </b-tab>
       <b-tab title="Output">
-        <div class="mt-1 p-1">
+        <div class="table-container-div mt-1 p-1">
           <IOTable
             :readonly="false"
             digital_type="output"

@@ -5,11 +5,9 @@ var ws = new WebSocketHelp('ws/Sys_Messages');
 ws.Connect();
 ws.onmessage = (ev) => {
 
-    var sysmessage = JSON.parse(ev.data)
-    bus.emit('system_msg_updated', sysmessage)
+    var sysmessages = JSON.parse(ev.data)
+    sysmessages.forEach(sysmessage => {
+        bus.emit('system_msg_updated', sysmessage)
+    });
     //SystemMsgStore.dispatch('Update', sysmessage)
 }
-
-document.addEventListener('close', () => {
-    alert(1213)
-})

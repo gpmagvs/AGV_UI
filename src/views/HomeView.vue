@@ -14,7 +14,7 @@
         >{{VMSData.CarName==""?"AGV":VMSData.CarName}}</div>
         <div class="account-name flex-fill">{{UserName }}</div>
         <div
-          @click="VersionTextClickHandle()"
+          @dblclick="VersionTextClickHandle()"
           class="version-name flex-fill"
         >{{ VMSData.APPVersion }}</div>
       </div>
@@ -261,10 +261,7 @@ export default {
       }
     },
     VersionTextClickHandle() {
-      this.version_text_click_count += 1;
-      if (this.version_text_click_count > this.trigger_admin_dialog_count) {
-        this.ConfirmGODTriggering();
-      }
+      this.ConfirmGODTriggering();
     },
     ConfirmGODTriggering() {
       this.$swal.fire({
@@ -433,12 +430,12 @@ export default {
 
           if (this.VMSData.Tag != this.previous_tagID) {
             Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
-           
-          } 
+
+          }
           bus.emit('/nav_path_update', {
-              name: this.VMSData.CarName,
-              tags: this.VMSData.NavInfo.PathPlan
-            })
+            name: this.VMSData.CarName,
+            tags: this.VMSData.NavInfo.PathPlan
+          })
         }
         this.previous_tagID = this.VMSData.Tag;
         this.AGVPoseErrorHandler();

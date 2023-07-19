@@ -54,9 +54,9 @@ img {
 }
 .controller {
   padding-top: 80px;
-  height: 800px;
+  height: 600px;
   background: url("../../assets/images/agv_controller_bg.png");
-  background-size: 700px;
+  background-size: 600px;
   background-repeat: no-repeat;
   background-position: center;
 
@@ -75,15 +75,15 @@ img {
   }
 
   .up {
-    bottom: 25px;
+    bottom: 55px;
   }
   .down {
-    bottom: -180px;
+    bottom: -20px;
   }
   .rotate-png-row {
-    top: 60px;
+    top: 0px;
     div {
-      margin-inline: 170px;
+      margin-inline: 140px;
     }
   }
 }

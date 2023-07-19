@@ -1,13 +1,21 @@
 <template>
   <div v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0" id="vcs-alarms">
-    <el-alert
-      v-for="alarm in CurrentAlarms"
-      :key="alarm.Time"
-      :type=" alarm.ELevel ==0? 'warning': 'error'"
-      :title="`${Timeformat(alarm.Time)}-[${alarm.Code}]`"
-      :description="`${alarm.Description}(${alarm.CN==''?alarm.Description:alarm.CN})`"
-      show-icon
-    />
+    <div v-for="(alarmObj,code) in AlarmCodesGroup" :key="code">
+      <!-- <div style="position:absolute;z-index: 5000; left:-12px">
+        <el-badge
+          v-if="alarmObj.Count>1"
+          :value="alarmObj.Count"
+          :type="alarmObj.Alarm.ELevel ==0? 'warning': 'danger'"
+        ></el-badge>
+        <span></span>
+      </div>-->
+      <el-alert
+        show-icon
+        :type="alarmObj.Alarm.ELevel ==0? 'warning': 'error'"
+        :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
+        :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN==''?alarmObj.Alarm.Description:alarmObj.Alarm.CN})`"
+      ></el-alert>
+    </div>
   </div>
   <i
     @click="ToggleMenu"
@@ -52,14 +60,16 @@ export default {
       return SystemMsgStore.getters.SysMessages
     },
     CurrentAlarms() {
+
       return AGVStatusStore.getters.AlarmCodes
+    },
+    AlarmCodesGroup() {
+      return AGVStatusStore.getters.AlarmGroup;
     }
 
   },
   mounted() {
-
     document.title = "GPM AGV";
-
     bus.on('/god_mode_changed', (is_god_mode_now) => {
       this.showMenuToggleIcon = is_god_mode_now
     });
@@ -141,6 +151,11 @@ html {
   }
   .el-alert {
     margin: 3px auto;
+    text-align: left;
+    --el-alert-icon-large-size: 37px;
+    .el-alert__close-btn {
+      font-size: 30px;
+    }
   }
 }
 </style>

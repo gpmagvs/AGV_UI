@@ -71,9 +71,15 @@ export var AGVStatusStore = createStore({
     AlarmCodes: state => {
       return state.AGVStatus.AlarmCodes.filter(alarm => alarm.Code != 0);
     },
+    AlarmGroup: state => {
+      return state.AGVStatus.AlarmsGroup;
+    },
     /**是否為巡檢AGV */
     IsInspectionAGV: state => {
       return state.AGVStatus.Agv_Type == 2;
+    },
+    CurrentPose: state => {
+      return state.AGVStatus.Pose;
     }
 
   },

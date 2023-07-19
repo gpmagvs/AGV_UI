@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="w-100 mt-2">
+    <div class="mt-2">
       <el-pagination
         background
         layout="prev, pager, next"
@@ -26,7 +26,7 @@
         @current-change="PageChangeHandler"
       />
     </div>
-    <div class="w-100 border mt-1">
+    <div class="border mt-1">
       <el-table
         :data="alarms"
         row-key="Time"

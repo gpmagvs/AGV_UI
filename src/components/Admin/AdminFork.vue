@@ -64,7 +64,7 @@ export default {
 .agv-fork-img {
   position: absolute;
   bottom: 0;
-  margin: auto 33px;
+  margin: auto 93px;
   /* background-color: red; */
   .fork {
     position: absolute;

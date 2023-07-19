@@ -1,5 +1,7 @@
 import axios from 'axios'
 import param from '@/gpm_param'
+import MoveTestVM from '@/ViewModels/MoveTestDto.js'
+
 var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
@@ -164,6 +166,18 @@ export const NavigationAPI = {
   },
   async MoveTo(x, y, theta, point_id) {
     await axios_entity.get(`api/LocalNav/MoveTo?x=${x}&y=${y}&theta=${theta}&point_id=${point_id}`)
+  },
+  /**移動測試 
+   *  { confirm: Boolean, message: String }
+  */
+  async MoveTest(moveTestVM = MoveTestVM) {
+    debugger
+    try {
+      var ret = await axios_entity.post(`api/LocalNav/MoveTo`, moveTestVM)
+      return ret.data; //{confirm,message}
+    } catch (error) {
+      return { confirm: false, message: error.message };
+    }
   }
 }
 

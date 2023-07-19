@@ -1,7 +1,7 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs pills @activate-tab="TabChangedHandler">
+    <b-tabs pills>
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
@@ -10,7 +10,7 @@
       </b-tab>
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
-        <div class="mt-3 border p-1">
+        <div class="table-container-div mt-3 border p-1">
           <alarm_warn_table></alarm_warn_table>
         </div>
       </b-tab>
