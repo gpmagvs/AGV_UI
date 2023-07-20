@@ -80,7 +80,7 @@ import { AGVStatusStore } from '@/store';
 export default {
   data() {
     return {
-      move_test_drawer: true,
+      move_test_drawer: false,
       waiting_sever_response: false,
       moveTestDto: new MoveTestVM()
     }
@@ -113,8 +113,10 @@ export default {
     },
     SetCurrentPose() {
       var currentAGVPose = AGVStatusStore.getters.CurrentPose;
+      var currentAGVAngle = AGVStatusStore.getters.CurrentAngle;
       this.moveTestDto.X = currentAGVPose.position.x;
       this.moveTestDto.Y = currentAGVPose.position.y;
+      this.moveTestDto.Theta = currentAGVAngle;
     }
   },
 }

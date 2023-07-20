@@ -80,6 +80,12 @@ export var AGVStatusStore = createStore({
     },
     CurrentPose: state => {
       return state.AGVStatus.Pose;
+    },
+    CurrentAngle: state => {
+      return state.AGVStatus.Angle;
+    },
+    BatteryStatus: state => {
+      return state.AGVStatus.BatteryStatus
     }
 
   },
