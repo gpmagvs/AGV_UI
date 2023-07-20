@@ -38,7 +38,7 @@
         {{$t('backend_server_error')}}
       </div>
       <!-- 電量至頂顯示 -->
-      <BatteryGroup :battery_states="VMSData.BatteryStatus" :bat_count="VMSData.Agv_Type==2?2:1"></BatteryGroup>
+      <BatteryGroup :battery_states="VMSData.BatteryStatus"></BatteryGroup>
       <div class="d-flex flex-row h-100">
         <!--Side 左側邊-->
         <div class="side h-100">

@@ -2,8 +2,8 @@
   <div class="battrey-group d-flex flex-row" @click="()=>{ show_battery_viewer=IsMiniAGV}">
     <div
       class="bat d-flex flex-row"
-      v-bind:class="IsOnlyOneBattery?'w-100':'w-50'"
-      v-for="i in bat_count==1?[0]: [0,bat_count-1]"
+      v-bind:class="IsMiniAGV?'w-50':'w-100'"
+      v-for="i in IsMiniAGV?[1,2]:[0]"
       :key="i"
     >
       <i
@@ -59,10 +59,6 @@ export default {
       type: String,
       default: "horizon"
     },
-    bat_count: {
-      type: Number,
-      default: 2
-    },
     battery_states: {
       type: Array,
       default() {
@@ -74,9 +70,6 @@ export default {
     }
   },
   computed: {
-    IsOnlyOneBattery() {
-      return this.bat_count == 1;
-    },
     IsMiniAGV() {
       return AGVStatusStore.getters.IsInspectionAGV
     }
@@ -88,12 +81,16 @@ export default {
   },
   methods: {
     GetBatteryStatus(index) {
-      var stat = this.battery_states[index]
-      if (stat)
-        return stat
-      else
+      debugger
+      try {
+        var stat = this.battery_states.find(bat => bat.BatteryID == index)
+        if (stat)
+          return stat
+        else
+          return new BatteryStatus(100)
+      } catch (error) {
         return new BatteryStatus(100)
-
+      }
     },
     GetLabel(bat_status = new BatteryStatus) {
       if (!bat_status.IsCharging)
