@@ -12,15 +12,35 @@
         <div class="rounded border p-2 text-start" style="position:relative; left:-74px;">
           <span class="p-2">Battery-1</span>
           <div>
-            <b-button :disabled="!Bat1Lockable" variant="primary" class="mx-1">Lock</b-button>
-            <b-button :disabled="!Bat1UnLockable" variant="primary" class="mx-1">Unlock</b-button>
+            <b-button
+              @click="BatteryLockHandler(1,true)"
+              :disabled="!Bat1Lockable"
+              variant="primary"
+              class="mx-1"
+            >Lock</b-button>
+            <b-button
+              @click="BatteryLockHandler(1,false)"
+              :disabled="!Bat1UnLockable"
+              variant="primary"
+              class="mx-1"
+            >Unlock</b-button>
           </div>
         </div>
         <div class="rounded border p-2 text-start" style="position:relative; left:-69px;">
           <span class="p-2">Battery-2</span>
           <div>
-            <b-button :disabled="!Bat2Lockable" variant="primary" class="mx-1">Lock</b-button>
-            <b-button :disabled="!Bat2UnLockable" variant="primary" class="mx-1">Unlock</b-button>
+            <b-button
+              @click="BatteryLockHandler(2,true)"
+              :disabled="!Bat2Lockable"
+              variant="primary"
+              class="mx-1"
+            >Lock</b-button>
+            <b-button
+              @click="BatteryLockHandler(2,false)"
+              :disabled="!Bat2UnLockable"
+              variant="primary"
+              class="mx-1"
+            >Unlock</b-button>
           </div>
         </div>
       </div>
@@ -30,6 +50,8 @@
 
 <script>
 import { AGVStatusStore } from '@/store'
+import { BatteryLockCtrl } from '@/api/VMSAPI.js'
+
 export default {
   data() {
     return {
@@ -123,6 +145,11 @@ export default {
       return bat1_lock_sensor_info.IsLockSensorON | (!bat1_lock_sensor_info.IsUnlockSensorON && !bat1_lock_sensor_info.IsLockSensorON);
     }
   },
+  methods: {
+    async BatteryLockHandler(bat_no, islock) {
+      await BatteryLockCtrl(bat_no, islock)
+    },
+  }
 }
 </script>
 

@@ -250,3 +250,38 @@ export async function RechargeCircuit() {
   var ret = await axios_entity.get(`api/VMS/RechargeCircuit`)
   return ret.data //boolean 
 }
+
+
+/**控制Fork */
+export const ForkAPI = {
+
+  async Init() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Init`)
+    return ret.data;
+  },
+  async Home(speed = 1.0) {
+    var ret = await axios_entity.get(`api/VMS/Fork/Home?speed=${speed}`)
+    return ret.data;
+  },
+
+  async Pose(pose, speed = 1.0) {
+    var ret = await axios_entity.get(`api/VMS/Fork/Pose?pose=${pose}&speed=${speed}`)
+    return ret.data;
+  },
+  async Stop() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Stop`)
+    return ret.data;
+  },
+  async Up(speed = 1.0) {
+    var ret = await axios_entity.get(`api/VMS/Fork/Up?speed=${speed}`)
+    return ret.data;
+  },
+  async Down(speed = 1.0) {
+    var ret = await axios_entity.get(`api/VMS/Fork/Down?speed=${speed}`)
+    return ret.data;
+  },
+  async SetTagHeightLimit(tag_id, pose_loc, layer, height) {
+    return true
+  }
+
+}

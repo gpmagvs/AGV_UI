@@ -43,7 +43,6 @@
 <script>
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
-import ZAxisControl_hao from './ZAxisControl_Hao.vue'
 import IOTable from './IOTable.vue';
 import { param, version } from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
@@ -56,7 +55,7 @@ import { UserStore, DIOStore } from '@/store'
 export default {
 
   components: {
-    AgvControl, ZAxisControl, IOTable, ZAxisControl_hao, ManualSettings
+    AgvControl, ZAxisControl, IOTable, ManualSettings
   },
   data() {
     return {

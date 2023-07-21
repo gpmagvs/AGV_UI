@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import VerticalControl from '@/api/VerticalControlAPI'
+import { ForkAPI } from '@/api/VMSAPI'
 import Notifier from '@/api/NotifyHelper'
 import bus from '@/event-bus.js'
 export default {
@@ -56,7 +56,7 @@ export default {
   methods: {
     async Setting() {
       Notifier.Primary("LD/ULD高度設定請求已送出", 'bottom');
-      var ret = await VerticalControl.SetTagHeightLimit(this.tag_id, this.pose_loc, this.layer, this.pose)
+      var ret = await ForkAPI.SetTagHeightLimit(this.tag_id, this.pose_loc, this.layer, this.pose)
       if (ret.Success) {
         Notifier.Success("LD/ULD高度設定成功", 'bottom');
       } else {
@@ -64,7 +64,7 @@ export default {
       }
     },
     async PoseTo() {
-      await VerticalControl.Pose(this.pose);
+      await ForkAPI.Pose(this.pose);
     }
   },
   mounted() {

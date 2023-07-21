@@ -31,7 +31,6 @@
     }
     .charging,
     .warning,
-    
     .idle,
     .run,.working {
       background-color: rgb(13, 110, 253);
@@ -64,7 +63,7 @@
     .charging,
     .warning {      
 
-      background-color: rgb(13, 110, 253);
+      background-color: limegreen;
       color:white;
     }
 

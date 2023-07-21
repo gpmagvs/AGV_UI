@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import VerticalControl from '@/api/VerticalControlAPI';
+import { ForkAPI } from '@/api/VMSAPI';
 import ZaxisPoseSetting from './ZaxisPoseSetting.vue';
 import bus from '@/event-bus'
 export default {
@@ -101,19 +101,19 @@ export default {
   },
   methods: {
     async Up() {
-      var ret = await VerticalControl.Up();
+      var ret = await ForkAPI.Up();
     },
     async Down() {
-      var ret = await VerticalControl.Down();
+      var ret = await ForkAPI.Down();
     },
     async Orig() {
-      var ret = await VerticalControl.Orig();
+      var ret = await ForkAPI.Home();
     },
     async Stop() {
-      var ret = await VerticalControl.Stop();
+      var ret = await ForkAPI.Stop();
     },
     async Pose() {
-      var ret = await VerticalControl.Pose(1.2);
+      var ret = await ForkAPI.Pose(1.2);
     }
   },
   mounted() {

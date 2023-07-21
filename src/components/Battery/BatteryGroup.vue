@@ -21,10 +21,13 @@
           style="font-size:16px;"
         ></b-progress-bar>
       </b-progress>
-      <div class="d-flex" v-if="GetBatteryStatus(i).IsCharging">
+      <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
         <label for>充電電流:</label>
-        {{123}}
-        <span style="font-size:smaller;">mA</span>
+        {{GetBatteryStatus(i).ChargeCurrent}}
+        <span
+          class="px-1"
+          style="font-size:smaller;"
+        >mA</span>
       </div>
     </div>
     <el-drawer v-model="show_battery_viewer" direction="btt" size="600px" :show-close="false">
@@ -96,7 +99,7 @@ export default {
       if (!bat_status.IsCharging)
         return bat_status.BatteryLevel + "%";
       else {
-        return bat_status.BatteryLevel + "(充電中)%";
+        return bat_status.BatteryLevel + "%(充電中)";
       }
     },
     GetClass(bat_status = new BatteryStatus) {
@@ -110,7 +113,7 @@ export default {
           return 'bg-primary'
       }
       else {
-        return 'bg-success'
+        return 'charging'
       }
     },
     OnClick(i) {
@@ -130,6 +133,9 @@ export default {
     margin-right: 3px;
     position: relative;
     left: -2px;
+  }
+  .charging {
+    background-color: limegreen;
   }
 }
 </style>
