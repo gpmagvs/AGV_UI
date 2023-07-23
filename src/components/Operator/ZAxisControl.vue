@@ -14,7 +14,14 @@
         </div>
         <div class="d-flex flex-row my-2">
           <div class="label-item">Current Position</div>
-          <el-input size="small" style="width:72px" class="py-1" center v-model="position" disabled></el-input>
+          <el-input
+            size="small"
+            style="width:72px"
+            class="py-1"
+            center
+            v-model="ForkHeight"
+            disabled
+          ></el-input>
         </div>
         <div v-if="true" class="p-2 my-2 border rounded">
           <ZaxisPoseSetting></ZaxisPoseSetting>
@@ -82,10 +89,11 @@
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
 import ZaxisPoseSetting from './ZaxisPoseSetting.vue';
-import bus from '@/event-bus'
+import { AGVStatusStore } from '@/store'
+import AdminFork from '@/components/Admin/AdminFork.vue'
 export default {
   components: {
-    ZaxisPoseSetting,
+    ZaxisPoseSetting, AdminFork
   },
   props: {
     enabled: {
@@ -95,8 +103,12 @@ export default {
   },
   data() {
     return {
-      position: 0,
       hardware_limit_enable: true
+    }
+  },
+  computed: {
+    ForkHeight() {
+      return AGVStatusStore.getters.ForkHeight
     }
   },
   methods: {
@@ -115,11 +127,6 @@ export default {
     async Pose() {
       var ret = await ForkAPI.Pose(1.2);
     }
-  },
-  mounted() {
-    bus.on('/z_axis_position', (position) => {
-      this.position = position
-    });
   },
 }
 </script>

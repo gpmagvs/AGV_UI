@@ -1,24 +1,7 @@
 <template>
   <div class="home h-100" v-loading="loading">
     <!-- Top Header  -->
-    <div class="fixed-top">
-      <div class="status d-flex flex-row">
-        <div class="sys-name flex-fill d-flex flex-row justify-content-center">
-          <div>GPM AGV</div>
-        </div>
-
-        <div
-          v-bind:class="VMSData.SubState==''?'down':VMSData.SubState.toLowerCase()"
-          class="agvc-name flex-fill"
-          @click="where_r_u()"
-        >{{VMSData.CarName==""?"AGV":VMSData.CarName}}</div>
-        <div class="account-name flex-fill">{{UserName }}</div>
-        <div
-          @dblclick="VersionTextClickHandle()"
-          class="version-name flex-fill"
-        >{{ VMSData.APPVersion }}</div>
-      </div>
-    </div>
+    <AGVHeader></AGVHeader>
     <div class="main-content">
       <!--語系切換按鈕-->
       <div class="lang-switch">
@@ -188,13 +171,14 @@
 </template>
 
 <script>
+import AGVHeader from '@/components/AGVHeader.vue'
 import battery from '@/components/Battery/Battery.vue'
 import BatteryGroup from '@/components/Battery/BatteryGroup.vue'
 import mileage from '@/components/Mileage.vue'
 import emo from '@/components/EMOButton.vue'
 import login from '@/components/Login.vue'
 import connection_state from '@/components/ConnectionStates.vue'
-import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher, Where_r_u } from '@/api/VMSAPI'
+import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher } from '@/api/VMSAPI'
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import { version } from '@/gpm_param'
@@ -209,7 +193,7 @@ import MainContent from '@/components/MainContent/TabContainer.vue'
 export default {
   name: 'HomeView',
   components: {
-    jw_switch, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent
+    AGVHeader, jw_switch, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent
   },
   data() {
     return {
@@ -243,9 +227,6 @@ export default {
     }
   },
   methods: {
-    async where_r_u() {
-      await Where_r_u();
-    },
     LangChangeHandle(checked) {
       this.IsUseChinese = checked;
       this.$i18n.locale = this.IsUseChinese ? 'zh-TW' : 'en-US';
@@ -255,22 +236,6 @@ export default {
       } else {
         Notifier.Primary("Language:English", 'bottom', 800);
       }
-    },
-    VersionTextClickHandle() {
-      this.ConfirmGODTriggering();
-    },
-    ConfirmGODTriggering() {
-      this.$swal.fire({
-        title: 'Warning',
-        text: `Do you known what are you doing now?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'OK',
-        allowOutsideClick: false
-      }).then((result) => {
-        this.AdminSwitchDialogResultHandle(result.isConfirmed);
-      })
-
     },
     AdminSwitchDialogResultHandle(checked = false) {
       this.version_text_click_count = 0;
@@ -307,7 +272,7 @@ export default {
       else {
         this.$swal.fire({
           title: 'AGV Initialize',
-          text: `${this.$t('start_init_action_notify_submarin_agv')}`,
+          text: `${this.$t(this.Is_Fork_AGV ? 'start_init_action_notify' : 'start_init_action_notify_submarin_agv')}`,
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -383,28 +348,7 @@ export default {
       })
 
     },
-    AGVSMsgIOWebsocketInit() {
-      var ws = new WebSocketHelp('ws/AGVS_MSG_IO');
-      ws.Connect();
-      ws.onmessage = (event) => {
-        var msg_io_data = JSON.parse(event.data);
-        if (this.$refs['agvs_msg_table'] != undefined) {
-          this.$refs['agvs_msg_table'].AddNewMsgData(msg_io_data);
 
-        }
-        if (msg_io_data.Message.includes('0301')) {
-          var task_msg = JSON.parse(msg_io_data.Message.replaceAll("*\r", ""))
-          var task_name = task_msg["Header"]["0301"]["Task Name"];
-          ElNotification({
-            title: 'NAVITATOR_NEW_TASK',
-            message: task_name,
-            type: 'success',
-            duration: 10000
-          })
-        }
-
-      };
-    },
     VMSDataWebsocketInit() {
       this.ws = new WebSocketHelp('ws/AGVCState');
       this.ws.Connect();
@@ -569,6 +513,9 @@ export default {
     Is_TSMC_MiniAGV() {
       return AGVStatusStore.getters.IsInspectionAGV;
     },
+    Is_Fork_AGV() {
+      return AGVStatusStore.getters.IsForkAGV;
+    },
     is_god_mode_now() {
       return UserStore.getters.IsGodUser
     },
@@ -616,7 +563,6 @@ export default {
     //   this.moduleInformation = await GetModuleInformation();
     // }, 200);
     this.VMSDataWebsocketInit();
-    this.AGVSMsgIOWebsocketInit();
     setInterval(() => {
       this.time = moment(Date.now()).format('yyyy/MM/DD HH:mm:ss');
     }, 1000);
@@ -689,34 +635,6 @@ export default {
   }
 }
 
-.status {
-  .sys-name,
-  .account-name,
-  .version-name {
-    margin: auto 1px;
-    color: white;
-    font-weight: bold;
-    font-size: 22px;
-    // letter-spacing: 2px;
-  }
-
-  .sys-name {
-    margin-left: 0;
-  }
-  .agvc-name {
-    margin: auto 1px;
-    font-weight: bold;
-    font-size: 22px; //background-color: rgb(0, 197, 211);
-  }
-  .account-name {
-    background-color: rgb(23, 162, 184);
-  }
-  .version-name,
-  .sys-name {
-    background-color: rgb(0, 123, 255);
-    margin-right: 0;
-  }
-}
 .lang-switch {
   position: absolute;
   right: 9px;

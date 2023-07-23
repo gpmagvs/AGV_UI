@@ -77,6 +77,9 @@ export var AGVStatusStore = createStore({
     /**是否為巡檢AGV */
     IsInspectionAGV: state => {
       return state.AGVStatus.Agv_Type == 2;
+    },  /**是否為巡檢AGV */
+    IsForkAGV: state => {
+      return state.AGVStatus.Agv_Type == 0;
     },
     CurrentPose: state => {
       return state.AGVStatus.Pose;
@@ -86,6 +89,9 @@ export var AGVStatusStore = createStore({
     },
     BatteryStatus: state => {
       return state.AGVStatus.BatteryStatus
+    },
+    ForkHeight: state => {
+      return state.AGVStatus.ZAxisDriverState.position
     }
 
   },

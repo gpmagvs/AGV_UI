@@ -1,7 +1,7 @@
 <template>
-  <div @mouseup="(e)=>{isForkClickDown=false}" class="admin">
+  <div @mouseup="(e)=>{isForkClickDown=false}" class="admin w-100 h-100">
     <div @mousemove="MouseMove" class="agv-fork-img">
-      <img src="/images/agv_lift.png" width="500" alt />
+      <img src="/images/agv_lift.png" width="300" alt />
       <div @mousedown="ForkClick" v-bind:style="ForkStyle" class="fork">
         <span>{{ ForkHeight }} mm</span>
       </div>
