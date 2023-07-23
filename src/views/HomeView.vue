@@ -237,15 +237,6 @@ export default {
         Notifier.Primary("Language:English", 'bottom', 800);
       }
     },
-    AdminSwitchDialogResultHandle(checked = false) {
-      this.version_text_click_count = 0;
-      if (checked) {
-        UserStore.commit('setUser', {
-          UserName: 'GOD',
-          Role: 3
-        });
-      }
-    },
     ShowLogin() {
       if (this.IsLogin) {
         this.$swal.fire({
@@ -526,7 +517,7 @@ export default {
       return this.IsLogin ? '登出' : '登入';
     },
     alarmResetBtnVariant() {
-      return this.VMSData.AlarmCodes.length > 0 ? 'danger' : 'light'
+      return ( this.VMSData.AlarmCodes.length > 0) ? 'danger' : 'light'
     },
 
     IsAutoMode() {

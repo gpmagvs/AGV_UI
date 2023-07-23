@@ -55,6 +55,15 @@ export default {
       })
 
     },
+    AdminSwitchDialogResultHandle(checked = false) {
+      this.version_text_click_count = 0;
+      if (checked) {
+        UserStore.commit('setUser', {
+          UserName: 'GOD',
+          Role: 3
+        });
+      }
+    },
   },
 }
 </script>
