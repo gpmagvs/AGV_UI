@@ -27,7 +27,7 @@
         <div class="side h-100">
           <div class="opt-buttons px-1 py-1 d-flex flex-column">
             <b-button
-              :disabled="back_end_server_err||VMSData.IsSystemIniting||VMSData.AlarmCodes.length!=0"
+              :disabled="back_end_server_err||VMSData.IsSystemIniting"
               @click="AGVInitialize()"
               class="mb-1 p-2"
               v-bind:class="VMSData.SubState==''?'down':VMSData.SubState.toLowerCase()"
@@ -517,7 +517,7 @@ export default {
       return this.IsLogin ? '登出' : '登入';
     },
     alarmResetBtnVariant() {
-      return ( this.VMSData.AlarmCodes.length > 0) ? 'danger' : 'light'
+      return (this.VMSData.AlarmCodes.length > 0) ? 'danger' : 'light'
     },
 
     IsAutoMode() {

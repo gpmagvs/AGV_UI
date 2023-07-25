@@ -63,6 +63,7 @@
 <script>
 import { clsRegister } from '@/ViewModels/clsDIOTable';
 import { DIO } from '@/api/VMSAPI.js'
+import { UserStore } from '@/store'
 export default {
   props: {
     enabled: {
@@ -105,7 +106,14 @@ export default {
       if (this.table_data.length < 16)
         return [];
       return this.table_data.slice(this.pagecurrent * 16, 16 * (this.pagecurrent + 1))
+    },
+    IsUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0;
+    },
+    IsGodUse() {
+      return UserStore.getters.IsGodUser;
     }
+
   },
   methods: {
     tb_row_class(row, rowIndex) {
@@ -131,12 +139,20 @@ export default {
       this.pagecurrent = number - 1;
     },
     async cellDoubleClickHandle(row, column, event) {
+      if (!this.IsUserLogin)
+        return;
+
       if (this.digital_type == 'input') {
         await DIO.DI_State_Change(row.Address, !row.State)
       } else {
-        this.DIOChangeComfirmDialogShow = true;
+
         this.toChangeAddress = row.Address;
         this.toChangeState = !row.State;
+        if (this.IsGodUse) {
+          this.WriteDIOHandle();
+          return;
+        }
+        this.DIOChangeComfirmDialogShow = true;
 
       }
     },

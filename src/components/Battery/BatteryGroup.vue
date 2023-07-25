@@ -84,7 +84,6 @@ export default {
   },
   methods: {
     GetBatteryStatus(index) {
-      debugger
       try {
         var stat = this.battery_states.find(bat => bat.BatteryID == index)
         if (stat)

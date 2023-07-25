@@ -171,7 +171,6 @@ export const NavigationAPI = {
    *  { confirm: Boolean, message: String }
   */
   async MoveTest(moveTestVM = MoveTestVM) {
-    debugger
     try {
       var ret = await axios_entity.post(`api/LocalNav/MoveTo`, moveTestVM)
       return ret.data; //{confirm,message}

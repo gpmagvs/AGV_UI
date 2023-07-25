@@ -10,7 +10,7 @@
           </td>
           <td>
             <div>
-              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i> VMS
+              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i> AGVS
             </div>
           </td>
         </tr>
