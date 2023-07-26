@@ -77,7 +77,8 @@ export var AGVStatusStore = createStore({
     /**是否為巡檢AGV */
     IsInspectionAGV: state => {
       return state.AGVStatus.Agv_Type == 2;
-    },  /**是否為巡檢AGV */
+    },
+    /**是否為Fork AGV */
     IsForkAGV: state => {
       return state.AGVStatus.Agv_Type == 0;
     },
@@ -213,12 +214,46 @@ export var DIOStore = createStore({
       }
 
       return outputs
+    },
+    Fork_ARM_States: state => {
+      if (state.DIOStates.Inputs == undefined) {
+        return {
+          IsArmAtHomePose: false,
+          IsArmAtEndPose: true
+        }
+      }
+      var Inputs = state.DIOStates.Inputs;
+      var IsArmAtHomePose = !Inputs.find(reg => reg.Address == 'X0000').State
+      var IsArmAtEndPose = !Inputs.find(reg => reg.Address == 'X0001').State
+      debugger
+      return {
+        IsArmAtHomePose: IsArmAtHomePose,
+        IsArmAtEndPose: IsArmAtEndPose
+      }
     }
 
   },
   mutations: {
     updateStatus(state, data) {
       state.DIOStates = data
+    }
+  }
+})
+
+export var ForkTeachStore = createStore({
+  state: {
+    HasAnyChanged: false
+  },
+  getters: {
+    IsAnyChanged: state => {
+      return state.HasAnyChanged;
+    }
+  },
+  mutations: {
+    setIsAnyChanged(state, HasAnyChanged) {
+
+      debugger
+      state.HasAnyChanged = HasAnyChanged;
     }
   }
 })

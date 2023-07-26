@@ -23,18 +23,24 @@
             disabled
           ></el-input>
         </div>
-        <div v-if="true" class="p-2 my-2 border rounded">
-          <ZaxisPoseSetting></ZaxisPoseSetting>
+        <div v-if="enabled" class="p-2 my-2 border rounded">
+          <b-button @click="ShowTeachView">牙叉位置校點</b-button>
         </div>
       </div>
       <!-- <el-divider direction="vertical"></el-divider> -->
       <div class="control-buttons mx-2">
-        <b-button :disabled="!enabled" size="lg" class="w-100 border mb-3" variant="light" block>
+        <b-button
+          :disabled="(!enabled|isZAxisMoving)"
+          size="lg"
+          class="w-100 border mb-3"
+          variant="light"
+          block
+        >
           <i class="bi bi-chevron-bar-up"></i>
           {{$t('up_limit_pose') }}
         </b-button>
         <b-button
-          :disabled="!enabled"
+          :disabled="(!enabled|isZAxisMoving)"
           @click="Up()"
           size="lg"
           class="w-100 border mb-3"
@@ -45,7 +51,7 @@
           {{$t('up') }}
         </b-button>
         <b-button
-          :disabled="!enabled"
+          :disabled="(!enabled|isZAxisMoving)"
           @click="Orig()"
           size="lg"
           class="w-100 border mb-3"
@@ -55,19 +61,12 @@
           <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>
           {{$t('original') }}
         </b-button>
-        <b-button
-          :disabled="!enabled"
-          @click="Stop()"
-          size="lg"
-          class="w-100 border mb-3"
-          variant="light"
-          block
-        >
+        <b-button @click="Stop()" size="lg" class="w-100 border mb-3" variant="light" block>
           <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>
           {{$t('stop') }}
         </b-button>
         <b-button
-          :disabled="!enabled"
+          :disabled="(!enabled|isZAxisMoving)"
           @click="Down()"
           size="lg"
           class="w-100 border mb-3"
@@ -77,23 +76,38 @@
           <i class="bi bi-chevron-down"></i>
           {{$t('down') }}
         </b-button>
-        <b-button :disabled="!enabled" size="lg" class="w-100 border mb-3" variant="light" block>
+        <b-button
+          :disabled="(!enabled|isZAxisMoving)"
+          size="lg"
+          class="w-100 border mb-3"
+          variant="light"
+          block
+        >
           <i class="bi bi-chevron-bar-down"></i>
           {{$t('down_limit_pose') }}
         </b-button>
       </div>
+      <el-drawer
+        v-model="show_teach_page"
+        direction="btt"
+        size="80%"
+        @close="TeachDrawerClosingHandle"
+        title="FORK TEACH"
+      >
+        <forkTeachEditor ref="fork_teach"></forkTeachEditor>
+      </el-drawer>
     </div>
   </div>
 </template>
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
-import ZaxisPoseSetting from './ZaxisPoseSetting.vue';
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, ForkTeachStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
+import forkTeachEditor from './ForkTeachEditor.vue'
 export default {
   components: {
-    ZaxisPoseSetting, AdminFork
+    AdminFork, forkTeachEditor
   },
   props: {
     enabled: {
@@ -103,6 +117,8 @@ export default {
   },
   data() {
     return {
+      isZAxisMoving: false,
+      show_teach_page: false,
       hardware_limit_enable: true
     }
   },
@@ -113,19 +129,49 @@ export default {
   },
   methods: {
     async Up() {
+      this.isZAxisMoving = true;
       var ret = await ForkAPI.Up();
+      this.isZAxisMoving = false;
     },
     async Down() {
+      this.isZAxisMoving = true;
       var ret = await ForkAPI.Down();
+      this.isZAxisMoving = false;
     },
     async Orig() {
+      this.isZAxisMoving = true;
       var ret = await ForkAPI.Home();
+      this.isZAxisMoving = false;
     },
     async Stop() {
       var ret = await ForkAPI.Stop();
     },
     async Pose() {
+
+      this.isZAxisMoving = true;
       var ret = await ForkAPI.Pose(1.2);
+      this.isZAxisMoving = false;
+    },
+    ShowTeachView() {
+      if (this.$refs['fork_teach'])
+        this.$refs['fork_teach'].reload();
+      this.show_teach_page = true;
+    },
+    TeachDrawerClosingHandle() {
+      if (ForkTeachStore.getters.IsAnyChanged) {
+        this.$swal.fire({
+          icon: 'warning',
+          text: '教點資料已修改但尚未儲存，確定要離開?',
+          showConfirmButton: true,
+          showCancelButton: true
+        }).then(user_response => {
+          if (!user_response.isConfirmed) {
+            this.show_teach_page = true
+          }
+          else {
+          }
+        })
+      }
     }
   },
 }

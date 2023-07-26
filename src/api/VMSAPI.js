@@ -254,6 +254,49 @@ export async function RechargeCircuit() {
 /**控制Fork */
 export const ForkAPI = {
 
+  /**取得教點資料 */
+  async GetTeachData() {
+    var ret = await axios_entity.get(`api/VMS/Fork/TeachDatas`)
+    return ret.data;
+  },
+  /**儲存所有教點設定 */
+  async SaveTeachData(teach_data) {
+    var ret = await axios_entity.post(`api/VMS/Fork/SaveTeachDatas`, teach_data)
+    return ret.data;
+  },
+  /**儲存單元教點設定 */
+  async SaveUnitTeachData(unit_teach_data) {
+    var ret = await axios_entity.post(`api/VMS/Fork/SaveUnitTeachData`, unit_teach_data)
+    return ret.data;
+  },
+  /**移除Tag教點設定 */
+  async RemoveTagTeachData(tag) {
+    var ret = await axios_entity.get(`api/VMS/Fork/RemoveTagTeachData?tag=${tag}`)
+    return ret.data;
+  },
+  /**移除單元教點設定 */
+  async RemoveUnitTeachData(tag, layer) {
+    var ret = await axios_entity.get(`api/VMS/Fork/RemoveUnitTeachData?tag=${tag}&layer=${layer}`)
+    return ret.data;
+  },
+
+  /**枒杈伸出 */
+  async ARM_Extend() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Arm/Extend`)
+    return ret.data;
+  },
+
+  /**枒杈縮回 */
+  async ARM_Shorten() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Arm/Shorten`)
+    return ret.data;
+  },
+  /**枒杈停止 */
+  async ARM_Stop() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Arm/Stop`)
+    return ret.data;
+  },
+
   async Init() {
     var ret = await axios_entity.get(`api/VMS/Fork/Init`)
     return ret.data;

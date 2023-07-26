@@ -52,7 +52,26 @@
         </div>
       </div>
     </div>
-
+    <div v-if="IsForkARMControlable" class="d-flex flex-row py-3">
+      <div class="item-label">牙叉伸縮</div>
+      <div class="battery py-1">
+        <div class="d-flex flex-row mb-1">
+          <b-button
+            :disabled="FORK_ARM_Status.IsArmAtHomePose"
+            @click="ForkArmPoseControlHandler(true)"
+            squared
+            variant="primary"
+          >縮回</b-button>
+          <b-button
+            :disabled="FORK_ARM_Status.IsArmAtEndPose"
+            @click="ForkArmPoseControlHandler(false)"
+            squared
+            variant="primary"
+          >伸出</b-button>
+          <b-button @click="ForkArmStopHandler()" squared variant="danger">停止</b-button>
+        </div>
+      </div>
+    </div>
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">煞車功能</div>
       <b-button
@@ -97,10 +116,10 @@
 </template>
 
 <script>
-import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl } from '@/api/VMSAPI.js'
+import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl, ForkAPI } from '@/api/VMSAPI.js'
 import Notifier from '@/api/NotifyHelper';
 import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, DIOStore } from '@/store'
 
 export default {
   components: {
@@ -123,6 +142,17 @@ export default {
   computed: {
     IsBatteryLockControlable() {
       return AGVStatusStore.getters.IsInspectionAGV
+    },
+    IsForkARMControlable() {
+      return AGVStatusStore.getters.IsForkAGV
+    },
+    FORK_ARM_Status() {
+      //{
+      //   IsArmAtHomePose: IsArmAtHomePose,
+      //   IsArmAtEndPose: IsArmAtEndPose
+      // }
+      debugger
+      return DIOStore.getters.Fork_ARM_States
     }
   },
   methods: {
@@ -150,6 +180,15 @@ export default {
     },
     async BatteryLockHandler(bat_no, islock) {
       await BatteryLockCtrl(bat_no, islock)
+    },
+    async ForkArmPoseControlHandler(isExtend) {
+      if (isExtend)
+        await ForkAPI.ARM_Extend();
+      else
+        await ForkAPI.ARM_Shorten();
+    },
+    async ForkArmStopHandler() {
+      await ForkAPI.ARM_Stop();
     },
     onChange(input) {
       if (input + "" == "") {
