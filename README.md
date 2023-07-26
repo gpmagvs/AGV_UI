@@ -1,19 +1,22 @@
 # agvs_ui
 
-## Project setup
+## 專案Clone後,或遇到找不到套件時
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 運行服務進行開發
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 發布前端程式
 ```
 npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- 預設發布位置  outputDir: '../GPMVehicleControlSystem/GPMVehicleControlSystem/wwwroot'
+- 發布位置可修改 vue.config.js 檔案中的 <b>outputDir</b>. 
+
+
+
