@@ -3,13 +3,43 @@ import {
   createWebHistory
 } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import HomeViewVersion2 from '../views/Version2/HomeView.vue'
 import Admin from '../views/Admin.vue'
+import MainStatuShow from '@/components/Version2/MainStatuShow.vue'
+import { UIStore } from '@/store'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: HomeView
+  },
+  {
+    path: '/v2',
+    name: '',
+    component: HomeViewVersion2,
+    children: [
+      {
+
+        path: '/v2',
+        name: 'MainStatuShow',
+        component: MainStatuShow,
+      },
+      {
+        path: 'controller',
+        component: () => import('../components/Admin/Controller.vue'),
+        children: [
+          {
+            path: 'move',
+            component: () => import('../components/Controller/MoveController.vue')
+          },
+          {
+            path: 'fork',
+            component: () => import('../components/Controller/ForkController.vue')
+          }
+        ]
+      }
+    ]
   },
   {
     path: '/rd_test',
@@ -18,21 +48,21 @@ const routes = [
       import(/* webpackChunkName: "about" */ '../views/RDTestView.vue'),
   },
   {
-    path:'/admin',
-    name:'admin',
-    component:Admin,
-    children:[
+    path: '/admin',
+    name: 'admin',
+    component: Admin,
+    children: [
       {
-        path:'controller',
-        name:'controller',
-        component: ()=>import('../components/Admin/Controller.vue')
+        path: 'controller',
+        name: 'controller',
+        component: () => import('../components/Admin/Controller.vue')
       }
     ]
   },
   {
     path: '/idle',
     name: 'idle',
-    component:()=> import('../views/IdleView.vue')
+    component: () => import('../views/IdleView.vue')
   }
 ]
 

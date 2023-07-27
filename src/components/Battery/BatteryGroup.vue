@@ -62,19 +62,13 @@ export default {
       type: String,
       default: "horizon"
     },
-    battery_states: {
-      type: Array,
-      default() {
-        return [
-          new BatteryStatus(),
-          new BatteryStatus()
-        ]
-      }
-    }
   },
   computed: {
     IsMiniAGV() {
       return AGVStatusStore.getters.IsInspectionAGV
+    },
+    battery_states() {
+      return AGVStatusStore.getters.BatteryStatus
     }
   },
   data() {

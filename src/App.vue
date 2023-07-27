@@ -17,11 +17,7 @@
       ></el-alert>
     </div>
   </div>
-  <i
-    @click="ToggleMenu"
-    v-show="showMenuToggleIcon"
-    class="bi text-primary bi-list menu-toggle-icon"
-  ></i>
+  <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
   <SideMenuDrawer ref="side_menu"></SideMenuDrawer>
   <router-view v-slot="{ Component }">
     <keep-alive>

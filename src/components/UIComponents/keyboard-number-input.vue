@@ -49,11 +49,10 @@ export default {
           this.input_str = this.input_str.slice(0, -1);
         }
         this.InputChangedHandle(this.GetInputNumber);
-        this.show_keyboard=false;
+        this.show_keyboard = false;
         return;
       }
       if (val == 'back') {
-        debugger
         if (this.input_str != '') {
           this.input_str = this.input_str.slice(0, -1);
         }

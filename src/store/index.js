@@ -16,6 +16,23 @@ export default createStore({
   }
 })
 
+export var UIStore = createStore({
+  state: {
+    UI_Version: 2,
+  },
+  getters: {
+    CurrentUIVersion: state => {
+      return state.UI_Version;
+    }
+  },
+  mutations: {
+
+  },
+  actions: {
+
+
+  }
+})
 
 
 /**系統訊息STORE */
@@ -251,8 +268,6 @@ export var ForkTeachStore = createStore({
   },
   mutations: {
     setIsAnyChanged(state, HasAnyChanged) {
-
-      debugger
       state.HasAnyChanged = HasAnyChanged;
     }
   }

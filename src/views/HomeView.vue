@@ -343,7 +343,6 @@ export default {
     VMSDataWebsocketInit() {
       this.ws = new WebSocketHelp('ws/AGVCState');
       this.ws.Connect();
-
       this.ws.onmessage = (event) => {
 
         this.back_end_server_err = false;
