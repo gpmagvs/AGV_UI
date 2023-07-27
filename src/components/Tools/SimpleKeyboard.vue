@@ -24,7 +24,8 @@ export default {
     }
   },
   data: () => ({
-    keyboard: null
+    keyboard: null,
+    lastinput: undefined
   }),
   mounted() {
 
@@ -34,7 +35,7 @@ export default {
         onChange: this.onChange,
         onKeyPress: this.onKeyPress,
         layout: {
-          default: ["1 2 3", "4 5 6", "7 8 9", " 0 {bksp}"],
+          default: ["  back", "1 2 3", "4 5 6", "7 8 9", ". 0 enter"],
         },
         theme: "hg-theme-default hg-layout-numeric numeric-theme"
 
@@ -54,7 +55,9 @@ export default {
     },
     onKeyPress(button) {
       this.$emit("onKeyPress", button);
-      if (button === "{shift}" || button === "{lock}") this.handleShift();
+      if (button === "{shift}" || button === "{lock}")
+        this.handleShift();
+      this.lastinput = button
     },
     handleShift() {
       let currentLayout = this.keyboard.options.layoutName;

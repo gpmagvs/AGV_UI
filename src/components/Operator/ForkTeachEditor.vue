@@ -9,7 +9,12 @@
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
-            <el-input @change="InputChanged" type="number" v-model="scope.row.Tag"></el-input>
+            <el-input
+              @click="InputClicked"
+              @change="InputChanged"
+              type="number"
+              v-model="scope.row.Tag"
+            ></el-input>
           </div>
         </template>
       </el-table-column>
@@ -17,6 +22,7 @@
         <el-table-column label="Up Pose(cm)">
           <template #default="scope">
             <el-input
+              @click="InputClicked"
               @change="InputChanged"
               type="number"
               step="0.01"
@@ -29,6 +35,7 @@
         <el-table-column label="Down Pose(cm)">
           <template #default="scope">
             <el-input
+              @click="InputClicked"
               @change="InputChanged"
               type="number"
               step="0.01"
@@ -47,13 +54,19 @@
         </template>
       </el-table-column>
     </el-table>
+    <SimpleKeyboardVue></SimpleKeyboardVue>
   </div>
 </template>
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI'
 import { ForkTeachStore } from '@/store'
+import SimpleKeyboardVue from '@/components/Tools/SimpleKeyboard.vue';
+
 export default {
+  components: {
+    SimpleKeyboardVue
+  },
   data() {
     return {
       TeachDatas: [
@@ -168,9 +181,15 @@ export default {
     async LoadTeachDataFromServer() {
       this.loading = true;
       setTimeout(async () => {
-        this.TeachDatas = await ForkAPI.GetTeachData()
-        this.loading = false;
-        this.ResetOriDattaString();
+        try {
+
+          this.TeachDatas = await ForkAPI.GetTeachData()
+          this.loading = false;
+          this.ResetOriDattaString();
+        } catch (error) {
+
+          this.loading = false;
+        }
       }, 100);
     },
     async SaveHandler() {
@@ -205,6 +224,9 @@ export default {
       this.HasAnyChange = currentJson != this.OriDataJson;
 
     },
+    InputClicked(ele){
+      console.log(ele)
+    },
     AddTagTeachHandler() {
       this.TeachDatas.push({
         Tag: this.NewTagNumber,
@@ -227,7 +249,7 @@ export default {
     }
   },
   mounted() {
-    this.LoadTeachDataFromServer();
+    this.reload();
   },
 }
 </script>

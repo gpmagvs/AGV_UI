@@ -8,6 +8,23 @@
       class="agvc-control-panel keys pt-4 p-3"
       style="width:400px"
     >
+      <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
+        <div class="speed-item-container d-flex flex-row">
+          <div>Linear Speed</div>
+          <!-- <KeyboardInput v-model="linear_speed"></KeyboardInput> -->
+          <el-input-number size="large" v-model="linear_speed" :step="0.1" :max="1" :min="0.01"></el-input-number>
+        </div>
+        <div class="speed-item-container d-flex flex-row">
+          <div>Rotation Speed</div>
+          <el-input-number
+            size="large"
+            v-model="rotation_speed"
+            :step="0.01"
+            :max="0.3"
+            :min="0.01"
+          ></el-input-number>
+        </div>
+      </div>
       <table class="w-100">
         <tbody>
           <tr align="center">
@@ -56,22 +73,16 @@
         </tbody>
       </table>
     </div>
-    <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
-      <div class="speed-item-container d-flex flex-row">
-        <div>Linear Speed</div>
-        <el-input-number v-model="linear_speed" :step="0.01" :max="0.3" :min="0.01"></el-input-number>
-      </div>
-      <div class="speed-item-container d-flex flex-row">
-        <div>Rotation Speed</div>
-        <el-input-number v-model="rotation_speed" :step="0.01" :max="0.3" :min="0.01"></el-input-number>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { MOVEControl } from '@/api/VMSAPI';
+import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
 export default {
+  components: {
+    KeyboardInput,
+  },
   props: {
     enabled: {
       type: Boolean,

@@ -151,7 +151,7 @@ export default {
       //   IsArmAtHomePose: IsArmAtHomePose,
       //   IsArmAtEndPose: IsArmAtEndPose
       // }
-      debugger
+
       return DIOStore.getters.Fork_ARM_States
     }
   },

@@ -225,7 +225,7 @@ export var DIOStore = createStore({
       var Inputs = state.DIOStates.Inputs;
       var IsArmAtHomePose = !Inputs.find(reg => reg.Address == 'X0000').State
       var IsArmAtEndPose = !Inputs.find(reg => reg.Address == 'X0001').State
-      debugger
+
       return {
         IsArmAtHomePose: IsArmAtHomePose,
         IsArmAtEndPose: IsArmAtEndPose
