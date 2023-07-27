@@ -26,7 +26,7 @@ export default {
 .home-view-header {
   .agv-name {
     font-weight: bold;
-    font-size: 40px;
+    font-size: 20px;
   }
 }
 </style>

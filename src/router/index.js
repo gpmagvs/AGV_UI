@@ -26,6 +26,12 @@ const routes = [
         component: MainStatuShow,
       },
       {
+
+        path: 'IOTable',
+        component: () => import('../components/Version2/DIOViewer.vue'),
+
+      },
+      {
         path: 'controller',
         component: () => import('../components/Admin/Controller.vue'),
         children: [
