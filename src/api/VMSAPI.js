@@ -316,32 +316,11 @@ export const ForkAPI = {
     var ret = await axios_entity.get(`api/VMS/Fork/Arm/Stop`)
     return ret.data;
   },
-
-  async Init() {
-    var ret = await axios_entity.get(`api/VMS/Fork/Init`)
-    return ret.data;
-  },
-  async Home(speed = 1.0) {
-    var ret = await axios_entity.get(`api/VMS/Fork/Home?speed=${speed}`)
+  async Action(action = "", pose = 0, speed = 0) {
+    var ret = await axios_entity.get(`api/VMS/Fork?action=${action}&pose=${pose}&speed=${speed}`)
     return ret.data;
   },
 
-  async Pose(pose, speed = 1.0) {
-    var ret = await axios_entity.get(`api/VMS/Fork/Pose?pose=${pose}&speed=${speed}`)
-    return ret.data;
-  },
-  async Stop() {
-    var ret = await axios_entity.get(`api/VMS/Fork/Stop`)
-    return ret.data;
-  },
-  async Up(speed = 1.0) {
-    var ret = await axios_entity.get(`api/VMS/Fork/Up?speed=${speed}`)
-    return ret.data;
-  },
-  async Down(speed = 1.0) {
-    var ret = await axios_entity.get(`api/VMS/Fork/Down?speed=${speed}`)
-    return ret.data;
-  },
   async SetTagHeightLimit(tag_id, pose_loc, layer, height) {
     return true
   }

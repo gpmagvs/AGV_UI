@@ -41,7 +41,7 @@
         </b-button>
         <b-button
           :disabled="(!enabled|isZAxisMoving)"
-          @click="Up()"
+          @click="ForkAction('up')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
@@ -52,7 +52,7 @@
         </b-button>
         <b-button
           :disabled="(!enabled|isZAxisMoving)"
-          @click="Orig()"
+          @click="ForkAction('home')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
@@ -61,13 +61,19 @@
           <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>
           {{$t('original') }}
         </b-button>
-        <b-button @click="Stop()" size="lg" class="w-100 border mb-3" variant="light" block>
+        <b-button
+          @click="ForkAction('stop')"
+          size="lg"
+          class="w-100 border mb-3"
+          variant="light"
+          block
+        >
           <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>
           {{$t('stop') }}
         </b-button>
         <b-button
           :disabled="(!enabled|isZAxisMoving)"
-          @click="Down()"
+          @click="ForkAction('down')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
@@ -128,30 +134,19 @@ export default {
     }
   },
   methods: {
-    async Up() {
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Up();
-      this.isZAxisMoving = false;
+    async ForkAction(action, pose = 0, speed = 0) {
+      this.isZAxisMoving=true;
+      var ret = await ForkAPI.Action(action, pose, speed);
+      this.isZAxisMoving=false;
+      if(!ret.confirm){
+        this.$swal.fire({
+          text:ret.message,
+          icon:'error',
+          title:'牙叉禁止操作'
+        })
+      }
     },
-    async Down() {
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Down();
-      this.isZAxisMoving = false;
-    },
-    async Orig() {
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Home();
-      this.isZAxisMoving = false;
-    },
-    async Stop() {
-      var ret = await ForkAPI.Stop();
-    },
-    async Pose() {
 
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Pose(1.2);
-      this.isZAxisMoving = false;
-    },
     ShowTeachView() {
       if (this.$refs['fork_teach'])
         this.$refs['fork_teach'].reload();
