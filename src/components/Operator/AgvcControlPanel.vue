@@ -29,21 +29,25 @@
         <tbody>
           <tr align="center">
             <td>
-              <div :class="active_state"></div>
-            </td>
-            <td>
-              <div :class="active_state" @click="MOVE_UP()">
-                <i class="bi bi-arrow-up"></i>
+              <div :class="active_state" @click="MOVE_FL()">
+                <img src="@/assets/images/forward_left.png" alt />
               </div>
             </td>
             <td>
-              <div :class="active_state"></div>
+              <div :class="active_state" @click="MOVE_UP()">
+                <img src="@/assets/images/fordward.png" alt />
+              </div>
+            </td>
+            <td>
+              <div :class="active_state" @click="MOVE_FR()">
+                <img src="@/assets/images/forward_right.png" alt />
+              </div>
             </td>
           </tr>
           <tr align="justify">
             <td>
               <div :class="active_state" @click="MOVE_LEFT()">
-                <i class="bi bi-arrow-left"></i>
+                <img src="@/assets/images/left.png" alt />
               </div>
             </td>
             <td>
@@ -53,25 +57,34 @@
             </td>
             <td>
               <div :class="active_state" @click="MOVE_RIGHT()">
-                <i class="bi bi-arrow-right"></i>
+                <img src="@/assets/images/right.png" alt />
               </div>
             </td>
           </tr>
           <tr align="justify">
             <td>
-              <div :class="active_state"></div>
-            </td>
-            <td>
-              <div :class="active_state" @click="MOVE_DOWN()">
-                <i class="bi bi-arrow-down"></i>
+              <div :class="active_state" @click="MOVE_BL()">
+                <img src="@/assets/images/back_left.png" alt />
               </div>
             </td>
             <td>
-              <div @click="speed_modifyable=!speed_modifyable" :class="active_state"></div>
+              <div :class="active_state" @click="MOVE_DOWN()">
+                <img src="@/assets/images/backward.png" alt />
+              </div>
+            </td>
+            <td>
+              <div :class="active_state" @click="MOVE_BR()">
+                <img src="@/assets/images/back_right.png" alt />
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
+      <div
+        @click="speed_modifyable=!speed_modifyable"
+        style="height:20px;width:100px"
+        class="bg-light"
+      ></div>
     </div>
   </div>
 </template>
@@ -112,6 +125,18 @@ export default {
     },
     async MOVE_STOP() {
       await MOVEControl.AGVMove_STOP();
+    },
+    async MOVE_FR() {
+      await MOVEControl.AGVMove_FordwardRight();
+    },
+    async MOVE_FL() {
+      await MOVEControl.AGVMove_FordwardLeft();
+    },
+    async MOVE_BR() {
+      await MOVEControl.AGVMove_BackwardRight();
+    },
+    async MOVE_BL() {
+      await MOVEControl.AGVMove_BackwardLeft();
     }
   },
   computed: {

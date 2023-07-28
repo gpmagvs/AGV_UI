@@ -70,6 +70,26 @@ export const MOVEControl = {
     var ret = await axios_entity.get('api/ManualOperator/Stop')
     return ret
   },
+
+  async AGVMove_FordwardRight() {
+
+    var ret = await axios_entity.get('api/ManualOperator/FordwardRight')
+    return ret
+  },
+
+  async AGVMove_FordwardLeft() {
+    var ret = await axios_entity.get('api/ManualOperator/FordwardLeft')
+    return ret
+  },
+  async AGVMove_BackwardRight() {
+    var ret = await axios_entity.get('api/ManualOperator/BackwardRight')
+    return ret
+  },
+  async AGVMove_BackwardLeft() {
+    var ret = await axios_entity.get('api/ManualOperator/BackwardLeft')
+    return ret
+  },
+
 }
 
 export const MODESwitcher = {
