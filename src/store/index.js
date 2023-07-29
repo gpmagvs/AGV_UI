@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
+import clsSensorStatus from '@/ViewModels/clsSensorStatus';
 import bus from '@/event-bus';
 export default createStore({
   state: {
@@ -110,6 +111,55 @@ export var AGVStatusStore = createStore({
     },
     ForkHeight: state => {
       return state.AGVStatus.ZAxisDriverState.position
+    },
+    AGV_Sensors_States: state => {
+      debugger
+      if (DIOStore.getters.DIOStates.Inputs == undefined) {
+        return {}
+      }
+      var agv_status = state.AGVStatus
+      var sensors = {};
+      //aim : 整合DIO狀態給出AGV周邊設備狀態
+      sensors.LaserFront = new clsSensorStatus('前方雷射');
+      sensors.LaserFront.active = !DIOStore.getters.IsLaserFrontByass;
+      sensors.LaserFront.status = DIOStore.getters.IsLaserFrontAlarm ? 2 : (DIOStore.getters.IsLaserFrontWarning ? 1 : 0);
+      sensors.LaserBack = new clsSensorStatus('後方雷射');
+      sensors.LaserBack.active = !DIOStore.getters.IsLaserBackByass;
+      sensors.LaserBack.status = DIOStore.getters.IsLaserBackAlarm ? 2 : (DIOStore.getters.IsLaserBackWarning ? 1 : 0);
+
+
+      sensors.LaserRight = new clsSensorStatus('右方雷射');
+      sensors.LaserRight.active = !DIOStore.getters.IsLaserRightByass;
+      sensors.LaserRight.status = DIOStore.getters.IsLaserRightAlarm ? 2 : 0;
+
+      sensors.LaserLeft = new clsSensorStatus('左方雷射');
+      sensors.LaserLeft.active = !DIOStore.getters.IsLaserLeftByass;
+      sensors.LaserLeft.status = DIOStore.getters.IsLaserLeftAlarm ? 2 : 0;
+
+
+      sensors.Bumper = new clsSensorStatus('Bumper');
+      sensors.Bumper.status = DIOStore.getters.IsBumperTrigger ? 2 : 0;
+      //Drivers
+      sensors.RightWheel = new clsSensorStatus('右輪馬達');
+      sensors.RightWheel.status = DIOStore.getters.IsRightMotorAlarm ? 2 : 0;
+
+      sensors.LeftWheel = new clsSensorStatus('左輪馬達');
+      sensors.LeftWheel.status = DIOStore.getters.IsLeftMotorAlarm ? 2 : 0;
+
+      sensors.VerticalWheel = new clsSensorStatus('垂直軸馬達');
+      sensors.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
+
+      sensors.VerticalBelt = new clsSensorStatus('垂直軸馬達皮帶');
+      sensors.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
+
+
+      sensors.ForkFrontendObstacle = new clsSensorStatus('Fork前端障礙物檢知');
+      sensors.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
+
+      sensors.SickLidar = new clsSensorStatus('Sick');
+
+
+      return sensors;
     }
 
   },
@@ -233,6 +283,7 @@ export var DIOStore = createStore({
       return outputs
     },
     Fork_ARM_States: state => {
+
       if (state.DIOStates.Inputs == undefined) {
         return {
           IsArmAtHomePose: false,
@@ -247,7 +298,118 @@ export var DIOStore = createStore({
         IsArmAtHomePose: IsArmAtHomePose,
         IsArmAtEndPose: IsArmAtEndPose
       }
-    }
+    },
+    IsLaserFrontAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X0032').State
+    },
+
+    IsLaserFrontWarning: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      var region1 = !Inputs.find(reg => reg.Address == 'X0030').State
+      var region2 = !Inputs.find(reg => reg.Address == 'X0031').State
+      var region3 = !Inputs.find(reg => reg.Address == 'X0032').State
+      return (region1 | region2) & !region3
+    },
+
+    IsLaserBackAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X0036').State
+    },
+
+    IsLaserBackWarning: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      var region1 = !Inputs.find(reg => reg.Address == 'X0034').State
+      var region2 = !Inputs.find(reg => reg.Address == 'X0035').State
+      var region3 = !Inputs.find(reg => reg.Address == 'X0036').State
+      return (region1 | region2) & !region3
+    },
+
+    IsLaserRightAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X000F').State
+    },
+
+    IsLaserLeftAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X000E').State
+    },
+
+    IsLaserFrontByass: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Outputs = state.DIOStates.Outputs;
+      return Outputs.find(reg => reg.Name == 'Front_LsrBypass').State
+    },
+    IsLaserBackByass: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Outputs = state.DIOStates.Outputs;
+      return Outputs.find(reg => reg.Name == 'Back_LsrBypass').State
+    },
+    IsLaserLeftByass: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Outputs = state.DIOStates.Outputs;
+      return Outputs.find(reg => reg.Name == 'Left_LsrBypass').State
+    },
+    IsLaserRightByass: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Outputs = state.DIOStates.Outputs;
+      return Outputs.find(reg => reg.Name == 'Right_LsrBypass').State
+    },
+    IsBumperTrigger: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X000A').State
+    },
+    IsRightMotorAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X0015').State
+    },
+
+    IsLeftMotorAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X0017').State
+    },
+
+    IsVerticalMotorAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X0019').State
+    },
+    IsVerticalBeltAlarm: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return !Inputs.find(reg => reg.Address == 'X002C').State
+    },
+    IsForkFronendObstacle: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      return Inputs.find(reg => reg.Address == 'X0011').State
+    },
+
 
   },
   mutations: {

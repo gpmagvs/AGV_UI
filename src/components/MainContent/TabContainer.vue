@@ -8,6 +8,11 @@
           <status_card></status_card>
         </div>
       </b-tab>
+      <b-tab title="Overview">
+        <div class="mt-3 border p-1">
+          <AgvOverview></AgvOverview>
+        </div>
+      </b-tab>
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
         <div class="table-container-div mt-3 border p-1">
@@ -62,13 +67,14 @@ import AGVSMsgDisplay from '@/components/AGVSMsgDisplay.vue'
 import TaskDeliveryVue from '@/components/VMSTask/TaskDelivery.vue'
 import CSTReader from '@/components/CSTReaderView.vue'
 import EQHandshakeView from '@/components/E84/EQHandshakeView.vue'
-import Notifier from "@/api/NotifyHelper.js"
+import AgvOverview from '@/components/AGVStatusOverview.vue';
+import Notifier from "@/api/NotifyHelper.js";
 import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
 import { UserStore } from '@/store'
 import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
 export default {
-  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView },
+  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview },
   props: {
     VMSData: {
       type: Object,
