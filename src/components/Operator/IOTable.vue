@@ -1,28 +1,13 @@
 <template>
-  <div class="px-1 d-flex flex-row border">
+  <div class="px-1 d-flex flex-row border justify-content-center">
     <div class="mt-2">
-      <div class="d-flex flex-column" style="width:40px">
-        <b-button class="m-1" size="sm" @click="()=>{pagecurrent=pagecurrent-1}">▲</b-button>
-        <b-button
-          class="m-1 border"
-          size="sm"
-          @click="()=>{pagecurrent=i}"
-          v-for="i in  table_data.length==2? 2: table_data.length/16"
-          :key="i"
-          :variant="i==pagecurrent?'primary':''"
-        >{{ i }}</b-button>
-        <b-button class="m-1" size="sm" @click="()=>{pagecurrent=pagecurrent+1}">▼</b-button>
-      </div>
-      <!-- <el-pagination
-        :page-size="16"
-        :total="table_data.length"
-        v-model="pagecurrent"
-        background
-        layout="prev, pager, next"
-        @current-change="PageChangeHandler"
-      />-->
+      <jw-pagination
+        @page_changed="(ev)=>{pagecurrent=ev-1}"
+        :pageSize="16"
+        :totalCount="table_data.length"
+      ></jw-pagination>
     </div>
-    <div class="w-100 border mt-1">
+    <div class="border mt-1 flex-fill">
       <el-table
         size="small"
         :data="page_table_data"
@@ -30,8 +15,9 @@
         header
         border
         height="550"
-        row-key="address_display"
+        row-key="Address"
         @row-dblclick="cellDoubleClickHandle"
+        style="width:99%"
       >
         <el-table-column label="Addr" prop="Address" width="60"></el-table-column>
         <el-table-column label="Name" prop="Name"></el-table-column>
@@ -69,7 +55,11 @@
 import { clsRegister } from '@/ViewModels/clsDIOTable';
 import { DIO } from '@/api/VMSAPI.js'
 import { UserStore } from '@/store'
+import jwPagination from '../UIComponents/jw-pagination.vue';
 export default {
+  components: {
+    jwPagination,
+  },
   props: {
     enabled: {
       type: Boolean,
@@ -87,8 +77,38 @@ export default {
       type: Array,
       default() {
         return [
+          new clsRegister("X0000", "1"),
           new clsRegister("X0001", ""),
           new clsRegister("X0002", ""),
+          new clsRegister("X0003", ""),
+          new clsRegister("X0004", ""),
+          new clsRegister("X0005", ""),
+          new clsRegister("X0006", ""),
+          new clsRegister("X0007", ""),
+          new clsRegister("X0008", ""),
+          new clsRegister("X0009", ""),
+          new clsRegister("X000A", ""),
+          new clsRegister("X000B", ""),
+          new clsRegister("X000C", ""),
+          new clsRegister("X000D", ""),
+          new clsRegister("X000E", ""),
+          new clsRegister("X000F", ""),
+          new clsRegister("X0000", ""),
+          new clsRegister("X0001", ""),
+          new clsRegister("X0002", ""),
+          new clsRegister("X0003", ""),
+          new clsRegister("X0004", ""),
+          new clsRegister("X0005", ""),
+          new clsRegister("X0006", ""),
+          new clsRegister("X0007", "2"),
+          new clsRegister("X0008", ""),
+          new clsRegister("X0009", ""),
+          new clsRegister("X000A", ""),
+          new clsRegister("X000B", ""),
+          new clsRegister("X000C", ""),
+          new clsRegister("X000D", ""),
+          new clsRegister("X000E", ""),
+          new clsRegister("X000F", ""),
         ]
       }
     },
@@ -104,12 +124,8 @@ export default {
     }
   },
   computed: {
-    pags_counts() {
-      return this.table_data.length / 16;
-    },
+
     page_table_data() {
-      if (this.table_data.length < 16)
-        return [];
       return this.table_data.slice(this.pagecurrent * 16, 16 * (this.pagecurrent + 1))
     },
     IsUserLogin() {
