@@ -77,7 +77,22 @@ export var SystemMsgStore = createStore({
 /**AGV狀態STORE */
 export var AGVStatusStore = createStore({
   state: {
-    AGVStatus: new VMSData()
+    AGVStatus: new VMSData(),
+    SensorStatus: {
+      LaserFront: new clsSensorStatus('前方雷射', 0, 155),
+      LaserBack: new clsSensorStatus('後方雷射', 0, -155, 'left-bottom'),
+      LaserRight: new clsSensorStatus('右方雷射', 80, -125, 'right-top'),
+      LaserLeft: new clsSensorStatus('左方雷射', -80, -125),
+      Bumper: new clsSensorStatus('Bumper', 70, 155, 'right-top'),
+      Bumper_back: new clsSensorStatus('Bumper', 70, -155, 'right-bottom'),
+      RightWheel: new clsSensorStatus('右輪馬達', 35, 0, 'right'),
+      LeftWheel: new clsSensorStatus('左輪馬達', -35, 0, 'left'),
+      VerticalWheel: new clsSensorStatus('垂直軸馬達', 0, -85),
+      VerticalBelt: new clsSensorStatus('垂直軸馬達皮帶', 30, -85, 'right-top'),
+      ForkFrontendObstacle: new clsSensorStatus('牙叉障礙物', -40, 120, 'left-bottom'),
+      ForkArmPosition: new clsSensorStatus('牙叉伸縮位置', 40, 120, 'right-bottom'),
+      // SickLidar: new clsSensorStatus('Sick'),
+    }
   },
   getters: {
     AGVStatus: state => {
@@ -118,48 +133,38 @@ export var AGVStatusStore = createStore({
         return {}
       }
       var agv_status = state.AGVStatus
-      var sensors = {};
       //aim : 整合DIO狀態給出AGV周邊設備狀態
-      sensors.LaserFront = new clsSensorStatus('前方雷射');
-      sensors.LaserFront.active = !DIOStore.getters.IsLaserFrontByass;
-      sensors.LaserFront.status = DIOStore.getters.IsLaserFrontAlarm ? 2 : (DIOStore.getters.IsLaserFrontWarning ? 1 : 0);
-      sensors.LaserBack = new clsSensorStatus('後方雷射');
-      sensors.LaserBack.active = !DIOStore.getters.IsLaserBackByass;
-      sensors.LaserBack.status = DIOStore.getters.IsLaserBackAlarm ? 2 : (DIOStore.getters.IsLaserBackWarning ? 1 : 0);
+      state.SensorStatus.LaserFront.active = !DIOStore.getters.IsLaserFrontByass;
+      state.SensorStatus.LaserFront.status = DIOStore.getters.IsLaserFrontAlarm ? 2 : (DIOStore.getters.IsLaserFrontWarning ? 1 : 0);
+      state.SensorStatus.LaserBack.active = !DIOStore.getters.IsLaserBackByass;
+      state.SensorStatus.LaserBack.status = DIOStore.getters.IsLaserBackAlarm ? 2 : (DIOStore.getters.IsLaserBackWarning ? 1 : 0);
 
 
-      sensors.LaserRight = new clsSensorStatus('右方雷射');
-      sensors.LaserRight.active = !DIOStore.getters.IsLaserRightByass;
-      sensors.LaserRight.status = DIOStore.getters.IsLaserRightAlarm ? 2 : 0;
+      state.SensorStatus.LaserRight.active = !DIOStore.getters.IsLaserRightByass;
+      state.SensorStatus.LaserRight.status = DIOStore.getters.IsLaserRightAlarm ? 2 : 0;
 
-      sensors.LaserLeft = new clsSensorStatus('左方雷射');
-      sensors.LaserLeft.active = !DIOStore.getters.IsLaserLeftByass;
-      sensors.LaserLeft.status = DIOStore.getters.IsLaserLeftAlarm ? 2 : 0;
+      state.SensorStatus.LaserLeft.active = !DIOStore.getters.IsLaserLeftByass;
+      state.SensorStatus.LaserLeft.status = DIOStore.getters.IsLaserLeftAlarm ? 2 : 0;
 
 
-      sensors.Bumper = new clsSensorStatus('Bumper');
-      sensors.Bumper.status = DIOStore.getters.IsBumperTrigger ? 2 : 0;
+      state.SensorStatus.Bumper.status = DIOStore.getters.IsBumperTrigger ? 2 : 0;
+      state.SensorStatus.Bumper_back.status = DIOStore.getters.IsBumperTrigger ? 2 : 0;
       //Drivers
-      sensors.RightWheel = new clsSensorStatus('右輪馬達');
-      sensors.RightWheel.status = DIOStore.getters.IsRightMotorAlarm ? 2 : 0;
+      state.SensorStatus.RightWheel.status = DIOStore.getters.IsRightMotorAlarm ? 2 : 0;
 
-      sensors.LeftWheel = new clsSensorStatus('左輪馬達');
-      sensors.LeftWheel.status = DIOStore.getters.IsLeftMotorAlarm ? 2 : 0;
+      state.SensorStatus.LeftWheel.status = DIOStore.getters.IsLeftMotorAlarm ? 2 : 0;
 
-      sensors.VerticalWheel = new clsSensorStatus('垂直軸馬達');
-      sensors.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
+      state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
 
-      sensors.VerticalBelt = new clsSensorStatus('垂直軸馬達皮帶');
-      sensors.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
+      state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
 
 
-      sensors.ForkFrontendObstacle = new clsSensorStatus('Fork前端障礙物檢知');
-      sensors.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
-
-      sensors.SickLidar = new clsSensorStatus('Sick');
+      state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
+      state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtEndPose && !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
 
-      return sensors;
+
+      return state.SensorStatus;
     }
 
   },
@@ -291,8 +296,8 @@ export var DIOStore = createStore({
         }
       }
       var Inputs = state.DIOStates.Inputs;
-      var IsArmAtHomePose = Inputs.find(reg => reg.Address == 'X0000').State
-      var IsArmAtEndPose = Inputs.find(reg => reg.Address == 'X0001').State
+      var IsArmAtHomePose = !Inputs.find(reg => reg.Address == 'X0000').State
+      var IsArmAtEndPose = !Inputs.find(reg => reg.Address == 'X0001').State
 
       return {
         IsArmAtHomePose: IsArmAtHomePose,

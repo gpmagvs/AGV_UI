@@ -1,74 +1,128 @@
 <template>
-  <div>
-    <el-input type="number" v-model="agv_angle"></el-input>
-    <svg class="bg-dark" :width="diameter" :height="diameter">
+  <div class="bg-dark text-light d-flex justify-content-center">
+    <div class="options">
+      <el-checkbox label="僅顯示異常" v-model="only_show_abnormal_sensors"></el-checkbox>
+    </div>
+    <svg
+      class="bg-dark"
+      :width="diameter"
+      :height="diameter"
+      :viewBox="`${-center} ${-center} ${diameter} ${diameter}`"
+    >
       <!-- 绘制圆 -->
-      <circle
-        :cx="center"
-        :cy="center"
-        :r="radius"
-        fill="transparent"
-        stroke="grey"
-        stroke-width="1"
-      />
+      <circle cx="0" cy="0" :r="radius" fill="transparent" stroke="grey" stroke-width="1" />
       <text
         v-for="deg in degrees"
         :key="deg"
-        :x="diameter/2"
-        :y="diameter"
+        :x="0"
+        :y="diameter/2"
         text-anchor="middle"
         :fill="primary_color"
-        font-size="9"
-        :transform="`rotate(${deg-agv_angle} ${center} ${center})`"
+        font-size="14"
+        :transform="`rotate(${deg-agv_angle} 0 0)`"
       >{{deg-180}}</text>
 
       <polygon
-        :points="`${center},15 ${center-15},35 ${center+15},35`"
+        :points="`0,${-radius} -15,${-radius+15} 15,${-radius+15}`"
         :fill="primary_color"
         stroke="black"
         stroke-width="0"
       />
 
+      <!-- <line
+        :x1="-radius"
+        :y1="0"
+        :x2="radius"
+        :y2="0"
+        stroke="grey"
+        stroke-width="1"
+        stroke-dasharray="5 5"
+      />
+      <line
+        :x1="0"
+        :y1="-radius"
+        :x2="0"
+        :y2="radius"
+        stroke="grey"
+        stroke-width="1"
+        stroke-dasharray="5 5"
+      />-->
       <!-- AGV旋轉圓周顯示 -->
       <line
         v-for="deg in degrees"
         :key="deg"
         class="line2"
-        :x1="diameter/2"
-        :y1="center-agv_radius-10"
-        :x2="diameter/2"
-        :y2="center-agv_radius"
-        :stroke="primary_color"
+        :x1="0"
+        :y1="agv_radius"
+        :x2="0"
+        :y2="agv_radius-5"
+        :stroke="'grey'"
         stroke-width="1"
-        :transform="`rotate(${deg-agv_angle} ${center} ${center})`"
+        :transform="`rotate(${deg-agv_angle} 0 0)`"
       />
-      <circle
-        v-if="false"
-        :cx="center"
-        :cy="center"
-        :r="agv_radius"
-        fill="transparent"
-        stroke="grey"
+      <circle v-if="false" :cx="0" :cy="0" :r="agv_radius" fill="transparent" stroke="grey" />
+
+      <image
+        xlink:href="@/assets/images/fork_sketch_topview.png"
+        :x="-agv_car_size.width*1.2/2"
+        :y="-agv_car_size.length*1.2/2"
+        :width="agv_car_size.width*1.2"
+        :height="agv_car_size.length*1.2"
       />
-      <rect
-        :x="center-(agv_car_size.width/2)"
-        :y="center-(agv_car_size.length/2)"
-        :width="agv_car_size.width"
-        :height="agv_car_size.length"
-        fill="pink"
-        stroke="pink"
-      />
+
+      <!-- 感測器狀態 -->
+      <svg
+        v-for="(data,key) in sensor_data"
+        :key="key"
+        :width="380"
+        :height="100"
+        viewBox="-190 -50 380 100"
+        :x="data.position.x-190"
+        :y="(-data.position.y)-50"
+        @click="SensorDotClickHandler(key)"
+        @mousemove="SensorDotMouseHover"
+        @mouseover="SensorDotMouseHoverDataTransfer(data)"
+        @mouseleave="()=>{sensorTooltipStyle.visibility='hidden'}"
+      >
+        <!-- 點 -->
+        <circle
+          :cx="0"
+          :cy="0"
+          r="5"
+          :fill="GetSensorColorByStatus(data.status)"
+          :stroke="GetSensorColorByStatus(data.status)"
+        />
+        <!-- 外環 -->
+        <circle
+          :cx="0"
+          :cy="0"
+          r="9"
+          fill="transparent"
+          :stroke="GetSensorColorByStatus(data.status)"
+        />
+        <SensorStatusTooltipVue
+          v-if="!only_show_abnormal_sensors | data.status!=0"
+          :sensorName="data.name"
+          :sensorData="data"
+          :position="data.textPosition"
+          :xOffset="-data.position.x"
+        />
+      </svg>
     </svg>
+    <div v-bind:style="sensorTooltipStyle" class="sensor-tooltip">{{sensorTooltipStyle.name }}</div>
   </div>
 </template>
   
   <script>
+import SensorStatusTooltipVue from './SensorStatusTooltip.vue';
+import { AGVStatusStore } from '@/store'
 export default {
+
   name: 'AngleMarks',
   props: {
     diameter: {
       type: Number,
-      default: 600,
+      default: 550,
     },
     agv_car_size: {
       type: Object,
@@ -83,28 +137,97 @@ export default {
       type: Object,
       default() {
         return {
-
         }
       }
     },
     status: {
       type: String,
       default: 'safe'
+    },
+    sensor_data: {
+      type: Object,
+      default() {
+        return {
+
+        }
+      }
     }
+  },
+  components: {
+    SensorStatusTooltipVue,
   },
   data() {
     return {
+      only_show_abnormal_sensors: true,
       center: this.diameter / 2,
       radius: this.diameter / 2 - 10,
       agv_radius: Math.sqrt(Math.pow(this.agv_car_size.length / 2, 2) + Math.pow(this.agv_car_size.width / 2, 2)),
       degrees: [],
       //
-      agv_angle: 90,
+      sensorTooltipStyle: {
+        top: '0',
+        left: '0',
+        name: ''
+      }
     };
   },
   computed: {
     primary_color() {
       return this.status == 'safe' ? 'limegreen' : (this.status == 'warning' ? 'yellow' : 'red');
+    },
+    agv_angle() {
+      debugger
+      return AGVStatusStore.getters.CurrentAngle;
+    }
+  },
+  methods: {
+    SensorDotClickHandler(key) {
+      alert(key + ' clcickedddddd!!!')
+    },
+    CalulateVerticalLineX(style_data) {
+      return style_data.line1.x_length * Math.cos(style_data.line1.rotation)
+    },
+    GetSensorColorByStatus(status) {
+      if (status == 2)
+        return 'red'
+      if (status == 1)
+        return 'orange'
+      else
+        return 'limegreen'
+    },
+    GetTextPosition(position) {
+      if (position == 'top') {
+        return { x: '110', y: '-20' }
+      }
+      else if (position == 'top-start') {
+        return { x: '110', y: '-20' }
+      }
+      else if (position == 'top-end') {
+        return { x: '110', y: '-20' }
+      }
+      else if (position == 'bottom') {
+        return { x: '0', y: '18' }
+      }
+      else if (position == 'bottom-start') {
+        return { x: '-15', y: '18' }
+      }
+      else if (position == 'bottom-end') {
+        return { x: '15', y: '18' }
+      }
+      else {
+        return { x: '0', y: '-18' }
+
+      }
+    },
+    SensorDotMouseHover(e) {
+      console.info(e)
+      this.sensorTooltipStyle.top = `${e.pageY - 20}px`
+      this.sensorTooltipStyle.left = `${e.pageX + 20}px`
+      this.sensorTooltipStyle.visibility = 'visible'
+    },
+    SensorDotMouseHoverDataTransfer(data) {
+      console.info(data)
+      this.sensorTooltipStyle.name = data.name
     }
   },
   mounted() {
@@ -113,8 +236,17 @@ export default {
   },
 };
   </script>
-<style scoped>
+<style lang="scss" scoped>
+.options {
+  position: relative;
+  left: 10px;
+  top: 10px;
+}
 .line2 {
-  color: green;
+  color: #008000;
+}
+.sensor-tooltip {
+  position: fixed;
+  color: pink;
 }
 </style>

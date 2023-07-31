@@ -33,7 +33,7 @@ class VMSData {
   }
   LinearSpeed = 0
   AngularSpeed = 0
-  Angle = -1
+  Angle = 0
   BCR_State_MoveBase = {
     state: 0,
     tagID: 0,

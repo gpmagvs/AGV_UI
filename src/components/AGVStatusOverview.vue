@@ -1,7 +1,7 @@
 <template>
   <div>
-    {{ SensorStatus }}
-    <AngleDisplay status="warning"></AngleDisplay>
+    <!-- {{ SensorStatus }} -->
+    <AngleDisplay status="safe" :sensor_data="SensorStatus"></AngleDisplay>
   </div>
 </template>
 
