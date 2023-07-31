@@ -6,10 +6,10 @@
         <b-button @click="selected='output'" :variant="output_btn_class" class="border my-1">OUTPUT</b-button>
       </div>
       <div class="io-table-container flex-fill w-100">
-        <div v-if="selected=='input'">
+        <div v-show="selected=='input'">
           <IOTableVue :table_data="IOData.Inputs"></IOTableVue>
         </div>
-        <div v-else>
+        <div v-show="selected=='output'">
           <IOTableVue :table_data="IOData.Outputs"></IOTableVue>
         </div>
       </div>

@@ -1,21 +1,26 @@
 <template>
-  <div class="px-1">
-    <div class="d-flex flex-row">
-      <div class="flex-fill"></div>
-      <!-- <div>
-        <span class="m-2">Search :</span>
-        <el-input size="small" style="width:168px"></el-input>
-      </div>-->
-    </div>
-    <div class="w-100 mt-2">
-      <el-pagination
+  <div class="px-1 d-flex flex-row border">
+    <div class="mt-2">
+      <div class="d-flex flex-column" style="width:40px">
+        <b-button class="m-1" size="sm" @click="()=>{pagecurrent=pagecurrent-1}">▲</b-button>
+        <b-button
+          class="m-1 border"
+          size="sm"
+          @click="()=>{pagecurrent=i}"
+          v-for="i in  table_data.length==2? 2: table_data.length/16"
+          :key="i"
+          :variant="i==pagecurrent?'primary':''"
+        >{{ i }}</b-button>
+        <b-button class="m-1" size="sm" @click="()=>{pagecurrent=pagecurrent+1}">▼</b-button>
+      </div>
+      <!-- <el-pagination
         :page-size="16"
         :total="table_data.length"
         v-model="pagecurrent"
         background
         layout="prev, pager, next"
         @current-change="PageChangeHandler"
-      />
+      />-->
     </div>
     <div class="w-100 border mt-1">
       <el-table

@@ -128,7 +128,6 @@ export var AGVStatusStore = createStore({
       return state.AGVStatus.ZAxisDriverState.position
     },
     AGV_Sensors_States: state => {
-      debugger
       if (DIOStore.getters.DIOStates.Inputs == undefined) {
         return {}
       }

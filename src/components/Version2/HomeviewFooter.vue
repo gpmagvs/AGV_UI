@@ -106,14 +106,14 @@ export default {
 <style lang="scss" scoped>
 .home-view-footer {
   height: 120px;
-  background-color: #dee0e1;
+  background-color: #ebe7e7;
   .system-controls {
     button {
       font-size: 25px;
       width: 151px;
       margin-inline: 2px;
       font-weight: bold;
-      border: 1px solid rgb(75, 75, 75);
+      border: 1px solid rgb(167, 167, 167);
     }
   }
   .icons {

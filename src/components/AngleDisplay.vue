@@ -176,7 +176,6 @@ export default {
       return this.status == 'safe' ? 'limegreen' : (this.status == 'warning' ? 'yellow' : 'red');
     },
     agv_angle() {
-      debugger
       return AGVStatusStore.getters.CurrentAngle;
     }
   },

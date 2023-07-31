@@ -7,6 +7,8 @@ import HomeViewVersion2 from '../views/Version2/HomeView.vue'
 import Admin from '../views/Admin.vue'
 import MainStatuShow from '@/components/Version2/MainStatuShow.vue'
 import { UIStore } from '@/store'
+import AgvOverview from '@/components/AGVStatusOverview.vue';
+
 
 const routes = [
   {
@@ -23,7 +25,7 @@ const routes = [
 
         path: '/v2',
         name: 'MainStatuShow',
-        component: MainStatuShow,
+        component: AgvOverview,
       },
       {
 

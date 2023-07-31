@@ -1,16 +1,14 @@
 <template>
-  <div class="bg-dark w-100 h-100 home-view-new d-flex flex-column">
+  <div class="bg-dark w-100 home-view-new d-flex flex-column">
     <homview-header></homview-header>
-    <div class="flex-fill p-1 border bg-light w-100 d-flex flex-row justify-content-center">
-      <div></div>
-      <div class="d-flex flex-fill border">
-        <router-view class="d-flex flex-column justify-content-center w-100" v-slot="{ Component }">
+    <div class="flex-fill bg-light w-100">
+      <div class="d-flex flex-column flex-fill border">
+        <router-view class="flex-fill w-100" v-slot="{ Component }">
           <keep-alive>
             <component :is="Component" />
           </keep-alive>
         </router-view>
       </div>
-      <div class="bg-light"></div>
     </div>
     <HomeviewFooter></HomeviewFooter>
   </div>

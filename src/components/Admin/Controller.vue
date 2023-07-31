@@ -1,5 +1,5 @@
 <template>
-  <div style="height:580px;width:100%;padding-inline:5px">
+  <div class="py-5" style="height:680px;width:100%;padding-inline:5px">
     <div class="d-flex flex-row">
       <div class="switch-btn">
         <div v-if="currentRoute=='/v2/controller/fork'">
