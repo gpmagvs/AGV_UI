@@ -19,7 +19,7 @@
         @row-dblclick="cellDoubleClickHandle"
         style="width:99%"
       >
-        <el-table-column label="Addr" prop="Address" width="60"></el-table-column>
+        <el-table-column label="Address" prop="Address" width="70"></el-table-column>
         <el-table-column label="Name" prop="Name"></el-table-column>
         <el-table-column label="Value" prop="State" width="60" :formatter="StateFormatter"></el-table-column>
         <!-- <el-table-column width="40" v-if="!readonly && enabled" label>
@@ -31,6 +31,11 @@
             ></el-checkbox>
           </template>
         </el-table-column>-->
+        <el-table-column v-if="useToggle" width="80">
+          <template #default="scope">
+            <el-button @click="cellDoubleClickHandle(scope.row)" size="small">Toggle</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -93,25 +98,14 @@ export default {
           new clsRegister("X000D", ""),
           new clsRegister("X000E", ""),
           new clsRegister("X000F", ""),
-          new clsRegister("X0000", ""),
-          new clsRegister("X0001", ""),
-          new clsRegister("X0002", ""),
-          new clsRegister("X0003", ""),
-          new clsRegister("X0004", ""),
-          new clsRegister("X0005", ""),
-          new clsRegister("X0006", ""),
-          new clsRegister("X0007", "2"),
-          new clsRegister("X0008", ""),
-          new clsRegister("X0009", ""),
-          new clsRegister("X000A", ""),
-          new clsRegister("X000B", ""),
-          new clsRegister("X000C", ""),
-          new clsRegister("X000D", ""),
-          new clsRegister("X000E", ""),
-          new clsRegister("X000F", ""),
+
         ]
       }
     },
+    useToggle: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -160,6 +154,7 @@ export default {
       this.pagecurrent = number - 1;
     },
     async cellDoubleClickHandle(row, column, event) {
+      debugger
       if (!this.IsUserLogin)
         return;
 

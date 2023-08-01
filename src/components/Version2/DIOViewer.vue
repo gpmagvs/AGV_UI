@@ -10,7 +10,7 @@
           <IOTableVue :table_data="IOData.Inputs"></IOTableVue>
         </div>
         <div v-show="selected=='output'">
-          <IOTableVue :table_data="IOData.Outputs"></IOTableVue>
+          <IOTableVue :table_data="IOData.Outputs" :useToggle="true"></IOTableVue>
         </div>
       </div>
     </div>
