@@ -1,7 +1,7 @@
 <template>
   <div class="switch-container">
     <input type="checkbox" id="switch" class="switch" v-model="isChecked" @change="toggleSwitch" />
-    <label for="switch" class="switch-label" v-bind:style="active_style">
+    <label for="switch" class="switch-label" v-bind:style="[custom_style,active_style]">
       <div class="switch-inner"></div>
     </label>
     <span @click="toggleSwitch" class="switch-text" v-show="!isChecked">{{ inactive_text }}</span>
@@ -37,6 +37,11 @@ export default {
       type: String,
       default: 'rgb(108, 117, 125)'
     },
+    width: {
+      type: String,
+      default: '68px'
+
+    }
   },
   computed: {
     active_style() {
@@ -44,6 +49,11 @@ export default {
         backgroundColor: this.isChecked ? this.active_color : this.inactive_color
       }
     },
+    custom_style() {
+      return {
+        width: this.width
+      }
+    }
   },
   data() {
     return {

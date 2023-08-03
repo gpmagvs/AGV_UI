@@ -1,10 +1,9 @@
 <template>
-  <div class="bg-dark text-light d-flex justify-content-center">
-    <div class="options">
+  <div class="d-flex justify-content-center">
+    <!-- <div class="options">
       <el-checkbox label="僅顯示異常" v-model="only_show_abnormal_sensors"></el-checkbox>
-    </div>
+    </div>-->
     <svg
-      class="bg-dark"
       :width="diameter"
       :height="diameter"
       :viewBox="`${-center} ${-center} ${diameter} ${diameter}`"
@@ -73,6 +72,7 @@
       <!-- 感測器狀態 -->
       <svg
         v-for="(data,key) in sensor_data"
+        v-show="data.visible"
         :key="key"
         :width="380"
         :height="100"

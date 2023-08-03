@@ -1,16 +1,16 @@
 <template>
-  <div class="home-view-header text-light">
+  <div class="home-view-header fixed-top text-light">
     <div class="agv-name bg-primary d-flex justify-content-center">
-      <div class="w-25 status border">
+      <div class="w-25 border">
+        <span>GPM AGV</span>
+      </div>
+      <div class="w-25 border">
         <span>{{ AGVName }}</span>
       </div>
-      <div class="w-25 border bg-primary">
+      <div class="w-25 border">
         <span v-text="UserName"></span>
       </div>
-      <div class="w-25 border bg-light text-dark">
-        <span v-text="APPVersion"></span>
-      </div>
-      <div class="w-25 border bg-light text-dark">
+      <div class="w-25 border bg-info">
         <span v-text="APPVersion"></span>
       </div>
     </div>
@@ -22,8 +22,13 @@
 import { AGVStatusStore, UserStore } from '@/store'
 import BatteryGroupVue from '@/components/Battery/BatteryGroup.vue'
 export default {
+
   components: {
     BatteryGroupVue,
+  },
+  data() {
+    return {
+    }
   },
   computed: {
     AGVName() {
@@ -34,7 +39,11 @@ export default {
     },
     UserName() {
       return UserStore.getters.CurrentUserName
-    }
+    },
+
+  },
+  mounted() {
+
   },
 }
 </script>
@@ -42,8 +51,10 @@ export default {
 <style lang="scss" >
 .home-view-header {
   .agv-name {
-    font-weight: bold;
+    font-weight: 900;
     font-size: 20px;
+    letter-spacing: 2px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
 }
 </style>

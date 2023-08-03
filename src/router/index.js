@@ -28,10 +28,12 @@ const routes = [
         component: AgvOverview,
       },
       {
-
         path: 'IOTable',
         component: () => import('../components/Version2/DIOViewer.vue'),
-
+      },
+      {
+        path: 'Alarm',
+        component: () => import('../components/AlarmWarningTable.vue'),
       },
       {
         path: 'controller',

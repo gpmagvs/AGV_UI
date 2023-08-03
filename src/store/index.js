@@ -20,14 +20,20 @@ export default createStore({
 export var UIStore = createStore({
   state: {
     UI_Version: 2,
+    PreviousControllRoute: 'move'
   },
   getters: {
     CurrentUIVersion: state => {
       return state.UI_Version;
+    },
+    PreviousControllRoute: state => {
+      return state.PreviousControllRoute;
     }
   },
   mutations: {
-
+    SetPreviousControllerRoute(state, route) {
+      state.PreviousControllRoute = route;
+    }
   },
   actions: {
 
@@ -154,13 +160,16 @@ export var AGVStatusStore = createStore({
       state.SensorStatus.LeftWheel.status = DIOStore.getters.IsLeftMotorAlarm ? 2 : 0;
 
       state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
-
       state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
-
-
       state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
       state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtEndPose && !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
+
+      var isForkAGV = state.AGVStatus.Agv_Type == 0;
+      state.SensorStatus.VerticalWheel.visible = isForkAGV
+      state.SensorStatus.VerticalBelt.visible = isForkAGV
+      state.SensorStatus.ForkFrontendObstacle.visible = isForkAGV
+      state.SensorStatus.ForkArmPosition.visible = isForkAGV
 
 
       return state.SensorStatus;

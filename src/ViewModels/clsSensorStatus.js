@@ -3,6 +3,7 @@ class clsSensorStatus {
         this.name = Name
         this.status = 0 //0:normal,1:warning, 2:alarm
         this.active = true //是否啟用 如果是bypass=>false
+        this.visible = true //是否顯示
         this.error_code = 0
         this.position = {
             x: x,

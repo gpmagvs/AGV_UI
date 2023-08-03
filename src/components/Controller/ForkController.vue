@@ -1,5 +1,5 @@
 <template>
-  <div class="fork-controller">
+  <div class="fork-controller bg-dark">
     <div class="d-flex flex-row">
       <div>
         <div @mousedown="ForkClick" v-bind:style="ForkStyle" class="fork">
@@ -8,24 +8,28 @@
         <img src="/images/agv_lift.png" width="300" alt />
       </div>
       <div class="flex-fill"></div>
-      <div
-        class="control-buttons px-2 border m-1 bg-light d-flex flex-column justify-content-start"
-      >
+      <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">升降控制</span>
-        <b-button @click="Up" variant="primary my-1">上點位</b-button>
-        <b-button @click="Up" variant="primary my-1">Up</b-button>
-        <b-button @click="Orig" variant="success my-1">Home</b-button>
-        <b-button @click="Stop" variant="danger my-1">Stop</b-button>
-        <b-button @click="Down" variant="primary my-1">下</b-button>
-        <b-button @click="Down" variant="primary my-1">下點位</b-button>
+        <b-button @click="ForkAction('up')" variant="primary my-1">上點位</b-button>
+        <b-button @click="ForkAction('up')" variant="primary my-1">Up</b-button>
+        <b-button @click="ForkAction('home')" variant="success my-1">Home</b-button>
+        <b-button @click="ForkAction('stop')" variant="danger my-1">Stop</b-button>
+        <b-button @click="ForkAction('down')" variant="primary my-1">下</b-button>
+        <b-button @click="ForkAction('down')" variant="primary my-1">下點位</b-button>
       </div>
-      <div
-        class="control-buttons px-2 border m-1 bg-light d-flex flex-column justify-content-start"
-      >
+      <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">伸縮控制</span>
-        <b-button @click="Up" variant="primary my-1">牙叉伸出</b-button>
-        <b-button @click="Up" variant="primary my-1">牙叉縮回</b-button>
-        <b-button @click="Orig" variant="danger my-1">牙叉停止動作</b-button>
+        <b-button
+          :disabled="!FORK_ARM_Status.IsArmAtEndPose&&FORK_ARM_Status.IsArmAtHomePose"
+          @click="ForkArmPoseControlHandler(true)"
+          variant="primary my-1"
+        >牙叉伸出</b-button>
+        <b-button
+          :disabled="!FORK_ARM_Status.IsArmAtHomePose&&FORK_ARM_Status.IsArmAtEndPose"
+          @click="ForkArmPoseControlHandler(false)"
+          variant="primary my-1"
+        >牙叉縮回</b-button>
+        <b-button @click="ForkArmStopHandler" variant="danger my-1">牙叉停止動作</b-button>
       </div>
     </div>
   </div>
@@ -33,7 +37,7 @@
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
-import { AGVStatusStore, ForkTeachStore } from '@/store'
+import { AGVStatusStore, ForkTeachStore, DIOStore } from '@/store'
 
 export default {
   data() {
@@ -51,33 +55,39 @@ export default {
       return {
         bottom: `${-380 + this.ForkHeight * 10}px`
       }
+    }, FORK_ARM_Status() {
+      //{
+      //   IsArmAtHomePose: IsArmAtHomePose,
+      //   IsArmAtEndPose: IsArmAtEndPose
+      // }
+
+      return DIOStore.getters.Fork_ARM_States
     }
   },
   methods: {
-    async Up() {
+    async ForkAction(action, pose = 0, speed = 0) {
       this.isZAxisMoving = true;
-      var ret = await ForkAPI.Up();
+      var ret = await ForkAPI.Action(action, pose, speed);
       this.isZAxisMoving = false;
+      if (!ret.confirm) {
+        this.$swal.fire({
+          text: ret.message,
+          icon: 'error',
+          title: '牙叉禁止操作'
+        })
+      }
     },
-    async Down() {
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Down();
-      this.isZAxisMoving = false;
+    async ForkArmPoseControlHandler(isExtend) {
+      if (isExtend)
+        await ForkAPI.ARM_Extend();
+      else
+        await ForkAPI.ARM_Shorten();
     },
-    async Orig() {
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Home();
-      this.isZAxisMoving = false;
+    async ForkArmStopHandler() {
+      await ForkAPI.ARM_Stop();
     },
-    async Stop() {
-      var ret = await ForkAPI.Stop();
-    },
-    async Pose() {
 
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Pose(1.2);
-      this.isZAxisMoving = false;
-    },
+
     ShowTeachView() {
       if (this.$refs['fork_teach'])
         this.$refs['fork_teach'].reload();

@@ -1,14 +1,13 @@
 <template>
-  <div class="bg-dark w-100 home-view-new d-flex flex-column">
-    <homview-header></homview-header>
-    <div class="flex-fill bg-light w-100">
-      <div class="d-flex flex-column flex-fill border">
-        <router-view class="flex-fill w-100" v-slot="{ Component }">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
-      </div>
+  <div class="bg-dark w-100 home-view-new">
+    <homview-header class="bg-dark"></homview-header>
+    <div class="bg-dark text-light w-100" style="    margin-top: 52px;
+    height: 600px;">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
     <HomeviewFooter></HomeviewFooter>
   </div>

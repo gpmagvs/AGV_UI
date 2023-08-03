@@ -1,13 +1,21 @@
 <template>
-  <div class="move-controller">
+  <div class="move-controller bg-dark py-3">
     <div class="d-flex flex-row">
       <div class="bg-img">
-        <div class="directions">
-          <div class="up">
-            <img @click="MOVE_UP" src="/images/up-arrow.png" :width="icon_size" alt />
+        <div class="directions rounded border">
+          <div class="d-flex justify-content-center">
+            <!-- <div class="up">
+              <img @click="MOVE_UP" src="/images/forward_left.png" :width="icon_size" alt />
+            </div>-->
+            <div class="up mx-5">
+              <img @click="MOVE_UP" src="/images/up-arrow.png" :width="icon_size" alt />
+            </div>
+            <!-- <div class="up">
+              <img @click="MOVE_UP" src="/images/forward_right.png" :width="icon_size" alt />
+            </div>-->
           </div>
           <!-- <img class="bg-img" src="/images/agv_controller_bg.png" width="600" alt /> -->
-          <div class="w-100 justify-content-center rotate-png-row d-flex">
+          <div class="justify-content-center rotate-png-row d-flex">
             <div>
               <img @click="MOVE_LEFT" src="/images/rotate-left.png" :width="icon_size" alt />
             </div>
@@ -80,28 +88,31 @@ export default {
 .move-controller {
   width: 100%;
   height: 100%;
+
   .bg-img {
     width: 100%;
     height: 100%;
-    background: url("../../assets/images/agv_controller_bg.png");
-    background-size: 450px;
+    background: url("../../assets/images/fork_sketch_topview.png");
+    background-size: 200px;
     background-repeat: no-repeat;
     background-position: center;
+    background-color: rgb(41, 41, 41);
   }
   .directions {
-    margin-top: 20px;
+    margin-inline: 17%;
+    img:hover {
+      background-color: rgb(13, 110, 253);
+      cursor: pointer;
+    }
+    img:active {
+      padding: 3px;
+    }
     .rotate-png-row {
       height: 180px;
       padding-top: 20px;
       button {
         font-size: 50px;
         margin-top: 15px;
-      }
-      div {
-        margin-inline: 14px;
-      }
-      div:hover {
-        cursor: pointer;
       }
     }
     // padding-top: 100px;

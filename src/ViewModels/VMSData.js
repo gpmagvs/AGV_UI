@@ -3,21 +3,57 @@ import BatteryStatus from './BatteryStatus'
 class VMSData {
   APPVersion = "1.0.0"
   Agv_Type = 0
-  Simulation = false
-  MainState = 'DOWN'
-  SubState = 'DOWN'
+  AutoMode = 0
+  AGVC_ID = -1
+  AngularSpeed = 0
+  Angle = 0
+  AlarmCodes = []
+  AGV_Direct = 'STOP'
+  BCR_State_MoveBase = {
+    state: 0,
+    tagID: 0,
+    xValue: 0.0,
+    yValue: 0.0,
+    theta: 0.0,
+  }
+  BatteryStatus = new Array() < BatteryStatus > 0
+
+  CarName = 'AGV'
+  CST_Data = ''
+  Current_LASER_MODE = 'Bypass'
+  DriversStates = new Array() < clsDriverState > 0
+  IsAGVPoseError = false
   IsInitialized = false
   IsSystemIniting = false
-  OnlineMode = 0
-  AutoMode = 0
-  CarName = 'AGV'
-  AGVC_ID = -1
-  CST_Data = ''
-  Tag = -1
+  LinearSpeed = 0
+  Laser_Mode = 0
   Last_Visited_Tag = 1
   Last_Visit_MapPoint = { Name: 'UNKNOWN' }
-  BatteryStatus = new Array() < BatteryStatus > 0
+  LocStatus = 10
+  LightsStates = {
+    Front: false,
+    Back: false,
+    Right: false,
+    Left: false,
+    Run: false,
+    Down: false,
+    Idle: false,
+    Online: false,
+  }
+  MapComparsionRate = -1
   Mileage = 0
+  MainState = 'DOWN'
+
+  NavInfo = {
+    Destination: '',
+    Speed_max_limit: -1,
+    PathPlan: [],
+    DestinationMapPoint: {
+      Name: 'UNKNOWN'
+    }
+  }
+  NewestAlarm = undefined
+  OnlineMode = 0
   Pose = {
     position: {
       x: 0,
@@ -31,46 +67,13 @@ class VMSData {
       w: 0,
     },
   }
-  LinearSpeed = 0
-  AngularSpeed = 0
-  Angle = 0
-  BCR_State_MoveBase = {
-    state: 0,
-    tagID: 0,
-    xValue: 0.0,
-    yValue: 0.0,
-    theta: 0.0,
-  }
-  NavInfo = {
-    Destination: '',
-    Speed_max_limit: -1,
-    PathPlan: [],
-    DestinationMapPoint: {
-      Name: 'UNKNOWN'
-    }
-  }
-  MapComparsionRate = -1
-  LocStatus = 10
-  AlarmCodes = []
-  NewestAlarm = undefined
-  AGV_Direct = 'STOP'
+  Simulation = false
+  SubState = 'DOWN'
+  Tag = -1
+  UltrSensorState = new UltrasonicSensorState()
   ZAxisDriverState = new clsDriverState()
   ZAxisActionName = ''
-  DriversStates = new Array() < clsDriverState > 0
-  Laser_Mode = 0
-  UltrSensorState = new UltrasonicSensorState()
-  IsAGVPoseError = false
-  Current_LASER_MODE = 'Bypass'
-  LightsStates = {
-    Front: false,
-    Back: false,
-    Right: false,
-    Left: false,
-    Run: false,
-    Down: false,
-    Idle: false,
-    Online: false,
-  }
+
 }
 
 export class UltrasonicSensorState {

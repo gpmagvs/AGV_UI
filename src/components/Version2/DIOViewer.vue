@@ -1,7 +1,7 @@
 <template>
   <div class="p-1">
     <div class="d-flex flex-row h-100">
-      <div class="button-group d-flex flex-column px-2 h-100 border">
+      <div class="button-group d-flex flex-column px-2 h-100">
         <b-button @click="selected='input'" :variant="input_btn_class" class="border my-1">INPUT</b-button>
         <b-button @click="selected='output'" :variant="output_btn_class" class="border my-1">OUTPUT</b-button>
       </div>
@@ -34,11 +34,11 @@ export default {
       return DIOStore.getters.DIOStates;
     },
     input_btn_class() {
-      return this.selected == 'input' ? 'primary' : ''
+      return this.selected == 'input' ? 'primary' : 'dark'
     },
 
     output_btn_class() {
-      return this.selected == 'input' ? '' : 'primary'
+      return this.selected == 'input' ? 'dark' : 'primary'
     }
   },
 }

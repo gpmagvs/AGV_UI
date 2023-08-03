@@ -16,7 +16,10 @@
         border
         height="550"
         row-key="Address"
+        :highlight-current-row="false"
         @row-dblclick="cellDoubleClickHandle"
+        @cell-mouse-enter="cellMouseEnterHandler"
+        @cell-mouse-leave="cellMouseLeaveHandler"
         style="width:99%"
       >
         <el-table-column label="Address" prop="Address" width="70"></el-table-column>
@@ -61,6 +64,7 @@ import { clsRegister } from '@/ViewModels/clsDIOTable';
 import { DIO } from '@/api/VMSAPI.js'
 import { UserStore } from '@/store'
 import jwPagination from '../UIComponents/jw-pagination.vue';
+import { valueEquals } from 'element-plus';
 export default {
   components: {
     jwPagination,
@@ -114,7 +118,8 @@ export default {
       pagecurrent: 0,
       DIOChangeComfirmDialogShow: false,
       toChangeAddress: '',
-      toChangeState: false
+      toChangeState: false,
+      hover_row: {}
     }
   },
   computed: {
@@ -135,13 +140,16 @@ export default {
       if (row.rowIndex < 0) {
         return '';
       }
+      if (this.hover_row) {
+        if (this.hover_row.Address == row.row.Address) {
+          return 'bg-dark'
+        }
+      }
       var value = this.page_table_data[row.rowIndex].State;
       try {
-        if (value == false) {
-          return 'off-row';
-        } else {
+        if (value)
           return 'on-row';
-        }
+        return 'off-row';
 
       } catch (error) {
         return 'off-row';
@@ -152,6 +160,12 @@ export default {
     },
     PageChangeHandler(number) {
       this.pagecurrent = number - 1;
+    },
+    cellMouseEnterHandler(row, column, cell, event) {
+      this.hover_row = row
+    },
+    cellMouseLeaveHandler(row, column, cell, event) {
+      this.hover_row = undefined
     },
     async cellDoubleClickHandle(row, column, event) {
       debugger
@@ -182,7 +196,13 @@ export default {
 
 <style  lang="scss">
 .el-table .on-row {
-  background-color: rgb(195, 229, 202);
+  background-color: limegreen;
+  color: white;
+  font-weight: bold;
   /* --el-table-tr-bg-color: var(--el-color-success-light-9); */
+}
+.el-table .off-row {
+  background-color: black;
+  color: white;
 }
 </style>

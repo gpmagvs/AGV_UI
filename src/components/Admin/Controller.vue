@@ -11,7 +11,7 @@
             alt
           />
         </div>
-        <div v-if="currentRoute=='/v2/controller/move'">
+        <div v-if="isForkAGV&&currentRoute=='/v2/controller/move'">
           <img
             @click="controllSwitch('fork')"
             class="border bg-dark"
@@ -21,9 +21,9 @@
           />
         </div>
       </div>
-      <div class="flex-fill bg-light">
+      <div class="flex-fill mx-2 px-2 rounded border">
         <router-view
-          class="d-flex flex-fill bg-light flex-column justify-content-center w-100"
+          class="d-flex flex-fill flex-column justify-content-center w-100"
           v-slot="{ Component }"
         >
           <keep-alive>
@@ -37,6 +37,7 @@
 
 <script>
 import AdminForkVue from './AdminFork.vue'
+import { UIStore, AGVStatusStore } from '@/store'
 export default {
   components: {
     AdminForkVue,
@@ -50,12 +51,16 @@ export default {
     controllSwitch(action) {
       this.action = action;
       this.$router.push(action);
+      UIStore.commit('SetPreviousControllerRoute', action)
     }
   },
   computed: {
     currentRoute() {
       var route = this.$route.path;
       return route
+    },
+    isForkAGV() {
+      return AGVStatusStore.getters.IsForkAGV;
     }
   }
 }
