@@ -10,7 +10,7 @@
       <div class="w-25 border">
         <span v-text="UserName"></span>
       </div>
-      <div class="w-25 border bg-info">
+      <div class="w-25 border bg-info" @click="HandleAppVersionClick">
         <span v-text="APPVersion"></span>
       </div>
     </div>
@@ -41,6 +41,14 @@ export default {
       return UserStore.getters.CurrentUserName
     },
 
+  },
+  methods: {
+    HandleAppVersionClick() {
+      this.$swal.fire({
+        title: 'VERSION INFORMATION',
+        text: 'version\r\n<br></br>version'
+      })
+    }
   },
   mounted() {
 

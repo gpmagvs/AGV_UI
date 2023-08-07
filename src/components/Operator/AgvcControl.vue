@@ -41,6 +41,11 @@
               <b-form-input size="sm" disabled v-model.number="vms_data.AngularSpeed"></b-form-input>
             </el-form-item>
           </div>
+
+          <div class="row div-container mx-1 my-2">
+            <label class="text-start border-bottom">位置上報</label>
+            <b-button @click="HandleUpload">Upload</b-button>
+          </div>
           <!-- <b-button variant="primary" @click="FindTagBtnHandler">Auto Find Tag</b-button> -->
         </el-form>
       </div>
@@ -54,6 +59,7 @@ import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData';
 import agvc_control_panel from './AgvcControlPanel'
 import { FindTagCenter } from '@/api/VMSAPI'
+import MapAPI from '@/api/MapAPI.js'
 
 export default {
   components: {
@@ -95,6 +101,35 @@ export default {
     async FindTagBtnHandler() {
       var response = await FindTagCenter();
 
+    },
+    async HandleUpload() {
+      var agvname = this.vms_data.CarName;
+      var tag = this.vms_data.Tag;
+      var x = this.vms_data.Pose.position.x;
+      var y = this.vms_data.Pose.position.y;
+      var theta = this.vms_data.Angle;
+      var response = await MapAPI.UploadCoordination(agvname, tag, x, y, theta);
+      if (response) {
+        this.$swal.fire(
+          {
+            text: '位置上報成功',
+            title: '位置上報',
+            icon: 'information',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      } else {
+        this.$swal.fire(
+          {
+            text: '位置上報失敗',
+            title: '位置上報',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
     }
   },
   mounted() {

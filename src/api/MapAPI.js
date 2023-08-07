@@ -75,6 +75,16 @@ const MapAPI = {
         return undefined
       })
   },
+  UploadCoordination(agv_name, tag, x, y, theta) {
+    try {
+      return axios_entity.get(`api/Map/UploadCoordination?AGVName=${agv_name}&tagNumber=${tag}&x=${x}&y=${y}&theta=${theta}`).
+        then(ret => {
+          return ret.data
+        })
+    } catch (error) {
+      return false;
+    }
+  }
 }
 
 export default MapAPI

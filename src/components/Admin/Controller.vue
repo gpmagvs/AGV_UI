@@ -21,7 +21,14 @@
           />
         </div>
       </div>
-      <div class="flex-fill mx-2 px-2 rounded border">
+      <div
+        class="flex-fill mx-2 px-2 rounded border"
+        v-loading="!isUseable"
+        :element-loading-text="OptForbidNotifyText"
+        element-loading-spinner="''"
+        element-loading-svg-view-box="-10, -10, 50, 50"
+        element-loading-background="rgba(13, 110, 253, 0.3)"
+      >
         <router-view
           class="d-flex flex-fill flex-column justify-content-center w-100"
           v-slot="{ Component }"
@@ -37,7 +44,7 @@
 
 <script>
 import AdminForkVue from './AdminFork.vue'
-import { UIStore, AGVStatusStore } from '@/store'
+import { UIStore, UserStore, AGVStatusStore } from '@/store'
 export default {
   components: {
     AdminForkVue,
@@ -61,6 +68,19 @@ export default {
     },
     isForkAGV() {
       return AGVStatusStore.getters.IsForkAGV;
+    },
+    isUseable() {
+      return this.isUserLogin && !this.isAnyModeON;
+    },
+    isAnyModeON() {
+      var agv_data = AGVStatusStore.getters.AGVStatus;
+      return agv_data.OnlineMode != 0 | agv_data.AutoMode != 0
+    },
+    isUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0;
+    },
+    OptForbidNotifyText() {
+      return '操作時需登入權限並將模式變更為OFFLINE/MANUAL'
     }
   }
 }

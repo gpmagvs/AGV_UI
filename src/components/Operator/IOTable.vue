@@ -34,7 +34,7 @@
             ></el-checkbox>
           </template>
         </el-table-column>-->
-        <el-table-column v-if="useToggle" width="80">
+        <el-table-column v-if="useToggle&&IsUserLogin" width="80">
           <template #default="scope">
             <el-button @click="cellDoubleClickHandle(scope.row)" size="small">Toggle</el-button>
           </template>

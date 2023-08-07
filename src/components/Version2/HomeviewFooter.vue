@@ -5,18 +5,12 @@
       class="sys-time-display rounded px-1 text-light"
       v-text="SystemTime"
     ></span>
-    <!-- <div class="mode-switchs rounded px-1 text-light">
-      <span style="font-size: 12px;">AUTO-MODE</span>
-      <el-switch></el-switch>
-      <span style="font-size: 12px;">AUTO-MODE</span>
-      <el-switch></el-switch>
-    </div>-->
     <div class="system-controls">
-      <div class="py-2 text-start px-1 d-flex">
-        <div>
+      <div class="switchs py-2 text-start px-1 d-flex">
+        <div class @click="HandleModeSwitchRequest('online')">
           <span class="mx-1" style="font-size: 15px;">ONLINE-MODE</span>
           <el-switch
-            v-model="OnlineMode"
+            v-model="CurrentIsOnlineMode"
             active-color="rgb(95, 171, 80)"
             inactive-color="red"
             active-text="ONLINE"
@@ -24,22 +18,24 @@
             inline-prompt
             size="large"
             width="80px"
+            :loading="OnlineModeSwitching"
           ></el-switch>
           <!-- :before-change="mode.beforeChangeHandler"
           :loading="mode.loading"-->
           <!-- <jw-switch inactive_text="OFFLINE" active_text="ONLINE"></jw-switch> -->
         </div>
-        <div>
+        <div @click="HandleModeSwitchRequest('auto')">
           <span class="mx-1" style="font-size: 15px;">AUTO-MODE</span>
           <el-switch
-            v-model="AutoMode"
+            v-model="CurrentIsAutoMode"
             active-color="rgb(95, 171, 80)"
             inactive-color="red"
             active-text="AUTO"
             inactive-text="MANUAL"
             inline-prompt
             size="large"
-            width="80px"
+            width="85px"
+            :loading="AutoModeSwitching"
           ></el-switch>
         </div>
       </div>
@@ -99,6 +95,9 @@ export default {
       version_text_click_count: 0,
       OnlineMode: false,
       AutoMode: false,
+      OnlineModeSwitching: false,
+      AutoModeSwitching: false,
+
     }
   },
   methods: {
@@ -148,7 +147,6 @@ export default {
       await BuzzerOff();
     },
     async RemoveCstClick() {
-
     },
     async EmoClick() {
       EMO();
@@ -172,7 +170,44 @@ export default {
         this.$refs.loginShow.Show();
       }
     },
+    async HandleModeSwitchRequest(request) {
+      var _text = request == 'online' ? `確定要將AGV${this.CurrentIsOnlineMode ? '下線' : '上線'}?` : `確定要將AGV更改為${this.CurrentIsAutoMode ? '手動模式' : '自動模式'}?`;
+      var _title = request == 'online' ? 'AGV ONLINE-MODE CHANGE' : 'AGV AUTO-MODE CHANGE';
+      this.$swal.fire(
+        {
+          text: _text,
+          title: _title,
+          icon: 'question'
+        }).then(async (res) => {
+          if (!res.isConfirmed)
+            return;
 
+          var result = { Success: false, Message: '未知的錯誤' }
+          if (request == 'auto') {
+            this.AutoModeSwitching = true;
+            result = await MODESwitcher.AutoModeSwitch(this.CurrentIsAutoMode ? 0 : 1)
+
+          } else {
+            this.OnlineModeSwitching = true;
+            result = await MODESwitcher.OnlineModeSwitch(this.CurrentIsOnlineMode ? 0 : 1)
+          }
+          this.OnlineModeSwitching = this.AutoModeSwitching = false;
+
+          if (!result.Success) {
+            this.$swal.fire(
+              {
+                text: result.Message,
+                title: '',
+                icon: 'error',
+                showCancelButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+              })
+          }
+
+        })
+      return false;
+    },
     VersionTextClickHandle() {
       this.version_text_click_count += 1;
       if (this.version_text_click_count > this.trigger_admin_dialog_count) {
@@ -212,6 +247,13 @@ export default {
     IsLogin() {
       return UserStore.getters.CurrentUserRole != 0;
     },
+    CurrentIsAutoMode() {
+      debugger
+      return AGVStatusStore.getters.AGVStatus.AutoMode == 1;
+    },
+    CurrentIsOnlineMode() {
+      return AGVStatusStore.getters.AGVStatus.OnlineMode == 1;
+    }
   },
   mounted() {
     setInterval(() => {
@@ -250,6 +292,12 @@ export default {
       border: 1px solid rgb(167, 167, 167);
       box-shadow: 3px -1px 13px -1px #959595;
     }
+  }
+  .switchs {
+    width: 100%;
+    background-color: black;
+    color: white;
+    font-weight: 900;
   }
   .icons {
     padding-right: 25px;

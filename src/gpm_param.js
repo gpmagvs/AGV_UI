@@ -8,5 +8,5 @@ var param = {
     }
   },
 }
-export const version = '23.7.27.1'
+export const version = '23.8.4.1'
 export default param
