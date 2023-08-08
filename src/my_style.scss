@@ -107,3 +107,13 @@
 } 
   
 }
+.el-loading-mask {
+  z-index: 1000;
+}
+
+.controller-route-view{
+  .el-loading-spinner .el-loading-text{
+    font-size: 30px;
+    letter-spacing: 2px;
+  }
+}

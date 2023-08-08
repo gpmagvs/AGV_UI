@@ -2,19 +2,12 @@
   <div class="move-controller bg-dark py-3">
     <div class="d-flex flex-row">
       <div class="bg-img">
-        <div class="directions rounded border">
+        <div class="directions rounded">
           <div class="d-flex justify-content-center">
-            <!-- <div class="up">
-              <img @click="MOVE_UP" src="/images/forward_left.png" :width="icon_size" alt />
-            </div>-->
             <div class="up mx-5">
               <img @click="MOVE_UP" src="/images/up-arrow.png" :width="icon_size" alt />
             </div>
-            <!-- <div class="up">
-              <img @click="MOVE_UP" src="/images/forward_right.png" :width="icon_size" alt />
-            </div>-->
           </div>
-          <!-- <img class="bg-img" src="/images/agv_controller_bg.png" width="600" alt /> -->
           <div class="justify-content-center rotate-png-row d-flex">
             <div>
               <img @click="MOVE_LEFT" src="/images/rotate-left.png" :width="icon_size" alt />
@@ -32,10 +25,13 @@
           </div>
         </div>
       </div>
-      <div class="options d-flex flex-column justify-content-center p-3 bg-warning">
+
+      <div class="tag-reader-info mx-3 border p-3 rounded">
+        <TagReaderRadar></TagReaderRadar>
+      </div>
+      <div v-if="false" class="options d-flex flex-column justify-content-center p-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
-          <!-- <KeyboardInput v-model="linear_speed"></KeyboardInput> -->
           <el-input-number size="large" v-model="linear_speed" :step="0.1" :max="1" :min="0.01"></el-input-number>
         </div>
         <div class="speed-item-container d-flex flex-row">
@@ -55,7 +51,11 @@
 
 <script>
 import { MOVEControl } from '@/api/VMSAPI';
+import TagReaderRadar from './TagReaderRadar.vue';
 export default {
+  components: {
+    TagReaderRadar,
+  },
   data() {
     return {
       icon_size: 130,

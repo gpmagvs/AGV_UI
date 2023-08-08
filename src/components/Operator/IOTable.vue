@@ -168,7 +168,6 @@ export default {
       this.hover_row = undefined
     },
     async cellDoubleClickHandle(row, column, event) {
-      debugger
       if (!this.IsUserLogin)
         return;
 

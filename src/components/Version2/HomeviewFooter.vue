@@ -102,7 +102,6 @@ export default {
   },
   methods: {
     ControllerIconClick() {
-      debugger
       this.$router.push(`/v2/controller/${UIStore.getters.PreviousControllRoute}`)
     },
     HomeIconClick() {
@@ -248,7 +247,6 @@ export default {
       return UserStore.getters.CurrentUserRole != 0;
     },
     CurrentIsAutoMode() {
-      debugger
       return AGVStatusStore.getters.AGVStatus.AutoMode == 1;
     },
     CurrentIsOnlineMode() {
@@ -267,25 +265,18 @@ export default {
 .home-view-footer {
   height: 120px;
   background-color: #ebe7e7;
-  .sys-time-display,
-  .mode-switchs {
+  .sys-time-display {
     background-color: rgb(67 67 67);
     position: absolute;
     font-weight: bold;
     bottom: 123px;
-  }
-  .mode-switchs {
-    left: 10px;
-    color: white;
-  }
-  .sys-time-display {
-    right: 1px;
     letter-spacing: 2px;
+    right: 1px;
   }
   .system-controls {
     button {
       font-size: 25px;
-      width: 151px;
+      width: 160px;
       height: 70px;
       margin-inline: 2px;
       font-weight: bold;

@@ -22,12 +22,13 @@
         </div>
       </div>
       <div
-        class="flex-fill mx-2 px-2 rounded border"
+        class="controller-route-view flex-fill mx-2 px-2 rounded border"
         v-loading="!isUseable"
         :element-loading-text="OptForbidNotifyText"
         element-loading-spinner="''"
         element-loading-svg-view-box="-10, -10, 50, 50"
-        element-loading-background="rgba(13, 110, 253, 0.3)"
+        element-loading-background="rgba(155, 175, 193,.2)"
+        :element-loading-z-index="1"
       >
         <router-view
           class="d-flex flex-fill flex-column justify-content-center w-100"
@@ -70,6 +71,8 @@ export default {
       return AGVStatusStore.getters.IsForkAGV;
     },
     isUseable() {
+      if (this.isGodUser)
+        return true;
       return this.isUserLogin && !this.isAnyModeON;
     },
     isAnyModeON() {
@@ -79,6 +82,9 @@ export default {
     isUserLogin() {
       return UserStore.getters.CurrentUserRole != 0;
     },
+    isGodUser() {
+      return UserStore.getters.IsGodUser;
+    },
     OptForbidNotifyText() {
       return '操作時需登入權限並將模式變更為OFFLINE/MANUAL'
     }
@@ -86,7 +92,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 img {
   cursor: pointer;
 }

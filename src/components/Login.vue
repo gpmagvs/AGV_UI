@@ -5,7 +5,7 @@
         <h3 :id="titleId" :class="login_title">Login</h3>
       </div>
     </template>
-    <div class="login-content py-2">
+    <div class="login-content py-2" style="z-index:99999">
       <el-form label-position="top">
         <el-form-item label="Account" :required="true">
           <el-input
