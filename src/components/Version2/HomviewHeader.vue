@@ -10,7 +10,7 @@
       <div class="w-25 border">
         <span v-text="UserName"></span>
       </div>
-      <div class="w-25 border bg-info" @click="HandleAppVersionClick">
+      <div class="w-25 border bg-info" @dblclick="HandleAppVersionClick">
         <span v-text="APPVersion"></span>
       </div>
     </div>

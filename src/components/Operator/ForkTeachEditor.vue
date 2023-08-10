@@ -5,7 +5,7 @@
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
     </div>
-    <el-table :data="TeachDatas" size="small" v-loading="loading">
+    <el-table :data="TeachDatas" height="600" size="small" v-loading="loading">
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
@@ -54,7 +54,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <SimpleKeyboardVue></SimpleKeyboardVue>
+    <!-- <SimpleKeyboardVue></SimpleKeyboardVue> -->
   </div>
 </template>
 
@@ -224,7 +224,7 @@ export default {
       this.HasAnyChange = currentJson != this.OriDataJson;
 
     },
-    InputClicked(ele){
+    InputClicked(ele) {
       console.log(ele)
     },
     AddTagTeachHandler() {

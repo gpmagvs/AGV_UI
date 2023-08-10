@@ -16,6 +16,7 @@
         <b-button @click="ForkAction('stop')" variant="danger my-1">Stop</b-button>
         <b-button @click="ForkAction('down')" variant="primary my-1">下</b-button>
         <b-button @click="ForkAction('down')" variant="primary my-1">下點位</b-button>
+        <b-button @click="()=>{teach_data_visible=true}" variant="warning my-1">教點</b-button>
       </div>
       <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">伸縮控制</span>
@@ -32,19 +33,27 @@
         <b-button @click="ForkArmStopHandler" variant="danger my-1">牙叉停止動作</b-button>
       </div>
     </div>
+
+    <el-dialog v-model="teach_data_visible" draggable width="90%">
+      <forkTeachEditor></forkTeachEditor>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore, DIOStore } from '@/store'
-
+import forkTeachEditor from '@/components/Operator/ForkTeachEditor.vue'
 export default {
+  components: {
+    forkTeachEditor,
+  },
   data() {
     return {
       isZAxisMoving: false,
       show_teach_page: false,
-      hardware_limit_enable: true
+      hardware_limit_enable: true,
+      teach_data_visible: false
     }
   },
   computed: {
