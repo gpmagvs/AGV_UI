@@ -8,7 +8,7 @@
           <status_card></status_card>
         </div>
       </b-tab>
-      <b-tab title="Overview">
+      <b-tab v-if="IsGodMod" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview></AgvOverview>
         </div>
