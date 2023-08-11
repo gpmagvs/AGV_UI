@@ -1,7 +1,9 @@
 # agvs_ui
 
-## 專案Clone後,或遇到找不到套件時
+## 專案Clone後安裝套件
 ```
+npm config set ssl-strict=false
+
 npm install
 ```
 
