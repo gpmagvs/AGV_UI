@@ -24,6 +24,7 @@
             :enabled="operation_enabled_return"
             :super_user="isGodMode"
             :table_data="DIOTableData.Outputs"
+            :useToggle=true
           ></IOTable>
         </div>
       </b-tab>
