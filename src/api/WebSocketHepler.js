@@ -78,7 +78,7 @@ class WebSocketHelp {
       if (this.wssocket) {
         if (this.wssocket.readyState == WebSocket.CONNECTING) {
 
-        } 
+        }
         else {
           if (this.wssocket.readyState == WebSocket.OPEN) {
             this.wssocket.send('alive')

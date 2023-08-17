@@ -13,7 +13,7 @@ export class clsForkTesetOption {
   initalizeBeforeTest = false
   pauseWhenReachQuarter = true
 }
-export class clsForkTestState {}
+export class clsForkTestState { }
 
 let FORKTEST = {
   async Start(option) {
@@ -31,4 +31,18 @@ let FORKTEST = {
   },
 }
 
-export { FORKTEST }
+let MoveTEST = {
+  /**開始測試 */
+  async Start(option) {
+    console.warn(option)
+    var ret = await axios_entity.post('/api/RDTEST/MoveTest', option)
+    return ret.data
+  },
+  /**停止測試 */
+  async Stop() {
+    var ret = await axios_entity.post('/api/RDTEST/MoveTest/Stop')
+    return ret.data
+  },
+}
+
+export { FORKTEST, MoveTEST }

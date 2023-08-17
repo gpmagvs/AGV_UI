@@ -48,7 +48,12 @@ const routes = [
             component: () => import('../components/Controller/ForkController.vue')
           }
         ]
-      }
+      },
+      {
+        path: 'rd_test',
+        component: () =>
+          import(/* webpackChunkName: "about" */ '../views/RDTestView.vue'),
+      },
     ]
   },
   {

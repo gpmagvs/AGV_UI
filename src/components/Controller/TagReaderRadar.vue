@@ -88,7 +88,6 @@ export default {
       return 50 + this.offset_y
     },
     Transform() {
-      debugger
       return `rotate(${180 - this.theta} ${this.loc_X} ${this.loc_Y})`
     }
   },

@@ -41,6 +41,29 @@ export var UIStore = createStore({
   }
 })
 
+export var RDTestDataStore = createStore({
+  state: {
+    TestData: {
+      move_test: {
+        duration: 0,
+        state: 0
+      }
+    }
+  },
+  getters: {
+    testData: state => {
+      return state.TestData;
+    }
+  },
+  mutations: {
+    SetData(state, data) {
+      state.TestData = data;
+    }
+  },
+  actions: {
+
+  }
+})
 
 /**系統訊息STORE */
 export var SystemMsgStore = createStore({
@@ -173,6 +196,9 @@ export var AGVStatusStore = createStore({
 
 
       return state.SensorStatus;
+    },
+    CurrentTag: state => {
+      return state.AGVStatus.BCR_State_MoveBase.tagID
     }
 
   },

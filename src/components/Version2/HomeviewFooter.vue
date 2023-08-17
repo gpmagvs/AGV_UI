@@ -66,6 +66,9 @@
           <div @click="ShowLogin">
             <img src="/images/signin.png" width="60" alt />
           </div>
+          <div @click="ShowRDTEstPage">
+            <img src="/images/signin.png" width="60" alt />
+          </div>
         </div>
       </div>
       <div @click="EmoClick">
@@ -112,6 +115,10 @@ export default {
     },
     AlarmIconClick() {
       this.$router.push('/v2/Alarm')
+    },
+    ShowRDTEstPage() {
+      this.$router.push('/v2/rd_test')
+
     },
     async InitializeClick() {
       this.$swal.fire({
@@ -169,6 +176,7 @@ export default {
         this.$refs.loginShow.Show();
       }
     },
+
     async HandleModeSwitchRequest(request) {
       var _text = request == 'online' ? `確定要將AGV${this.CurrentIsOnlineMode ? '下線' : '上線'}?` : `確定要將AGV更改為${this.CurrentIsAutoMode ? '手動模式' : '自動模式'}?`;
       var _title = request == 'online' ? 'AGV ONLINE-MODE CHANGE' : 'AGV AUTO-MODE CHANGE';
