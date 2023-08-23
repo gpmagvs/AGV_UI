@@ -21,12 +21,12 @@
       <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">伸縮控制</span>
         <b-button
-          :disabled="!FORK_ARM_Status.IsArmAtEndPose&&FORK_ARM_Status.IsArmAtHomePose"
+          :disabled="FORK_ARM_Status.IsArmAtEndPose&&!FORK_ARM_Status.IsArmAtHomePose"
           @click="ForkArmPoseControlHandler(true)"
           variant="primary my-1"
         >牙叉伸出</b-button>
         <b-button
-          :disabled="!FORK_ARM_Status.IsArmAtHomePose&&FORK_ARM_Status.IsArmAtEndPose"
+          :disabled="FORK_ARM_Status.IsArmAtHomePose&&!FORK_ARM_Status.IsArmAtEndPose"
           @click="ForkArmPoseControlHandler(false)"
           variant="primary my-1"
         >牙叉縮回</b-button>

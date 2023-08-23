@@ -263,7 +263,7 @@ export default {
       else {
         this.$swal.fire({
           title: 'AGV Initialize',
-          text: `${this.$t(this.Is_Fork_AGV ? 'start_init_action_notify' : 'start_init_action_notify_submarin_agv')}`,
+          text: `${this.$t(this.Is_Fork_AGV ? this.VMSData.ForkHasLoading ? 'start_init_action_notify_fork_has_loading' : 'start_init_action_notify' : 'start_init_action_notify_submarin_agv')}`,
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: 'OK',

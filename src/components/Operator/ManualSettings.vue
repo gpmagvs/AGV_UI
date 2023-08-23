@@ -57,13 +57,13 @@
       <div class="battery py-1">
         <div class="d-flex flex-row mb-1">
           <b-button
-            :disabled="!FORK_ARM_Status.IsArmAtHomePose&&FORK_ARM_Status.IsArmAtEndPose"
+            :disabled="FORK_ARM_Status.IsArmAtHomePose&&!FORK_ARM_Status.IsArmAtEndPose"
             @click="ForkArmPoseControlHandler(false)"
             squared
             variant="primary"
           >縮回</b-button>
           <b-button
-            :disabled="!FORK_ARM_Status.IsArmAtEndPose&&FORK_ARM_Status.IsArmAtHomePose"
+            :disabled="FORK_ARM_Status.IsArmAtEndPose&&!FORK_ARM_Status.IsArmAtHomePose"
             @click="ForkArmPoseControlHandler(true)"
             squared
             variant="primary"
@@ -182,10 +182,11 @@ export default {
       await BatteryLockCtrl(bat_no, islock)
     },
     async ForkArmPoseControlHandler(isExtend) {
+      var result = { confirm: false, message: '' }
       if (isExtend)
-        await ForkAPI.ARM_Extend();
+        result = await ForkAPI.ARM_Extend();
       else
-        await ForkAPI.ARM_Shorten();
+        result = await ForkAPI.ARM_Shorten();
     },
     async ForkArmStopHandler() {
       await ForkAPI.ARM_Stop();

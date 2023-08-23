@@ -8,11 +8,7 @@
           <status_card></status_card>
         </div>
       </b-tab>
-      <b-tab v-if="IsGodMod" title="Overview">
-        <div class="mt-3 border p-1">
-          <AgvOverview></AgvOverview>
-        </div>
-      </b-tab>
+
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
         <div class="table-container-div mt-3 border p-1">
@@ -25,18 +21,20 @@
           <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
         </div>
       </b-tab>
-      <!-- 3D Model Display -->
-      <b-tab v-if="IsGodMod" :title="$t('3d_model')">
-        <div class="mt-3 border p-1">
-          <ForkAGV3D></ForkAGV3D>
-        </div>
-      </b-tab>
+
       <!-- CST READER -->
       <b-tab v-if="VMSData.Agv_Type!=2" title="CST Reader">
         <div class="mt-3 border p-1">
           <CSTReader></CSTReader>
         </div>
       </b-tab>
+      <!-- 3D Model Display -->
+      <b-tab v-if="IsGodMod" :title="$t('3d_model')">
+        <div class="mt-3 border p-1">
+          <ForkAGV3D></ForkAGV3D>
+        </div>
+      </b-tab>
+
       <b-tab v-if="true" title="設備交握(E84)">
         <div class="mt-3 border p-1">
           <EQHandshakeView></EQHandshakeView>
@@ -48,7 +46,11 @@
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
       </b-tab>
-
+      <b-tab v-if="IsGodMod" title="Overview">
+        <div class="mt-3 border p-1">
+          <AgvOverview></AgvOverview>
+        </div>
+      </b-tab>
       <b-tab v-if="false" title="AGVS MSG">
         <div class="mt-3 border p-1">
           <AGVSMsgDisplay ref="agvs_msg_table"></AGVSMsgDisplay>

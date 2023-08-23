@@ -28,6 +28,7 @@
     "original":"ORIGINAL",
     "stop":"Stop",
     "cancel_init_action_notify":"Are you sure you want to cancel the initialization process?",
+    "start_init_action_notify_fork_has_loading":"Fork has cargo noew,Do you confirm to proceed with the initialization process? Once the initialization process starts, the Fork will descend. Please ensure that there are no goods on the Fork and check for any obstacles around the AGV.",
     "start_init_action_notify":"Do you confirm to proceed with the initialization process? Once the initialization process starts, the Fork will descend. Please ensure that there are no goods on the Fork and check for any obstacles around the AGV.",
     "charging_current":"Charging Current",
     "wait_online_text":"AGV Online Process is running, Please wait...",

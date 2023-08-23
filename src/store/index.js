@@ -185,7 +185,7 @@ export var AGVStatusStore = createStore({
       state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
       state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
       state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
-      state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtEndPose && !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
+      state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
 
       var isForkAGV = state.AGVStatus.Agv_Type == 0;
@@ -330,8 +330,8 @@ export var DIOStore = createStore({
         }
       }
       var Inputs = state.DIOStates.Inputs;
-      var IsArmAtHomePose = !Inputs.find(reg => reg.Address == 'X0000').State
-      var IsArmAtEndPose = !Inputs.find(reg => reg.Address == 'X0001').State
+      var IsArmAtHomePose = !Inputs.find(reg => reg.Address == 'X0001').State
+      var IsArmAtEndPose = !Inputs.find(reg => reg.Address == 'X0000').State
 
       return {
         IsArmAtHomePose: IsArmAtHomePose,
@@ -446,7 +446,7 @@ export var DIOStore = createStore({
       if (state.DIOStates.Inputs == undefined)
         return false
       var Inputs = state.DIOStates.Inputs;
-      return Inputs.find(reg => reg.Address == 'X0011').State
+      return !Inputs.find(reg => reg.Address == 'X0011').State
     },
 
 

@@ -73,6 +73,7 @@ class VMSData {
   UltrSensorState = new UltrasonicSensorState()
   ZAxisDriverState = new clsDriverState()
   ZAxisActionName = ''
+  ForkHasLoading = false
 
 }
 

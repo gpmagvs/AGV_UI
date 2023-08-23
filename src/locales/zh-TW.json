@@ -30,6 +30,7 @@
     "original":"原點",
     "stop":"停止",
     "cancel_init_action_notify":"確定要取消初始化動作?",
+    "start_init_action_notify_fork_has_loading":"Fork上有負載，確定要進行初始化動作? 初始化動作開始後 Fork 將會下降，請確認 AGV 周圍無障礙物",
     "start_init_action_notify":"確定要進行初始化動作? 初始化動作開始後 Fork 將會下降,請確認 Fork上有無貨物，並確認 AGV 周圍無障礙物",
     "start_init_action_notify_submarin_agv":"確定要進行初始化動作?",
     "charging_current":"充電電流",
