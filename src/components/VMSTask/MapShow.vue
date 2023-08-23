@@ -6,7 +6,7 @@
         <div>
           <b-form-input v-model="map_name" disabled size="sm" :state="map_data.Name!=undefined"></b-form-input>
         </div>
-        <b-button varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button>
+        <!-- <b-button  varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button> -->
       </div>
       <div
         v-loading="loading"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex fle-row border-bottom py-1 my-1">
-      <el-button :disabled=" !HasAnyChange" type="primary" @click="SaveHandler">儲存</el-button>
+      <el-button :disabled="!HasAnyChange" type="primary" @click="SaveHandler">儲存</el-button>
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
     </div>

@@ -11,7 +11,18 @@
         @dblclick="where_r_u()"
       >{{AGVName==""?"AGV":AGVName}}</div>
       <div class="account-name flex-fill">{{UserName }}</div>
-      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill">{{ APPVersion }}</div>
+      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill">
+        {{ APPVersion }}
+        <i
+          v-if="IsGodUser"
+          @click="()=>{uploadVisible=true}"
+          class="bi bi-cloud-upload"
+        ></i>
+      </div>
+
+      <el-dialog draggable title="File Upload" v-model="uploadVisible">
+        <uploader></uploader>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -19,8 +30,17 @@
 <script>
 import { AGVStatusStore, UserStore } from '@/store'
 import { Where_r_u } from '@/api/VMSAPI'
+import uploader from '@/components/Upload'
 
 export default {
+  components: {
+    uploader,
+  },
+  data() {
+    return {
+      uploadVisible: false
+    }
+  },
   computed: {
     SubStatus() {
       return AGVStatusStore.getters.AGVStatus.SubState;
@@ -33,6 +53,9 @@ export default {
     },
     UserName() {
       return UserStore.getters.CurrentUserName
+    },
+    IsGodUser() {
+      return UserStore.getters.IsGodUser
     }
   },
   methods: {

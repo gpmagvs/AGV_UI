@@ -63,7 +63,6 @@
     <MapShowVue
       :task_allocatable="true"
       @OnFeatureClicked="MapFeatureClickedHandle"
-      @DownloadMapDataClicked="DownloadMapData"
       class="flex-fill"
       style="height:600px"
       ref="map"

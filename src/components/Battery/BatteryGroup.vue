@@ -38,11 +38,7 @@
           type="danger"
           size="large"
           @click="close"
-        >
-          <el-icon class="el-icon--left">
-            <CircleCloseFilled />
-          </el-icon>Close
-        </el-button>
+        ></el-button>
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>
