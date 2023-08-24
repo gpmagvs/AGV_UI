@@ -146,6 +146,12 @@ export const DIO = {
     )
     return ret.data
   },
+  async HsSignalChange(signal, state) {
+    var ret = await axios_entity.get(
+      `api/VMS/DIO/SetHsSignalState?signal=${signal}&state=${state}`,
+    )
+    return ret.data
+  }
 }
 
 /**煞車模組 */

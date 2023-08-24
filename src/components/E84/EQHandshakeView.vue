@@ -6,8 +6,7 @@
       <b-button @click="show_hs_test_drawer=true" class="my-1" variant="primary">交握測試</b-button>
     </div>
     <div class="d-flex justify-content-center">
-      <DJM_PIO Owner="AGV"></DJM_PIO>
-      <DJM_PIO Owner="EQ"></DJM_PIO>
+      <DJM_PIO></DJM_PIO>
     </div>
 
     <el-drawer direction="btt" v-model="show_hs_test_drawer">

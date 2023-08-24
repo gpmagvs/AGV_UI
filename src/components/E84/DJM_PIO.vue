@@ -1,28 +1,38 @@
 <template>
   <div class="djm-pio border rounded mx-1 py-3 px-5">
     <h3 class="border-bottom text-primary">{{ Owner }}</h3>
-    <div v-for="pio in PIO_States" :key="pio.index">
-      <div class="d-flex">
-        <div class="signal-name">{{ pio.name }}</div>
-        <el-tooltip
-          placement="right"
-          :content="pio.address+ (Editable?'(Double Click To Toggle)':'')"
-        >
+
+    <div class="d-flex">
+      <div>
+        <div v-for="(state,name) in HandshakeSignals.AGV" :key="name" class="d-flex">
+          <div class="signal-name">{{name}}</div>
           <div
-            @dblclick="SignalWriteChangeHandler(pio)"
+            @dblclick="SignalWriteChangeHandler('AGV',name)"
             class="border signal-div rounded"
             v-bind:style="{ 
-              backgroundColor: pio.state ==1?'rgb(0, 204, 0)': 'grey',
+              backgroundColor: state?'rgb(0, 204, 0)': 'grey',
             }"
-          >{{ pio.index }}</div>
-        </el-tooltip>
+          >{{ state? 'ON':'OFF' }}</div>
+        </div>
+      </div>
+      <div class="mx-5">
+        <div v-for="(state,name) in HandshakeSignals.EQ" :key="name" class="d-flex">
+          <div class="signal-name">{{name}}</div>
+          <div
+            @dblclick="SignalWriteChangeHandler('EQ',name)"
+            class="border signal-div rounded"
+            v-bind:style="{ 
+              backgroundColor: state?'rgb(0, 204, 0)': 'grey',
+            }"
+          >{{ state? 'ON':'OFF' }}</div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { UserStore, DIOStore } from '@/store'
+import { AGVStatusStore, UserStore, DIOStore } from '@/store'
 import { DIO } from '@/api/VMSAPI'
 export default {
   props: {
@@ -33,107 +43,6 @@ export default {
   },
   data() {
     return {
-      AGV_PIO: [
-        {
-          index: 0,
-          name: 'VALID',
-          state: 0,
-          address: 'Y0020'
-        },
-        {
-          index: 1,
-          name: '',
-          state: 0,
-          address: 'Y0021'
-        },
-        {
-          index: 2,
-          name: '',
-          state: 0,
-          address: 'Y0022'
-        },
-        {
-          index: 3,
-          name: 'AGV READY',
-          state: 0,
-          address: 'Y0023'
-        },
-        {
-          index: 4,
-          name: 'TR_REQ',
-          state: 0,
-          address: 'Y0024'
-        },
-        {
-          index: 5,
-          name: 'BUSY',
-          state: 0,
-          address: 'Y0025'
-        },
-        {
-          index: 6,
-          name: 'COMPT',
-          state: 0,
-          address: 'Y0026'
-        },
-        {
-          index: 7,
-          name: '',
-          state: 0,
-          address: 'Y0027'
-        },
-      ],
-
-      EQ_PIO: [
-        {
-          index: 0,
-          name: 'L_REQ',
-          state: 0,
-          address: 'X0020'
-        },
-        {
-          index: 1,
-          name: 'U_REQ',
-          state: 0,
-          address: 'X0021'
-        },
-        {
-          index: 2,
-          name: '',
-          state: 0,
-          address: 'X0022'
-        },
-        {
-          index: 3,
-          name: 'READY',
-          state: 0,
-          address: 'X0023'
-        },
-        {
-          index: 4,
-          name: 'UP_READY',
-          state: 0,
-          address: 'X0024'
-        },
-        {
-          index: 5,
-          name: 'LOW_READY',
-          state: 0,
-          address: 'X0025'
-        },
-        {
-          index: 6,
-          name: 'EQ_BUSY',
-          state: 0,
-          address: 'X0026'
-        },
-        {
-          index: 7,
-          name: '',
-          state: 1,
-          address: 'X0027'
-        },
-      ]
     }
   },
   computed: {
@@ -143,30 +52,19 @@ export default {
     IsGodUse() {
       return UserStore.getters.IsGodUser;
     },
-    PIO_States() {
-      for (let index = 0; index < 8; index++) {
-        this.AGV_PIO[index].state = DIOStore.getters.E84_AGV[index]
-        this.EQ_PIO[index].state = DIOStore.getters.E84_EQ[index]
-        if (DIOStore.getters.IsE84UseEmu) {
-          this.EQ_PIO[index].address = `Y000${index}`
-        }
-      }
-      return this.Owner == 'AGV' ? this.AGV_PIO : this.EQ_PIO
+    HandshakeSignals() {
+      return AGVStatusStore.getters.Handshake_Signals
     },
-    E84_AGV() {
-      return DIOStore.getters.E84_AGV
-    }
+
   },
   methods: {
 
-    async SignalWriteChangeHandler(pio = { index: 7, name: '', state: 1, address: 'X0027' }) {
-      if (!this.Editable)
-        return;
-      if (this.Owner != 'AGV') {
-        if (!DIOStore.getters.IsE84UseEmu)
-          return;
-      }
-      await DIO.DO_State_Change(pio.address, pio.state == 0)
+    async SignalWriteChangeHandler(owner, signal_name) {
+      // if (!this.Editable)
+      //   return;
+      var state_to_change = !this.HandshakeSignals[owner][signal_name]
+      alert(signal_name + ' change to :' + state_to_change)
+      await DIO.HsSignalChange(signal_name, state_to_change)
     }
   },
 }

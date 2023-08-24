@@ -199,6 +199,28 @@ export var AGVStatusStore = createStore({
     },
     CurrentTag: state => {
       return state.AGVStatus.BCR_State_MoveBase.tagID
+    },
+    Handshake_Signals: state => {
+      var signals = state.AGVStatus.HandShakeSignals
+      if (signals)
+        return state.AGVStatus.HandShakeSignals
+      else {
+        return {
+          AGV: {
+            AGV_BUSY: false,
+            AGV_COMPT: false,
+            AGV_READY: false,
+            AGV_TR_REQ: false,
+            AGV_VALID: false,
+          },
+          EQ: {
+            EQ_BUSY: false,
+            EQ_L_REQ: false,
+            EQ_READY: false,
+            EQ_U_REQ: false,
+          }
+        }
+      }
     }
 
   },
