@@ -146,9 +146,9 @@ export const DIO = {
     )
     return ret.data
   },
-  async HsSignalChange(signal, state) {
+  async HsSignalChange(owner = "AGV|EQ", signal, state) {
     var ret = await axios_entity.get(
-      `api/VMS/DIO/SetHsSignalState?signal=${signal}&state=${state}`,
+      `api/VMS/DIO/Set${owner}HsSignalState?signal_name=${signal}&state=${state}`,
     )
     return ret.data
   }

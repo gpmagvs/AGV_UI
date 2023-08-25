@@ -60,11 +60,8 @@ export default {
   methods: {
 
     async SignalWriteChangeHandler(owner, signal_name) {
-      // if (!this.Editable)
-      //   return;
       var state_to_change = !this.HandshakeSignals[owner][signal_name]
-      alert(signal_name + ' change to :' + state_to_change)
-      await DIO.HsSignalChange(signal_name, state_to_change)
+      await DIO.HsSignalChange(owner, signal_name, state_to_change)
     }
   },
 }
