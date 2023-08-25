@@ -424,8 +424,8 @@ export default {
           }),
         ],
         view: new View({
-          center: [0, 0],
-          zoom: 6,
+          center: [57000, 52000],
+          zoom: 9,
         }),
       });
 
@@ -436,6 +436,12 @@ export default {
       this.CreateMeshLayer();
       this.StationStyleRender();
 
+      var map_view_cache = localStorage.getItem('map_view');
+      if (map_view_cache) {
+        var map_view_options = JSON.parse(map_view_cache)
+        this.map.getView().setCenter(map_view_options.center)
+        this.map.getView().setZoom(map_view_options.zoom)
+      }
 
 
       //this.Line_Layer.getSource().addFeature(lineFeature);
@@ -444,7 +450,11 @@ export default {
       this.map.on('click', (evt) => {
         this.showTaskAllocationMenu = this.showStationMenu = this.showNoPointSelectedMenu = false;
       })
-
+      this.map.on('moveend', (evt) => {
+        var zoom = this.map.getView().getZoom();
+        var center = this.map.getView().getCenter();
+        localStorage.setItem('map_view', JSON.stringify({ zoom: zoom, center: center }));
+      })
       // 监听 feature 的右键点击事件
       this.map.on('pointerdown', (event) => {
         if (event.originalEvent.button === 2 | event.originalEvent.button === 0) {
@@ -780,12 +790,13 @@ export default {
       this.map.getLayers().item(this.layer_index.station).getSource().getFeatures().forEach((feature) => {
         var station = this.stations.find(st => st.feature == feature);
         var showTagNumber = this.display_selected == 'Tag';
+        debugger
         const name = (showTagNumber ? station.tag : station.index) + '';
         var nameInt = parseInt(name);
         var isEQStation = nameInt % 2 == 0
 
         var trangleImg = new RegularShape({
-          radius: 8,
+          radius: 11,
           fill: new Fill({
             color: 'rgb(37, 172, 95)',
           }),
@@ -798,7 +809,7 @@ export default {
         })
 
         var circleImg = new CircleStyle({
-          radius: 8,
+          radius: 11,
           fill: new Fill({
             color: 'rgb(243, 123, 55)',
           }),
@@ -814,7 +825,7 @@ export default {
             text: name,
             offsetX: -18,
             offsetY: -18,
-            font: 'bold 14px sans-serif',
+            font: 'bold 21px sans-serif',
             fill: new Fill({
               color: showTagNumber ? 'gold' : 'lime'
             }),
