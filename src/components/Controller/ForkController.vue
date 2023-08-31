@@ -43,7 +43,7 @@
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore, DIOStore } from '@/store'
-import forkTeachEditor from '@/components/Operator/ForkTeachEditor.vue'
+import forkTeachEditor from '@/components/Operator/WorkStation/ForkTeachEditor.vue'
 export default {
   components: {
     forkTeachEditor,

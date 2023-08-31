@@ -10,7 +10,7 @@
       <div class="w-25 border">
         <span v-text="UserName"></span>
       </div>
-      <div class="w-25 border bg-info" @dblclick="HandleAppVersionClick">
+      <div class="w-25 border bg-info" @dblclick="HandleAppVersionClick" @contextmenu="HandleVersionDivContextMenu">
         <span v-text="APPVersion"></span>
       </div>
     </div>
@@ -48,6 +48,9 @@ export default {
         title: 'VERSION INFORMATION',
         text: 'version\r\n<br></br>version'
       })
+    },
+    HandleVersionDivContextMenu(event){
+      
     }
   },
   mounted() {

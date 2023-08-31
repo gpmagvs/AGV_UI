@@ -8,6 +8,7 @@
     <div class="system-controls">
       <div class="switchs py-2 text-start px-1 d-flex">
         <div class @click="HandleModeSwitchRequest('online')">
+          <span class="mx-1" style="font-size: 15px; border-left: 6px solid rgb(13, 110, 253); "></span>
           <span class="mx-1" style="font-size: 15px;">ONLINE-MODE</span>
           <el-switch
             v-model="CurrentIsOnlineMode"
@@ -24,8 +25,9 @@
           :loading="mode.loading"-->
           <!-- <jw-switch inactive_text="OFFLINE" active_text="ONLINE"></jw-switch> -->
         </div>
-        <div @click="HandleModeSwitchRequest('auto')">
-          <span class="mx-1" style="font-size: 15px;">AUTO-MODE</span>
+        <div class="mx-2" @click="HandleModeSwitchRequest('auto')">
+          <span class="mx-1" style="font-size: 15px; border-left: 6px solid rgb(13, 110, 253); "></span>
+          <span class="mx-1" style="font-size: 15px; ">AUTO-MODE</span>
           <el-switch
             v-model="CurrentIsAutoMode"
             active-color="rgb(95, 171, 80)"
@@ -66,8 +68,8 @@
           <div @click="ShowLogin">
             <img src="/images/signin.png" width="60" alt />
           </div>
-          <div @click="ShowRDTEstPage">
-            <img src="/images/signin.png" width="60" alt />
+          <div v-if="IsLogin" @click="ShowRDTEstPage">
+            <span style="font-size:30px;font-weight: bold; color:red">TEST</span>
           </div>
         </div>
       </div>

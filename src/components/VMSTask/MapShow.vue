@@ -790,7 +790,6 @@ export default {
       this.map.getLayers().item(this.layer_index.station).getSource().getFeatures().forEach((feature) => {
         var station = this.stations.find(st => st.feature == feature);
         var showTagNumber = this.display_selected == 'Tag';
-        debugger
         const name = (showTagNumber ? station.tag : station.index) + '';
         var nameInt = parseInt(name);
         var isEQStation = nameInt % 2 == 0

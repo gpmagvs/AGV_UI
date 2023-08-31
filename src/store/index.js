@@ -250,6 +250,7 @@ export var UserStore = createStore({
       return state.UserState.Role == 3;
     },
     IsDevUser: state => {
+
       return state.UserState.Role == 2;
     },
     CurrentUserRole: state => {

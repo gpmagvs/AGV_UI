@@ -195,7 +195,7 @@ export default {
 
 <style  lang="scss">
 .el-table .on-row {
-  background-color: limegreen;
+  background-color: rgb(13, 110, 253);
   color: white;
   font-weight: bold;
   /* --el-table-tr-bg-color: var(--el-color-success-light-9); */

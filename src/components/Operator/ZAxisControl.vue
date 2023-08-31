@@ -110,7 +110,7 @@
 import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
-import forkTeachEditor from './ForkTeachEditor.vue'
+import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
 export default {
   components: {
     AdminFork, forkTeachEditor
@@ -135,14 +135,14 @@ export default {
   },
   methods: {
     async ForkAction(action, pose = 0, speed = 0) {
-      this.isZAxisMoving=true;
+      this.isZAxisMoving = true;
       var ret = await ForkAPI.Action(action, pose, speed);
-      this.isZAxisMoving=false;
-      if(!ret.confirm){
+      this.isZAxisMoving = false;
+      if (!ret.confirm) {
         this.$swal.fire({
-          text:ret.message,
-          icon:'error',
-          title:'牙叉禁止操作'
+          text: ret.message,
+          icon: 'error',
+          title: '牙叉禁止操作'
         })
       }
     },

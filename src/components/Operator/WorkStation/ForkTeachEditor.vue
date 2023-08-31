@@ -5,7 +5,13 @@
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
     </div>
-    <el-table :data="TeachDatas" height="600" size="small" v-loading="loading">
+    <el-table
+      @cell-click="HandleCellClicked"
+      :data="TeachDatas"
+      height="600"
+      size="small"
+      v-loading="loading"
+    >
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
@@ -19,7 +25,7 @@
         </template>
       </el-table-column>
       <el-table-column v-for="index in [0,1,2]" :key="index" :label="'layer-'+index">
-        <el-table-column label="Up Pose(cm)">
+        <el-table-column label="Up Pose(cm)" :prop="`Up_Pose:${index}`">
           <template #default="scope">
             <el-input
               @click="InputClicked"
@@ -32,7 +38,7 @@
             ></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="Down Pose(cm)">
+        <el-table-column label="Down Pose(cm)" :prop="`Down_Pose:${index}`">
           <template #default="scope">
             <el-input
               @click="InputClicked"
@@ -54,6 +60,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <TeachTool @onValueChanged="HamdleVirtualKBValuechange" ref="teach_tool"></TeachTool>
     <!-- <SimpleKeyboardVue></SimpleKeyboardVue> -->
   </div>
 </template>
@@ -62,10 +69,10 @@
 import { ForkAPI } from '@/api/VMSAPI'
 import { ForkTeachStore } from '@/store'
 import SimpleKeyboardVue from '@/components/Tools/SimpleKeyboard.vue';
-
+import TeachTool from './ForkTeachTool.vue'
 export default {
   components: {
-    SimpleKeyboardVue
+    SimpleKeyboardVue, TeachTool
   },
   data() {
     return {
@@ -126,6 +133,7 @@ export default {
       OriDataJson: undefined,
       HasAnyChange: false,
       loading: false,
+      selected_data: {}
     }
   },
   watch: {
@@ -225,7 +233,10 @@ export default {
 
     },
     InputClicked(ele) {
-      console.log(ele)
+      setTimeout(() => {
+        this.$refs['teach_tool'].Show(this.selected_data)
+      }, 100)
+
     },
     AddTagTeachHandler() {
       this.TeachDatas.push({
@@ -246,7 +257,39 @@ export default {
     ResetOriDattaString() {
       this.OriDataJson = this.GetNonCommString(this.TeachDatas)
       this.HasAnyChange = false;
+    },
+    HandleCellClicked(row, column, cell, event) {
+      //property:'Up_Pose:0'
+      var prop_splited = column.property.split(':')
+      if (prop_splited.length == 1) {
+        this.selected_data = {
+          tag: row.Tag,
+          layer: undefined,
+          pose: undefined,
+          value: row.Tag
+        }
+        return
+      }
+      var pose_prop = prop_splited[0]
+      var layer = parseInt(prop_splited[1])
+      var value = row.Layers[layer].Value[pose_prop]
+      this.selected_data = {
+        tag: row.Tag,
+        layer: layer,
+        pose: pose_prop,
+        value: value
+      }
+    },
+    HamdleVirtualKBValuechange(data) {
+      var row = this.TeachDatas.find(_data => _data.Tag == data.tag)
+      if (data.pose == undefined) {
+        row.Tag = data.value
+      } else {
+        row.Layers[data.layer].Value[data.pose] = data.value
+      }
+      this.InputChanged()
     }
+
   },
   mounted() {
     this.reload();
