@@ -61,8 +61,16 @@ export default {
     },
     AlarmCodesGroup() {
       return AGVStatusStore.getters.AlarmGroup;
+    },
+    VehicleName() {
+      return AGVStatusStore.getters.AGVName;
     }
 
+  },
+  watch: {
+    VehicleName(newValue, oldValue) {
+      document.title = 'GPM-' + newValue;
+    }
   },
   mounted() {
     document.title = "GPM AGV";
