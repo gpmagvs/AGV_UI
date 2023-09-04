@@ -200,6 +200,14 @@ export var AGVStatusStore = createStore({
     CurrentTag: state => {
       return state.AGVStatus.BCR_State_MoveBase.tagID
     },
+    /**AGV是否在進行EQ(TR_REQ ON) */
+    IsHandshaking: (state) => {
+      var signals = state.AGVStatus.HandShakeSignals
+      if (signals)
+        return signals.AGV.AGV_TR_REQ;
+      else
+        return false;
+    },
     Handshake_Signals: state => {
       var signals = state.AGVStatus.HandShakeSignals
       if (signals)
