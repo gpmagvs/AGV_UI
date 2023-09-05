@@ -226,6 +226,7 @@ export var AGVStatusStore = createStore({
             EQ_L_REQ: false,
             EQ_READY: false,
             EQ_U_REQ: false,
+            EQ_GO: false,
           }
         }
       }

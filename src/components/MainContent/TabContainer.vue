@@ -28,6 +28,19 @@
           <CSTReader></CSTReader>
         </div>
       </b-tab>
+      <b-tab v-if="true" title="設備交握(E84)">
+        <div class="mt-3 border p-1">
+          <EQHandshakeView></EQHandshakeView>
+        </div>
+      </b-tab>
+
+      <!-- 本地任務派送 -->
+      <b-tab v-if="IsGodMod|IsDevUser" title="Task">
+        <div class="mt-3 border p-1">
+          <TaskDeliveryVue></TaskDeliveryVue>
+        </div>
+      </b-tab>
+      
       <!-- 3D Model Display -->
       <b-tab v-if="IsGodMod" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
@@ -35,17 +48,6 @@
         </div>
       </b-tab>
 
-      <b-tab v-if="true" title="設備交握(E84)">
-        <div class="mt-3 border p-1">
-          <EQHandshakeView></EQHandshakeView>
-        </div>
-      </b-tab>
-      <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod|IsDevUser" title="Task">
-        <div class="mt-3 border p-1">
-          <TaskDeliveryVue></TaskDeliveryVue>
-        </div>
-      </b-tab>
       <b-tab v-if="IsGodMod" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview></AgvOverview>

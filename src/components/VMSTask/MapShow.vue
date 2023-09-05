@@ -364,7 +364,7 @@ export default {
 
       const lduldable_types = [1, 2, 4, 5, 6, 11, 12, 21, 22];
       var stations = Object.values(this.map_data.Points);
-      return stations.filter(st => lduldable_types.includes(st.StationType));
+      return stations.filter(st => st.IsEquipment);
     },
     GetChargeStations() {
       if (!this.map_data)
