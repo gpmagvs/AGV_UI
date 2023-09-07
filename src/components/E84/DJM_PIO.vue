@@ -1,7 +1,5 @@
 <template>
   <div class="djm-pio border rounded mx-1 py-3 px-5">
-    <h3 class="border-bottom text-primary">{{ Owner }}</h3>
-
     <div class="d-flex">
       <div>
         <div v-for="(state,name) in HandshakeSignals.AGV" :key="name" class="d-flex">
@@ -25,6 +23,28 @@
               backgroundColor: state?'rgb(0, 204, 0)': 'grey',
             }"
           >{{ state? 'ON':'OFF' }}</div>
+        </div>
+      </div>
+      <div class="timer">
+        <div class="d-flex">
+          <span>TP1</span>
+          <div>{{HSTimers.TA1_Wait_L_U_REQ_ON}}</div>
+        </div>
+        <div class="d-flex">
+          <span>TP2</span>
+          <div>{{HSTimers.TA2_Wait_EQ_READY_ON}}</div>
+        </div>
+        <div class="d-flex">
+          <span>TP3</span>
+          <div>{{HSTimers.TA3_Wait_EQ_BUSY_ON}}</div>
+        </div>
+        <div class="d-flex">
+          <span>TP4</span>
+          <div>{{HSTimers.TA4_Wait_EQ_BUSY_OFF}}</div>
+        </div>
+        <div class="d-flex">
+          <span>TP5</span>
+          <div>{{HSTimers.TA5_Wait_L_U_REQ_OFF}}</div>
         </div>
       </div>
     </div>
@@ -55,6 +75,9 @@ export default {
     HandshakeSignals() {
       return AGVStatusStore.getters.Handshake_Signals
     },
+    HSTimers() {
+      return AGVStatusStore.getters.HSTimers
+    }
 
   },
   methods: {
@@ -90,5 +113,10 @@ h3 {
   padding-right: 10px;
   text-align: right;
   font-weight: bold;
+}
+.timer {
+  span {
+    margin-right: 5px;
+  }
 }
 </style>

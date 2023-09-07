@@ -74,6 +74,13 @@ class VMSData {
   ZAxisDriverState = new clsDriverState()
   ZAxisActionName = ''
   ForkHasLoading = false
+  HandShakeTimers = {
+    TA1_Wait_L_U_REQ_ON: 0,
+    TA2_Wait_EQ_READY_ON: 0,
+    TA3_Wait_EQ_BUSY_ON: 0,
+    TA4_Wait_EQ_BUSY_OFF: 0,
+    TA5_Wait_L_U_REQ_OFF: 0,
+  }
 
 }
 
