@@ -371,9 +371,12 @@ export default {
 
     },
     MapFeatureClickedHandle(feature) {
-      this.SelectedFeature = feature
-      if (this.SelectedFeature)
-        this.ShowTaskAllocateDrawer = true;
+      if (feature.get('station_type')) {
+
+        this.SelectedFeature = feature
+        if (this.SelectedFeature)
+          this.ShowTaskAllocateDrawer = true;
+      }
     }
   },
   mounted() {

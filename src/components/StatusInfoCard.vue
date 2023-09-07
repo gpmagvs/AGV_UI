@@ -72,7 +72,7 @@
             </td>
           </tr>
 
-          <tr align="justify">
+          <!-- <tr align="justify">
             <td>直線速度 (m/s)</td>
             <td class="val-column">
               <b-form-input size="sm" disabled v-model="vms_data.LinearSpeed"></b-form-input>
@@ -81,7 +81,7 @@
             <td>
               <b-form-input size="sm" disabled v-model="vms_data.AngularSpeed"></b-form-input>
             </td>
-          </tr>
+          </tr>-->
           <tr align="justify">
             <td>{{$t('current_position')}}</td>
             <td class="val-column">

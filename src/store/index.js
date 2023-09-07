@@ -230,6 +230,9 @@ export var AGVStatusStore = createStore({
           }
         }
       }
+    },
+    CurrentLaserMode: state => {
+      return state.AGVStatus.Current_LASER_MODE
     }
 
   },

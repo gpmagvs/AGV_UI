@@ -32,7 +32,7 @@
             </el-form-item>
           </div>
 
-          <div class="row div-container mx-1 my-2">
+          <!-- <div class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">速度資訊</label>
             <el-form-item class="col-6" label="Linear X">
               <b-form-input size="sm" disabled v-model.number="vms_data.LinearSpeed"></b-form-input>
@@ -40,9 +40,9 @@
             <el-form-item class="col-6" label="Angular Z">
               <b-form-input size="sm" disabled v-model.number="vms_data.AngularSpeed"></b-form-input>
             </el-form-item>
-          </div>
+          </div>-->
 
-          <div class="row div-container mx-1 my-2">
+          <div v-if="enabled" class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">位置上報</label>
             <b-button @click="HandleUpload">Upload</b-button>
           </div>

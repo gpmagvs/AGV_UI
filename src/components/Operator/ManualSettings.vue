@@ -33,6 +33,22 @@
         variant="primary"
       >Modify</b-button>
     </div>
+
+    <div class="d-flex flex-row py-3">
+      <div class="item-label">Current Laser Mode</div>
+      <div>
+        <b-form-input
+          size="lg"
+          class="centered-text"
+          disabled
+          v-model="CurrentLaserMode"
+          min="0"
+          max="16"
+          text-align="center"
+        ></b-form-input>
+      </div>
+    </div>
+
     <el-drawer v-model="show_keyboard" direction="btt" size="50%">
       <SimpleKeyboard keyboard_type="number" @onChange="onChange"></SimpleKeyboard>
     </el-drawer>
@@ -153,6 +169,9 @@ export default {
       // }
 
       return DIOStore.getters.Fork_ARM_States
+    },
+    CurrentLaserMode() {
+      return AGVStatusStore.getters.CurrentLaserMode
     }
   },
   methods: {
@@ -215,9 +234,10 @@ export default {
   height: 450px;
   .item-label {
     width: 160px;
-    font-size: 24px;
+    font-size: 22px;
     text-align: left;
-    padding: 5px;
+    padding: 1px;
+    font-weight: bold;
   }
   .b-form-input input {
     text-align: center;

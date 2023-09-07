@@ -166,7 +166,7 @@ export default {
       selected_feature: undefined,
       mouse_click_coordinate: undefined,
       map_name: 'Unknown',
-      display_selected: "Tag",
+      display_selected: "Name",
       agv_display_mode_selected: "show",
       map: new Map(),
       showStationMenu: false,
@@ -319,6 +319,10 @@ export default {
             var _tagID = map.Points[index].TagNumber;
             var _x = map.Points[index].X;
             var _y = map.Points[index].Y;
+            var _name = map.Points[index].Name;
+            var _station_type = map.Points[index].StationType;
+            var _is_eq_station = map.Points[index].IsEquipment;
+            var _is_charge_station = map.Points[index].IsCharge;
             var _feature = new Feature({
               geometry: new Point([Graph.X * 1000, Graph.Y * -1000]),
               // geometry: new Point([_x * -100000, _y * -100000]),
@@ -326,6 +330,8 @@ export default {
               name: index,
             });
             _feature.setId(_tagID);
+            _feature.set('name', _name)
+            _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
 
             this.stations.push(
               {
@@ -790,14 +796,21 @@ export default {
       this.map.getLayers().item(this.layer_index.station).getSource().getFeatures().forEach((feature) => {
         var station = this.stations.find(st => st.feature == feature);
         var showTagNumber = this.display_selected == 'Tag';
-        const name = (showTagNumber ? station.tag : station.index) + '';
-        var nameInt = parseInt(name);
-        var isEQStation = nameInt % 2 == 0
+        var showName = this.display_selected == 'Name';
+        var station_name = station.feature.get('name')
+        var station_type = station.feature.get('station_type') //'eq','normal'
+        //_feature.set('station_type', _is_eq_station ? 'eq' : 'normal')
 
-        var trangleImg = new RegularShape({
+        const name = (showTagNumber ? station.tag : (showName ? station_name : station.index)) + '';
+        var nameInt = parseInt(name);
+        var isCharge = station_type == 'charge';
+        var isEQOrCharge = station_type == 'eq' || isCharge
+
+
+        var EqImg = new RegularShape({
           radius: 11,
           fill: new Fill({
-            color: 'rgb(37, 172, 95)',
+            color: isCharge ? 'pink' : 'lime',
           }),
           stroke: new Stroke({
             color: 'black',
@@ -807,10 +820,10 @@ export default {
           points: 3,
         })
 
-        var circleImg = new CircleStyle({
-          radius: 11,
+        var NormalPtImg = new CircleStyle({
+          radius: 9,
           fill: new Fill({
-            color: 'rgb(243, 123, 55)',
+            color: 'gold',
           }),
           stroke: new Stroke({
             color: 'black',
@@ -819,14 +832,14 @@ export default {
         })
 
         feature.setStyle(new Style({
-          image: isEQStation ? trangleImg : circleImg,
+          image: isEQOrCharge ? EqImg : NormalPtImg,
           text: new Text({
             text: name,
             offsetX: -18,
             offsetY: -18,
             font: 'bold 21px sans-serif',
             fill: new Fill({
-              color: showTagNumber ? 'gold' : 'lime'
+              color: isEQOrCharge ? isCharge ? 'pink' : 'lime' : 'gold'
             }),
             stroke: new Stroke({
               color: 'black',

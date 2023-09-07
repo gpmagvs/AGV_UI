@@ -1,5 +1,9 @@
 <template>
-  <div v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0" id="vcs-alarms">
+  <div
+    class="fixed-bottom text-right"
+    v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0"
+    id="vcs-alarms"
+  >
     <div v-for="(alarmObj,code) in AlarmCodesGroup" :key="code">
       <!-- <div style="position:absolute;z-index: 5000; left:-12px">
         <el-badge
@@ -138,7 +142,7 @@ html {
 }
 #vcs-alarms {
   position: absolute;
-  right: 5px;
+  left: 50%;
   z-index: 9999;
   width: 50%;
 

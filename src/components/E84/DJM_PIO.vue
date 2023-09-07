@@ -7,7 +7,7 @@
         <div v-for="(state,name) in HandshakeSignals.AGV" :key="name" class="d-flex">
           <div class="signal-name">{{name}}</div>
           <div
-            @dblclick="SignalWriteChangeHandler('AGV',name)"
+            @click="SignalWriteChangeHandler('AGV',name)"
             class="border signal-div rounded"
             v-bind:style="{ 
               backgroundColor: state?'rgb(0, 204, 0)': 'grey',
@@ -19,7 +19,7 @@
         <div v-for="(state,name) in HandshakeSignals.EQ" :key="name" class="d-flex">
           <div class="signal-name">{{name}}</div>
           <div
-            @dblclick="SignalWriteChangeHandler('EQ',name)"
+            @click="SignalWriteChangeHandler('EQ',name)"
             class="border signal-div rounded"
             v-bind:style="{ 
               backgroundColor: state?'rgb(0, 204, 0)': 'grey',
@@ -60,6 +60,9 @@ export default {
   methods: {
 
     async SignalWriteChangeHandler(owner, signal_name) {
+      if (!this.IsGodUse) {
+        return;
+      }
       var state_to_change = !this.HandshakeSignals[owner][signal_name]
       await DIO.HsSignalChange(owner, signal_name, state_to_change)
     }
