@@ -34,13 +34,19 @@
         </div>
       </b-tab>
 
+      <b-tab v-if="true" title="Log">
+        <div class="mt-3 border p-1">
+          <LogQuery></LogQuery>
+        </div>
+      </b-tab>
+
       <!-- 本地任務派送 -->
       <b-tab v-if="IsGodMod|IsDevUser" title="Task">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
       </b-tab>
-      
+
       <!-- 3D Model Display -->
       <b-tab v-if="IsGodMod" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
@@ -77,8 +83,9 @@ import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
 import { UserStore } from '@/store'
 import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
+import LogQuery from '@/components/Log/LogQuery.vue'
 export default {
-  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview },
+  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery },
   props: {
     VMSData: {
       type: Object,

@@ -332,3 +332,11 @@ export const ForkAPI = {
   }
 
 }
+
+/**LOG Controller API */
+export const LogAPI = {
+  async Query(option) {
+    var ret = await axios_entity.post(`api/Log/Query`, option)
+    return ret.data;
+  }
+}
