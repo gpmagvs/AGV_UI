@@ -24,7 +24,7 @@
             :enabled="operation_enabled_return"
             :super_user="isGodMode"
             :table_data="DIOTableData.Outputs"
-            :useToggle=true
+            :useToggle="true"
           ></IOTable>
         </div>
       </b-tab>
@@ -34,10 +34,10 @@
         </div>
       </b-tab>
     </b-tabs>
-    <div @click="VersionTextClickHandle()" class="ui-version text-end px-3">
+    <!-- <div @click="VersionTextClickHandle()" class="ui-version text-end px-3">
       UI Version:
       <p>{{UIVersion}}</p>
-    </div>
+    </div>-->
   </div>
 </template>
 

@@ -1,33 +1,27 @@
 <template>
-  <div
-    class="fixed-bottom text-right"
-    v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0"
-    id="vcs-alarms"
-  >
-    <div v-for="(alarmObj,code) in AlarmCodesGroup" :key="code">
-      <!-- <div style="position:absolute;z-index: 5000; left:-12px">
-        <el-badge
-          v-if="alarmObj.Count>1"
-          :value="alarmObj.Count"
-          :type="alarmObj.Alarm.ELevel ==0? 'warning': 'danger'"
-        ></el-badge>
-        <span></span>
-      </div>-->
-      <el-alert
-        show-icon
-        :type="alarmObj.Alarm.ELevel ==0? 'warning': 'error'"
-        :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
-        :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN==''?alarmObj.Alarm.Description:alarmObj.Alarm.CN})`"
-      ></el-alert>
+  <div class="appcontainer" v-bind:style="AppBorderStyle">
+    <div
+      class="fixed-bottom text-right"
+      v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0"
+      id="vcs-alarms"
+    >
+      <div v-for="(alarmObj,code) in AlarmCodesGroup" :key="code">
+        <el-alert
+          show-icon
+          :type="alarmObj.Alarm.ELevel ==0? 'warning': 'error'"
+          :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
+          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN==''?alarmObj.Alarm.Description:alarmObj.Alarm.CN})`"
+        ></el-alert>
+      </div>
     </div>
+    <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
+    <SideMenuDrawer ref="side_menu"></SideMenuDrawer>
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </div>
-  <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
-  <SideMenuDrawer ref="side_menu"></SideMenuDrawer>
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
-  </router-view>
 </template>
 
 <script>
@@ -68,6 +62,13 @@ export default {
     },
     VehicleName() {
       return AGVStatusStore.getters.AGVName;
+    },
+    AppBorderStyle() {
+      var alarms = Object.values(this.AlarmCodesGroup)
+      var any_alarm = alarms.filter(al => al.Alarm.ELevel != 0).length != 0
+      return {
+        border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
+      }
     }
 
   },
@@ -87,16 +88,6 @@ export default {
     bus.on('idle', (arg) => {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
-    })
-    bus.on('system_msg_updated', (msg) => {
-      var _type = msg.Level == 0 ? 'info' : msg.Level == 1 ? 'warning' : 'error';
-      ElNotification({
-        title: 'System Message',
-        message: msg.Message,
-        type: _type,
-        position: 'bottom-right',
-        duration: 3000,
-      });
     })
   },
 };
@@ -140,10 +131,12 @@ html {
   -ms-user-select: none; /* IE 10+ */
   user-select: none;
 }
+
 #vcs-alarms {
   position: absolute;
-  left: 50%;
+  left: 49%;
   z-index: 9999;
+  bottom: 27px;
   width: 50%;
 
   span {
