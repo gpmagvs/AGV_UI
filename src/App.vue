@@ -21,6 +21,7 @@
         <component :is="Component" />
       </keep-alive>
     </router-view>
+    <SystemSettingsView></SystemSettingsView>
   </div>
 </template>
 
@@ -30,10 +31,11 @@ import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
 import { SystemMsgStore, AGVStatusStore } from '@/store'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
+import SystemSettingsView from '@/views/SystemSettingsView.vue'
 
 export default {
   components: {
-    SideMenuDrawer,
+    SideMenuDrawer,SystemSettingsView
   },
   data() {
     return {

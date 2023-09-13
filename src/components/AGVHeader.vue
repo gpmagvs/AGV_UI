@@ -1,7 +1,10 @@
 <template>
   <div class="fixed-top">
     <div class="status d-flex flex-row">
-      <div class="sys-name flex-fill d-flex flex-row justify-content-center">
+      <div class="sys-name flex-fill">
+        <div class="px-2" style="width:50px;position:absolute;">
+          <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
+        </div>
         <div>GPM AGV</div>
       </div>
 
@@ -31,6 +34,7 @@
 import { AGVStatusStore, UserStore } from '@/store'
 import { Where_r_u } from '@/api/VMSAPI'
 import uploader from '@/components/Upload'
+import bus from '@/event-bus.js'
 
 export default {
   components: {
@@ -87,6 +91,9 @@ export default {
         });
       }
     },
+    HandleSettingIconClick() {
+      bus.emit('show-settings')
+    }
   },
 }
 </script>

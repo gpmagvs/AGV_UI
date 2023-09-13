@@ -14,7 +14,7 @@
         :row-class-name="tb_row_class"
         header
         border
-        height="550"
+        height="570"
         row-key="Address"
         :highlight-current-row="false"
         @row-dblclick="cellDoubleClickHandle"

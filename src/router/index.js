@@ -9,7 +9,6 @@ import MainStatuShow from '@/components/Version2/MainStatuShow.vue'
 import { UIStore } from '@/store'
 import AgvOverview from '@/components/AGVStatusOverview.vue';
 
-
 const routes = [
   {
     path: '/',

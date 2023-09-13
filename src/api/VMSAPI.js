@@ -6,6 +6,19 @@ var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
 
+
+/**系統相關api */
+export var SystemAPI = {
+  async GetSettings() {
+    var ret = await axios_entity.get('api/System/Settings')
+    return ret.data
+  },
+  async SaveSettings(settings) {
+    var ret = await axios_entity.post('api/System/SaveParameters', settings)
+    return ret.data
+  }
+}
+
 export async function EMO() {
   var ret = await axios_entity.post('api/VMS/EMO')
   return ret

@@ -324,9 +324,7 @@ export default {
             var _is_eq_station = map.Points[index].IsEquipment;
             var _is_charge_station = map.Points[index].IsCharge;
             var _feature = new Feature({
-              geometry: new Point([Graph.X * 1000, Graph.Y * -1000]),
-              // geometry: new Point([_x * -100000, _y * -100000]),
-              //   name: Graph.Display,
+              geometry: new Point([_x * 10000, _y * 10000]),
               name: index,
             });
             _feature.setId(_tagID);
