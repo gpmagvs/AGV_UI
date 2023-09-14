@@ -246,6 +246,24 @@ export var AGVStatusStore = createStore({
   }
 })
 
+/**系統參數STORE */
+export var SystemSettingsStore = createStore({
+  state: {
+    Settings: {
+
+    }
+  },
+  getters: {
+    Settings: state => {
+      return state.Settings
+    }
+  },
+  mutations: {
+    setSettings(state, settings) {
+      state.Settings = settings
+    }
+  }
+})
 /**用戶狀態STORE */
 export var UserStore = createStore({
   state: {

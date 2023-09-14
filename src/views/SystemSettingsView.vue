@@ -8,6 +8,9 @@
       </template>
       <div>
         <el-form :model="settings" label-width="250" label-position="left">
+          <el-form-item label="網頁鍵盤移動控制">
+            <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
+          </el-form-item>
           <el-form-item label="空取空放">
             <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
           </el-form-item>
@@ -51,6 +54,27 @@
               v-model="settings.LOAD_OBS_DETECTION.Duration"
             ></el-input-number>
           </el-form-item>
+          <el-form-item label="斷開充電回路電流閥值(mA)">
+            <el-input-number
+              @change="HandleParamChanged"
+              size="small"
+              v-model="settings.CutOffChargeRelayCurrentThreshodlval"
+            ></el-input-number>
+          </el-form-item>
+
+          <el-form-item label="離線地圖圖資檔案路徑">
+            <el-input
+              @change="HandleParamChanged"
+              size="small"
+              v-model="settings.MapParam.LocalMapFileName"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Z軸皮帶檢知Bypass">
+            <el-switch
+              @change="HandleParamChanged"
+              v-model="settings.SensorBypass.BeltSensorBypass"
+            ></el-switch>
+          </el-form-item>
         </el-form>
       </div>
     </el-drawer>
@@ -61,6 +85,7 @@
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
 import { SystemAPI } from '@/api/VMSAPI.js'
+import { SystemSettingsStore } from '@/store'
 export default {
   data() {
     return {
@@ -86,6 +111,7 @@ export default {
         Spin_Laser_Mode: 5,
         LDULD_FrontBackLaser_Bypass: true,
         FrontLighterFlashWhenNormalMove: true,
+        WebKeyboardMoveControl: false,
         Connections: {
           RosBridge: {
             IP: "192.168.235.130",
@@ -137,6 +163,7 @@ export default {
       var _settings = await SystemAPI.GetSettings()
       console.log(_settings)
       this.settings = _settings
+      SystemSettingsStore.commit('setSettings', _settings)
       ElNotification({
         title: '系統參數設定',
         message: '系統參數讀取成功',
@@ -148,6 +175,8 @@ export default {
     async HandleParamChanged() {
       var success = await SystemAPI.SaveSettings(this.settings)
       if (success) {
+        SystemSettingsStore.commit('setSettings', this.settings)
+
         ElNotification({
           title: '系統參數設定',
           message: '系統參數設定成功',

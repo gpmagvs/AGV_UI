@@ -1,7 +1,7 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs pills>
+    <b-tabs @activate-tab="HandleTabpageChanged" pills>
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
@@ -84,6 +84,8 @@ import bus from '@/event-bus.js'
 import { UserStore } from '@/store'
 import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
 import LogQuery from '@/components/Log/LogQuery.vue'
+import { ROS_STORE } from "@/store/ros_store"
+import { ElNotification } from 'element-plus'
 export default {
   components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery },
   props: {
@@ -99,12 +101,15 @@ export default {
     }
   },
   methods: {
-    TabChangedHandler(currentTabs, previousTabs) {
-      this.currentTabs = currentTabs;
+    HandleTabpageChanged(currentTabs, previousTabs) {
       if (currentTabs == previousTabs)
         return;
       if (currentTabs == 1) {
         bus.emit('/alarmtable_tab_click')
+      }
+      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 2)
+      if (currentTabs != 2) {
+        ROS_STORE.dispatch('force_stop')
       }
       this.$emit('OnTabChanged', this.currentTabs);
     },

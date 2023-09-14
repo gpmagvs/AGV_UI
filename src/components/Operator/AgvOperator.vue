@@ -1,6 +1,6 @@
 <template>
   <div class="agv-operator">
-    <b-tabs pills small>
+    <b-tabs pills small @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')" active>
         <div class="mt-1 p-1">
           <AgvControl :enabled="operation_enabled_return"></AgvControl>
@@ -52,6 +52,8 @@ import WebSocketHelp from '@/api/WebSocketHepler'
 import bus from '@/event-bus.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserStore, DIOStore } from '@/store'
+import { ROS_STORE } from "@/store/ros_store"
+import { ElNotification } from 'element-plus'
 
 export default {
 
@@ -107,7 +109,16 @@ export default {
           Role: 3
         });
       }
-    }
+    },
+    HandleTabpageChanged(currentTabs, previousTabs) {
+      if (currentTabs == previousTabs)
+        return;
+      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
+      if (currentTabs != 0) {
+        ROS_STORE.dispatch('force_stop')
+      }
+      this.$emit('OnTabChanged', this.currentTabs);
+    },
   },
   props: {
     ModuleInformation: {
