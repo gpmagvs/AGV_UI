@@ -31,18 +31,17 @@ export function Stop() {
     angular_speed = 0.0
 }
 
-ros.on('connection', function () {
-    console.log('ros bridge server connected!');
-    linear_speed = 0.0
-    angular_speed = 0.0
 
+var cmd_vel_publish_timer = null
+
+function StartCmdVelPublishTimer() {
     var keyboard_move_topic = new ROSLIB.Topic({
         ros: ros,
         name: '/cmd_vel',
         messageType: 'geometry_msgs/Twist'
     })
 
-    setInterval(() => {
+    cmd_vel_publish_timer = setInterval(() => {
         if (!_keyboardControlEnable)
             return
         if (linear_speed >= _max_linear_speed || linear_speed <= -_max_linear_speed)
@@ -64,6 +63,12 @@ ros.on('connection', function () {
             }
         }))
     }, 0.1);
+}
+
+ros.on('connection', function () {
+    console.log('ros bridge server connected!');
+    linear_speed = 0.0
+    angular_speed = 0.0
 })
 
 
