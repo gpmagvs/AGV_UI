@@ -319,7 +319,7 @@ export default {
             var _tagID = map.Points[index].TagNumber;
             var _x = map.Points[index].X;
             var _y = map.Points[index].Y;
-            var _name = map.Points[index].Name;
+            var _name = map.Points[index].Graph.Display;
             var _station_type = map.Points[index].StationType;
             var _is_eq_station = map.Points[index].IsEquipment;
             var _is_charge_station = map.Points[index].IsCharge;
