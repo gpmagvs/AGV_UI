@@ -320,6 +320,9 @@ export default {
             var _x = map.Points[index].X;
             var _y = map.Points[index].Y;
             var _name = map.Points[index].Graph.Display;
+            if (_name == "" | _name == undefined) {
+              _name = map.Points[index].Name;
+            }
             var _station_type = map.Points[index].StationType;
             var _is_eq_station = map.Points[index].IsEquipment;
             var _is_charge_station = map.Points[index].IsCharge;
