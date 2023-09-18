@@ -12,7 +12,7 @@
         class="bi bi-battery-charging"
       ></i>
       <i v-else :class="'bi bi-battery-full'"></i>
-      <b-progress class="flex-fill h-100" :max="100" animated>
+      <b-progress class="flex-fill h-100" :max="100" animated @click="HandleBatteryClick">
         <b-progress-bar
           animated
           :value="GetBatteryStatus(i).BatteryLevel"
@@ -42,6 +42,15 @@
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>
+
+    <el-drawer v-model="show_battery_info" direction="rtl" size="660px">
+      <template #header>
+        <div class="w-100 text-start">
+          <h3>電池資訊</h3>
+        </div>
+      </template>
+      <Battery_Detail style="position: absolute; width:100%;top:80px"></Battery_Detail>
+    </el-drawer>
   </div>
 </template>
 
@@ -49,9 +58,10 @@
 import BatteryStatus from '@/ViewModels/BatteryStatus';
 import MiniAGVBatteryViewer from './MiniAGVBatteryViewer.vue'
 import { AGVStatusStore } from '@/store'
+import Battery_Detail from './Battery_Detail.vue';
 export default {
   components: {
-    MiniAGVBatteryViewer
+    MiniAGVBatteryViewer, Battery_Detail
   },
   props: {
     direction: {
@@ -69,7 +79,8 @@ export default {
   },
   data() {
     return {
-      show_battery_viewer: false
+      show_battery_viewer: false,
+      show_battery_info: false
     }
   },
   methods: {
@@ -107,6 +118,9 @@ export default {
     },
     OnClick(i) {
       alert('wtf' + i)
+    },
+    HandleBatteryClick() {
+      this.show_battery_info = true;
     }
   },
 }

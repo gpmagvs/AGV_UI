@@ -353,3 +353,10 @@ export const LogAPI = {
     return ret.data;
   }
 }
+
+export const BatteryQueryAPI = {
+  async Query(option) {
+    var ret = await axios_entity.post(`api/Battery`, option)
+    return ret.data;
+  }
+}

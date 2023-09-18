@@ -16,6 +16,8 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 import './my_style.scss'
 import './system_message_fetch'
 import './AGVDataFetchWorker.js'
+import VueApexCharts from "vue3-apexcharts";
+
 // import './idling_detector'
 const i18n = createI18n({
   legacy: false,
@@ -40,5 +42,6 @@ app.use(BootstrapVue3)
 app.use(ElementPlus)
 app.use(i18n)
 app.use(VueSweetalert2, Sweetalert_options)
+app.use(VueApexCharts);
 
 app.mount('#app')

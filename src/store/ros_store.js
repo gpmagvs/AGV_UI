@@ -6,6 +6,9 @@ import { KeyboardControlEnable, Stop, linear_speed, angular_speed } from '@/api/
 export var ROS_STORE = createStore({
     state: {
         keyboard_move_enable: false,
+        module_info: {
+
+        }
     },
     getters: {
         linear_speed: state => {
@@ -13,12 +16,18 @@ export var ROS_STORE = createStore({
         },
         angular_speed: state => {
             return angular_speed
+        },
+        BatteryInfo: state => {
+            return state.module_info.Battery
         }
     },
     mutations: {
         setKeyBoardMoveEnable(state, enable) {
             state.keyboard_move_enable = enable;
             KeyboardControlEnable(enable)
+        },
+        update_module_info(state, module_info) {
+            state.module_info = module_info
         }
     },
     actions: {

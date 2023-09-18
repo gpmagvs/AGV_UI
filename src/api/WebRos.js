@@ -5,6 +5,7 @@ var ros = new ROSLIB.Ros({
     url: param.ros_bridge_url
 })
 import { SystemSettingsStore } from '@/store'
+import { ROS_STORE } from "@/store/ros_store";
 console.log('ros url:' + param.ros_bridge_url);
 
 /**直線速度 */
@@ -69,9 +70,18 @@ ros.on('connection', function () {
     console.log('ros bridge server connected!');
     linear_speed = 0.0
     angular_speed = 0.0
+
+    var module_info_listener = new ROSLIB.Topic({
+        ros: ros,
+        name: '/module_information',
+        messageType: 'gpm_msgs/ModuleInformation'
+    })
+    module_info_listener.subscribe(function (module_info) {
+
+        ROS_STORE.commit('update_module_info', module_info)
+    })
+
 })
-
-
 
 document.addEventListener('keydown', (event) => {
     var name = event.key;
