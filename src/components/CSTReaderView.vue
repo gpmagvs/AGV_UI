@@ -27,6 +27,7 @@
 
 <script>
 import { TriggerCSTReader, StopCSTReader } from '@/api/VMSAPI'
+import bus from '@/event-bus.js'
 export default {
   data() {
     return {
@@ -36,6 +37,9 @@ export default {
     }
   },
   mounted() {
+    bus.on('remove_cst', () => {
+      this.qrCodeValue = '';
+    })
     // setInterval(() => {
     //   this.fetchImage();
     // }, 1000);;

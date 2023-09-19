@@ -1,7 +1,7 @@
 import axios from 'axios'
 import param from '@/gpm_param'
 import MoveTestVM from '@/ViewModels/MoveTestDto.js'
-
+import bus from '@/event-bus.js'
 var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
@@ -45,9 +45,13 @@ export async function BuzzerOff() {
   var ret = await axios_entity.post('api/VMS/BuzzerOff')
   return ret
 }
+/**移除卡匣CST Reader資料 */
 export async function RemoveCassette() {
   var ret = await axios_entity.post('api/VMS/RemoveCassette')
-  return ret.data;
+  var success = ret.data;
+  if (success)
+    bus.emit('remove_cst')
+  return success;
 }
 
 export const MOVEControl = {

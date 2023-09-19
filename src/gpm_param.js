@@ -1,4 +1,5 @@
 var param = {
+  /**後端Server URL */
   get backend_host() {
     if (process.env.NODE_ENV == 'development') {
       return 'http://10.22.141.219:7025'
@@ -8,6 +9,7 @@ var param = {
       return `${window.location.protocol}//${window.location.host}`
     }
   },
+  /**ROS Bridge Server Weboscket URL */
   get ros_bridge_url() {
     if (process.env.NODE_ENV == 'development') {
       return 'ws://10.22.141.219:9090'
