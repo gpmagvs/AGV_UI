@@ -354,9 +354,19 @@ export const LogAPI = {
   }
 }
 
-export const BatteryQueryAPI = {
+export const BatteryAPI = {
   async Query(option) {
     var ret = await axios_entity.post(`api/Battery`, option)
+    return ret.data;
+  },
+
+  async GetChargeCicuitState() {
+    var ret = await axios_entity.get(`api/Battery/ChargeCicuitState`)
+    return ret.data;
+  },
+
+  async ChargeCicuitSwitch(enabled = false) {
+    var ret = await axios_entity.get(`api/Battery/RechargeSwitch?enabled=${enabled}`)
     return ret.data;
   }
 }

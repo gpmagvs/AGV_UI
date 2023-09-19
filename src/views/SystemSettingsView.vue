@@ -21,11 +21,11 @@
                     v-model="settings.FrontLighterFlashWhenNormalMove"
                   ></el-switch>
                 </el-form-item>
-                <el-form-item label="斷開充電回路電流閥值(mA)">
+                <el-form-item label="斷開充電回路電壓閥值(mV)">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.CutOffChargeRelayCurrentThreshodlval"
+                    v-model="settings.CutOffChargeRelayVoltageThreshodlval"
                   ></el-input-number>
                 </el-form-item>
 
@@ -36,7 +36,7 @@
                     v-model="settings.MapParam.LocalMapFileName"
                   ></el-input>
                 </el-form-item>
-                <el-form-item label="Z軸皮帶檢知Bypass">
+                <el-form-item v-if="IsForkAGV" label="Z軸皮帶檢知Bypass">
                   <el-switch
                     @change="HandleParamChanged"
                     v-model="settings.SensorBypass.BeltSensorBypass"
@@ -140,7 +140,7 @@
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
 import { SystemAPI } from '@/api/VMSAPI.js'
-import { SystemSettingsStore } from '@/store'
+import { SystemSettingsStore, AGVStatusStore } from '@/store'
 export default {
   data() {
     return {
@@ -161,7 +161,7 @@ export default {
         ForbidToOnlineTags: [
           49
         ],
-        CutOffChargeRelayCurrentThreshodlval: 5000,
+        CutOffChargeRelayVoltageThreshodlval: 28800,
         LDULD_Laser_Mode: 0,
         Spin_Laser_Mode: 5,
         LDULD_FrontBackLaser_Bypass: true,
@@ -213,7 +213,11 @@ export default {
       }
     }
   },
-
+  computed: {
+    IsForkAGV() {
+      return AGVStatusStore.getters.IsForkAGV;
+    }
+  },
   mounted() {
     bus.on('show-settings', async () => {
       await this.DownloadSettings();
@@ -231,7 +235,7 @@ export default {
         title: '系統參數設定',
         message: '系統參數讀取成功',
         type: 'success',
-        position: 'bottom-right',
+        position: 'top-right',
         duration: 1000,
       });
     },
@@ -244,15 +248,15 @@ export default {
           title: '系統參數設定',
           message: '系統參數設定成功',
           type: 'success',
-          position: 'bottom-right',
           duration: 1000,
+          position: 'top-right'
         });
       } else {
         ElNotification({
           title: '系統參數設定',
           message: '系統參數設定失敗',
           type: 'error',
-          position: 'bottom-right',
+          position: 'top-right',
           duration: 1000,
         });
       }

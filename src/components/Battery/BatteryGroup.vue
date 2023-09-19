@@ -49,7 +49,7 @@
           <h3>電池資訊</h3>
         </div>
       </template>
-      <Battery_Detail style="position: absolute; width:100%;top:80px"></Battery_Detail>
+      <Battery_Detail ref="battery_detail" style="position: absolute; width:100%;top:80px"></Battery_Detail>
     </el-drawer>
   </div>
 </template>
@@ -119,8 +119,11 @@ export default {
     OnClick(i) {
       alert('wtf' + i)
     },
-    HandleBatteryClick() {
+    async HandleBatteryClick() {
       this.show_battery_info = true;
+      setTimeout(() => {
+        this.$refs['battery_detail'].UpdateChargeCircuitState();
+      }, 500);
     }
   },
 }

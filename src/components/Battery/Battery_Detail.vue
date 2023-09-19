@@ -3,6 +3,18 @@
     <b-tabs>
       <b-tab title="電池狀態">
         <div class="border p-3">
+          <div class="text-start border-bottom my-2">
+            <span class="mx-2">充電迴路</span>
+            <el-switch
+              size="large"
+              inline-prompt
+              active-text="開啟"
+              inactive-text="關閉"
+              inactive-color="red"
+              v-model="charge_circuit_state"
+              @change="HandleChargeCircuitSwitch"
+            ></el-switch>
+          </div>
           <div class="d-flex flex-row">
             <div v-for="(bat,id) in batteries" :key="id">
               <div class="border p-3" style="width: 200px;">
@@ -73,11 +85,12 @@
 
 <script>
 import { ROS_STORE } from '@/store/ros_store';
-import { BatteryQueryAPI } from '@/api/VMSAPI.js'
+import { BatteryAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
 export default {
   data() {
     return {
+      charge_circuit_state: false,
       batteries: {},
       query_options: {
         id: 1,
@@ -142,17 +155,23 @@ export default {
       //   this.chart_datas.series[0].name = item
       //   this.$refs['bat_chart'].updateSeries(this.chart_datas.series, false)
     },
+    async HandleChargeCircuitSwitch(enabled) {
+      await BatteryAPI.ChargeCicuitSwitch(enabled)
+    },
     async HandleQueryButtonClick() {
       var start_dt = moment(this.query_options.time_range[0]).format('yyyy/MM/DD')
       var end_dt = moment(this.query_options.time_range[1]).format('yyyy/MM/DD')
       this.query_options.time_range[0] = start_dt;
       this.query_options.time_range[1] = end_dt;
-      var result = await BatteryQueryAPI.Query(this.query_options)
+      var result = await BatteryAPI.Query(this.query_options)
       this.chart_datas.series[0].name = this.query_options.item;
       this.chart_datas.series[0].data = Object.values(result)
       this.$refs['bat_chart'].updateSeries(this.chart_datas.series, false)
       this.chart_datas.chartOptions.xaxis.categories = Object.keys(result)
       this.$refs['bat_chart'].updateOptions(this.chart_datas.chartOptions)
+    },
+    async UpdateChargeCircuitState() {
+      this.charge_circuit_state = await BatteryAPI.GetChargeCicuitState()
     }
   },
   mounted() {
