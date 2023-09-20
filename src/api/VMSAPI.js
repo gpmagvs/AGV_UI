@@ -75,10 +75,19 @@ export const MOVEControl = {
     var ret = await axios_entity.get(`api/ManualOperator/Left?speed=${speed}`)
     return ret
   },
-
+  /**車體向左橫移 */
+  async AGVShift_LEFT(speed = 0.1) {
+    var ret = await axios_entity.get(`api/ManualOperator/ShiftLeft?speed=${speed}`)
+    return ret
+  },
   /**車體移動-RIGHT */
   async AGVMove_RIGHT(speed = 0.1) {
     var ret = await axios_entity.get(`api/ManualOperator/Right?speed=${speed}`)
+    return ret
+  },
+  /**車體向右橫移 */
+  async AGVShift_Right(speed = 0.1) {
+    var ret = await axios_entity.get(`api/ManualOperator/ShiftRight?speed=${speed}`)
     return ret
   },
 

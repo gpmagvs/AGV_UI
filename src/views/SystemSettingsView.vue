@@ -14,33 +14,32 @@
                 <el-form-item label="網頁鍵盤移動控制">
                   <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
                 </el-form-item>
-
                 <el-form-item label="一般走行開啟車頭燈">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.FrontLighterFlashWhenNormalMove"
-                  ></el-switch>
+                    v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
                 </el-form-item>
                 <el-form-item label="斷開充電回路電壓閥值(mV)">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.CutOffChargeRelayVoltageThreshodlval"
-                  ></el-input-number>
+                    v-model="settings.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
                 </el-form-item>
-
                 <el-form-item label="離線地圖圖資檔案路徑">
                   <el-input
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.MapParam.LocalMapFileName"
-                  ></el-input>
+                    v-model="settings.MapParam.LocalMapFileName"></el-input>
                 </el-form-item>
                 <el-form-item v-if="IsForkAGV" label="Z軸皮帶檢知Bypass">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.SensorBypass.BeltSensorBypass"
-                  ></el-switch>
+                    v-model="settings.SensorBypass.BeltSensorBypass"></el-switch>
+                </el-form-item>
+                <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
                 </el-form-item>
               </el-form>
             </div>
@@ -51,40 +50,34 @@
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
-
                 <el-form-item label="CST ID讀取功能">
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
                 </el-form-item>
                 <el-form-item label="CST 在席檢-進入設備前">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.CST_EXIST_DETECTION.Before_In"
-                  ></el-switch>
+                    v-model="settings.CST_EXIST_DETECTION.Before_In"></el-switch>
                 </el-form-item>
                 <el-form-item label="CST 在席檢-設備動作後">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"
-                  ></el-switch>
+                    v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"></el-switch>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-放貨">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.LOAD_OBS_DETECTION.Enable_Load"
-                  ></el-switch>
+                    v-model="settings.LOAD_OBS_DETECTION.Enable_Load"></el-switch>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-取貨">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"
-                  ></el-switch>
+                    v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"></el-switch>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-偵測時間(sec)">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.LOAD_OBS_DETECTION.Duration"
-                  ></el-input-number>
+                    v-model="settings.LOAD_OBS_DETECTION.Duration"></el-input-number>
                 </el-form-item>
                 <el-form-item label="等待EQ READY播放音樂">
                   <el-switch @change="HandleParamChanged" v-model="settings.PlayHandshakingMusic"></el-switch>
@@ -96,36 +89,31 @@
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.EQHSTimeouts.TA1_Wait_L_U_REQ_ON"
-                  ></el-input-number>
+                    v-model="settings.EQHSTimeouts.TA1_Wait_L_U_REQ_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA2_Wait_EQ_READY_ON">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.EQHSTimeouts.TA2_Wait_EQ_READY_ON"
-                  ></el-input-number>
+                    v-model="settings.EQHSTimeouts.TA2_Wait_EQ_READY_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA3_Wait_EQ_BUSY_ON">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.EQHSTimeouts.TA3_Wait_EQ_BUSY_ON"
-                  ></el-input-number>
+                    v-model="settings.EQHSTimeouts.TA3_Wait_EQ_BUSY_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA4_Wait_EQ_BUSY_OFF">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.EQHSTimeouts.TA4_Wait_EQ_BUSY_OFF"
-                  ></el-input-number>
+                    v-model="settings.EQHSTimeouts.TA4_Wait_EQ_BUSY_OFF"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA5_Wait_L_U_REQ_OFF">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
-                    v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"
-                  ></el-input-number>
+                    v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
@@ -209,6 +197,9 @@ export default {
           TA3_Wait_EQ_BUSY_ON: 15,
           TA4_Wait_EQ_BUSY_OFF: 90,
           TA5_Wait_L_U_REQ_OFF: 5
+        },
+        InspectionAGV: {
+          CheckBatteryLockStateWhenInit: false
         }
       }
     }
@@ -216,6 +207,9 @@ export default {
   computed: {
     IsForkAGV() {
       return AGVStatusStore.getters.IsForkAGV;
+    },
+    IsInspectionAGV() {
+      return AGVStatusStore.getters.IsInspectionAGV;
     }
   },
   mounted() {
@@ -265,5 +259,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

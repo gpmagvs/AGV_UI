@@ -6,8 +6,7 @@
       element-loading-background="rgba(0,0,0,0)"
       ref="agvc_ctrl_pnl"
       class="agvc-control-panel keys pt-4 p-3"
-      style="width:400px"
-    >
+      style="width:400px">
       <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
@@ -21,8 +20,7 @@
             v-model="rotation_speed"
             :step="0.01"
             :max="0.3"
-            :min="0.01"
-          ></el-input-number>
+            :min="0.01"></el-input-number>
         </div>
       </div>
       <table class="w-100">
@@ -64,7 +62,7 @@
           <tr align="justify">
             <td>
               <div :class="active_state" @click="MOVE_BL()">
-                <img src="@/assets/images/back_left.png" alt />
+                <img v-if="!IsMiniAGV" src="@/assets/images/back_left.png" alt />
               </div>
             </td>
             <td>
@@ -74,17 +72,16 @@
             </td>
             <td>
               <div :class="active_state" @click="MOVE_BR()">
-                <img src="@/assets/images/back_right.png" alt />
+                <img v-if="!IsMiniAGV" src="@/assets/images/back_right.png" alt />
               </div>
             </td>
           </tr>
         </tbody>
       </table>
       <div
-        @click="speed_modifyable=!speed_modifyable"
+        @click="speed_modifyable = !speed_modifyable"
         style="height:20px;width:100px"
-        class="bg-light"
-      ></div>
+        class="bg-light"></div>
     </div>
   </div>
 </template>
@@ -92,6 +89,7 @@
 <script>
 import { MOVEControl } from '@/api/VMSAPI';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
+import { AGVStatusStore } from '@/store'
 export default {
   components: {
     KeyboardInput,
@@ -118,30 +116,50 @@ export default {
       await MOVEControl.AGVMove_DOWN(this.linear_speed);
     },
     async MOVE_LEFT() {
-      await MOVEControl.AGVMove_LEFT(this.rotation_speed);
+      if (this.IsMiniAGV) {
+        await MOVEControl.AGVShift_LEFT(this.linear_speed);
+      } else {
+        await MOVEControl.AGVMove_LEFT(this.rotation_speed);
+      }
     },
     async MOVE_RIGHT() {
-      await MOVEControl.AGVMove_RIGHT(this.rotation_speed);
+      if (this.IsMiniAGV)
+        await MOVEControl.AGVShift_Right(this.linear_speed);
+      else
+        await MOVEControl.AGVMove_RIGHT(this.rotation_speed);
     },
     async MOVE_STOP() {
       await MOVEControl.AGVMove_STOP();
     },
     async MOVE_FR() {
-      await MOVEControl.AGVMove_FordwardRight();
+      if (this.IsMiniAGV)
+        await MOVEControl.AGVMove_RIGHT(this.rotation_speed);
+      else
+        await MOVEControl.AGVMove_FordwardRight();
     },
     async MOVE_FL() {
-      await MOVEControl.AGVMove_FordwardLeft();
+      if (this.IsMiniAGV)
+        await MOVEControl.AGVMove_LEFT(this.rotation_speed);
+      else
+        await MOVEControl.AGVMove_FordwardLeft();
     },
     async MOVE_BR() {
+      if (this.IsMiniAGV)
+        return;
       await MOVEControl.AGVMove_BackwardRight();
     },
     async MOVE_BL() {
+      if (this.IsMiniAGV)
+        return;
       await MOVEControl.AGVMove_BackwardLeft();
     }
   },
   computed: {
     active_state() {
       return this.enabled ? 'active' : 'inactive';
+    },
+    IsMiniAGV() {
+      return AGVStatusStore.getters.IsInspectionAGV;
     }
   },
 }
@@ -153,6 +171,7 @@ export default {
     width: 120px;
   }
 }
+
 .agvc-control-panel {
   table {
     td {
@@ -164,19 +183,23 @@ export default {
         height: 80px;
         border-radius: 3px;
         border: 1px solid grey;
+
         i {
           font-size: 50px;
           position: relative;
           top: 5px;
         }
+
         &:active {
           background-color: red;
           color: white;
         }
       }
+
       .active {
         background-color: white;
       }
+
       .inactive {
         background-color: rgb(202, 202, 202);
       }
