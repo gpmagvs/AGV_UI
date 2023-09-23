@@ -107,7 +107,7 @@
             <div class="state-title">當前位置/座標</div>
             <span
               style="font-size:18px">{{ VMSData.Last_Visit_MapPoint.Name }}/({{ VMSData.Pose.position.x.toFixed(2) }},{{ VMSData.Pose.position.y.toFixed(2) }}) </span>
-            <el-button effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
+            <el-button v-if="Is_TSMC_MiniAGV" effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
           </div>
           <!-- 里程 -->
           <div class="mileage bg-light border rounded m-1 p-3 py-1">
