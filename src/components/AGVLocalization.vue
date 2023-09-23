@@ -41,7 +41,7 @@ import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization';
 export default {
     data() {
         return {
-            ShowDialog: true,
+            ShowDialog: false,
             localization: new clsLocalization(10, 0, 0, 0)
         }
     },
