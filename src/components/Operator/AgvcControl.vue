@@ -1,6 +1,6 @@
 <template>
   <div class="agv-control">
-    <div v-show="!enabled" class="disable-notify text-start my-2">{{$t('agv_control_notify_text') }}</div>
+    <div v-show="!enabled" class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
     <div class="d-flex flex-row">
       <div class="information" style="width:260px">
         <el-form label-position="top">
@@ -8,11 +8,19 @@
             <label class="text-start border-bottom">Tag ID</label>
             <el-form-item class="my-2">
               <b-form-input
+                v-if="!IsInspectionAGV"
                 size="sm"
                 disabled
                 v-model="vms_data.BCR_State_MoveBase.tagID"
-                :state="vms_data.BCR_State_MoveBase.tagID>0"
-              ></b-form-input>
+                :state="vms_data.BCR_State_MoveBase.tagID > 0">
+              </b-form-input>
+              <b-form-input
+                v-else
+                size="sm"
+                disabled
+                v-model="vms_data.Last_Visited_Tag"
+                :state="vms_data.Last_Visited_Tag > 0">
+              </b-form-input>
             </el-form-item>
           </div>
           <div class="row div-container mx-1 my-2">
@@ -24,14 +32,12 @@
               <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.yValue"></b-form-input>
             </el-form-item>
           </div>
-
           <div class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">角度</label>
             <el-form-item class="my-2">
               <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.theta"></b-form-input>
             </el-form-item>
           </div>
-
           <!-- <div class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">速度資訊</label>
             <el-form-item class="col-6" label="Linear X">
@@ -41,7 +47,6 @@
               <b-form-input size="sm" disabled v-model.number="vms_data.AngularSpeed"></b-form-input>
             </el-form-item>
           </div>-->
-
           <div v-if="enabled" class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">位置上報</label>
             <b-button @click="HandleUpload">Upload</b-button>
@@ -96,6 +101,9 @@ export default {
         return this.ModuleInformation.reader.tagID;
       }
     },
+    IsInspectionAGV() {
+      return this.vms_data.Agv_Type == 2;
+    }
   },
   methods: {
     async FindTagBtnHandler() {
@@ -146,11 +154,13 @@ export default {
     color: red;
     font-weight: bold;
   }
+
   .information {
     .div-container {
       // background-color: #f1f1f1;
       border: 1px solid rgb(202, 202, 202);
     }
+
     label {
       background-color: #f1f1f1;
       color: rgb(48, 48, 48);

@@ -6,7 +6,7 @@
           <AgvControl :enabled="operation_enabled_return"></AgvControl>
         </div>
       </b-tab>
-      <b-tab :disabled="agv_type==1" :title="$t('zaxis_up_down')">
+      <b-tab v-if="agv_type == 0" :title="$t('zaxis_up_down')">
         <div class="mt-1 p-1">
           <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
         </div>
@@ -24,8 +24,7 @@
             :enabled="operation_enabled_return"
             :super_user="isGodMode"
             :table_data="DIOTableData.Outputs"
-            :useToggle="true"
-          ></IOTable>
+            :useToggle="true"></IOTable>
         </div>
       </b-tab>
       <b-tab title="手動操作">
@@ -167,6 +166,7 @@ export default {
     font-weight: bold;
     user-select: none;
   }
+
   .admin-dialog-buttons {
     button {
       width: 220px;
@@ -184,6 +184,7 @@ export default {
     .yes-btn {
       background-color: rgb(0, 123, 255);
     }
+
     .no-btn {
       background-color: rgb(220, 53, 69);
     }
