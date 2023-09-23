@@ -2,6 +2,8 @@ import axios from 'axios'
 import param from '@/gpm_param'
 import MoveTestVM from '@/ViewModels/MoveTestDto.js'
 import bus from '@/event-bus.js'
+import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization'
+
 var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
@@ -381,5 +383,22 @@ export const BatteryAPI = {
   async ChargeCicuitSwitch(enabled = false) {
     var ret = await axios_entity.get(`api/Battery/RechargeSwitch?enabled=${enabled}`)
     return ret.data;
+  }
+}
+
+/**巡檢AGV API */
+export const InspectionAGVAPI = {
+  async Localization(localization = clsLocalization) {
+    try {
+
+      var ret = await axios_entity.post(`api/AGV/Localization`, localization)
+      return ret.data;
+    }
+    catch (ex) {
+      return {
+        Success: false,
+        Message: ex.message
+      }
+    }
   }
 }

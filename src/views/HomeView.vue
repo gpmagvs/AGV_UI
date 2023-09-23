@@ -2,6 +2,7 @@
   <div class="home h-100" v-loading="loading">
     <!-- Top Header  -->
     <AGVHeader></AGVHeader>
+    <AGVLocalization ref="localization_dialog"></AGVLocalization>
     <div class="main-content">
       <!--語系切換按鈕-->
       <div class="lang-switch">
@@ -11,14 +12,11 @@
           active_text="CH"
           active_color="rgb(0, 204, 0)"
           inactive_text="EN"
-          inactive_color="rgb(9, 76, 176)"
-        ></jw_switch>
+          inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
-
       <div v-if="back_end_server_err" class="server-error py-1 border fixed-top">
-        <div class="agv-name-in-alarm px-2">{{VMSData.CarName}}</div>
-        <i class="bi bi-exclamation-diamond"></i>
-        {{$t('backend_server_error')}}
+        <div class="agv-name-in-alarm px-2">{{ VMSData.CarName }}</div>
+        <i class="bi bi-exclamation-diamond"></i> {{ $t('backend_server_error') }}
       </div>
       <!-- 電量至頂顯示 -->
       <BatteryGroup :battery_states="VMSData.BatteryStatus"></BatteryGroup>
@@ -27,52 +25,46 @@
         <div class="side h-100">
           <div class="opt-buttons px-1 py-1 d-flex flex-column">
             <b-button
-              :disabled="back_end_server_err||VMSData.IsSystemIniting"
+              :disabled="back_end_server_err || VMSData.IsSystemIniting"
               @click="AGVInitialize()"
               class="mb-1 p-2"
-              v-bind:class="VMSData.SubState==''?'down':VMSData.SubState.toLowerCase()"
-              block
-            >
-              <b>{{$t('initialize') }}</b>
+              v-bind:class="VMSData.SubState == '' ? 'down' : VMSData.SubState.toLowerCase()"
+              block>
+              <b>{{ $t('initialize') }}</b>
             </b-button>
             <b-button
               :disabled="back_end_server_err"
               @click="AGVResetAlarm()"
               class="mb-1 p-2 border"
               block
-              :variant="alarmResetBtnVariant"
-            >
-              <b>{{$t('reset_alarm') }}</b>
+              :variant="alarmResetBtnVariant">
+              <b>{{ $t('reset_alarm') }}</b>
             </b-button>
             <b-button
               :disabled="back_end_server_err"
               @click="AGVBuzzerOff()"
               variant="light"
               class="mb-1 p-2 border"
-              block
-            >
-              <b>{{$t('buzzer_off') }}</b>
+              block>
+              <b>{{ $t('buzzer_off') }}</b>
             </b-button>
             <b-button
-              v-if="VMSData.Agv_Type!=2"
+              v-if="VMSData.Agv_Type != 2"
               :disabled="back_end_server_err"
               @click="ShowRemoveCstDialog()"
               variant="light"
               class="mb-1 p-2 border"
-              block
-            >
-              <b>{{$t('cst-remove') }}</b>
+              block>
+              <b>{{ $t('cst-remove') }}</b>
             </b-button>
             <b-button
               :disabled="back_end_server_err"
-              :variant="IsLogin? 'danger':'outline-dark'"
+              :variant="IsLogin ? 'danger' : 'outline-dark'"
               class="mb-1 p-2 border"
               block
-              @click="ShowLogin()"
-            >
-              <b>{{LoginBtnText}}</b>
+              @click="ShowLogin()">
+              <b>{{ LoginBtnText }}</b>
             </b-button>
-
             <login ref="login"></login>
           </div>
           <!--模式切換Switch-->
@@ -82,46 +74,44 @@
               <el-switch
                 v-model="IsOnlineMode"
                 @click.prevent="OnlineModeSwitchHandle()"
-                :disabled="back_end_server_err||VMSData.IsSystemIniting"
+                :disabled="back_end_server_err || VMSData.IsSystemIniting"
                 width="75"
                 size="large"
                 inline-prompt
                 inactive-text="Offline"
                 active-text="Online"
                 active-color="rgb(13, 110, 253)"
-                inactive-color="rgb(220, 53, 69)"
-              ></el-switch>
+                inactive-color="rgb(220, 53, 69)"></el-switch>
             </div>
             <div class="d-flex flex-row">
               <div class="mode-item-label py-2">Auto Mode</div>
               <el-switch
                 v-model="IsAutoMode"
                 @click.stop.prevent="AutoModeSwitchHandle()"
-                :disabled="back_end_server_err||VMSData.IsSystemIniting"
+                :disabled="back_end_server_err || VMSData.IsSystemIniting"
                 width="75"
                 size="large"
                 inline-prompt
                 inactive-text="Manual"
                 active-text="Auto"
                 active-color="rgb(13, 110, 253)"
-                inactive-color="rgb(220, 53, 69)"
-              ></el-switch>
+                inactive-color="rgb(220, 53, 69)"></el-switch>
             </div>
           </div>
           <div class="connection-status bg-light border rounded m-1 p-3 py-1">
-            <div class="state-title">{{$t('connection-states') }}</div>
+            <div class="state-title">{{ $t('connection-states') }}</div>
             <connection_state></connection_state>
           </div>
           <!-- 當前座標資訊 -->
           <div class="bg-light border rounded m-1 p-3 py-1">
-            <div class="state-title">當前座標</div>
+            <div class="state-title">當前位置/座標</div>
             <span
-              style="font-size:18px"
-            >({{VMSData.Pose.position.x.toFixed(2) }},{{VMSData.Pose.position.y.toFixed(2) }})</span>
+              style="font-size:18px">{{ VMSData.Last_Visit_MapPoint.Name }}/({{ VMSData.Pose.position.x.toFixed(2) }},{{ VMSData.Pose.position.y.toFixed(2) }}) </span>
+            <el-button effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
           </div>
           <!-- 里程 -->
           <div class="mileage bg-light border rounded m-1 p-3 py-1">
-            <div class="state-title">{{$t('mileage')}}</div>
+            <div class="state-title">{{ $t('mileage') }}</div>
             <mileage></mileage>
           </div>
           <!-- <div>{{ time }}</div> -->
@@ -130,14 +120,12 @@
           </div>
         </div>
         <!--主要內容 TabControl-->
-
         <MainContent :VMSData="VMSData"></MainContent>
       </div>
       <!-- <div class="battery-bottom p-0 bg-primary border w-100 fixed-bottom">
       <span>電量</span>
       <battery :showIcon="false" bHeight="2rem"></battery>
       </div>-->
-
       <!--對話框們-->
       <div class="modals">
         <!--等待上線動作完成對話框 -->
@@ -150,9 +138,8 @@
           :noCloseOnEsc="true"
           :hideHeaderClose="true"
           header-bg-variant="primary"
-          header-text-variant="light"
-        >
-          <p class="py-3">{{$t('wait_online_text')}}</p>
+          header-text-variant="light">
+          <p class="py-3">{{ $t('wait_online_text') }}</p>
         </b-modal>
         <!--上線失敗警示對話框-->
         <b-modal
@@ -161,8 +148,7 @@
           header-text-variant="light"
           :centered="true"
           title="上線請求失敗"
-          :ok-only="true"
-        >
+          :ok-only="true">
           <p ref="online-fail-msg"></p>
         </b-modal>
       </div>
@@ -189,11 +175,12 @@ import { ElNotification } from 'element-plus'
 import { UserStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
+import AGVLocalization from '@/components/AGVLocalization.vue'
 // @ is an alias to /src
 export default {
   name: 'HomeView',
   components: {
-    AGVHeader, jw_switch, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent
+    AGVHeader, jw_switch, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization
   },
   data() {
     return {
@@ -497,6 +484,9 @@ export default {
           this.wait_online_request_dialog_show = false;
         }, 1000);
       }
+    },
+    HandleLocalizationClick() {
+      this.$refs.localization_dialog.Show();
     }
   },
   computed: {
@@ -573,10 +563,12 @@ export default {
 .main-content {
   padding-top: 35px;
 }
+
 .simulation-mode {
   font-size: 20px;
   animation: color-change 1s infinite;
 }
+
 .server-connecting {
   animation: server-connectingcolor-change 1s infinite;
 }
@@ -595,15 +587,18 @@ export default {
 .server-error {
   animation: server-errorcolor-change 1s infinite;
 }
+
 @keyframes server-errorcolor-change {
   0% {
     background-color: red;
     color: white;
   }
+
   50% {
     background-color: rgb(255, 170, 170);
     color: black;
   }
+
   100% {
     background-color: red;
     color: white;
@@ -615,10 +610,12 @@ export default {
     background-color: rgb(255, 193, 22);
     color: white;
   }
+
   50% {
     background-color: rgb(255, 237, 156);
     color: black;
   }
+
   100% {
     background-color: rgb(255, 193, 22);
     color: white;
@@ -630,11 +627,13 @@ export default {
   right: 9px;
   top: 67px;
 }
+
 .alarm-show {
   background-color: rgb(248, 215, 218);
   font-weight: bold;
   color: white;
 }
+
 .agv-name-in-alarm {
   font-weight: bold;
   position: absolute;
@@ -646,12 +645,15 @@ export default {
     font-weight: bold;
   }
 }
+
 .side {
   width: 250px;
+
   .state-title {
     font-weight: bold;
     font-size: 18px;
   }
+
   .opt-buttons {
     font-weight: bold;
   }

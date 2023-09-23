@@ -1,16 +1,14 @@
 <template>
-  <div class="battrey-group d-flex flex-row" @click="()=>{ show_battery_viewer=IsMiniAGV}">
+  <div class="battrey-group d-flex flex-row">
     <div
       class="bat d-flex flex-row"
-      v-bind:class="IsMiniAGV?'w-50':'w-100'"
-      v-for="i in IsMiniAGV?[1,2]:[0]"
-      :key="i"
-    >
+      v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'"
+      v-for="i in IsMiniAGV ? [1, 2] : [0]"
+      :key="i">
       <i
         v-if="GetBatteryStatus(i).IsCharging"
         style="color:limegreen"
-        class="bi bi-battery-charging"
-      ></i>
+        class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'"></i>
       <b-progress class="flex-fill h-100" :max="100" animated @click="HandleBatteryClick">
         <b-progress-bar
@@ -18,31 +16,25 @@
           :value="GetBatteryStatus(i).BatteryLevel"
           :label="GetLabel(GetBatteryStatus(i))"
           v-bind:class="GetClass(GetBatteryStatus(i))"
-          style="font-size:16px;"
-        ></b-progress-bar>
+          style="font-size:16px;"></b-progress-bar>
       </b-progress>
       <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
-        <label for>充電電流:</label>
-        {{GetBatteryStatus(i).ChargeCurrent}}
-        <span
+        <label for>充電電流:</label> {{ GetBatteryStatus(i).ChargeCurrent }} <span
           class="px-1"
-          style="font-size:smaller;"
-        >mA</span>
+          style="font-size:smaller;">mA</span>
       </div>
     </div>
-    <el-drawer v-model="show_battery_viewer" direction="btt" size="600px" :show-close="false">
-      <template #header="{ close}">
+    <el-drawer v-model="show_inspection_agv_battery_viewer" direction="btt" size="600px" :show-close="false">
+      <template #header="{ close }">
         <el-button
           class="border-bottom"
           style="z-index:9999"
           type="danger"
           size="large"
-          @click="close"
-        ></el-button>
+          @click="close">Close</el-button>
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>
-
     <el-drawer v-model="show_battery_info" direction="rtl" size="660px">
       <template #header>
         <div class="w-100 text-start">
@@ -79,7 +71,7 @@ export default {
   },
   data() {
     return {
-      show_battery_viewer: false,
+      show_inspection_agv_battery_viewer: false,
       show_battery_info: false
     }
   },
@@ -120,7 +112,10 @@ export default {
       alert('wtf' + i)
     },
     async HandleBatteryClick() {
-      this.show_battery_info = true;
+      if (this.IsMiniAGV)
+        this.show_inspection_agv_battery_viewer = true
+      else
+        this.show_battery_info = true;
       setTimeout(() => {
         this.$refs['battery_detail'].UpdateChargeCircuitState();
       }, 500);
@@ -133,6 +128,7 @@ export default {
 .battrey-group {
   height: 22px;
   margin-top: 2px;
+
   i {
     font-size: 20px;
     transform: rotate(-0.25turn);
@@ -140,6 +136,7 @@ export default {
     position: relative;
     left: -2px;
   }
+
   .charging {
     background-color: limegreen;
   }
