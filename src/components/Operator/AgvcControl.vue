@@ -1,6 +1,5 @@
 <template>
   <div class="agv-control">
-    <div v-show="!enabled" class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
     <div class="d-flex flex-row">
       <div class="information" style="width:260px">
         <el-form label-position="top">
@@ -54,7 +53,7 @@
           <!-- <b-button variant="primary" @click="FindTagBtnHandler">Auto Find Tag</b-button> -->
         </el-form>
       </div>
-      <agvc_control_panel :enabled="enabled"></agvc_control_panel>
+      <agvc_control_panel></agvc_control_panel>
     </div>
   </div>
 </template>
@@ -150,10 +149,6 @@ export default {
 
 <style scoped lang="scss">
 .agv-control {
-  .disable-notify {
-    color: red;
-    font-weight: bold;
-  }
 
   .information {
     .div-container {

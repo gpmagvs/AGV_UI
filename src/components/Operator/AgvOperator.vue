@@ -3,7 +3,7 @@
     <b-tabs pills small @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')" active>
         <div class="mt-1 p-1">
-          <AgvControl :enabled="operation_enabled_return"></AgvControl>
+          <AgvControl></AgvControl>
         </div>
       </b-tab>
       <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">

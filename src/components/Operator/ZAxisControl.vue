@@ -2,10 +2,12 @@
   <div class="z-axis-control border p-1">
     <div
       v-show="!enabled"
-      class="disable-notify text-start my-2"
-    >{{$t('zaxis_control_notify_text') }}</div>
+      class="disable-notify text-start my-2">{{ $t('zaxis_control_notify_text') }}</div>
     <!-- <div class="d-flex" v-loading="!enabled" :element-loading-spinner="false"> -->
-    <div class="d-flex">
+    <div class="d-flex"
+      v-loading="!enabled"
+      :element-loading-spinner="false"
+      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'">
       <div class="d-flex flex-column w-50">
         <div class="d-flex flex-row">
           <div class="label-item">Hardware Limited</div>
@@ -20,8 +22,7 @@
             class="py-1"
             center
             v-model="ForkHeight"
-            disabled
-          ></el-input>
+            disabled></el-input>
         </div>
         <div v-if="enabled" class="p-2 my-2 border rounded">
           <b-button @click="ShowTeachView">牙叉位置校點</b-button>
@@ -30,76 +31,57 @@
       <!-- <el-divider direction="vertical"></el-divider> -->
       <div class="control-buttons mx-2">
         <b-button
-          :disabled="(!enabled|isZAxisMoving)"
+          :disabled="(!enabled | isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-bar-up"></i>
-          {{$t('up_limit_pose') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-bar-up"></i> {{ $t('up_limit_pose') }} </b-button>
         <b-button
-          :disabled="(!enabled|isZAxisMoving)"
+          :disabled="(!enabled | isZAxisMoving)"
           @click="ForkAction('up')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-up"></i>
-          {{$t('up') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-up"></i> {{ $t('up') }} </b-button>
         <b-button
-          :disabled="(!enabled|isZAxisMoving)"
+          :disabled="(!enabled | isZAxisMoving)"
           @click="ForkAction('home')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>
-          {{$t('original') }}
-        </b-button>
+          block>
+          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i> {{ $t('original') }} </b-button>
         <b-button
           @click="ForkAction('stop')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>
-          {{$t('stop') }}
-        </b-button>
+          block>
+          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i> {{ $t('stop') }} </b-button>
         <b-button
-          :disabled="(!enabled|isZAxisMoving)"
+          :disabled="(!enabled | isZAxisMoving)"
           @click="ForkAction('down')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-down"></i>
-          {{$t('down') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-down"></i> {{ $t('down') }} </b-button>
         <b-button
-          :disabled="(!enabled|isZAxisMoving)"
+          :disabled="(!enabled | isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-bar-down"></i>
-          {{$t('down_limit_pose') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-bar-down"></i> {{ $t('down_limit_pose') }} </b-button>
       </div>
       <el-drawer
         v-model="show_teach_page"
         direction="btt"
         size="80%"
         @close="TeachDrawerClosingHandle"
-        title="FORK TEACH"
-      >
+        title="FORK TEACH">
         <forkTeachEditor ref="fork_teach"></forkTeachEditor>
       </el-drawer>
     </div>
@@ -108,7 +90,7 @@
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
-import { AGVStatusStore, ForkTeachStore } from '@/store'
+import { AGVStatusStore, ForkTeachStore, UserStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
 import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
 export default {
@@ -116,10 +98,7 @@ export default {
     AdminFork, forkTeachEditor
   },
   props: {
-    enabled: {
-      type: Boolean,
-      default: false
-    },
+
   },
   data() {
     return {
@@ -131,6 +110,23 @@ export default {
   computed: {
     ForkHeight() {
       return AGVStatusStore.getters.ForkHeight
+    },
+    IsUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0;
+    },
+    IsGodUser() {
+      return UserStore.getters.IsGodUser;
+    },
+    IsAuto() {
+      return AGVStatusStore.getters.IsAuto;
+    },
+    IsOnline() {
+      return AGVStatusStore.getters.IsOnline;
+    },
+    enabled() {
+      if (this.IsGodUser)
+        return true;
+      return (this.IsUserLogin && !this.IsAuto && !this.IsOnline)
     }
   },
   methods: {
@@ -175,12 +171,14 @@ export default {
 <style scoped lang="scss">
 .z-axis-control {
   width: 720px;
+
   .label-item {
     width: 145px;
     text-align: left;
     padding: 4px;
   }
 }
+
 .disable-notify {
   color: red;
   font-weight: bold;

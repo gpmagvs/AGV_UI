@@ -17,6 +17,7 @@
     "current_position":"目前位置",
     "target_position":"目標位置",
     "action_name":"動作名稱",
+    "tag_read_status":"Tag讀取",
     "abormal":"異常",
     "carrier_id":"載物ID",
     "agv_control":"控制",

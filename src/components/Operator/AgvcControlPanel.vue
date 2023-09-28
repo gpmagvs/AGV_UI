@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <div class="agv-control-panel-container w-100">
     <div
       v-loading="!enabled"
       :element-loading-spinner="false"
-      element-loading-background="rgba(0,0,0,0)"
+      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
       ref="agvc_ctrl_pnl"
       class="agvc-control-panel keys pt-4 p-3"
       style="width:400px">
+      <div v-show="!enabled" class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
       <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
@@ -90,6 +91,7 @@
 import { MOVEControl } from '@/api/VMSAPI';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
 import { AGVStatusStore } from '@/store'
+import { UserStore } from '@/store'
 export default {
   components: {
     KeyboardInput,
@@ -160,48 +162,86 @@ export default {
     },
     IsMiniAGV() {
       return AGVStatusStore.getters.IsInspectionAGV;
+    },
+    IsUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0;
+    },
+    IsGodUser() {
+      return UserStore.getters.IsGodUser;
+    },
+    IsAuto() {
+      return AGVStatusStore.getters.IsAuto;
+    },
+    IsOnline() {
+      return AGVStatusStore.getters.IsOnline;
+    },
+    enabled() {
+      if (this.IsGodUser)
+        return true;
+      return (this.IsUserLogin && !this.IsAuto && !this.IsOnline)
     }
   },
 }
 </script>
 
 <style scoped lang="scss">
-.speed-item-container {
-  div {
-    width: 120px;
+.agv-control-panel-container {
+
+  .el-loading-spinner .el-loading-text {
+    color: var(--el-color-primary);
+    margin: 3px 0;
+    font-size: 24px;
   }
-}
 
-.agvc-control-panel {
-  table {
-    td {
-      div {
-        background-color: rgb(202, 202, 202);
-        margin: 5px;
-        width: 90%;
-        text-align: center;
-        height: 80px;
-        border-radius: 3px;
-        border: 1px solid grey;
+  .disable-notify {
+    color: red;
+    font-weight: bold;
+    font-size: 20px;
+    position: absolute;
+    top: 45%;
+    background-color: grey;
+  }
 
-        i {
-          font-size: 50px;
-          position: relative;
-          top: 5px;
+  .speed-item-container {
+    div {
+      width: 120px;
+    }
+  }
+
+  .agvc-control-panel {
+    table {
+      td {
+        .active {
+          background-color: white;
         }
 
-        &:active {
-          background-color: red;
-          color: white;
+        .inactive {
+          background-color: rgb(255, 255, 255);
         }
-      }
 
-      .active {
-        background-color: white;
-      }
+        div {
+          background-color: rgb(202, 202, 202);
+          margin: 5px;
+          width: 90%;
+          text-align: center;
+          height: 80px;
+          border-radius: 3px;
+          border: 1px solid grey;
 
-      .inactive {
-        background-color: rgb(202, 202, 202);
+          i {
+            font-size: 50px;
+            position: relative;
+            top: 5px;
+          }
+
+          &:active {
+            background-color: red;
+            color: white;
+          }
+
+
+        }
+
       }
     }
   }

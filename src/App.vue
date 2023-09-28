@@ -1,17 +1,15 @@
 <template>
-  <div class="appcontainer" v-bind:style="AppBorderStyle">
+  <div class="appcontainer" v-bind:style="AppBorderStyle" style="width:98vw">
     <div
       class="fixed-bottom text-right"
-      v-if="CurrentAlarms!=undefined && CurrentAlarms.length>0"
-      id="vcs-alarms"
-    >
-      <div v-for="(alarmObj,code) in AlarmCodesGroup" :key="code">
+      v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
+      id="vcs-alarms">
+      <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           show-icon
-          :type="alarmObj.Alarm.ELevel ==0? 'warning': 'error'"
+          :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
-          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN==''?alarmObj.Alarm.Description:alarmObj.Alarm.CN})`"
-        ></el-alert>
+          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN})`"></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -35,7 +33,7 @@ import SystemSettingsView from '@/views/SystemSettingsView.vue'
 
 export default {
   components: {
-    SideMenuDrawer,SystemSettingsView
+    SideMenuDrawer, SystemSettingsView
   },
   data() {
     return {
@@ -125,12 +123,16 @@ nav {
     }
   }
 }
+
 body,
 html {
   height: 100%;
-  -webkit-user-select: none; /* Chrome, Safari, Opera */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE 10+ */
+  -webkit-user-select: none;
+  /* Chrome, Safari, Opera */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE 10+ */
   user-select: none;
 }
 
@@ -145,19 +147,21 @@ html {
     // color: rgb(0, 123, 255);
     color: rgb(182, 179, 179);
   }
+
   p {
     text-align: left;
     font-weight: bold;
     font-size: 20px;
     padding: 0 auto;
   }
+
   .el-alert {
     margin: 3px auto;
     text-align: left;
     --el-alert-icon-large-size: 37px;
+
     .el-alert__close-btn {
       font-size: 30px;
     }
   }
-}
-</style>
+}</style>

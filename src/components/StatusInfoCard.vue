@@ -1,69 +1,16 @@
 <template>
   <div class="status-card">
-    <h4 class="text-start">{{$t('Status_info')}}</h4>
-
+    <h4 class="text-start">{{ $t('Status_info') }}</h4>
     <div class="w-100 border p-3">
-      <div class="module-error" v-show="false">
-        <el-alert
-          class="my-1"
-          show-icon
-          title="光達模組異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-alert
-          class="my-1"
-          show-icon
-          title="磁導引模組異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-alert
-          class="my-1"
-          show-icon
-          title="走行馬達異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-alert
-          class="my-1"
-          show-icon
-          title="電池模組異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-alert
-          class="my-1"
-          show-icon
-          title="IO模組異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-alert
-          class="my-1"
-          show-icon
-          title="Barcode Reader模組異常"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-        <el-divider></el-divider>
-      </div>
       <table class="status-tb w-100">
         <tbody>
           <tr align="justify">
-            <td>{{$t('status')}}</td>
+            <td>{{ $t('status') }}</td>
             <td class="val-column">
               <b-button
                 class="w-100 border"
-                v-bind:class="vms_data.SubState==''?'down':vms_data.SubState.toLowerCase()"
-              >
-                <b>{{vms_data.SubState==''?'ERROR':vms_data.SubState }}</b>
+                v-bind:class="vms_data.SubState == '' ? 'down' : vms_data.SubState.toLowerCase()">
+                <b>{{ vms_data.SubState == '' ? 'ERROR' : vms_data.SubState }}</b>
               </b-button>
             </td>
             <td>Laser Mode</td>
@@ -71,24 +18,13 @@
               <b-form-input size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input>
             </td>
           </tr>
-
-          <!-- <tr align="justify">
-            <td>直線速度 (m/s)</td>
-            <td class="val-column">
-              <b-form-input size="sm" disabled v-model="vms_data.LinearSpeed"></b-form-input>
-            </td>
-            <td>旋轉速度 (rad/s)</td>
-            <td>
-              <b-form-input size="sm" disabled v-model="vms_data.AngularSpeed"></b-form-input>
-            </td>
-          </tr>-->
           <tr align="justify">
-            <td>{{$t('current_position')}}</td>
+            <td>{{ $t('current_position') }}</td>
             <td class="val-column">
               <b-form-input size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Name"></b-form-input>
               <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
             </td>
-            <td>{{$t('target_position')}}</td>
+            <td>{{ $t('target_position') }}</td>
             <td class="val-column">
               <b-form-input size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Name"></b-form-input>
               <!-- <el-input disabled v-model="currentPosition"></el-input> -->
@@ -96,19 +32,24 @@
           </tr>
           <tr align="justify">
             <!-- 動作名稱 -->
-            <td>{{$t('action_name')}}</td>
+            <td>{{ $t('tag_read_status') }}</td>
             <td class="val-column">
-              <b-form-input size="sm" disabled v-model="vms_data.ZAxisActionName"></b-form-input>
+              <b-form-input
+                v-if="!IsInspectionAGV"
+                size="sm"
+                disabled
+                v-model="vms_data.BCR_State_MoveBase.tagID"
+                :state="vms_data.BCR_State_MoveBase.tagID > 0">
+              </b-form-input>
             </td>
             <!-- 載物ID -->
-            <td v-if="vms_data.Agv_Type!=2">{{$t('carrier_id')}}</td>
-            <td v-if="vms_data.Agv_Type!=2" class="val-column">
+            <td v-if="vms_data.Agv_Type != 2">{{ $t('carrier_id') }}</td>
+            <td v-if="vms_data.Agv_Type != 2" class="val-column">
               <b-form-input
                 size="sm"
                 disabled
                 v-model="vms_data.CST_Data"
-                :state="vms_data.CST_Data!='ERROR'"
-              ></b-form-input>
+                :state="vms_data.CST_Data != 'ERROR'"></b-form-input>
             </td>
           </tr>
           <tr v-if="true" align="justify">
@@ -118,8 +59,7 @@
                 size="sm"
                 disabled
                 v-model="LocStatusDisplay"
-                :state="LocStatusDisplay=='OK'"
-              ></b-form-input>
+                :state="LocStatusDisplay == 'OK'"></b-form-input>
             </td>
             <td>地圖比對率</td>
             <td>
@@ -127,14 +67,13 @@
                 size="sm"
                 disabled
                 v-model="vms_data.MapComparsionRate"
-                :state="vms_data.MapComparsionRate!=0"
-              ></b-form-input>
+                :state="vms_data.MapComparsionRate != 0"></b-form-input>
             </td>
           </tr>
           <tr align="justify">
-            <td>{{$t('abormal')}}</td>
+            <td>{{ $t('abormal') }}</td>
             <td colspan="4">
-              <b-form-textarea disabled v-model="NewestAlarm" :state="NewestAlarm==''"></b-form-textarea>
+              <b-form-textarea disabled v-model="NewestAlarm" :state="NewestAlarm == ''"></b-form-textarea>
               <!-- <el-input type="textarea" disabled v-model="NewestAlarm"></el-input> -->
             </td>
           </tr>
@@ -238,6 +177,7 @@ export default {
   tr {
     height: 50px;
   }
+
   td {
     //width: 120px;
     font-weight: bold;

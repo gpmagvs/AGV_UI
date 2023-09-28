@@ -179,7 +179,14 @@ export default {
       }
     },
     async ToggleDO(row) {
-      await DIO.DO_State_Change(row.Address, !row.State)
+      if (this.IsGodUse) {
+        await DIO.DO_State_Change(row.Address, !row.State)
+        return;
+      }
+
+      this.toChangeAddress = row.Address;
+      this.toChangeState = !row.State;
+      this.DIOChangeComfirmDialogShow = true;
 
     },
     async WriteDIOHandle() {

@@ -127,6 +127,12 @@ export var AGVStatusStore = createStore({
     AGVStatus: state => {
       return state.AGVStatus;
     },
+    IsOnline: state => {
+      return state.AGVStatus.OnlineMode == 1;
+    },
+    IsAuto: state => {
+      return state.AGVStatus.AutoMode == 1;
+    },
     AGVName: state => {
       return state.AGVStatus.CarName;
     },

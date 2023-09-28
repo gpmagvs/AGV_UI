@@ -15,6 +15,7 @@
     "current_position":"Current Position",
     "target_position":"Target Position",
     "action_name":"Action Name",
+    "tag_read_status":"Tag Read",
     "abormal":"Abnormal",
     "carrier_id":"Carrier ID",
     "agv_control":"AGV Control",

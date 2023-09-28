@@ -13,8 +13,7 @@
             min="0"
             max="16"
             text-align="center"
-            @click="()=>show_keyboard=true"
-          ></b-form-input>
+            @click="() => show_keyboard = true"></b-form-input>
           <div class="updown-btns">
             <b-input-group-append>
               <b-button :disabled="!enabled" squared @click="LaserMode_Increase">▲</b-button>
@@ -26,14 +25,12 @@
         </b-input-group>
       </div>
       <b-button
-        @click="modifyLaserModeDialogShow=true"
+        @click="modifyLaserModeDialogShow = true"
         :disabled="!enabled"
         squared
         class="mx-1"
-        variant="primary"
-      >Modify</b-button>
+        variant="primary">Modify</b-button>
     </div>
-
     <div class="d-flex flex-row py-3">
       <div class="item-label">Current Laser Mode</div>
       <div>
@@ -44,27 +41,24 @@
           v-model="CurrentLaserMode"
           min="0"
           max="16"
-          text-align="center"
-        ></b-form-input>
+          text-align="center"></b-form-input>
       </div>
     </div>
-
     <el-drawer v-model="show_keyboard" direction="btt" size="50%">
       <SimpleKeyboard keyboard_type="number" @onChange="onChange"></SimpleKeyboard>
     </el-drawer>
-
     <div v-if="IsBatteryLockControlable" class="d-flex flex-row py-3">
       <div class="item-label">電池鎖定</div>
       <div class="battery py-1">
         <div class="d-flex flex-row mb-1">
           <label>電池 1</label>
-          <b-button @click="BatteryLockHandler(1,true)" squared variant="primary">Lock</b-button>
-          <b-button @click="BatteryLockHandler(1,false)" squared variant="danger">Unlock</b-button>
+          <b-button @click="BatteryLockHandler(1, true)" squared variant="primary">Lock</b-button>
+          <b-button @click="BatteryLockHandler(1, false)" squared variant="danger">Unlock</b-button>
         </div>
         <div class="d-flex flex-row">
           <label>電池 2</label>
-          <b-button @click="BatteryLockHandler(2,true)" squared variant="primary">Lock</b-button>
-          <b-button @click="BatteryLockHandler(2,false)" squared variant="danger">Unlock</b-button>
+          <b-button @click="BatteryLockHandler(2, true)" squared variant="primary">Lock</b-button>
+          <b-button @click="BatteryLockHandler(2, false)" squared variant="danger">Unlock</b-button>
         </div>
       </div>
     </div>
@@ -73,17 +67,15 @@
       <div class="battery py-1">
         <div class="d-flex flex-row mb-1">
           <b-button
-            :disabled="FORK_ARM_Status.IsArmAtHomePose&&!FORK_ARM_Status.IsArmAtEndPose"
+            :disabled="!enabled || FORK_ARM_Status.IsArmAtHomePose && !FORK_ARM_Status.IsArmAtEndPose"
             @click="ForkArmPoseControlHandler(false)"
             squared
-            variant="primary"
-          >縮回</b-button>
+            variant="primary">縮回</b-button>
           <b-button
-            :disabled="FORK_ARM_Status.IsArmAtEndPose&&!FORK_ARM_Status.IsArmAtHomePose"
+            :disabled="!enabled || FORK_ARM_Status.IsArmAtEndPose && !FORK_ARM_Status.IsArmAtHomePose"
             @click="ForkArmPoseControlHandler(true)"
             squared
-            variant="primary"
-          >伸出</b-button>
+            variant="primary">伸出</b-button>
           <b-button @click="ForkArmStopHandler()" squared variant="danger">停止</b-button>
         </div>
       </div>
@@ -96,18 +88,15 @@
         squared
         variant="danger"
         style="width:130px"
-        @click="Brake()"
-      >煞車</b-button>
+        @click="Brake()">煞車</b-button>
       <b-button
         :disabled="!enabled"
         class="mx-1"
         squared
         variant="primary"
         style="width:130px"
-        @click="UnBrake()"
-      >解除煞車</b-button>
+        @click="UnBrake()">解除煞車</b-button>
     </div>
-
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">里程數</div>
       <b-button
@@ -116,16 +105,14 @@
         squared
         variant="danger"
         style="width:130px"
-        @click="ResetMile()"
-      >重置里程數</b-button>
+        @click="ResetMile()">重置里程數</b-button>
     </div>
     <b-modal
       v-model="modifyLaserModeDialogShow"
       :centered="true"
       title="Laser Mode Change"
-      @ok="ModifyLaserMode"
-    >
-      <p>Change Laser Mode to : {{laser_mode }}</p>
+      @ok="ModifyLaserMode">
+      <p>Change Laser Mode to : {{ laser_mode }}</p>
       <p>Are you sure?</p>
     </b-modal>
   </div>
@@ -135,17 +122,13 @@
 import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl, ForkAPI } from '@/api/VMSAPI.js'
 import Notifier from '@/api/NotifyHelper';
 import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
-import { AGVStatusStore, DIOStore } from '@/store'
+import { AGVStatusStore, DIOStore, UserStore } from '@/store'
 
 export default {
   components: {
     SimpleKeyboard,
   },
   props: {
-    enabled: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
@@ -172,6 +155,23 @@ export default {
     },
     CurrentLaserMode() {
       return AGVStatusStore.getters.CurrentLaserMode
+    },
+    IsUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0;
+    },
+    IsGodUser() {
+      return UserStore.getters.IsGodUser;
+    },
+    IsAuto() {
+      return AGVStatusStore.getters.IsAuto;
+    },
+    IsOnline() {
+      return AGVStatusStore.getters.IsOnline;
+    },
+    enabled() {
+      if (this.IsGodUser)
+        return true;
+      return (this.IsUserLogin && !this.IsAuto && !this.IsOnline)
     }
   },
   methods: {
@@ -231,7 +231,9 @@ export default {
     font-weight: bold;
     width: 130px;
   }
+
   height: 450px;
+
   .item-label {
     width: 160px;
     font-size: 22px;
@@ -239,9 +241,11 @@ export default {
     padding: 1px;
     font-weight: bold;
   }
+
   .b-form-input input {
     text-align: center;
   }
+
   .updown-btns {
     button {
       height: 25px;
@@ -253,15 +257,19 @@ export default {
       background-color: rgb(0, 123, 255);
     }
   }
+
   .battery {
     font-size: 25px;
+
     label {
       margin-right: 10px;
     }
+
     button {
       margin: auto 5px;
     }
   }
+
   .el-overlay {
     background-color: transparent;
   }
