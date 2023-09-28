@@ -19,7 +19,7 @@
     "action_name":"動作名稱",
     "abormal":"異常",
     "carrier_id":"載物ID",
-    "agv_control":"車控",
+    "agv_control":"控制",
     "zaxis_up_down":"升降",
     "agv_control_notify_text":"請先登入權限並Offline&Manual才可操作手動控車",
     "zaxis_control_notify_text":"請先登入權限並Offline&Manual才可操作Z軸與by pass Hardware Limited設定",

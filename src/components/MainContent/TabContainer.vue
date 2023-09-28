@@ -8,7 +8,6 @@
           <status_card></status_card>
         </div>
       </b-tab>
-
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
         <div class="table-container-div mt-3 border p-1">
@@ -21,39 +20,34 @@
           <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
         </div>
       </b-tab>
-
-      <!-- CST READER -->
-      <b-tab v-if="VMSData.Agv_Type!=2" title="CST Reader">
-        <div class="mt-3 border p-1">
-          <CSTReader></CSTReader>
-        </div>
-      </b-tab>
-      <b-tab v-if="true" title="設備交握(E84)">
+      <b-tab title="設備交握(E84)">
         <div class="mt-3 border p-1">
           <EQHandshakeView></EQHandshakeView>
         </div>
       </b-tab>
-
-      <b-tab v-if="true" title="Log">
+      <!-- CST READER -->
+      <b-tab v-if="!IsVisitor" title="CST Reader">
+        <div class="mt-3 border p-1">
+          <CSTReader></CSTReader>
+        </div>
+      </b-tab>
+      <b-tab v-if="IsGodMod" title="Log">
         <div class="mt-3 border p-1">
           <LogQuery></LogQuery>
         </div>
       </b-tab>
-
       <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod|IsDevUser" title="Task">
+      <b-tab v-if="IsGodMod | IsDevUser" title="Task">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
       </b-tab>
-
       <!-- 3D Model Display -->
       <b-tab v-if="IsGodMod" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
           <ForkAGV3D></ForkAGV3D>
         </div>
       </b-tab>
-
       <b-tab v-if="IsGodMod" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview></AgvOverview>
@@ -120,10 +114,18 @@ export default {
     },
     IsDevUser() {
       return UserStore.getters.IsDevUser
+    },
+    IsEngUser() {
+      return UserStore.getters.IsEngUser;
+    },
+    IsEngUser() {
+      return UserStore.getters.IsEngUser;
+    },
+    IsVisitor() {
+      return UserStore.getters.IsVisitor;
     }
   }
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

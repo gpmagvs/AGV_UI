@@ -6,7 +6,7 @@
           <AgvControl :enabled="operation_enabled_return"></AgvControl>
         </div>
       </b-tab>
-      <b-tab v-if="agv_type == 0" :title="$t('zaxis_up_down')">
+      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
         <div class="mt-1 p-1">
           <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
         </div>
@@ -24,7 +24,7 @@
             :enabled="operation_enabled_return"
             :super_user="isGodMode"
             :table_data="DIOTableData.Outputs"
-            :useToggle="true"></IOTable>
+            :isOutput="true"></IOTable>
         </div>
       </b-tab>
       <b-tab title="手動操作">

@@ -1,14 +1,13 @@
 <template>
   <div class="w-100">
     <div v-if="IsE84UseEmu" class="p-1 text-danger">模擬模式!</div>
-    <div v-if="!IsUserLogin" class="p-1 text-danger">登入後可手動變更AGV 交握訊號</div>
+    <div v-if="!IsUserLogin" class="p-1 text-danger">僅GPM權限使用者可手動變更AGV 交握訊號</div>
     <div class="d-flex flex-column px-1" v-if="IsGodUse" style="float: left;">
-      <b-button @click="show_hs_test_drawer=true" class="my-1" variant="primary">交握測試</b-button>
+      <b-button @click="show_hs_test_drawer = true" class="my-1" variant="primary">交握測試</b-button>
     </div>
     <div class="d-flex justify-content-center">
       <DJM_PIO></DJM_PIO>
     </div>
-
     <el-drawer direction="btt" v-model="show_hs_test_drawer">
       <div class="w-100 d-flex">
         <b-card title="設備異常模擬">
@@ -56,5 +55,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

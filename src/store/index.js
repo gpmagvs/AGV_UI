@@ -19,7 +19,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: 2,
+    UI_Version: "9.27.2",
     PreviousControllRoute: 'move'
   },
   getters: {
@@ -279,12 +279,17 @@ export var UserStore = createStore({
       else
         return 'OPERATOR'
     },
+    IsVisitor: state => {
+      return state.UserState.Role == 0;
+    },
     IsGodUser: state => {
       return state.UserState.Role == 3;
     },
     IsDevUser: state => {
-
       return state.UserState.Role == 2;
+    },
+    IsEngUser: state => {
+      return state.UserState.Role == 1;
     },
     CurrentUserRole: state => {
       return state.UserState.Role;
