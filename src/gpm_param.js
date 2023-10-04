@@ -2,8 +2,8 @@ var param = {
   /**後端Server URL */
   get backend_host() {
     if (process.env.NODE_ENV == 'development') {
-      return 'http://192.168.0.101:7025'
       return 'http://10.22.141.218:7025'
+      return 'http://192.168.0.101:7025'
       return 'http://192.168.0.200:7000'
       return 'http://127.0.0.1:7025'
     } else {
@@ -21,5 +21,5 @@ var param = {
     }
   }
 }
-export const version = 'U.23.9.23.1'
+export const version = 'U.23.10.4.1'
 export default param

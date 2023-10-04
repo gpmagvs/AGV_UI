@@ -53,6 +53,18 @@
                 <el-form-item label="CST ID讀取功能">
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
                 </el-form-item>
+                <el-form-item label="CST ID讀取失敗後狀態">
+                  <el-select @change="HandleParamChanged" v-model="settings.CstReadFailAction">
+                    <el-option label="Normal Status" :value="0"></el-option>
+                    <el-option label="Down Status" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="CST ID與任務不符動作">
+                  <el-select @change="HandleParamChanged" v-model="settings.Cst_ID_Not_Match_Action">
+                    <el-option label="上報讀取之ID" :value="0"></el-option>
+                    <el-option label="向派車查詢虛擬ID" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
                 <el-form-item label="CST 在席檢-進入設備前">
                   <el-switch
                     @change="HandleParamChanged"
@@ -143,6 +155,7 @@ export default {
         ActiveTrafficControl: false,
         EQHandshakeBypass: false,
         CST_READER_TRIGGER: true,
+        Cst_ID_Not_Match_Action: 0,//0:上報讀到的ID 1:向派車查詢虛擬ID
         ForkLifer_Enable: false,
         LDULD_Task_No_Entry: false,
         LastVisitedTag: 17,
@@ -179,6 +192,7 @@ export default {
           LocalMapFileName: "/temp/Map_UMTC_AOI.json"
         },
         EQHandshakeMethod: 2,
+        CstReadFailAction: 0,////0:狀態保持IDLE 1:狀態DOWN
         LOAD_OBS_DETECTION: {
           Enable_Load: false,
           Enable_UnLoad: false,
