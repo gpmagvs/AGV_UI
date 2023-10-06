@@ -209,6 +209,35 @@ export function AGVMove_BackwardRight(linear, rotation) {
     }))
 }
 
+export function AGVMove_ShiftLeft(linear) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: -linear,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+    }))
+}
+export function AGVMove_ShiftRight(linear) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: linear,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+    }))
+}
+
 export function AGVStop() {
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {

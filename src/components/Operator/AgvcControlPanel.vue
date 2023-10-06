@@ -88,8 +88,7 @@
 </template>
 
 <script>
-import { MOVEControl } from '@/api/VMSAPI';
-import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft } from '@/api/WebRos';
+import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft } from '@/api/WebRos';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
 import { AGVStatusStore } from '@/store'
 import { UserStore } from '@/store'
@@ -121,14 +120,14 @@ export default {
     },
     async MOVE_LEFT() {
       if (this.IsMiniAGV) {
-        await MOVEControl.AGVShift_LEFT(this.linear_speed);
+        AGVMove_ShiftLeft(this.linear_speed);
       } else {
         await AGVMoveLeft(this.rotation_speed);
       }
     },
     async MOVE_RIGHT() {
       if (this.IsMiniAGV)
-        await MOVEControl.AGVShift_Right(this.linear_speed);
+        AGVMove_ShiftRight(this.linear_speed);
       else
         AGVMoveRight(this.rotation_speed);
     },
@@ -137,13 +136,13 @@ export default {
     },
     async MOVE_FR() {
       if (this.IsMiniAGV)
-        await MOVEControl.AGVMove_RIGHT(this.rotation_speed);
+        AGVMoveRight(this.rotation_speed);
       else
         AGVMove_FordwardRight(0.2, 0.15);
     },
     async MOVE_FL() {
       if (this.IsMiniAGV)
-        await MOVEControl.AGVMove_LEFT(this.rotation_speed);
+        AGVMoveLeft(this.rotation_speed);
       else
         AGVMove_FordwardLeft(0.2, 0.15);
     },
