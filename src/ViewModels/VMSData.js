@@ -17,7 +17,6 @@ class VMSData {
     theta: 0.0,
   }
   BatteryStatus = new Array() < BatteryStatus > 0
-
   CarName = 'AGV'
   CST_Data = ''
   Current_LASER_MODE = 'Bypass'

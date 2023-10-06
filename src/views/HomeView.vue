@@ -104,9 +104,28 @@
           </div>
           <!-- 當前座標資訊 -->
           <div class="bg-light border rounded m-1 p-3 py-1">
-            <div class="state-title">當前位置/座標</div>
-            <span
-              style="font-size:18px">{{ VMSData.Last_Visit_MapPoint.Name }}/({{ VMSData.Pose.position.x.toFixed(2) }},{{ VMSData.Pose.position.y.toFixed(2) }}) </span>
+            <div class="py-1 d-flex justify-content-center">
+              <div class="m-1" v-if="!Is_TSMC_MiniAGV">
+                <div class="state-title">Tag</div>
+                <b-form-input
+                  size="sm"
+                  style="width:70px"
+                  disabled
+                  v-model="VMSData.BCR_State_MoveBase.tagID"
+                  :state="VMSData.BCR_State_MoveBase.tagID > 0">
+                </b-form-input>
+              </div>
+              <div class="m-1">
+                <div class="state-title">座標</div>
+                <b-form-input
+                  size="sm"
+                  style="width:120px"
+                  disabled
+                  :state="true"
+                  v-model="Coordination">
+                </b-form-input>
+              </div>
+            </div>
             <el-button v-if="Is_TSMC_MiniAGV" effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
           </div>
           <!-- 里程 -->
@@ -536,6 +555,9 @@ export default {
     },
     UserName() {
       return UserStore.getters.CurrentUserName
+    },
+    Coordination() {
+      return `(${this.VMSData.Pose.position.x.toFixed(2)},${this.VMSData.Pose.position.y.toFixed(2)})`;
     }
   },
   mounted() {

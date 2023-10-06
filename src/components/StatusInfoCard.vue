@@ -49,7 +49,7 @@
                 size="sm"
                 disabled
                 v-model="vms_data.CST_Data"
-                :state="vms_data.CST_Data != 'ERROR'"></b-form-input>
+                :state="vms_data.CST_Data != ''"></b-form-input>
             </td>
           </tr>
           <tr v-if="true" align="justify">

@@ -2,58 +2,42 @@
   <div class="djm-pio border rounded mx-1 py-3 px-5">
     <div class="d-flex">
       <div>
-        <div v-for="(state,name) in HandshakeSignals.AGV" :key="name" class="d-flex">
-          <div class="signal-name">{{name}}</div>
+        <div v-for="(state, name) in HandshakeSignals.AGV" :key="name" class="d-flex">
+          <div class="signal-name">{{ name }}</div>
           <div
-            @click="SignalWriteChangeHandler('AGV',name)"
+            @click="SignalWriteChangeHandler('AGV', name)"
             class="border signal-div rounded"
-            v-bind:style="{ 
-              backgroundColor: state?'rgb(0, 204, 0)': 'grey',
-            }"
-          >{{ state? 'ON':'OFF' }}</div>
+            v-bind:style="{
+              backgroundColor: state ? 'rgb(0, 204, 0)' : 'grey',
+            }">{{ state ? 'ON' : 'OFF' }}</div>
         </div>
       </div>
       <div class="mx-5">
-        <div v-for="(state,name) in HandshakeSignals.EQ" :key="name" class="d-flex">
-          <div class="signal-name">{{name}}</div>
+        <div v-for="(state, name) in HandshakeSignals.EQ" :key="name" class="d-flex">
+          <div class="signal-name">{{ name }}</div>
           <div
-            @click="SignalWriteChangeHandler('EQ',name)"
+            @click="SignalWriteChangeHandler('EQ', name)"
             class="border signal-div rounded"
-            v-bind:style="{ 
-              backgroundColor: state?'rgb(0, 204, 0)': 'grey',
-            }"
-          >{{ state? 'ON':'OFF' }}</div>
+            v-bind:style="{
+              backgroundColor: state ? 'rgb(0, 204, 0)' : 'grey',
+            }">{{ state ? 'ON' : 'OFF' }}</div>
         </div>
       </div>
-      <div class="timer">
-        <div class="d-flex">
-          <span>TP1</span>
-          <div>{{HSTimers.TA1_Wait_L_U_REQ_ON}}</div>
-        </div>
-        <div class="d-flex">
-          <span>TP2</span>
-          <div>{{HSTimers.TA2_Wait_EQ_READY_ON}}</div>
-        </div>
-        <div class="d-flex">
-          <span>TP3</span>
-          <div>{{HSTimers.TA3_Wait_EQ_BUSY_ON}}</div>
-        </div>
-        <div class="d-flex">
-          <span>TP4</span>
-          <div>{{HSTimers.TA4_Wait_EQ_BUSY_OFF}}</div>
-        </div>
-        <div class="d-flex">
-          <span>TP5</span>
-          <div>{{HSTimers.TA5_Wait_L_U_REQ_OFF}}</div>
-        </div>
-      </div>
+    </div>
+    <div class="my-1 timer">
+      <el-table size="small" :header-row-style="{ backgroundColor: 'black' }" border :data="HsTimerData" @click="HandleTimerTBClick">
+        <el-table-column label="Timer" prop="name"></el-table-column>
+        <el-table-column label="SV" prop="sv"></el-table-column>
+        <el-table-column label="PV" prop="pv"></el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
 
 <script>
-import { AGVStatusStore, UserStore, DIOStore } from '@/store'
+import { AGVStatusStore, UserStore, SystemSettingsStore } from '@/store'
 import { DIO } from '@/api/VMSAPI'
+import bus from '@/event-bus.js'
 export default {
   props: {
     Owner: {
@@ -77,11 +61,45 @@ export default {
     },
     HSTimers() {
       return AGVStatusStore.getters.HSTimers
+    },
+    HsTimerData() {
+      if (!this.HSTimerSettings || !this.HSTimers)
+        return [];
+
+      var data = [
+        {
+          name: 'T1',
+          sv: this.HSTimerSettings.TA1_Wait_L_U_REQ_ON,
+          pv: this.HSTimers.TA1_Wait_L_U_REQ_ON
+        }, {
+          name: 'T2',
+          sv: this.HSTimerSettings.TA2_Wait_EQ_READY_ON,
+          pv: this.HSTimers.TA2_Wait_EQ_READY_ON
+        }, {
+          name: 'T3',
+          sv: this.HSTimerSettings.TA3_Wait_EQ_BUSY_ON,
+          pv: this.HSTimers.TA3_Wait_EQ_BUSY_ON
+        }, {
+          name: 'T4',
+          sv: this.HSTimerSettings.TA4_Wait_EQ_BUSY_OFF,
+          pv: this.HSTimers.TA4_Wait_EQ_BUSY_OFF
+        }, {
+          name: 'T5',
+          sv: this.HSTimerSettings.TA5_Wait_L_U_REQ_OFF,
+          pv: this.HSTimers.TA5_Wait_L_U_REQ_OFF
+        },
+      ]
+      return data;
+    },
+    HSTimerSettings() {
+      return SystemSettingsStore.getters.Settings.EQHSTimeouts
     }
 
   },
   methods: {
-
+    HandleTimerTBClick() {
+      bus.emit('show-settings', 1);
+    },
     async SignalWriteChangeHandler(owner, signal_name) {
       if (!this.IsGodUse) {
         return;
@@ -94,12 +112,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.djm-pio {
-}
+.djm-pio {}
+
 h3 {
   //   padding-left: 100px;
   padding-bottom: 10px;
 }
+
 .signal-div {
   width: 60px;
   height: 60px;
@@ -107,6 +126,7 @@ h3 {
   color: white;
   cursor: pointer;
 }
+
 .signal-name {
   width: 100px;
   padding-top: 15px;
@@ -114,6 +134,7 @@ h3 {
   text-align: right;
   font-weight: bold;
 }
+
 .timer {
   span {
     margin-right: 5px;

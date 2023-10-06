@@ -7,7 +7,7 @@
         </div>
       </template>
       <div>
-        <b-tabs>
+        <b-tabs v-model="selected_tab">
           <b-tab title="一般">
             <div class="border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
@@ -141,10 +141,12 @@ import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
 import { SystemAPI } from '@/api/VMSAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
+
 export default {
   data() {
     return {
       drawer_show: false,
+      selected_tab: 1,
       settings: {
         LogFolder: "GPM_AGV_LOG",
         AgvType: 1,
@@ -227,8 +229,10 @@ export default {
     }
   },
   mounted() {
-    bus.on('show-settings', async () => {
+    bus.on('show-settings', async (tabIndex) => {
       await this.DownloadSettings();
+      if (tabIndex)
+        this.selected_tab = tabIndex;
       this.drawer_show = true
     })
     this.DownloadSettings();
