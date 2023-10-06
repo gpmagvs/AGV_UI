@@ -186,7 +186,6 @@ import connection_state from '@/components/ConnectionStates.vue'
 import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher } from '@/api/VMSAPI'
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
-import { version } from '@/gpm_param'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
 import WebSocketHelp from '@/api/WebSocketHepler'
@@ -533,9 +532,6 @@ export default {
     },
     IsOnlineMode() {
       return this.VMSData.OnlineMode == 1;
-    },
-    App_version() {
-      return version;
     },
     NewestAlarm() {
       if (this.VMSData.NewestAlarm == undefined) {

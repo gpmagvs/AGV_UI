@@ -33,10 +33,6 @@
         </div>
       </b-tab>
     </b-tabs>
-    <!-- <div @click="VersionTextClickHandle()" class="ui-version text-end px-3">
-      UI Version:
-      <p>{{UIVersion}}</p>
-    </div>-->
   </div>
 </template>
 
@@ -44,7 +40,7 @@
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
 import IOTable from './IOTable.vue';
-import { param, version } from '@/gpm_param';
+import { param } from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
 import ManualSettings from './ManualSettings.vue';
 import WebSocketHelp from '@/api/WebSocketHepler'
@@ -142,12 +138,6 @@ export default {
   computed: {
     isGodMode() {
       return UserStore.getters.IsGodUser;
-    },
-    UIVersion() {
-      if (version)
-        return version;
-      else
-        return "0.0.0.0";
     },
     operation_enabled_return() {
       if (this.isGodMode)
