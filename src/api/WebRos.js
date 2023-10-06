@@ -82,7 +82,147 @@ ros.on('connection', function () {
     })
 
 })
+var keyboard_move_topic = new ROSLIB.Topic({
+    ros: ros,
+    name: '/cmd_vel',
+    messageType: 'geometry_msgs/Twist'
+})
 
+export function AGVMoveUp(speed) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: speed,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+    }))
+}
+export function AGVMoveDown(speed) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: -speed,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+    }))
+}
+
+export function AGVMoveRight(speed) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: -speed,
+        }
+    }))
+}
+
+
+export function AGVMoveLeft(speed) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: speed,
+        }
+    }))
+}
+export function AGVMove_FordwardRight(linear, rotation) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: linear,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: -rotation,
+        }
+    }))
+}
+
+export function AGVMove_FordwardLeft(linear, rotation) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: linear,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: rotation,
+        }
+    }))
+}
+
+
+export function AGVMove_BackwardLeft(linear, rotation) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: -linear,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: -rotation,
+        }
+    }))
+}
+
+
+export function AGVMove_BackwardRight(linear, rotation) {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: -linear,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: rotation,
+        }
+    }))
+}
+
+export function AGVStop() {
+    keyboard_move_topic.publish(new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: 0,
+            z: 0,
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+    }))
+}
 document.addEventListener('keydown', (event) => {
     var name = event.key;
     var code = event.code;
