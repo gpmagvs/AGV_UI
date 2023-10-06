@@ -1,47 +1,47 @@
 <template>
   <div class="teach-tool">
     <el-dialog width="50%" :modal="false" draggable v-model="show" :title="title_">
-      <div class="border-bottom my-2 text-start">
-        <div class="d-flex">
-          <div>
-            <div class="height-text">{{ input_label_text }}</div>
-            <input id="teach-val-input" v-model="input_sum" @change="HandleInputChanged" />
-          </div>
-          <div class="mx-3" v-if="!is_modify_tagNumber">
-            <div class="height-text">Pose</div>
-            <div class="goal-val">{{ goal.pose }}</div>
-          </div>
-        </div>
-        <el-button @click="HandleForkMoveBtnClick" type="danger">移動牙叉至此位置</el-button>
-      </div>
-      <div class>
-        <SimpleKeyboardVue KeyboardVue keyboard_type="number" @onKeyPress="KeyboardInputChanged"></SimpleKeyboardVue>
-        <div class="text-start border-top py-2">
+      <div style="position:relative; top:-41px">
+        <div class="border-bottom my-2 text-start">
           <div class="d-flex">
-            <h6>牙叉位置調整</h6>
-            <span class="mx-3">
-              <span>當前高度:</span>
-              {{current_position }}
-              <span>cm</span>
-            </span>
-          </div>
-          <div class="d-flex">
-            <div class="button-group d-flex p-1">
-              <el-button @click="ForkAction('home')">Home</el-button>
-              <el-button @click="ForkAction('stop')" type="danger">STOP</el-button>
-            </div>
             <div>
+              <div class="height-text">{{ input_label_text }}</div>
+              <input id="teach-val-input" v-model="input_sum" @change="HandleInputChanged" />
+            </div>
+            <div class="mx-3" v-if="!is_modify_tagNumber">
+              <div class="height-text">Pose</div>
+              <div class="goal-val">{{ goal.pose }}</div>
+            </div>
+          </div>
+          <el-button @click="HandleForkMoveBtnClick" type="primary">移動牙叉至此位置</el-button>
+        </div>
+        <div class>
+          <SimpleKeyboardVue KeyboardVue keyboard_type="number" @onKeyPress="KeyboardInputChanged"></SimpleKeyboardVue>
+          <div class="text-start border-top py-2">
+            <div class="d-flex">
+              <h6>牙叉位置調整</h6>
+              <span class="mx-3">
+                <span>當前高度:</span> {{ current_position }} <span>cm</span>
+              </span>
+            </div>
+            <div class="d-flex">
               <div class="button-group d-flex p-1">
-                <el-button @click="ForkPositionAdjust(0.1)">+1mm</el-button>
-                <el-button @click="ForkPositionAdjust(0.5)">+5mm</el-button>
-                <el-button @click="ForkPositionAdjust(-0.1)">-1mm</el-button>
-                <el-button @click="ForkPositionAdjust(-0.5)">-5mm</el-button>
+                <el-button @click="ForkAction('home')">Home</el-button>
+                <el-button @click="ForkAction('stop')" type="danger">STOP</el-button>
               </div>
-              <div class="button-group d-flex p-1">
-                <el-button @click="ForkPositionAdjust(1)">+1cm</el-button>
-                <el-button @click="ForkPositionAdjust(5)">+5cm</el-button>
-                <el-button @click="ForkPositionAdjust(-1)">-1cm</el-button>
-                <el-button @click="ForkPositionAdjust(-5)">-5cm</el-button>
+              <div>
+                <div class="button-group d-flex p-1">
+                  <el-button @click="ForkPositionAdjust(0.1)">+1mm</el-button>
+                  <el-button @click="ForkPositionAdjust(0.5)">+5mm</el-button>
+                  <el-button @click="ForkPositionAdjust(-0.1)">-1mm</el-button>
+                  <el-button @click="ForkPositionAdjust(-0.5)">-5mm</el-button>
+                </div>
+                <div class="button-group d-flex p-1">
+                  <el-button @click="ForkPositionAdjust(1)">+1cm</el-button>
+                  <el-button @click="ForkPositionAdjust(5)">+5cm</el-button>
+                  <el-button @click="ForkPositionAdjust(-1)">-1cm</el-button>
+                  <el-button @click="ForkPositionAdjust(-5)">-5cm</el-button>
+                </div>
               </div>
             </div>
           </div>
@@ -157,7 +157,23 @@ export default {
       }
     },
     async ForkAction(action) {
-      await ForkAPI.Action(action)
+      if (action == 'home') {
+        this.$swal.fire(
+          {
+            text: '',
+            title: '確定要將牙叉移至Home點?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          }).then(async (ret) => {
+            if (!ret.isConfirmed)
+              return;
+            await ForkAPI.Action(action)
+          })
+      } else {
+        await ForkAPI.Action(action)
+      }
     },
     HandleInputChanged() {
 
@@ -188,10 +204,12 @@ export default {
     font-weight: 500;
     font-size: 20px;
   }
+
   .height-text,
   #teach-val-input {
     margin: 5px;
   }
+
   .goal-val {
     color: grey;
   }
@@ -200,6 +218,7 @@ export default {
   #teach-val-input {
     font-size: 40px;
   }
+
   #teach-val-input {
     text-align: left;
     height: 56px;
@@ -209,6 +228,7 @@ export default {
     background-color: aliceblue;
     border: 2px solid grey;
   }
+
   .button-group {
     button {
       width: 60px;

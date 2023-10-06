@@ -674,6 +674,10 @@ export default {
 
   .opt-buttons {
     font-weight: bold;
+
+    button {
+      letter-spacing: 2px;
+    }
   }
 }
 </style>
