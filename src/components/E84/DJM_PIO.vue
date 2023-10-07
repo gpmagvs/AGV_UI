@@ -98,6 +98,9 @@ export default {
   },
   methods: {
     HandleTimerTBClick() {
+      if (!this.IsGodUse) {
+        return;
+      }
       bus.emit('show-settings', 1);
     },
     async SignalWriteChangeHandler(owner, signal_name) {

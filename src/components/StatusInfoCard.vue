@@ -157,6 +157,9 @@ export default {
       else {
         return "Unknown"
       }
+    },
+    IsInspectionAGV() {
+      return this.vms_data.Agv_Type == 2;
     }
   },
 

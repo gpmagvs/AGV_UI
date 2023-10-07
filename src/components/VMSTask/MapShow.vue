@@ -1,12 +1,20 @@
 <template>
   <div class="map-show border py-2 px-2 d-flex flex-row bg-light">
     <div class="w-100">
-      <div class="w-100 d-flex flex-row justify-content-end">
-        <span class="p-1">MAP</span>
-        <div>
-          <b-form-input v-model="map_name" disabled size="sm" :state="map_data.Name!=undefined"></b-form-input>
+      <div class="my-1 d-flex flex-row justify-content-between">
+        <el-tooltip content="Go to Location Of AGV">
+          <el-button @click="OriginalZomm()"><i class="bi bi-house-door-fill"></i></el-button>
+        </el-tooltip>
+        <el-tooltip content="Go to Location Of AGV">
+          <el-button @click="GoToAGVLoc(0)"><i class="bi bi-geo-alt-fill"></i></el-button>
+        </el-tooltip>
+        <div class="w-100 d-flex flex-row justify-content-end">
+          <span class="p-1">MAP</span>
+          <div>
+            <b-form-input v-model="map_name" disabled size="sm" :state="map_data.Name != undefined"></b-form-input>
+          </div>
+          <!-- <b-button  varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button> -->
         </div>
-        <!-- <b-button  varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button> -->
       </div>
       <div
         v-loading="loading"
@@ -14,98 +22,82 @@
         :key="reload_key"
         class="map border"
         @contextmenu.prevent="showContextMenu"
-        @click="HideAllMenus"
-      >
+        @click="HideAllMenus">
         <!--編輯模式選單(有站點被選擇)-->
         <div
           class="edit-mode-menu bg-light border rounded"
           v-if="showStationMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
-          <div class="p-2 text-start">
-            Tag:
-            <b>{{ current_select_featureID}}</b>
+          :style="map_contextmenu_style">
+          <div class="p-2 text-start"> Tag: <b>{{ current_select_featureID }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="danger"
-              @click="handleEditModeMenuClick('remove')"
-            >移除</b-button>
+              @click="handleEditModeMenuClick('remove')">移除</b-button>
             <b-button
               variant="primary"
               class="w-100 my-1"
               size="sm"
-              @click="handleEditModeMenuClick('point_setting')"
-            >點位設定</b-button>
+              @click="handleEditModeMenuClick('point_setting')">點位設定</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
-
         <!--編輯模式選單(無站點被選擇)-->
         <div
           class="edit-mode-menu bg-light border rounded"
           v-if="showNoPointSelectedMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+          :style="map_contextmenu_style">
           <div class="px-1" style="position:absolute;left:6px">
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="danger"
-              @click="handleNoPointSelectedMenuClick('add_point')"
-            >新增站點</b-button>
+              @click="handleNoPointSelectedMenuClick('add_point')">新增站點</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
-
         <!--任務選單-->
         <div
           class="edit-mode-menu bg-light border rounded"
           v-if="showTaskAllocationMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+          :style="map_contextmenu_style">
           <div class="p-2 text-start">
             <span v-show="!is_agv_feature_selected">Tag:</span>
             <span v-show="is_agv_feature_selected">AGV:</span>
-            <b>{{is_agv_feature_selected? current_select_agv_name:current_select_featureID}}</b>
+            <b>{{ is_agv_feature_selected ? current_select_agv_name : current_select_featureID }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('move')"
-            >移動</b-button>
+              @click="handleTaskAllocatModeMenuClick('move')">移動</b-button>
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('load')"
-            >放貨</b-button>
+              @click="handleTaskAllocatModeMenuClick('load')">放貨</b-button>
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('unload')"
-            >取貨</b-button>
+              @click="handleTaskAllocatModeMenuClick('unload')">取貨</b-button>
           </div>
         </div>
-
         <!--AGV選單-->
         <div
           class="edit-mode-menu bg-light border rounded"
           v-if="showAGVMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+          :style="map_contextmenu_style">
           <div class="p-2 text-start border-bottom">
             <span>AGV :</span>
-            <b>{{ current_select_agv_name}}</b>
+            <b>{{ current_select_agv_name }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
             <el-color-picker v-model="color" show-alpha />
@@ -124,7 +116,7 @@
   </div>
 </template>
   
-  <script>
+<script>
 import 'ol/ol.css';
 import ContextMenu from 'ol-contextmenu';
 
@@ -169,6 +161,7 @@ export default {
       display_selected: "Name",
       agv_display_mode_selected: "show",
       map: new Map(),
+      original_zoom: 1,
       showStationMenu: false,
       showTaskAllocationMenu: false,
       showNoPointSelectedMenu: false,
@@ -359,6 +352,16 @@ export default {
         return station.feature.getGeometry().getCoordinates();
       }
     },
+    GoToAGVLoc(agv_index) {
+      var agv_name = this.agvList[agv_index].name;
+      var agv_coordination = this.get_agv_position(agv_name)
+      this.map.getView().setCenter(agv_coordination)
+    },
+    OriginalZomm() {
+      this.GoToAGVLoc(0);
+      this.map.getView().setZoom(this.original_zoom);
+
+    },
     GetNormalStations() {
       if (!this.map_data)
         return [];
@@ -448,6 +451,7 @@ export default {
         var map_view_options = JSON.parse(map_view_cache)
         this.map.getView().setCenter(map_view_options.center)
         this.map.getView().setZoom(map_view_options.zoom)
+        this.original_zoom = map_view_options.zoom;
       }
 
 
@@ -965,15 +969,16 @@ export default {
 
   },
 };
-  </script>
+</script>
   
 <style>
-.map-show {
-}
+.map-show {}
+
 .ol-zoom .ol-zoom-in,
 .ol-zoom .ol-zoom-out {
   font-size: 2.5rem;
 }
+
 .map {
   height: 95%;
   width: 100%;

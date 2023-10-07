@@ -37,7 +37,7 @@
         </div>
       </b-tab>
       <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod | IsDevUser" title="Task">
+      <b-tab v-if="IsGodMod | IsDevUser" title="Local派工">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
