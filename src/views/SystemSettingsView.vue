@@ -53,13 +53,13 @@
                 <el-form-item label="CST ID讀取功能">
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
                 </el-form-item>
-                <el-form-item label="CST ID讀取失敗後狀態">
+                <el-form-item label="CST ID讀取失敗後車載狀態設為">
                   <el-select @change="HandleParamChanged" v-model="settings.CstReadFailAction">
                     <el-option label="Normal Status" :value="0"></el-option>
                     <el-option label="Down Status" :value="1"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="CST ID與任務不符動作">
+                <el-form-item label="CST ID讀取值與任務不符時">
                   <el-select @change="HandleParamChanged" v-model="settings.Cst_ID_Not_Match_Action">
                     <el-option label="上報讀取之ID" :value="0"></el-option>
                     <el-option label="向派車查詢虛擬ID" :value="1"></el-option>
