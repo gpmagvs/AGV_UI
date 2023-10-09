@@ -17,18 +17,15 @@
           </div>
           <!-- Move To Position -->
         </div>
-
         <!-- For Movable -->
         <div
-          v-if="selectedAction === 'None'|selectedAction === 'Unload'|selectedAction === 'Load'|selectedAction === 'Charge'|selectedAction === 'Park'"
-        >
+          v-if="selectedAction === 'None' | selectedAction === 'Unload' | selectedAction === 'Load' | selectedAction === 'Charge' | selectedAction === 'Park'">
           <div class="item">
             <div class="title">目的地</div>
             <el-select
               @click="GetNormalStationTagsFromMap()"
               v-model="selectedToTag"
-              placeholder="請選擇目的地"
-            >
+              placeholder="請選擇目的地">
               <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id"></el-option>
             </el-select>
           </div>
@@ -48,7 +45,6 @@
               </el-select>
             </div>
           </div>
-
           <div class="item">
             <div class="title">載物ID</div>
             <el-input v-model="selectedCst" placeholder="請輸入載物ID"></el-input>
@@ -56,55 +52,45 @@
         </div>
       </div>
       <div class="bg-light item d-flex justify-content-end">
-        <b-button v-if="IsGodUse" @click="()=>{ MoveTestPanel.Show() }" variant="danger">移動測試</b-button>
+        <b-button v-if="IsGodUse" @click="() => { MoveTestPanel.Show() }" variant="danger">移動測試</b-button>
       </div>
     </div>
-
     <MapShowVue
       :task_allocatable="true"
       @OnFeatureClicked="MapFeatureClickedHandle"
       class="flex-fill"
       style="height:600px"
-      ref="map"
-    ></MapShowVue>
+      ref="map"></MapShowVue>
     <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt">
       <template #header>
-        <h2 class="text-start">Tag-{{SelectedFeature==undefined? "": SelectedFeature.getId()}}</h2>
+        <h2 class="text-start">Tag-{{ SelectedFeature == undefined ? "" : SelectedFeature.getId() }} <div v-if="SelectedFeatureIsVirtualPt" class="text-danger"> 虛擬點不可操作移動任務</div>
+        </h2>
       </template>
       <div class="px-1 d-flex flex-row justify-content-around">
         <b-button
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('None')"
-          :disabled="!SelectedFeatureMovable"
-        >
-          <i class="bi bi-arrows-move"></i>移動
-        </b-button>
+          :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt">
+          <i class="bi bi-arrows-move"></i>移動 </b-button>
         <b-button
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('Load')"
-          :disabled="!SelectedFeatureLDULDable"
-        >
-          <i class="bi bi-box-arrow-up-right"></i>放貨
-        </b-button>
+          :disabled="!SelectedFeatureLDULDable">
+          <i class="bi bi-box-arrow-up-right"></i>放貨 </b-button>
         <b-button
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('Unload')"
-          :disabled="!SelectedFeatureLDULDable"
-        >
-          <i class="bi bi-box-arrow-in-down-left"></i>取貨
-        </b-button>
-
+          :disabled="!SelectedFeatureLDULDable">
+          <i class="bi bi-box-arrow-in-down-left"></i>取貨 </b-button>
         <b-button
           class="my-1 action-button"
           variant="success"
           @click="handleTaskAllocatModeMenuClick('Charge')"
-          :disabled="!SelectedFeatureChargable"
-        >
-          <i class="bi bi-battery-charging"></i>充電
-        </b-button>
+          :disabled="!SelectedFeatureChargable">
+          <i class="bi bi-battery-charging"></i>充電 </b-button>
       </div>
     </el-drawer>
     <MoveTestDrawer ref="move_test"></MoveTestDrawer>
@@ -114,22 +100,19 @@
       :centered="true"
       title="Task Delivery"
       header-bg-variant="primary"
-      header-text-variant="light"
-    >
+      header-text-variant="light">
       <p>
         <span>Action:{{ selectedAction }}</span>
       </p>
       <p>確定要派送此任務?</p>
     </b-modal>
-
     <b-modal
       v-model="notify_dialog_show"
       :centered="true"
       title="Warning"
       :ok-only="true"
       header-bg-variant="warning"
-      header-text-variant="light"
-    >
+      header-text-variant="light">
       <p>
         <span>{{ notify_text }}</span>
       </p>
@@ -143,6 +126,8 @@ import { NavigationAPI } from '@/api/VMSAPI';
 import MapShowVue from './MapShow.vue';
 import { UserStore } from '@/store';
 import MoveTestDrawer from './MoveTestDrawer.vue'
+import bus from '@/event-bus.js'
+import { Feature } from 'ol';
 export default {
   components: {
     MapShowVue, MoveTestDrawer
@@ -152,7 +137,7 @@ export default {
       confirm_dialog_show: false,
       notify_dialog_show: false,
       ShowTaskAllocateDrawer: false,
-      SelectedFeature: undefined, //從map 點選的feature物件
+      SelectedFeature: new Feature(), //從map 點選的feature物件
       notify_text: '',
 
       selectedAction: 'None', // 選擇的Action
@@ -214,6 +199,12 @@ export default {
       this.GetNormalStationTagsFromMap();
       var l = this.moveable_tags.filter(i => i.id == this.SelectedFeature.getId())
       return l.length == 1;
+    },
+
+    SelectedFeatureIsVirtualPt() {
+      if (!this.SelectedFeature)
+        return false;
+      return this.SelectedFeature.get('isVirtual');
     },
     SelectedFeatureLDULDable() {
       if (!this.SelectedFeature)
@@ -372,7 +363,7 @@ export default {
     },
     MapFeatureClickedHandle(feature) {
       if (feature.get('station_type')) {
-
+        // this.SelectedFeature.get('data').IsVirtual
         this.SelectedFeature = feature
         if (this.SelectedFeature)
           this.ShowTaskAllocateDrawer = true;
@@ -409,6 +400,7 @@ export default {
     display: flex;
     flex-direction: row;
     margin: 10px auto;
+
     .title {
       width: 70px;
       text-align: left;

@@ -31,14 +31,14 @@
       <!-- <el-divider direction="vertical"></el-divider> -->
       <div class="control-buttons mx-2">
         <b-button
-          :disabled="(!enabled | isZAxisMoving)"
+          :disabled="(!enabled || isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
           block>
           <i class="bi bi-chevron-bar-up"></i> {{ $t('up_limit_pose') }} </b-button>
         <b-button
-          :disabled="(!enabled | isZAxisMoving)"
+          :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('up')"
           size="lg"
           class="w-100 border mb-3"
@@ -46,7 +46,7 @@
           block>
           <i class="bi bi-chevron-up"></i> {{ $t('up') }} </b-button>
         <b-button
-          :disabled="(!enabled | isZAxisMoving)"
+          :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('home')"
           size="lg"
           class="w-100 border mb-3"
@@ -61,7 +61,7 @@
           block>
           <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i> {{ $t('stop') }} </b-button>
         <b-button
-          :disabled="(!enabled | isZAxisMoving)"
+          :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('down')"
           size="lg"
           class="w-100 border mb-3"
@@ -69,7 +69,7 @@
           block>
           <i class="bi bi-chevron-down"></i> {{ $t('down') }} </b-button>
         <b-button
-          :disabled="(!enabled | isZAxisMoving)"
+          :disabled="(!enabled || isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"

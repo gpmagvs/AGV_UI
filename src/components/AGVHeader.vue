@@ -1,6 +1,6 @@
 <template>
   <div class="fixed-top">
-    <div class="status d-flex flex-row">
+    <div class="status d-flex flex-row bg-light">
       <div class="sys-name flex-fill">
         <div class="px-2" style="width:50px;position:absolute;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
@@ -9,13 +9,23 @@
       </div>
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-        class="agvc-name flex-fill"
+        class="agvc-name flex-fill text-primary"
         @dblclick="where_r_u()">{{ AGVName == "" ? "AGV" : AGVName }}</div>
       <div class="account-name flex-fill">{{ UserName }}</div>
       <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ APPVersion }}.UI.{{ UIVersion }} <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"
           class="bi bi-cloud-upload"></i>
+      </div>
+      <!--語系切換按鈕-->
+      <div class="lang-switch  ">
+        <jw_switch
+          @switch="LangChangeHandle"
+          :default="IsUseChinese"
+          active_text="CH"
+          active_color="rgb(0, 204, 0)"
+          inactive_text="EN"
+          inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
       <el-dialog draggable title="File Upload" v-model="uploadVisible">
         <uploader></uploader>
@@ -29,14 +39,17 @@ import { AGVStatusStore, UserStore, UIStore } from '@/store'
 import { Where_r_u } from '@/api/VMSAPI'
 import uploader from '@/components/Upload'
 import bus from '@/event-bus.js'
-
+import jw_switch from "@/components/UIComponents/jw-switch.vue"
+import Notifier from "@/api/NotifyHelper.js"
 export default {
   components: {
-    uploader,
+    uploader, jw_switch
   },
   data() {
     return {
-      uploadVisible: false
+      uploadVisible: false,
+      IsUseChinese: true,
+
     }
   },
   computed: {
@@ -90,32 +103,40 @@ export default {
     },
     HandleSettingIconClick() {
       bus.emit('show-settings')
-    }
+    },
+    LangChangeHandle(checked) {
+      this.IsUseChinese = checked;
+      this.$i18n.locale = this.IsUseChinese ? 'zh-TW' : 'en-US';
+      bus.emit('/lang_changed', this.$i18n.locale);
+      if (this.IsUseChinese) {
+        Notifier.Success("語言變更:中文", 'bottom', 800);
+      } else {
+        Notifier.Primary("Language:English", 'bottom', 800);
+      }
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
 .status {
+  height: 37px;
 
   .sys-name,
+  .agvc-name,
   .account-name,
   .version-name {
-    margin: auto 1px;
     color: white;
     font-weight: bold;
     font-size: 22px;
     // letter-spacing: 2px;
+    margin-right: 1px;
   }
 
-  .sys-name {
-    margin-left: 0;
-  }
-
-  .agvc-name {
-    margin: auto 1px;
-    font-weight: bold;
-    font-size: 22px; //background-color: rgb(0, 197, 211);
+  .lang-switch {
+    // position: absolute;
+    // right: 9px;
+    // top: 67px;
   }
 
   .account-name {
@@ -125,7 +146,6 @@ export default {
   .version-name,
   .sys-name {
     background-color: rgb(0, 123, 255);
-    margin-right: 0;
   }
 }
 </style>

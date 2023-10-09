@@ -312,6 +312,7 @@ export default {
             var _tagID = map.Points[index].TagNumber;
             var _x = map.Points[index].X;
             var _y = map.Points[index].Y;
+            var _IsVirtual = map.Points[index].IsVirtualPoint;
             var _name = map.Points[index].Graph.Display;
             if (_name == "" | _name == undefined) {
               _name = map.Points[index].Name;
@@ -326,6 +327,7 @@ export default {
             _feature.setId(_tagID);
             _feature.set('name', _name)
             _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
+            _feature.set('isVirtual', _IsVirtual)
 
             this.stations.push(
               {
@@ -865,8 +867,10 @@ export default {
       this.AGVDisplayControl(this.agv_display_mode_selected == 'show');
     },
     UpdateNavPathRender(agv_name, tags) {
-      if (tags.length == 0)
-        return;
+      // if (tags.length == 0){
+
+      //   return;
+      // }
       var layerName = `agv_path_layer_${agv_name}`
       var layer = this.map.getLayers().getArray().find(layer => layer.get('id') == layerName);
       if (layer) {

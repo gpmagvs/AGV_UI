@@ -4,16 +4,6 @@
     <AGVHeader></AGVHeader>
     <AGVLocalization ref="localization_dialog"></AGVLocalization>
     <div class="main-content">
-      <!--語系切換按鈕-->
-      <div class="lang-switch">
-        <jw_switch
-          @switch="LangChangeHandle"
-          :default="IsUseChinese"
-          active_text="CH"
-          active_color="rgb(0, 204, 0)"
-          inactive_text="EN"
-          inactive_color="rgb(9, 76, 176)"></jw_switch>
-      </div>
       <div v-if="back_end_server_err" class="server-error py-1 border fixed-top">
         <div class="agv-name-in-alarm px-2">{{ VMSData.CarName }}</div>
         <i class="bi bi-exclamation-diamond"></i> {{ $t('backend_server_error') }}
@@ -186,7 +176,6 @@ import connection_state from '@/components/ConnectionStates.vue'
 import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher } from '@/api/VMSAPI'
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
-import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
 import WebSocketHelp from '@/api/WebSocketHepler'
 import { ElNotification } from 'element-plus'
@@ -194,11 +183,12 @@ import { UserStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
+import { watch } from 'vue'
 // @ is an alias to /src
 export default {
   name: 'HomeView',
   components: {
-    AGVHeader, jw_switch, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization
+    AGVHeader, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization
   },
   data() {
     return {
@@ -217,7 +207,6 @@ export default {
       remove_CstData_ComfirmDialog_Show: false,
       ShowOnlineFailDialog: false,
       moduleInformation: {},
-      VMSData: new VMSData(),
       server_err_state_text: '連線中...',
       init_btn_blink_timer: null,
       mode_switch_data: {
@@ -232,16 +221,6 @@ export default {
     }
   },
   methods: {
-    LangChangeHandle(checked) {
-      this.IsUseChinese = checked;
-      this.$i18n.locale = this.IsUseChinese ? 'zh-TW' : 'en-US';
-      bus.emit('/lang_changed', this.$i18n.locale);
-      if (this.IsUseChinese) {
-        Notifier.Success("語言變更:中文", 'bottom', 800);
-      } else {
-        Notifier.Primary("Language:English", 'bottom', 800);
-      }
-    },
     ShowLogin() {
       if (this.IsLogin) {
         this.$swal.fire({
@@ -348,34 +327,6 @@ export default {
     VMSDataWebsocketInit() {
       this.ws = new WebSocketHelp('ws/AGVCState');
       this.ws.Connect();
-      this.ws.onmessage = (event) => {
-
-        this.back_end_server_err = false;
-        this.back_end_server_connecting = false;
-        this.VMSData = JSON.parse(event.data);
-        AGVStatusStore.commit('updateStatus', this.VMSData)
-        if (this.VMSData.Tag > 0) {
-          bus.emit('/agv_name_list', [{
-            AGV_Name: this.VMSData.CarName,
-            Current_Tag: this.VMSData.Tag,
-            State: this.VMSData.MainState,
-            IsOnline: this.VMSData.OnlineMode == 1,
-            Rotation: 0
-          }])
-
-          if (this.VMSData.Tag != this.previous_tagID) {
-            Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
-
-          }
-          bus.emit('/nav_path_update', {
-            name: this.VMSData.CarName,
-            tags: this.VMSData.NavInfo.PathPlan
-          })
-        }
-        this.previous_tagID = this.VMSData.Tag;
-        this.AGVPoseErrorHandler();
-        this.BusPublishDataOut();
-      }
       this.ws.onclose = (ev) => {
         this.back_end_server_connecting = false;
         this.server_err_state_text = "後端伺服器異常";
@@ -386,17 +337,6 @@ export default {
           if (this.ws.wssocket.readyState == WebSocket.OPEN) {
             this.ws.onmessage = null;
             this.back_end_server_err = this.back_end_server_connecting = true;
-            // setTimeout(() => {
-            //   this.$swal.fire({
-            //     title: `Page Reload`,
-            //     text: `Reconnect! Page will reload after 2 seconds.`,
-            //     icon: 'information',
-            //     showCancelButton: false,
-            //     confirmButtonText: 'OK',
-            //     customClass: 'my-sweetalert'
-            //   })
-            // }, 100)
-
             clearInterval(id)
             setTimeout(() => {
               location.reload()
@@ -505,6 +445,20 @@ export default {
     },
     HandleLocalizationClick() {
       this.$refs.localization_dialog.Show();
+    },
+    MapDataPublishOut() {
+      bus.emit('/agv_name_list', [{
+        AGV_Name: this.VMSData.CarName,
+        Current_Tag: this.VMSData.Tag,
+        State: this.VMSData.MainState,
+        IsOnline: this.VMSData.OnlineMode == 1,
+        Rotation: 0
+      }])
+
+      bus.emit('/nav_path_update', {
+        name: this.VMSData.CarName,
+        tags: this.VMSData.NavInfo.PathPlan
+      })
     }
   },
   computed: {
@@ -554,19 +508,56 @@ export default {
     },
     Coordination() {
       return `(${this.VMSData.Pose.position.x.toFixed(2)},${this.VMSData.Pose.position.y.toFixed(2)})`;
-    }
+    },
+    VMSData() {
+      return AGVStatusStore.getters.AGVStatus;
+    },
+
   },
   mounted() {
+
     // setInterval(async () => {
     //   this.moduleInformation = await GetModuleInformation();
     // }, 200);
-    this.VMSDataWebsocketInit();
+    // this.VMSDataWebsocketInit();
     setInterval(() => {
       this.time = moment(Date.now()).format('yyyy/MM/DD HH:mm:ss');
     }, 1000);
     setTimeout(() => {
       this.loading = false;
     }, 3000);
+    setTimeout(() => {
+      var handlerDataChanged = () => {
+        this.back_end_server_err = false;
+        this.back_end_server_connecting = false;
+        if (this.VMSData.Tag > 0) {
+          this.MapDataPublishOut();
+          if (this.VMSData.Tag != this.previous_tagID) {
+            Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
+          }
+        }
+        this.previous_tagID = this.VMSData.Tag;
+        this.AGVPoseErrorHandler();
+        this.BusPublishDataOut();
+      }
+      watch(() => this.VMSData, (new_data, old_data) => {
+        if (!new_data)
+          return;
+        handlerDataChanged();
+      }, {
+        immediate: true,
+        deep: true,
+      })
+      bus.on('ws_disconnect', () => {
+        this.back_end_server_err = true;
+        this.back_end_server_connecting = true;
+      })
+      bus.on('local-task-view-shown', () => {
+        handlerDataChanged();
+      })
+    }, 1000);
+
+
   },
   destroyed() {
     alert('destroy')
@@ -579,7 +570,7 @@ export default {
 
 <style lang="scss" scoped>
 .main-content {
-  padding-top: 35px;
+  padding-top: 38px;
 }
 
 .simulation-mode {
@@ -638,12 +629,6 @@ export default {
     background-color: rgb(255, 193, 22);
     color: white;
   }
-}
-
-.lang-switch {
-  position: absolute;
-  right: 9px;
-  top: 67px;
 }
 
 .alarm-show {

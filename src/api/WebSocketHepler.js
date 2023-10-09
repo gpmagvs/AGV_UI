@@ -7,6 +7,7 @@ class WebSocketHelp {
     this.wssocket = null
     this.closed_actived = false
     this.previousWsState = WebSocket.CLOSED
+    this.connected = false;
     bus.on('/ws_force_close', () => {
       this.Close()
     })
@@ -27,6 +28,7 @@ class WebSocketHelp {
     const socket = new WebSocket(`${this.ws_url}`)
     //this.SendAliveCheck()
     socket.onerror = (ev) => {
+      this.connected = false;
       console.info(`Try Connect to : ${this.ws_url} ON ＥＲＲＯＲ FAIL`)
     }
     this.wssocket = socket

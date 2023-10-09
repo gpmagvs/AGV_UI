@@ -43,6 +43,13 @@ export async function ResetAlarm() {
   var ret = await axios_entity.post('api/VMS/ResetAlarm')
   return ret
 }
+
+export async function ClearAlarm(code) {
+  var ret = await axios_entity.post(`api/VMS/ClearAlarm?alarm_code=${code}`)
+  return ret
+}
+
+
 export async function BuzzerOff() {
   var ret = await axios_entity.post('api/VMS/BuzzerOff')
   return ret

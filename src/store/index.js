@@ -3,6 +3,7 @@ import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
 import clsSensorStatus from '@/ViewModels/clsSensorStatus';
+import { ClearAlarm } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
 export default createStore({
   state: {
@@ -248,6 +249,11 @@ export var AGVStatusStore = createStore({
   mutations: {
     updateStatus(state, data) {
       state.AGVStatus = data
+    }
+  },
+  actions: {
+    async clear_alarm_with_code({ commit, getters, state }, code) {
+      await ClearAlarm(code);
     }
   }
 })

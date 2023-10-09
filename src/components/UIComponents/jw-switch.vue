@@ -1,7 +1,7 @@
 <template>
   <div class="switch-container">
     <input type="checkbox" id="switch" class="switch" v-model="isChecked" @change="toggleSwitch" />
-    <label for="switch" class="switch-label" v-bind:style="[custom_style,active_style]">
+    <label for="switch" class="switch-label" v-bind:style="[custom_style, active_style]">
       <div class="switch-inner"></div>
     </label>
     <span @click="toggleSwitch" class="switch-text" v-show="!isChecked">{{ inactive_text }}</span>
@@ -9,12 +9,11 @@
       @click="toggleSwitch"
       class="switch-text switch-text-on"
       v-bind:style="active_style"
-      v-show="isChecked"
-    >{{ active_text }}</span>
+      v-show="isChecked">{{ active_text }}</span>
   </div>
 </template>
   
-  <script>
+<script>
 export default {
   props: {
     default: {
@@ -70,9 +69,9 @@ export default {
     this.isChecked = this.default;
   },
 }
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
 .switch-container {
   display: inline-block;
   position: relative;
@@ -85,7 +84,7 @@ export default {
 .switch-label {
   display: inline-block;
   width: 60px;
-  height: 32px;
+  height: 37px;
   background-color: #ccc;
   border-radius: 3px;
   position: relative;
@@ -96,7 +95,7 @@ export default {
 .switch-inner {
   display: block;
   width: 10px;
-  height: 28px;
+  height: 32px;
   background-color: #fff;
   border-radius: 3px;
   position: absolute;
@@ -118,15 +117,15 @@ export default {
   transition: left 0.2s;
 }
 
-.switch:checked + .switch-label {
+.switch:checked+.switch-label {
   background-color: rgb(40, 167, 69);
 }
 
-.switch:checked + .switch-label .switch-inner {
+.switch:checked+.switch-label .switch-inner {
   transform: translateX(46px);
 }
 
-.switch:checked + .switch-label .switch-switch {
+.switch:checked+.switch-label .switch-switch {
   left: 30px;
 }
 
@@ -144,7 +143,7 @@ export default {
   width: 45px;
 }
 
-.switch:checked + .switch-label .switch-text {
+.switch:checked+.switch-label .switch-text {
   opacity: 0;
 }
 
@@ -153,7 +152,7 @@ export default {
   opacity: 1;
 }
 
-.switch:checked + .switch-label .switch-text-on {
+.switch:checked+.switch-label .switch-text-on {
   opacity: 1;
 }
 </style>

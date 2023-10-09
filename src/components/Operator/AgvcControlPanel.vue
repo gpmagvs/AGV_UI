@@ -97,11 +97,6 @@ export default {
     KeyboardInput,
   },
   props: {
-    enabled: {
-      type: Boolean,
-      default: false,
-    },
-
   },
   data() {
     return {

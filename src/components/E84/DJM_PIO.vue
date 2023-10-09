@@ -27,8 +27,8 @@
     <div class="my-1 timer">
       <el-table size="small" :header-row-style="{ backgroundColor: 'black' }" border :data="HsTimerData" @click="HandleTimerTBClick">
         <el-table-column label="Timer" prop="name"></el-table-column>
-        <el-table-column label="SV" prop="sv"></el-table-column>
-        <el-table-column label="PV" prop="pv"></el-table-column>
+        <el-table-column label="設定值" prop="sv"></el-table-column>
+        <el-table-column label="當前值" prop="pv"></el-table-column>
       </el-table>
     </div>
   </div>

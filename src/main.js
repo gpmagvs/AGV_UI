@@ -18,7 +18,7 @@ import './system_message_fetch'
 import './AGVDataFetchWorker.js'
 import VueApexCharts from "vue3-apexcharts";
 
-// import './idling_detector'
+import './idling_detector'
 const i18n = createI18n({
   legacy: false,
   locale: 'zh-TW',

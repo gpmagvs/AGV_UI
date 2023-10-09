@@ -65,7 +65,6 @@ export default {
     }
   },
   mounted() {
-    console.log('agv operator mounted');
     this.DIOTableWSInit();
   },
   methods: {

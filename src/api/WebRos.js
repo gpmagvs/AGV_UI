@@ -80,7 +80,9 @@ ros.on('connection', function () {
 
         ROS_STORE.commit('update_module_info', module_info)
     })
-
+})
+ros.on('error', function () {
+    console.warn('ROS Connection not estimated');
 })
 var keyboard_move_topic = new ROSLIB.Topic({
     ros: ros,

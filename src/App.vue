@@ -1,11 +1,12 @@
 <template>
-  <div class="appcontainer" v-bind:style="AppBorderStyle" style="width:98vw">
+  <div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
       id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
+          @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
@@ -47,6 +48,9 @@ export default {
     },
     Timeformat(time, format = 'yyyy-MM-DD HH:mm:ss') {
       return moment(time).format(format)
+    },
+    async HandleAlarmSheetClick(code) {
+      await AGVStatusStore.dispatch('clear_alarm_with_code', code)
     }
   },
   computed: {
@@ -64,10 +68,13 @@ export default {
       return AGVStatusStore.getters.AGVName;
     },
     AppBorderStyle() {
-      var alarms = Object.values(this.AlarmCodesGroup)
-      var any_alarm = alarms.filter(al => al.Alarm.ELevel != 0).length != 0
-      return {
-        border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
+      if (this.AlarmCodesGroup) {
+
+        var alarms = Object.values(this.AlarmCodesGroup)
+        var any_alarm = alarms.filter(al => al.Alarm.ELevel != 0).length != 0
+        return {
+          border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
+        }
       }
     }
 
@@ -109,6 +116,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   height: 100%;
+  overflow: hidden;
 }
 
 nav {
@@ -164,4 +172,5 @@ html {
       font-size: 30px;
     }
   }
-}</style>
+}
+</style>

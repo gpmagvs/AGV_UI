@@ -101,6 +101,11 @@ export default {
       if (currentTabs == 1) {
         bus.emit('/alarmtable_tab_click')
       }
+
+      if (currentTabs == 6) {
+        bus.emit('local-task-view-shown')
+      }
+
       ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 2)
       if (currentTabs != 2) {
         ROS_STORE.dispatch('force_stop')
