@@ -215,7 +215,7 @@ export function AGVMove_ShiftLeft(linear) {
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,
-            y: -linear,
+            y: linear,
             z: 0,
         },
         angular: {
@@ -229,7 +229,7 @@ export function AGVMove_ShiftRight(linear) {
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,
-            y: linear,
+            y: -linear,
             z: 0,
         },
         angular: {
