@@ -36,6 +36,11 @@
                     @change="HandleParamChanged"
                     v-model="settings.SensorBypass.BeltSensorBypass"></el-switch>
                 </el-form-item>
+                <el-form-item v-if="IsForkAGV" label="牙叉已在Home位置不需初始化">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
+                </el-form-item>
                 <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
                   <el-switch
                     @change="HandleParamChanged"
