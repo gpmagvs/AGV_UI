@@ -15,13 +15,11 @@ function DIOWS() {
     previous_DIOTableData_json = '';
     agv_dio_ws.Connect();
     agv_dio_ws.onmessage = (evt) => {
-        setTimeout(() => {
-            if (evt.data != previous_DIOTableData_json) {
-                var DIOTableData = JSON.parse(evt.data)
-                previous_DIOTableData_json = evt.data;
-                DIOStore.commit('updateStatus', DIOTableData)
-            }
-        }, 10);
+        if (evt.data != previous_DIOTableData_json) {
+            var DIOTableData = JSON.parse(evt.data)
+            previous_DIOTableData_json = evt.data;
+            DIOStore.commit('updateStatus', DIOTableData)
+        }
 
     }
 }
@@ -37,14 +35,11 @@ function RDTESTWS() {
 
 var StateWsOnmessageHandler = (evt) => {
     agv_status_ws.connected = true;
-    setTimeout(() => {
-        if (evt.data != previous_vms_data_json) {
-            console.log('data in, connected....');
-            var VMSData = JSON.parse(evt.data);
-            previous_vms_data_json = evt.data;
-            AGVStatusStore.commit('updateStatus', VMSData)
-        }
-    }, 10);
+    if (evt.data != previous_vms_data_json) {
+        var VMSData = JSON.parse(evt.data);
+        previous_vms_data_json = evt.data;
+        AGVStatusStore.commit('updateStatus', VMSData)
+    }
 }
 
 agv_status_ws.Connect();
