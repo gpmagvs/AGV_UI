@@ -94,6 +94,12 @@
                 <el-form-item label="等待EQ READY播放音樂">
                   <el-switch @change="HandleParamChanged" v-model="settings.PlayHandshakingMusic"></el-switch>
                 </el-form-item>
+                <el-form-item label="設備內停車允許誤差(mm)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.TagParkingTolerance"></el-input-number>
+                </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
                 </div>
@@ -194,6 +200,7 @@ export default {
           LocalMapFileName: "/temp/Map_UMTC_AOI.json"
         },
         EQHandshakeMethod: 2,
+        TagParkingTolerance: 5,
         CstReadFailAction: 0,////0:狀態保持IDLE 1:狀態DOWN
         LOAD_OBS_DETECTION: {
           Enable_Load: false,
