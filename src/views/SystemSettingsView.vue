@@ -46,6 +46,12 @@
                     @change="HandleParamChanged"
                     v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
                 </el-form-item>
+                <el-form-item label="Action任務Timeout(Sec)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.ActionTimeout"></el-input-number>
+                </el-form-item>
               </el-form>
             </div>
           </b-tab>
@@ -206,6 +212,7 @@ export default {
         },
         EQHandshakeMethod: 2,
         TagParkingTolerance: 5,
+        ActionTimeout: 5,
         CstReadFailAction: 0,////0:狀態保持IDLE 1:狀態DOWN
         LOAD_OBS_DETECTION: {
           Enable_Load: false,
