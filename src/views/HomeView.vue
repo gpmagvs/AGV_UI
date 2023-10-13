@@ -36,7 +36,7 @@
               variant="light"
               class="mb-1 p-2 border"
               block>
-              <b>{{ $t('buzzer_off') }}</b>
+              <b><i v-if="IsBuzzerMute" class="bi bi-volume-mute-fill"></i>{{ $t('buzzer_off') }}</b>
             </b-button>
             <b-button
               v-if="VMSData.Agv_Type != 2"
@@ -179,7 +179,7 @@ import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
 import WebSocketHelp from '@/api/WebSocketHepler'
 import { ElNotification } from 'element-plus'
-import { UserStore, AGVStatusStore } from '@/store'
+import { UserStore, SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
@@ -512,6 +512,9 @@ export default {
     VMSData() {
       return AGVStatusStore.getters.AGVStatus;
     },
+    IsBuzzerMute() {
+      return !SystemSettingsStore.getters.Settings.BuzzerOn
+    }
 
   },
   mounted() {
