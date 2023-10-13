@@ -11,8 +11,13 @@
           <b-tab title="一般">
             <div class="border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
-                <el-form-item label="網頁鍵盤移動控制">
+                <!-- <el-form-item label="網頁鍵盤移動控制">
                   <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
+                </el-form-item> -->
+                <el-form-item label="蜂鳴器">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.BuzzerMute"></el-switch>
                 </el-form-item>
                 <el-form-item label="一般走行開啟車頭燈">
                   <el-switch
@@ -189,6 +194,7 @@ export default {
         Auto_Read_CST_ID_When_No_Data_But_Has_Cargo: false,
         ForkLifer_Enable: false,
         LDULD_Task_No_Entry: false,
+        BuzzerOn: true,
         LastVisitedTag: 17,
         ForbidToOnlineTags: [
           49
