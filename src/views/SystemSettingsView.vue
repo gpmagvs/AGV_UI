@@ -41,6 +41,16 @@
                     @change="HandleParamChanged"
                     v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
                 </el-form-item>
+                <el-form-item v-if="!IsInspectionAGV" label="初始化時有帳無料自動清帳">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo"></el-switch>
+                </el-form-item>
+                <el-form-item v-if="!IsInspectionAGV" label="初始化時有料無帳自動建帳">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Auto_Read_CST_ID_When_No_Data_But_Has_Cargo"></el-switch>
+                </el-form-item>
                 <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
                   <el-switch
                     @change="HandleParamChanged"
@@ -175,6 +185,8 @@ export default {
         EQHandshakeBypass: false,
         CST_READER_TRIGGER: true,
         Cst_ID_Not_Match_Action: 0,//0:上報讀到的ID 1:向派車查詢虛擬ID
+        Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo: false,
+        Auto_Read_CST_ID_When_No_Data_But_Has_Cargo: false,
         ForkLifer_Enable: false,
         LDULD_Task_No_Entry: false,
         LastVisitedTag: 17,
