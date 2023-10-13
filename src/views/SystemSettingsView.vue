@@ -17,7 +17,7 @@
                 <el-form-item label="蜂鳴器">
                   <el-switch
                     @change="HandleParamChanged"
-                    v-model="settings.BuzzerMute"></el-switch>
+                    v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
                 <el-form-item label="一般走行開啟車頭燈">
                   <el-switch
@@ -178,7 +178,7 @@ export default {
   data() {
     return {
       drawer_show: false,
-      selected_tab: 1,
+      selected_tab: 0,
       settings: {
         LogFolder: "GPM_AGV_LOG",
         AgvType: 1,
