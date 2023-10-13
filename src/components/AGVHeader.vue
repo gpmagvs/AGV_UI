@@ -9,7 +9,7 @@
       </div>
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-        class="agvc-name flex-fill text-primary"
+        class="agvc-name flex-fill"
         @dblclick="where_r_u()">{{ AGVName == "" ? "AGV" : AGVName }}</div>
       <div class="account-name flex-fill">{{ UserName }}</div>
       <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ APPVersion }}.UI.{{ UIVersion }} <i
