@@ -43,30 +43,32 @@
       </b-tab>
       <b-tab title="停車精度">
         <div class="parking-acq border text-start">
-          <div class="options">
-            <div class="title">開始時間</div>
-            <el-date-picker
-              v-model="ParkingAcqQueryOptions.StartTimeStr"
-              type="datetime"
-              placeholder="Select date and time"
-              value-format="YYYY/MM/DD HH:mm:ss" />
+          <div class="border-bottom py-1 mb-1">
+            <div class="options">
+              <div class="title">開始時間</div>
+              <el-date-picker
+                v-model="ParkingAcqQueryOptions.StartTimeStr"
+                type="datetime"
+                placeholder="Select date and time"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            </div>
+            <div class="options">
+              <div class="title">結束時間</div>
+              <el-date-picker
+                v-model="ParkingAcqQueryOptions.EndTimeStr"
+                type="datetime"
+                placeholder="Select date and time"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            </div>
+            <div class="options">
+              <div class="title">位置</div>
+              <el-select @click="HandleParkLocSelectorClcik" v-model="ParkingAcqQueryOptions.Tag">
+                <el-option v-for="loc in ParkedLocList" :key="loc.tag" :value="loc.tag" :label="loc.tag + ':' + loc.name"></el-option>
+              </el-select>
+              <el-button class="mx-1" @click="HandleParkingACQQueryBtnClick" type="primary">查詢</el-button>
+              <el-button v-if="this.ParkingAqcQuResults.length > 0" size="sm" type="primary" @click="HandleDownloadCSVBtnClick">Download CSV</el-button>
+            </div>
           </div>
-          <div class="options">
-            <div class="title">結束時間</div>
-            <el-date-picker
-              v-model="ParkingAcqQueryOptions.EndTimeStr"
-              type="datetime"
-              placeholder="Select date and time"
-              value-format="YYYY/MM/DD HH:mm:ss" />
-          </div>
-          <div class="options">
-            <div class="title">位置</div>
-            <el-select @click="HandleParkLocSelectorClcik" v-model="ParkingAcqQueryOptions.Tag">
-              <el-option v-for="loc in ParkedLocList" :key="loc.tag" :value="loc.tag" :label="loc.tag + ':' + loc.name"></el-option>
-            </el-select>
-            <el-button @click="HandleParkingACQQueryBtnClick" type="primary">查詢</el-button>
-          </div>
-          <el-divider></el-divider>
           <b-tabs>
             <b-tab title="散佈圖">
               <div class="px-5" id="park_acq_chart" style="width: 100%;">
@@ -74,17 +76,25 @@
               </div>
             </b-tab>
             <b-tab title="表格">
-              <el-table size="small" :data="ParkingAqcQuResults" border style="width:800px">
-                <el-table-column class prop="Time" label="Time" width="190"></el-table-column>
-                <el-table-column class prop="ParkingTag" label="Tag" width="50">
-                </el-table-column>
-                <el-table-column class prop="ParkingLocation" label="Location" width="110">
-                </el-table-column>
-                <el-table-column class prop="X" label="X" width="50"></el-table-column>
-                <el-table-column class prop="Y" label="Y" width="50"></el-table-column>
-                <el-table-column class prop="TaskName" label="任務名稱" width="150"></el-table-column>
-                <el-table-column class prop="DistanceToTagCenter" label="Distance" width="80"></el-table-column>
-              </el-table></b-tab>
+              <div>
+                <el-table row-key="Time" size="small" :data="ParkingAqcQuResultsForPage" border style="width:850px;height: 400px;">
+                  <el-table-column class prop="Time" label="Time" width="190"></el-table-column>
+                  <el-table-column class prop="TaskName" label="任務名稱" width="200"></el-table-column>
+                  <el-table-column class prop="ParkingTag" label="Tag" width="50"> </el-table-column>
+                  <el-table-column class prop="ParkingLocation" label="Location" width="110"> </el-table-column>
+                  <el-table-column class prop="X" label="X" width="50"></el-table-column>
+                  <el-table-column class prop="Y" label="Y" width="50"></el-table-column>
+                  <el-table-column class prop="DistanceToTagCenter" label="Distance" width="80"></el-table-column>
+                </el-table>
+                <el-pagination
+                  background
+                  layout="prev, pager, next"
+                  :current-page="ParkingAcqQueryOptions.Page"
+                  :page-size="ParkingAcqQueryOptions.NumberPerPage"
+                  :total="ParkingAqcQuResults.length"
+                  @current-change="HandleParkingAcqTbPaginationChanged" />
+              </div>
+            </b-tab>
           </b-tabs>
         </div>
       </b-tab>
@@ -109,6 +119,8 @@ export default {
         StartTimeStr: "2023/09/08 10:00:00",
         EndTimeStr: "2023/09/08 11:00:00",
         Tag: 7,
+        Page: 1,
+        NumberPerPage: 11,
       },
       ParkedLocList: [],
       Results: {
@@ -175,12 +187,19 @@ export default {
       }
     }
   },
+  computed: {
+    ParkingAqcQuResultsForPage() {
+      var startIndex = (this.ParkingAcqQueryOptions.Page - 1) * this.ParkingAcqQueryOptions.NumberPerPage
+      var endIndex = startIndex + this.ParkingAcqQueryOptions.NumberPerPage;
+      return this.ParkingAqcQuResults.slice(startIndex, endIndex)
+
+    }
+  },
   methods: {
     async HandleQueryBtnClick() {
       this.SaveTimeToLocalStorage();
       this.QueryOptions.Page = 1;
       var response = await LogAPI.Query(this.QueryOptions);
-
       this.Results.TotalCount = response.TotalCount
       this.Results.Messages = response.LogMessageList
 
@@ -193,9 +212,12 @@ export default {
       this.ParkingAqcQuResults.forEach(element => {
         this.chart_datas.series[0].data.push([element.X, element.Y])
       });
+
+      this.ParkingAcqQueryOptions.Page = 1;
     },
     async HandleParkLocSelectorClcik() {
       var ParkedLocList = await LogAPI.GetParkedLocs();
+      ParkedLocList.sort();
       this.ParkedLocList = []
       ParkedLocList.forEach(loc_str => {
         //tag:name
@@ -235,6 +257,51 @@ export default {
         this.QueryOptions.FromTimeStr = obj.from;
         this.QueryOptions.ToTimeStr = obj.to;
       }
+    },
+    HandleParkingAcqTbPaginationChanged(page) {
+      this.ParkingAcqQueryOptions.Page = page;
+    },
+    HandleDownloadCSVBtnClick() {
+      this.buildData(this.ParkingAqcQuResults).then(data => {
+        this.downloadCSV(data);
+      })
+    },
+    buildData(data) {
+      return new Promise((resolve, reject) => {
+        // 最後所有的資料會存在這
+        let arrayData = [];
+        // 取 data 的第一個 Object 的 key 當表頭
+        let arrayTitle = Object.keys(data[0]);
+        arrayData.push(arrayTitle);
+        // 取出每一個 Object 裡的 value，push 進新的 Array 裡
+        Array.prototype.forEach.call(data, d => {
+          let items = [];
+          Array.prototype.forEach.call(arrayTitle, title => {
+            let item = d[title];
+            items.push(item);
+          });
+          arrayData.push(items)
+        })
+
+        resolve(arrayData);
+      })
+
+    },
+    downloadCSV(data) {
+      let csvContent = '';
+      Array.prototype.forEach.call(data, d => {
+        let dataString = d.join(',') + '\n';
+        csvContent += dataString;
+      })
+
+      // 下載的檔案名稱
+      let fileName = 'Parking_Accuracy' + (new Date()).getTime() + '.csv';
+
+      // 建立一個 a，並點擊它
+      let link = document.createElement('a');
+      link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvContent));
+      link.setAttribute('download', fileName);
+      link.click();
     }
 
   },
