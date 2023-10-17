@@ -69,7 +69,7 @@
               <el-button v-if="this.ParkingAqcQuResults.length > 0" size="sm" type="primary" @click="HandleDownloadCSVBtnClick">Download CSV</el-button>
             </div>
           </div>
-          <b-tabs>
+          <b-tabs v-loading="Loading">
             <b-tab title="散佈圖">
               <div class="px-5" id="park_acq_chart" style="width: 100%;">
                 <apexchart ref="park_acq_chart" type="scatter" height="350" :options="chart_datas.chartOptions" :series="chart_datas.series"></apexchart>
@@ -108,6 +108,7 @@ import moment from 'moment'
 export default {
   data() {
     return {
+      Loading: false,
       QueryOptions: {
         FromTimeStr: "2023/09/08 10:00:00",
         ToTimeStr: "2023/09/08 11:00:00",
@@ -145,6 +146,17 @@ export default {
               enabled: false,
             }
           },
+          theme: {
+            mode: 'light',
+            palette: 'palette1',
+            monochrome: {
+              enabled: false,
+              color: '#255aee',
+              shadeTo: 'light',
+              shadeIntensity: 0.65
+            },
+          }
+          ,
           dataLabels: {
             enabled: false,
             formatter: function (val, opts) {
@@ -205,15 +217,20 @@ export default {
 
     },
     async HandleParkingACQQueryBtnClick() {
-      this.chart_datas.chartOptions.title.text = `停車精度- Tag ${this.ParkingAcqQueryOptions.Tag}`
-      this.$refs['park_acq_chart'].updateOptions(this.chart_datas.chartOptions);
-      this.ParkingAqcQuResults = await LogAPI.QueryParkingAcq(this.ParkingAcqQueryOptions);
-      this.chart_datas.series[0].data = []
-      this.ParkingAqcQuResults.forEach(element => {
-        this.chart_datas.series[0].data.push([element.X, element.Y])
-      });
+      this.Loading = true;
+      setTimeout(async () => {
+        this.chart_datas.chartOptions.title.text = `停車精度- Tag ${this.ParkingAcqQueryOptions.Tag}`
+        this.$refs['park_acq_chart'].updateOptions(this.chart_datas.chartOptions);
+        this.ParkingAqcQuResults = await LogAPI.QueryParkingAcq(this.ParkingAcqQueryOptions);
+        this.chart_datas.series[0].data = []
+        this.ParkingAqcQuResults.forEach(element => {
+          this.chart_datas.series[0].data.push([element.X, element.Y])
+        });
 
-      this.ParkingAcqQueryOptions.Page = 1;
+        this.ParkingAcqQueryOptions.Page = 1;
+        this.Loading = false;
+      }, 500);
+
     },
     async HandleParkLocSelectorClcik() {
       var ParkedLocList = await LogAPI.GetParkedLocs();
