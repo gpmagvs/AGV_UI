@@ -20,7 +20,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "10.13.1",
+    UI_Version: "10.18.A",
     PreviousControllRoute: 'move'
   },
   getters: {
