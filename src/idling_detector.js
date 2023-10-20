@@ -5,6 +5,7 @@ var interval = setInterval(() => {
     idleTime += 1;
     if (idleTime >= 300) {
         UserStore.dispatch('Logout')
+        location.reload()
         resetTimer()
         //bus.emit('idle', '');
     }

@@ -14,7 +14,6 @@ import { createI18n } from 'vue-i18n'
 import VueSweetalert2 from 'vue-sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import './my_style.scss'
-import './system_message_fetch'
 import './AGVDataFetchWorker.js'
 import VueApexCharts from "vue3-apexcharts";
 
