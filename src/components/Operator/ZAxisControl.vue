@@ -35,6 +35,7 @@
           size="lg"
           class="w-100 border mb-3"
           variant="light"
+          @click="ForkAction('up_limit')"
           block>
           <i class="bi bi-chevron-bar-up"></i> {{ $t('up_limit_pose') }} </b-button>
         <b-button
@@ -73,6 +74,7 @@
           size="lg"
           class="w-100 border mb-3"
           variant="light"
+          @click="ForkAction('down_limit')"
           block>
           <i class="bi bi-chevron-bar-down"></i> {{ $t('down_limit_pose') }} </b-button>
       </div>
