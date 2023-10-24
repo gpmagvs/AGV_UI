@@ -202,13 +202,13 @@ export const Braker = {
 }
 
 export const AlarmTableAPI = {
-  async TotalAlarmCount() {
-    var ret = await axios_entity.get(`api/AlarmTable/Total`)
+  async TotalAlarmCount(alarm_type = 'All') {
+    var ret = await axios_entity.get(`api/AlarmTable/Total?alarm_type=${alarm_type}`)
     return ret.data
   },
-  async QueryByPage(page = 1, page_size = 16) {
+  async QueryByPage(page = 1, page_size = 16, alarm_type = 'All') {
     var ret = await axios_entity.get(
-      `api/AlarmTable/Query?page=${page}&page_size=${page_size}`,
+      `api/AlarmTable/Query?page=${page}&page_size=${page_size}&alarm_type=${alarm_type}`,
     )
     return ret.data
   },

@@ -2,20 +2,24 @@
   <div class="alarm-warn-table px-1">
     <div class="d-flex flex-row">
       <div class="flex-fill text-start">
-        <b-button size="sm" @click="AlarmDownload">{{$t('refresh')}}</b-button>
+        <label class="text-danger"><b><i class="bi bi-three-dots-vertical"></i>警報類型</b></label>
+        <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
+          <el-option label="ALL" value="All"></el-option>
+          <el-option label="Alarm" value="Alarm"></el-option>
+          <el-option label="Warning" value="Warning"></el-option>
+        </el-select>
+        <b-button size="sm" @click="AlarmDownload">{{ $t('refresh') }}</b-button>
         <b-button
           v-if="clear_alarm_btn_visible"
           variant="danger"
           @click="ClearAlarmAlert()"
-          size="sm"
-        >{{ $t('clear_alarm_records') }}</b-button>
+          size="sm">{{ $t('clear_alarm_records') }}</b-button>
       </div>
       <div>
         <span class="m-2">Search :</span>
         <el-input size="small" style="width:168px"></el-input>
       </div>
     </div>
-
     <div class="mt-2">
       <el-pagination
         background
@@ -23,8 +27,8 @@
         :total="totalAlarmNum"
         :page-size="page_size"
         v-model="page"
-        @current-change="PageChangeHandler"
-      />
+        :current-page="page"
+        @current-change="PageChangeHandler" />
     </div>
     <div class="border mt-1">
       <el-table
@@ -34,17 +38,16 @@
         header
         border
         height="550"
-        size="small"
-      >
+        size="small">
         <el-table-column label="Time" prop="Time" width="160" :formatter="TimeFormmter"></el-table-column>
         <el-table-column label="Code" prop="Code" width="90" header-align="center">
-          <template #default="{row}">
+          <template #default="{ row }">
             <div class="text-center">{{ row.Code }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="Description" :prop="lang=='zh-TW'?'CN':'Description'"></el-table-column>
+        <el-table-column label="Description" :prop="lang == 'zh-TW' ? 'CN' : 'Description'"></el-table-column>
         <el-table-column label="Level" prop="Level" width="100" header-align="center">
-          <template #default="{row}">
+          <template #default="{ row }">
             <div class="text-center">
               <b>{{ row.Level }}</b>
             </div>
@@ -56,8 +59,7 @@
       v-model="clear_alarms_dialog_show"
       centered
       title="Alarm Records Clear"
-      @ok="ClearAlarmRecords"
-    >
+      @ok="ClearAlarmRecords">
       <p>確定要清除異常紀錄?</p>
     </b-modal>
   </div>
@@ -78,6 +80,7 @@ export default {
       page_size: 15,
       lang: 'zh-TW',
       clear_alarms_dialog_show: false,
+      DisplaySelected: 'All'
 
     }
   },
@@ -105,13 +108,12 @@ export default {
       return moment(cellValue).format('yyyy/MM/DD HH:mm:ss');
     },
     async PageChangeHandler(page) {
-
       this.page = page;
       this.AlarmDownload();
     },
     async AlarmDownload() {
-      this.totalAlarmNum = await AlarmTableAPI.TotalAlarmCount()
-      this.alarms = await AlarmTableAPI.QueryByPage(this.page, this.page_size);
+      this.totalAlarmNum = await AlarmTableAPI.TotalAlarmCount(this.DisplaySelected)
+      this.alarms = await AlarmTableAPI.QueryByPage(this.page, this.page_size, this.DisplaySelected);
     },
     ClearAlarmAlert() {
       this.$swal.fire({
@@ -132,6 +134,10 @@ export default {
       await AlarmTableAPI.ClearAlarms();
       Notifier.Success("Alarm Clear", "bottom", 1000);
       await this.AlarmDownload();
+    },
+    async HandleAlarmTypeChanged() {
+      this.page = 1;
+      this.AlarmDownload();
     }
   },
   computed: {
@@ -155,10 +161,12 @@ export default {
 .el-table .success-row {
   --el-table-tr-bg-color: var(--el-color-success-light-9);
 }
+
 .el-table .warning-row {
   background-color: rgb(255, 237, 186);
   /* --el-table-tr-bg-color: var(--el-color-warning-light-9); */
 }
+
 .el-table .alarm-row {
   background-color: rgb(245, 198, 206);
 }
