@@ -119,7 +119,7 @@
             <el-button v-if="Is_TSMC_MiniAGV" effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
           </div>
           <!-- 里程 -->
-          <div class="mileage bg-light border rounded m-1 p-3 py-1">
+          <div class="mileage bg-light border rounded m-1 p-1 py-1">
             <div class="state-title">{{ $t('mileage') }}</div>
             <mileage></mileage>
           </div>

@@ -77,6 +77,12 @@
               <!-- <el-input type="textarea" disabled v-model="NewestAlarm"></el-input> -->
             </td>
           </tr>
+          <tr align="justify">
+            <td></td>
+            <td colspan="4" class="text-end">
+              <p style="font-size:12px;color:grey">RAM :{{ Memory }} Mb</p>
+            </td>
+          </tr>
           <tr v-if="false" align="justify">
             <td>AGV Direct</td>
             <td>
@@ -92,6 +98,7 @@
 <script>
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
+
 export default {
   props: {
 
@@ -160,6 +167,9 @@ export default {
     },
     IsInspectionAGV() {
       return this.vms_data.Agv_Type == 2;
+    },
+    Memory() {
+      return this.vms_data.SysLoading ? this.vms_data.SysLoading.Memory : -1;
     }
   },
 

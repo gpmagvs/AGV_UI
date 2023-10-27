@@ -80,9 +80,13 @@ class VMSData {
     TA4_Wait_EQ_BUSY_OFF: 0,
     TA5_Wait_L_U_REQ_OFF: 0,
   }
+  SysLoading = new clsSysLoading()
 
 }
-
+export class clsSysLoading {
+  Memory = 0
+  CPU = 0
+}
 export class UltrasonicSensorState {
   state = 1
   errorCode = 1

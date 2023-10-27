@@ -20,7 +20,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "10.24.A",
+    UI_Version: "10.25.A",
     PreviousControllRoute: 'move'
   },
   getters: {
@@ -243,6 +243,9 @@ export var AGVStatusStore = createStore({
     },
     HSTimers: state => {
       return state.AGVStatus.HandShakeTimers
+    },
+    SysLoading: state => {
+      return state.AGVStatus.SysLoading
     }
 
   },
