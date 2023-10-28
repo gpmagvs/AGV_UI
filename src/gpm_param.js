@@ -13,8 +13,9 @@ var param = {
   /**ROS Bridge Server Weboscket URL */
   get ros_bridge_url() {
     if (process.env.NODE_ENV == 'development') {
-      return 'ws://192.168.0.101:9090'
+      return 'ws://192.168.235.130:9090'
       return 'ws://127.0.0.1:7025'
+      return 'ws://192.168.0.101:9090'
       return 'ws://10.22.141.219:9090'
     } else {
       return `ws://${window.location.hostname}:9090`

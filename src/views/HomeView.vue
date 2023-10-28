@@ -130,6 +130,14 @@
         </div>
         <!--主要內容 TabControl-->
         <MainContent :VMSData="VMSData"></MainContent>
+        <div v-if="IsSegmentTaskAndIDLE" style="position:absolute;right: 9px;top: 75px;">
+          <el-alert
+            show-icon
+            type="warning"
+            title="停等"
+            :description="WaitinInfo">
+          </el-alert>
+        </div>
       </div>
       <!-- <div class="battery-bottom p-0 bg-primary border w-100 fixed-bottom">
       <span>電量</span>
@@ -514,6 +522,12 @@ export default {
     },
     IsBuzzerMute() {
       return !SystemSettingsStore.getters.Settings.BuzzerOn
+    },
+    IsSegmentTaskAndIDLE() {
+      return this.VMSData.NavInfo.IsSegmentTaskExecuting;
+    },
+    WaitinInfo() {
+      return `等待前往-${this.VMSData.NavInfo.Destination}`
     }
 
   },

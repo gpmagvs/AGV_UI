@@ -44,12 +44,16 @@ class VMSData {
   MainState = 'DOWN'
 
   NavInfo = {
+    /**任務終點 */
     Destination: '',
     Speed_max_limit: -1,
+    /**任務軌跡 */
     PathPlan: [],
     DestinationMapPoint: {
       Name: 'UNKNOWN'
-    }
+    },
+    /**是否為分段任務 */
+    IsSegmentTaskExecuting: false
   }
   NewestAlarm = undefined
   OnlineMode = 0
