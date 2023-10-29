@@ -111,7 +111,7 @@
                   size="sm"
                   style="width:120px"
                   disabled
-                  :state="true"
+                  :state="VMSData.LocStatus == 10"
                   v-model="Coordination">
                 </b-form-input>
               </div>
