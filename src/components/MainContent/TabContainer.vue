@@ -31,6 +31,11 @@
           <CSTReader></CSTReader>
         </div>
       </b-tab>
+      <b-tab title="Overview">
+        <div class="mt-3 border p-1">
+          <AgvOverview :AsMainPageMode="false"></AgvOverview>
+        </div>
+      </b-tab>
       <b-tab v-if="IsGodMod" title="Log">
         <div class="mt-3 border p-1">
           <LogQuery></LogQuery>
@@ -46,11 +51,6 @@
       <b-tab v-if="IsGodMod" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
           <ForkAGV3D></ForkAGV3D>
-        </div>
-      </b-tab>
-      <b-tab v-if="IsGodMod" title="Overview">
-        <div class="mt-3 border p-1">
-          <AgvOverview></AgvOverview>
         </div>
       </b-tab>
       <b-tab v-if="false" title="AGVS MSG">

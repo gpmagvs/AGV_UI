@@ -7,7 +7,6 @@ export var ROS_STORE = createStore({
     state: {
         keyboard_move_enable: false,
         module_info: {
-
         }
     },
     getters: {
@@ -19,6 +18,9 @@ export var ROS_STORE = createStore({
         },
         BatteryInfo: state => {
             return state.module_info.Battery
+        },
+        Module_Information: state => {
+            return state.module_info
         }
     },
     mutations: {
@@ -27,6 +29,7 @@ export var ROS_STORE = createStore({
             KeyboardControlEnable(enable)
         },
         update_module_info(state, module_info) {
+            debugger
             state.module_info = module_info
         }
     },

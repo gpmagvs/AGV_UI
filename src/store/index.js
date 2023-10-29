@@ -5,6 +5,7 @@ import VMSData from '@/ViewModels/VMSData';
 import clsSensorStatus from '@/ViewModels/clsSensorStatus';
 import { ClearAlarm } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
+import { ROS_STORE } from './ros_store';
 export default createStore({
   state: {
   },
@@ -110,17 +111,18 @@ export var AGVStatusStore = createStore({
     AGVStatus: new VMSData(),
     SensorStatus: {
       LaserFront: new clsSensorStatus('前方雷射', 0, 155),
-      LaserBack: new clsSensorStatus('後方雷射', 0, -155, 'left-bottom'),
-      LaserRight: new clsSensorStatus('右方雷射', 80, -125, 'right-top'),
-      LaserLeft: new clsSensorStatus('左方雷射', -80, -125),
+      LaserBack: new clsSensorStatus('後方雷射', 0, -155, 'bottom'),
+      LaserRight: new clsSensorStatus('右方雷射', 80, -125, 'right-bottom'),
+      LaserLeft: new clsSensorStatus('左方雷射', -80, -125, 'left-bottom'),
       Bumper: new clsSensorStatus('Bumper', 70, 155, 'right-top'),
       Bumper_back: new clsSensorStatus('Bumper', 70, -155, 'right-bottom'),
-      RightWheel: new clsSensorStatus('右輪馬達', 35, 0, 'right'),
-      LeftWheel: new clsSensorStatus('左輪馬達', -35, 0, 'left'),
-      VerticalWheel: new clsSensorStatus('垂直軸馬達', 0, -85),
-      VerticalBelt: new clsSensorStatus('垂直軸馬達皮帶', 30, -85, 'right-top'),
+      RightWheel: new clsSensorStatus('右輪馬達', 40, 30, 'right'),
+      LeftWheel: new clsSensorStatus('左輪馬達', -35, 30, 'left'),
+      VerticalWheel: new clsSensorStatus('垂直軸馬達', -35, -85, 'left'),
+      Battery: new clsSensorStatus('電池', 15, -85, 'right', 30),
       ForkFrontendObstacle: new clsSensorStatus('牙叉障礙物', -40, 120, 'left-bottom'),
-      ForkArmPosition: new clsSensorStatus('牙叉伸縮位置', 40, 120, 'right-bottom'),
+      // VerticalBelt: new clsSensorStatus('垂直軸馬達皮帶', 30, -85, 'right-top'),
+      // ForkArmPosition: new clsSensorStatus('牙叉伸縮位置', 40, 120, 'right-bottom'),
       // SickLidar: new clsSensorStatus('Sick'),
     }
   },
@@ -190,17 +192,45 @@ export var AGVStatusStore = createStore({
       state.SensorStatus.LeftWheel.status = DIOStore.getters.IsLeftMotorAlarm ? 2 : 0;
 
       state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
-      state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
+      // state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
       state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
-      state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
+      // state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
 
       var isForkAGV = state.AGVStatus.Agv_Type == 0;
-      state.SensorStatus.VerticalWheel.visible = isForkAGV
-      state.SensorStatus.VerticalBelt.visible = isForkAGV
-      state.SensorStatus.ForkFrontendObstacle.visible = isForkAGV
-      state.SensorStatus.ForkArmPosition.visible = isForkAGV
 
+      state.SensorStatus.VerticalWheel.visible = isForkAGV
+      state.SensorStatus.ForkFrontendObstacle.visible = isForkAGV
+      // state.SensorStatus.VerticalBelt.visible = isForkAGV
+      // state.SensorStatus.ForkArmPosition.visible = isForkAGV
+
+      // state.SensorStatus.LaserFront.always_show_info =
+      //   state.SensorStatus.LaserBack.always_show_info =
+      //   state.SensorStatus.LaserRight.always_show_info =
+      //   state.SensorStatus.LaserLeft.always_show_info =
+
+
+      var Module_Information = ROS_STORE.getters.Module_Information
+      if (Module_Information.Wheel_Driver) {
+        var Wheel_DriverStates = Module_Information.Wheel_Driver.driversState;
+        if (Wheel_DriverStates) {
+          var LeftWheelDriver = Wheel_DriverStates[0];
+          var RightWheelDriver = Wheel_DriverStates[1];
+          var VerticalDriver = Module_Information.Action_Driver;
+          var Battery = Module_Information.Battery
+          state.SensorStatus.VerticalWheel.module_data = `電壓:${VerticalDriver.voltage / 100.0}V,電流:${VerticalDriver.outCurrent}mA,異常碼:${VerticalDriver.errorCode}`
+          state.SensorStatus.RightWheel.module_data = `電壓:${RightWheelDriver.voltage / 100.0}V,電流:${RightWheelDriver.outCurrent}mA,異常碼:${RightWheelDriver.errorCode}`
+          state.SensorStatus.LeftWheel.module_data = `電壓:${LeftWheelDriver.voltage / 100.0}V,電流:${LeftWheelDriver.outCurrent}mA,異常碼:${LeftWheelDriver.errorCode}`
+          state.SensorStatus.Battery.module_data = `電量:${Battery.batteryLevel}%,放電電流:${Battery.dischargeCurrent}mA,充電電流:${Battery.chargeCurrent}mA,異常碼:${Battery.errorCode}`
+
+        }
+      }
+
+
+      state.SensorStatus.Battery.always_show_info =
+        state.SensorStatus.VerticalWheel.always_show_info =
+        state.SensorStatus.RightWheel.always_show_info =
+        state.SensorStatus.LeftWheel.always_show_info = true
 
       return state.SensorStatus;
     },

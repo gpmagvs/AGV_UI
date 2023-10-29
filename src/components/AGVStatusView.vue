@@ -6,28 +6,23 @@
     <svg
       :width="diameter"
       :height="diameter"
-      :viewBox="`${-center} ${-center} ${diameter} ${diameter}`"
-    >
+      :viewBox="`${-center} ${-center} ${diameter} ${diameter}`">
       <!-- 绘制圆 -->
       <circle cx="0" cy="0" :r="radius" fill="transparent" stroke="grey" stroke-width="1" />
       <text
         v-for="deg in degrees"
         :key="deg"
         :x="0"
-        :y="diameter/2"
+        :y="diameter / 2"
         text-anchor="middle"
         :fill="primary_color"
         font-size="14"
-        :transform="`rotate(${deg-agv_angle} 0 0)`"
-      >{{deg-180}}</text>
-
+        :transform="`rotate(${deg - agv_angle} 0 0)`">{{ deg - 180 }}</text>
       <polygon
-        :points="`0,${-radius} -15,${-radius+15} 15,${-radius+15}`"
+        :points="`0,${-radius} -15,${-radius + 15} 15,${-radius + 15}`"
         :fill="primary_color"
         stroke="black"
-        stroke-width="0"
-      />
-
+        stroke-width="0" />
       <!-- <line
         :x1="-radius"
         :y1="0"
@@ -54,68 +49,61 @@
         :x1="0"
         :y1="agv_radius"
         :x2="0"
-        :y2="agv_radius-5"
+        :y2="agv_radius - 5"
         :stroke="'grey'"
         stroke-width="1"
-        :transform="`rotate(${deg-agv_angle} 0 0)`"
-      />
+        :transform="`rotate(${deg - agv_angle} 0 0)`" />
       <circle v-if="false" :cx="0" :cy="0" :r="agv_radius" fill="transparent" stroke="grey" />
-
       <image
         xlink:href="@/assets/images/fork_sketch_topview.png"
-        :x="-agv_car_size.width*1.2/2"
-        :y="-agv_car_size.length*1.2/2"
-        :width="agv_car_size.width*1.2"
-        :height="agv_car_size.length*1.2"
-      />
-
+        :x="-agv_car_size.width * 1.2 / 2"
+        :y="-agv_car_size.length * 1.2 / 2"
+        :width="agv_car_size.width * 1.2"
+        :height="agv_car_size.length * 1.2" />
       <!-- 感測器狀態 -->
       <svg
-        v-for="(data,key) in sensor_data"
+        v-for="(data, key) in sensor_data"
         v-show="data.visible"
         :key="key"
-        :width="380"
-        :height="100"
+        :width="440"
+        :height="180"
         viewBox="-190 -50 380 100"
-        :x="data.position.x-190"
-        :y="(-data.position.y)-50"
+        :x="data.position.x - 222 + data.position.x_offset"
+        :y="(-data.position.y) - 90"
         @click="SensorDotClickHandler(key)"
         @mousemove="SensorDotMouseHover"
         @mouseover="SensorDotMouseHoverDataTransfer(data)"
-        @mouseleave="()=>{sensorTooltipStyle.visibility='hidden'}"
-      >
+        @mouseleave="() => { sensorTooltipStyle.visibility = 'hidden' }">
         <!-- 點 -->
         <circle
           :cx="0"
           :cy="0"
           r="5"
           :fill="GetSensorColorByStatus(data.status)"
-          :stroke="GetSensorColorByStatus(data.status)"
-        />
+          :stroke="GetSensorColorByStatus(data.status)" />
         <!-- 外環 -->
         <circle
           :cx="0"
           :cy="0"
           r="9"
           fill="transparent"
-          :stroke="GetSensorColorByStatus(data.status)"
-        />
+          :stroke="GetSensorColorByStatus(data.status)" />
         <SensorStatusTooltipVue
-          v-if="!only_show_abnormal_sensors | data.status!=0"
+          v-if="!only_show_abnormal_sensors | data.status != 0 | data.always_show_info"
           :sensorName="data.name"
           :sensorData="data"
           :position="data.textPosition"
-          :xOffset="-data.position.x"
-        />
+          :xOffset="-data.position.x" />
       </svg>
     </svg>
-    <div v-bind:style="sensorTooltipStyle" class="sensor-tooltip">{{sensorTooltipStyle.name }}</div>
+    <div v-bind:style="sensorTooltipStyle" class="sensor-tooltip">{{ sensorTooltipStyle.name }}</div>
   </div>
 </template>
   
-  <script>
+<script>
 import SensorStatusTooltipVue from './SensorStatusTooltip.vue';
 import { AGVStatusStore } from '@/store'
+import { ROS_STORE } from '@/store/ros_store'
 export default {
 
   name: 'AngleMarks',
@@ -177,6 +165,9 @@ export default {
     },
     agv_angle() {
       return AGVStatusStore.getters.CurrentAngle;
+    },
+    module_information() {
+      return ROS_STORE.getters.Module_Information;
     }
   },
   methods: {
@@ -234,16 +225,18 @@ export default {
     this.degrees = Array.from({ length: 37 }, (_, index) => index * 10);
   },
 };
-  </script>
+</script>
 <style lang="scss" scoped>
 .options {
   position: relative;
   left: 10px;
   top: 10px;
 }
+
 .line2 {
   color: #008000;
 }
+
 .sensor-tooltip {
   position: fixed;
   color: pink;

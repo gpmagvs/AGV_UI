@@ -33,38 +33,6 @@ export function Stop() {
 }
 
 
-var cmd_vel_publish_timer = null
-
-function StartCmdVelPublishTimer() {
-    var keyboard_move_topic = new ROSLIB.Topic({
-        ros: ros,
-        name: '/cmd_vel',
-        messageType: 'geometry_msgs/Twist'
-    })
-
-    cmd_vel_publish_timer = setInterval(() => {
-        if (!_keyboardControlEnable)
-            return
-        if (linear_speed >= _max_linear_speed || linear_speed <= -_max_linear_speed)
-            linear_speed = linear_speed > 0 ? _max_linear_speed : -_max_linear_speed
-
-        if (angular_speed >= _max_angular_speed || angular_speed <= -_max_angular_speed)
-            angular_speed = angular_speed > 0 ? _max_angular_speed : -_max_angular_speed
-
-        keyboard_move_topic.publish(new ROSLIB.Message({
-            linear: {
-                x: linear_speed,
-                y: 0,
-                z: 0,
-            },
-            angular: {
-                x: 0,
-                y: 0,
-                z: -angular_speed,
-            }
-        }))
-    }, 0.1);
-}
 
 ros.on('connection', function () {
     console.log('ros bridge server connected!');
