@@ -18,7 +18,7 @@
               :disabled="back_end_server_err || VMSData.IsSystemIniting"
               @click="AGVInitialize()"
               class="mb-1 p-2"
-              v-bind:class="VMSData.SubState == '' ? 'down' : VMSData.SubState.toLowerCase()"
+              v-bind:class="VMSData.SubState == '' || !VMSData.IsInitialized ? 'down' : VMSData.SubState.toLowerCase()"
               block>
               <b>{{ $t('initialize') }}</b>
             </b-button>
@@ -132,10 +132,12 @@
         <MainContent :VMSData="VMSData"></MainContent>
         <div v-if="IsSegmentTaskAndIDLE" style="position:absolute;right: 9px;top: 75px;">
           <el-alert
+            id="waiting-go-alert"
             show-icon
             type="warning"
-            title="停等"
-            :description="WaitinInfo">
+            title="移動任務停等中..."
+            :description="WaitinInfo"
+            :closable="false">
           </el-alert>
         </div>
       </div>
@@ -527,7 +529,7 @@ export default {
       return this.VMSData.NavInfo.IsSegmentTaskExecuting;
     },
     WaitinInfo() {
-      return `等待前往-${this.VMSData.NavInfo.Destination}`
+      return `等待前往目的地-${this.VMSData.NavInfo.Destination}`
     }
 
   },
@@ -585,9 +587,29 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 .main-content {
   padding-top: 38px;
+}
+
+#waiting-go-alert {
+  .el-alert__title {
+    font-size: 25px;
+    position: relative;
+    left: -2rem;
+  }
+
+  .el-alert__description {
+    font-size: 32px;
+    position: relative;
+    color: rgb(13, 110, 253);
+    font-weight: bold;
+  }
+
+  .el-alert__icon {
+    font-size: 60px;
+    width: 60px;
+  }
 }
 
 .simulation-mode {

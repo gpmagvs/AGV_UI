@@ -98,6 +98,11 @@
           </b-tabs>
         </div>
       </b-tab>
+      <b-tab title="電池狀態">
+        <div>
+          <ChargeStatusQuery></ChargeStatusQuery>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -105,7 +110,11 @@
 <script>
 import { LogAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
+import ChargeStatusQuery from './ChargeStatusQuery'
 export default {
+  components: {
+    ChargeStatusQuery,
+  },
   data() {
     return {
       Loading: false,

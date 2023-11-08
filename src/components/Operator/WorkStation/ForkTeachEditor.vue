@@ -10,8 +10,7 @@
       :data="TeachDatas"
       height="600"
       size="small"
-      v-loading="loading"
-    >
+      v-loading="loading">
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
@@ -19,12 +18,29 @@
               @click="InputClicked"
               @change="InputChanged"
               type="number"
-              v-model="scope.row.Tag"
-            ></el-input>
+              v-model="scope.row.Tag"></el-input>
           </div>
         </template>
       </el-table-column>
-      <el-table-column v-for="index in [0,1,2]" :key="index" :label="'layer-'+index">
+      <el-table-column label="設備名稱" prop="Name">
+        <template #default="scope">
+          <div>
+            <el-input
+              disabled
+              @change="InputChanged"
+              v-model="scope.row.Name"></el-input>
+          </div>
+        </template>
+      </el-table-column> <el-table-column label="需交握" prop="NeedHandshake">
+        <template #default="scope">
+          <div>
+            <el-checkbox
+              @change="HandleNeedHandshakeCkbChanged(scope.row)"
+              v-model="scope.row.NeedHandshake"></el-checkbox>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column v-for="index in [0, 1, 2]" :key="index" :label="'layer-' + index">
         <el-table-column label="Up Pose(cm)" :prop="`Up_Pose:${index}`">
           <template #default="scope">
             <el-input
@@ -33,9 +49,8 @@
               type="number"
               step="0.01"
               min="0"
-              v-if="scope.row.Layers[index]!=undefined"
-              v-model="scope.row.Layers[index].Value.Up_Pose"
-            ></el-input>
+              v-if="scope.row.Layers[index] != undefined"
+              v-model="scope.row.Layers[index].Value.Up_Pose"></el-input>
           </template>
         </el-table-column>
         <el-table-column label="Down Pose(cm)" :prop="`Down_Pose:${index}`">
@@ -46,9 +61,8 @@
               type="number"
               step="0.01"
               min="0"
-              v-if="scope.row.Layers[index]!=undefined"
-              v-model="scope.row.Layers[index].Value.Down_Pose"
-            ></el-input>
+              v-if="scope.row.Layers[index] != undefined"
+              v-model="scope.row.Layers[index].Value.Down_Pose"></el-input>
           </template>
         </el-table-column>
       </el-table-column>
@@ -79,6 +93,7 @@ export default {
       TeachDatas: [
         {
           Tag: 10,
+          Name: '',
           Layers: [
             {
               Key: 0,
@@ -101,6 +116,7 @@ export default {
         },
         {
           Tag: 20,
+          Name: '',
           Layers: [
             {
               Key: 0,
@@ -232,6 +248,9 @@ export default {
       this.HasAnyChange = currentJson != this.OriDataJson;
 
     },
+    async HandleNeedHandshakeCkbChanged(row) {
+      await ForkAPI.WorkstationHandshakeSetting(row.Tag, row.NeedHandshake)
+    },
     InputClicked(ele) {
       setTimeout(() => {
         this.$refs['teach_tool'].Show(this.selected_data)
@@ -297,5 +316,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

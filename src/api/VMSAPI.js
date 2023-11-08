@@ -325,6 +325,11 @@ export const ForkAPI = {
     var ret = await axios_entity.post(`api/VMS/Fork/SaveTeachDatas`, teach_data)
     return ret.data;
   },
+  /**儲存所有教點設定 */
+  async WorkstationHandshakeSetting(eq_tag, isNeedHandshake) {
+    var ret = await axios_entity.get(`api/VMS/Workstation/HandshakeSetting?eq_tag=${eq_tag}&need_handshake=${isNeedHandshake}`)
+    return ret.data;
+  },
   /**儲存單元教點設定 */
   async SaveUnitTeachData(unit_teach_data) {
     var ret = await axios_entity.post(`api/VMS/Fork/SaveUnitTeachData`, unit_teach_data)

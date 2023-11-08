@@ -12,7 +12,7 @@
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
           <!-- <KeyboardInput v-model="linear_speed"></KeyboardInput> -->
-          <el-input-number size="large" v-model="linear_speed" :step="0.1" :max="1" :min="0.01"></el-input-number>
+          <el-input-number size="large" v-model="linear_speed" :step="0.001" :max="1" :min="0.001"></el-input-number>
         </div>
         <div class="speed-item-container d-flex flex-row">
           <div>Rotation Speed</div>
@@ -100,34 +100,62 @@ export default {
   },
   data() {
     return {
-      linear_speed: 0.2,
-      rotation_speed: 0.2,
-      speed_modifyable: false
+      linear_speed: 0.05,
+      rotation_speed: 0.05,
+      speed_modifyable: false,
+      linear_action: 'stop',
+      rotation_action: 'stop',
     }
   },
   methods: {
     async MOVE_UP() {
+      if (this.linear_action != 'up')
+        this.MOVE_STOP();
+      this.linear_action = 'up'
+      this.linear_speed += 0.05;
+      if (this.linear_speed >= 1)
+        this.linear_speed = 1
       AGVMoveUp(this.linear_speed);
       // await MOVEControl.AGVMove_UP(this.linear_speed);
     },
     async MOVE_DOWN() {
+      if (this.linear_action != 'down')
+        this.MOVE_STOP();
+      this.linear_action = 'down'
+      this.linear_speed += 0.05;
+      if (this.linear_speed >= 1)
+        this.linear_speed = 1
       AGVMoveDown(this.linear_speed);
     },
     async MOVE_LEFT() {
       if (this.IsMiniAGV) {
         AGVMove_ShiftLeft(this.linear_speed);
       } else {
-        await AGVMoveLeft(this.rotation_speed);
+        if (this.rotation_action != 'left')
+          this.MOVE_STOP();
+        this.rotation_action = 'left'
+        this.rotation_speed += 0.05;
+        if (this.rotation_speed >= 0.3)
+          this.rotation_speed = 0.3
+        AGVMoveLeft(this.rotation_speed);
       }
     },
     async MOVE_RIGHT() {
       if (this.IsMiniAGV)
         AGVMove_ShiftRight(this.linear_speed);
-      else
+      else {
+        if (this.rotation_action != 'right')
+          this.MOVE_STOP();
+        this.rotation_action = 'right'
+        this.rotation_speed += 0.05;
+        if (this.rotation_speed >= 0.3)
+          this.rotation_speed = 0.3
         AGVMoveRight(this.rotation_speed);
+      }
     },
     async MOVE_STOP() {
       AGVStop();
+      this.linear_speed = this.rotation_speed = 0.05;
     },
     async MOVE_FR() {
       if (this.IsMiniAGV)

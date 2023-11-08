@@ -206,6 +206,17 @@ export default {
         result = await ForkAPI.ARM_Extend();
       else
         result = await ForkAPI.ARM_Shorten();
+      if (!result.confirm) {
+        this.$swal.fire(
+          {
+            text: '',
+            title: result.message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
     },
     async ForkArmStopHandler() {
       await ForkAPI.ARM_Stop();
