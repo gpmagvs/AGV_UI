@@ -98,9 +98,14 @@
           </b-tabs>
         </div>
       </b-tab>
-      <b-tab title="電池狀態">
+      <!-- <b-tab title="電池狀態">
         <div>
           <ChargeStatusQuery></ChargeStatusQuery>
+        </div>
+      </b-tab> -->
+      <b-tab title="搬運紀錄">
+        <div>
+          <TranferLogView></TranferLogView>
         </div>
       </b-tab>
     </b-tabs>
@@ -111,9 +116,10 @@
 import { LogAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
 import ChargeStatusQuery from './ChargeStatusQuery'
+import TranferLogView from './TranferLogView'
 export default {
   components: {
-    ChargeStatusQuery,
+    ChargeStatusQuery, TranferLogView
   },
   data() {
     return {

@@ -386,6 +386,10 @@ export const LogAPI = {
   async GetParkedLocs() {
     var ret = await axios_entity.get(`api/ParkingAccurcy/GetAllParkLoc`)
     return ret.data;
+  },
+  async GetTransferLogToday() {
+    var ret = await axios_entity.get(`api/Log/GetTransferLogToday`)
+    return ret.data;
   }
 }
 
