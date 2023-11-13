@@ -3,7 +3,7 @@ import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
 import clsSensorStatus from '@/ViewModels/clsSensorStatus';
-import { ClearAlarm } from '@/api/VMSAPI.js'
+import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
 import { ROS_STORE } from './ros_store';
 export default createStore({
@@ -576,6 +576,38 @@ export var ForkTeachStore = createStore({
   mutations: {
     setIsAnyChanged(state, HasAnyChanged) {
       state.HasAnyChanged = HasAnyChanged;
+    },
+  }
+})
+
+
+export var WorkstationStore = createStore({
+  state: {
+    Workstations: {}
+  },
+  getters: {
+    Workstations: state => {
+      return state.Workstations;
+    }
+  },
+  mutations: {
+    setIsAnyChanged(state, HasAnyChanged) {
+      state.HasAnyChanged = HasAnyChanged;
+    },
+    store(state, data) {
+      state.Workstations = data;
+    }
+  },
+  actions: {
+    GetWorkStationData({ commit }) {
+      GetWorkstationsData().then(workstation_data => {
+        commit('store', workstation_data);
+      })
+    },
+    ModbusIOTestStart({ commit }, tag) {
+      return WorkStationModbusIOTest(tag).then(dat => {
+        return dat
+      })
     }
   }
 })

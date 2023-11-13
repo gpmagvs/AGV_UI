@@ -85,11 +85,15 @@ class VMSData {
     TA5_Wait_L_U_REQ_OFF: 0,
   }
   SysLoading = new clsSysLoading()
-
+  HandshakeStatus = new clsEQHandshake()
 }
 export class clsSysLoading {
   Memory = 0
   CPU = 0
+}
+export class clsEQHandshake {
+  ConnectionType = 0
+  Connected = false
 }
 export class UltrasonicSensorState {
   state = 1

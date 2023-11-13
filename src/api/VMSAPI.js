@@ -54,6 +54,7 @@ export async function BuzzerOff() {
   var ret = await axios_entity.post('api/VMS/BuzzerOff')
   return ret
 }
+
 /**移除卡匣CST Reader資料 */
 export async function RemoveCassette() {
   var ret = await axios_entity.post('api/VMS/RemoveCassette')
@@ -63,6 +64,17 @@ export async function RemoveCassette() {
   return success;
 }
 
+/**取得工位數據 */
+export async function GetWorkstationsData() {
+  var ret = await axios_entity.get('api/VMS/GetWorkstations')
+  return ret.data;
+}
+
+/**與指定TAG之工位進行IO測試(MODBUS )) */
+export async function WorkStationModbusIOTest(tag) {
+  var ret = await axios_entity.post(`api/VMS/WorkstationModbusIOTest?Tag=${tag}`)
+  return ret.data;
+}
 export const MOVEControl = {
   /**車體移動-UP */
   async AGVMove_UP(speed = 0.08) {
