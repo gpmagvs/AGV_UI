@@ -10,7 +10,7 @@
       <el-button :loading="connecting" type="primary" :disabled="workstation_name_slected == undefined" @click="HandleIOTestBtnClick">IO測試</el-button>
       <el-tag class="mx-2" size="large" effect="dark" :type="!EQHSStatus.Connected ? 'error' : 'primary'">{{ EQHSStatus.Connected ? "已連線" : "斷線" }}</el-tag>
     </div> {{ ConnectionTypeName }} <div class="d-flex flex-column px-1" v-if="IsGodUse" style="float: left;">
-      <b-button @click="show_hs_test_drawer = true" class="my-1" variant="primary">交握測試</b-button>
+      <b-button v-if="false" @click="show_hs_test_drawer = true" class="my-1" variant="primary">交握測試</b-button>
     </div>
     <div class="d-flex justify-content-center">
       <DJM_PIO></DJM_PIO>

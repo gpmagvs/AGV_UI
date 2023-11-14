@@ -5,14 +5,14 @@
         <div class="px-2" style="width:50px;position:absolute;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
-        <div>GPM AGV</div>
+        <div @click="() => { VersionShowUI = !VersionShowUI }">GPM AGV</div>
       </div>
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
         @dblclick="where_r_u()">{{ AGVName == "" ? "AGV" : AGVName }}</div>
       <div class="account-name flex-fill">{{ UserName }}</div>
-      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ APPVersion }}.UI.{{ UIVersion }} <i
+      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"
           class="bi bi-cloud-upload"></i>
@@ -49,7 +49,8 @@ export default {
     return {
       uploadVisible: false,
       IsUseChinese: true,
-
+      APPVersionDisplay: '',
+      VersionShowUI: false
     }
   },
   computed: {
@@ -115,6 +116,8 @@ export default {
       }
     },
   },
+  mounted() {
+  }
 }
 </script>
 
