@@ -140,6 +140,17 @@
             :closable="false">
           </el-alert>
         </div>
+        <div v-if="IsShowOrderStatus" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
+          <el-alert
+            id="order-go-alert"
+            :class="order_info_title_class"
+            show-icon
+            :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'"
+            :title="'派車系統任務-' + GetActionName + `(${this.OrderInfo.ActionName})`"
+            :description="GetOrderDescription"
+            :closable="false">
+          </el-alert>
+        </div>
       </div>
       <!-- <div class="battery-bottom p-0 bg-primary border w-100 fixed-bottom">
       <span>電量</span>
@@ -189,7 +200,7 @@ import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
 import WebSocketHelp from '@/api/WebSocketHepler'
 import { ElNotification } from 'element-plus'
-import { UserStore, SystemSettingsStore, AGVStatusStore } from '@/store'
+import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
@@ -228,6 +239,7 @@ export default {
       ws: null,
       previousAGVPoseIsError: false,
       ShowAGVPoseErrorModel: false,
+
     }
   },
   methods: {
@@ -528,8 +540,82 @@ export default {
     IsSegmentTaskAndIDLE() {
       return this.VMSData.NavInfo.IsSegmentTaskExecuting;
     },
+    IsShowOrderStatus() {
+      return this.OrderInfo.ActionName != 999;
+    },
     WaitinInfo() {
       return `等待前往目的地-${this.VMSData.NavInfo.Destination}`
+    },
+    /**
+     *  DestineName ,
+  SourceName,
+  ActionName */
+    OrderInfo() {
+      return this.VMSData.OrderInfo;
+    },
+    GetOrderDescription() {
+      if (this.OrderInfo.ActionName == 9) {
+        if (this.VMSData.CargoExist) {
+          return `前往[${this.OrderInfo.DestineName}]放貨(來源[${this.OrderInfo.SourceName}])`
+        } else {
+          return `前往[${this.OrderInfo.SourceName}]取貨(終點[${this.OrderInfo.DestineName}])`
+        }
+      }
+      else
+        return `終點-${this.OrderInfo.DestineName}`
+    },
+    GetActionName() {
+      switch (this.OrderInfo.ActionName) {
+        case 0:
+          return '移動'
+        case 1:
+          return '取貨'
+        case 2:
+          return '放貨/停車'
+        case 3:
+          return '放貨/停車'
+        case 6:
+          return '量測'
+        case 7:
+          return '放貨'
+        case 8:
+          return '充電'
+        case 9:
+          return '搬運'
+        case 10:
+          return '退出充電站'
+        case 12:
+          return '停車'
+        case 13:
+          return '退出停車點'
+        case 14:
+          return '交換電池'
+        default:
+          return `Unknown(${this.ActionName})`
+      }
+    },
+    order_info_title_class() {
+      if (this.VMSData.MainState == 'DOWN') {
+        return "order-info-title-error"
+      } else
+        return "order-info-title-normal"
+    },
+    orderInfoContinerStyle() {
+      //position:absolute;right: 9px;bottom: 0;
+      var isAlarmShow = AGVStatusStore.getters.AlarmCodes.length > 0;
+      var isHomeViewShow = UIStore.getters.CurrentTabSelected == 0;
+      if (isAlarmShow) {
+        return {
+          position: 'absolute',
+          right: '9px',
+          top: '73px'
+        }
+      } else
+        return {
+          position: 'absolute',
+          right: '9px',
+          bottom: '0'
+        }
     }
 
   },
@@ -609,6 +695,39 @@ export default {
   .el-alert__icon {
     font-size: 60px;
     width: 60px;
+  }
+}
+
+#order-go-alert {
+  .el-alert__title {
+    font-size: 25px;
+    position: relative;
+    left: 1rem;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+
+  .el-alert__description {
+    font-size: 32px;
+    position: relative;
+    color: rgb(41, 99, 187);
+  }
+
+  .el-alert__icon {
+    font-size: 40px;
+    width: 40px;
+  }
+}
+
+.order-info-title-normal {
+  .el-alert__title {
+    color: seagreen;
+  }
+}
+
+.order-info-title-error {
+  .el-alert__title {
+    color: red;
   }
 }
 

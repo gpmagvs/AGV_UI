@@ -75,7 +75,7 @@ import AgvOverview from '@/components/AGVStatusOverview.vue';
 import Notifier from "@/api/NotifyHelper.js";
 import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
-import { UserStore } from '@/store'
+import { UserStore, UIStore } from '@/store'
 import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
 import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
@@ -96,6 +96,7 @@ export default {
   },
   methods: {
     HandleTabpageChanged(currentTabs, previousTabs) {
+      UIStore.commit('SetCurrentTabSelected', currentTabs)
       if (currentTabs == previousTabs)
         return;
       if (currentTabs == 1) {

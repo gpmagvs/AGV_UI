@@ -22,7 +22,8 @@ export default createStore({
 export var UIStore = createStore({
   state: {
     UI_Version: "10.25.A",
-    PreviousControllRoute: 'move'
+    PreviousControllRoute: 'move',
+    CurrentTabSelected: 0
   },
   getters: {
     CurrentUIVersion: state => {
@@ -30,11 +31,15 @@ export var UIStore = createStore({
     },
     PreviousControllRoute: state => {
       return state.PreviousControllRoute;
-    }
+    },
+    CurrentTabSelected: state => state.CurrentTabSelected
   },
   mutations: {
     SetPreviousControllerRoute(state, route) {
       state.PreviousControllRoute = route;
+    },
+    SetCurrentTabSelected(state, tab) {
+      state.CurrentTabSelected = tab;
     }
   },
   actions: {

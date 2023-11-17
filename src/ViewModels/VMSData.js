@@ -77,6 +77,7 @@ class VMSData {
   ZAxisDriverState = new clsDriverState()
   ZAxisActionName = ''
   ForkHasLoading = false
+  CargoExist = false
   HandShakeTimers = {
     TA1_Wait_L_U_REQ_ON: 0,
     TA2_Wait_EQ_READY_ON: 0,
@@ -86,7 +87,15 @@ class VMSData {
   }
   SysLoading = new clsSysLoading()
   HandshakeStatus = new clsEQHandshake()
+  OrderInfo = new clsOrderInfo()
 }
+export class clsOrderInfo {
+  DestineName = ""
+  SourceName = ""
+  ActionName = 0
+
+}
+
 export class clsSysLoading {
   Memory = 0
   CPU = 0
