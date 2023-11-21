@@ -146,7 +146,7 @@
             :class="order_info_title_class"
             show-icon
             :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'"
-            :title="'派車系統任務-' + GetActionName + `(${this.OrderInfo.ActionName})`"
+            :title="`派車系統任務-[${GetActionName}]`"
             :description="GetOrderDescription"
             :closable="false">
           </el-alert>
@@ -556,13 +556,13 @@ export default {
     GetOrderDescription() {
       if (this.OrderInfo.ActionName == 9) {
         if (this.VMSData.CargoExist) {
-          return `前往[${this.OrderInfo.DestineName}]放貨(來源[${this.OrderInfo.SourceName}])`
+          return `前往[${this.OrderInfo.DestineName}]放貨(來源:[${this.OrderInfo.SourceName}])`
         } else {
-          return `前往[${this.OrderInfo.SourceName}]取貨(終點[${this.OrderInfo.DestineName}])`
+          return `前往[${this.OrderInfo.SourceName}]取貨(目的地:[${this.OrderInfo.DestineName}])`
         }
       }
       else
-        return `終點-${this.OrderInfo.DestineName}`
+        return `目的地-${this.OrderInfo.DestineName}`
     },
     GetActionName() {
       switch (this.OrderInfo.ActionName) {
