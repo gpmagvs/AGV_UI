@@ -93,6 +93,7 @@ export class clsOrderInfo {
   DestineName = ""
   SourceName = ""
   ActionName = 0
+  DisplayText = ""
 
 }
 

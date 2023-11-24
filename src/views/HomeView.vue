@@ -554,15 +554,7 @@ export default {
       return this.VMSData.OrderInfo;
     },
     GetOrderDescription() {
-      if (this.OrderInfo.ActionName == 9) {
-        if (this.VMSData.CargoExist) {
-          return `前往[${this.OrderInfo.DestineName}]放貨(來源:[${this.OrderInfo.SourceName}])`
-        } else {
-          return `前往[${this.OrderInfo.SourceName}]取貨(目的地:[${this.OrderInfo.DestineName}])`
-        }
-      }
-      else
-        return `目的地-${this.OrderInfo.DestineName}`
+      return this.OrderInfo.DisplayText;
     },
     GetActionName() {
       switch (this.OrderInfo.ActionName) {

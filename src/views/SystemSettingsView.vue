@@ -6,7 +6,7 @@
           <h2 class="text-start">Settings</h2>
         </div>
       </template>
-      <div>
+      <div style="position: relative;top: -1rem;">
         <b-tabs v-model="selected_tab">
           <b-tab title="一般">
             <div class="border p-2">
@@ -14,6 +14,9 @@
                 <!-- <el-form-item label="網頁鍵盤移動控制">
                   <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
                 </el-form-item> -->
+                <div class="text-start w-100 border-bottom">
+                  <b>Genernal</b>
+                </div>
                 <el-form-item label="蜂鳴器">
                   <el-switch
                     @change="HandleParamChanged"
@@ -56,18 +59,45 @@
                     @change="HandleParamChanged"
                     v-model="settings.Auto_Read_CST_ID_When_No_Data_But_Has_Cargo"></el-switch>
                 </el-form-item>
-                <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
-                </el-form-item>
                 <el-form-item label="Action任務Timeout(Sec)">
                   <el-input-number
                     @change="HandleParamChanged"
                     size="small"
                     v-model="settings.ActionTimeout"></el-input-number>
                 </el-form-item>
+                <div v-if="IsInspectionAGV" class="text-start w-100 border-bottom">
+                  <b>巡檢AGV</b>
+                </div>
+                <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
+                </el-form-item>
               </el-form>
+            </div>
+          </b-tab>
+          <b-tab title="安全防護">
+            <div class="border p-2">
+              <div class="text-start w-100 border-bottom">
+                <el-form :model="settings" label-width="150" label-position="left">
+                  <b>碰撞偵測功能</b>
+                  <el-form-item label="啟用">
+                    <el-switch
+                      @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.Enabled"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="閥值">
+                    <el-input-number
+                      step="0.01"
+                      precision="2"
+                      min="0.01"
+                      max="4"
+                      @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.ThresHold"></el-input-number>
+                    <span class="mx-2">G</span>
+                  </el-form-item>
+                </el-form>
+              </div>
             </div>
           </b-tab>
           <b-tab title="設備取/放貨">
