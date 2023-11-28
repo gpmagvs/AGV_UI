@@ -44,29 +44,37 @@
       <b-tab title="停車精度">
         <div class="parking-acq border text-start">
           <div class="border-bottom py-1 mb-1">
-            <div class="options">
-              <div class="title">開始時間</div>
-              <el-date-picker
-                v-model="ParkingAcqQueryOptions.StartTimeStr"
-                type="datetime"
-                placeholder="Select date and time"
-                value-format="YYYY/MM/DD HH:mm:ss" />
+            <div class="d-flex flex-row">
+              <div class="options">
+                <div class="title">開始時間</div>
+                <el-date-picker
+                  v-model="ParkingAcqQueryOptions.StartTimeStr"
+                  type="datetime"
+                  placeholder="Select date and time"
+                  value-format="YYYY/MM/DD HH:mm:ss" />
+              </div>
+              <div class="options">
+                <div class="title">結束時間</div>
+                <el-date-picker
+                  v-model="ParkingAcqQueryOptions.EndTimeStr"
+                  type="datetime"
+                  placeholder="Select date and time"
+                  value-format="YYYY/MM/DD HH:mm:ss" />
+              </div>
             </div>
             <div class="options">
-              <div class="title">結束時間</div>
-              <el-date-picker
-                v-model="ParkingAcqQueryOptions.EndTimeStr"
-                type="datetime"
-                placeholder="Select date and time"
-                value-format="YYYY/MM/DD HH:mm:ss" />
+              <el-radio-group v-model="ParkingAcqQueryOptions.QueryBy" class="ml-4">
+                <el-radio label="Location" size="large"> <span>Tag</span>
+                  <span> <el-select :disabled="ParkingAcqQueryOptions.QueryBy != 'Location'" @click="HandleParkLocSelectorClcik" v-model="ParkingAcqQueryOptions.TagSelect">
+                      <el-option v-for="loc in ParkedLocList" :key="loc.tag" :value="loc.tag" :label="`[${loc.tag}] ${loc.name}`"></el-option>
+                    </el-select></span></el-radio>
+                <el-radio label="Task_Name" size="large">Task Name <el-input :disabled="ParkingAcqQueryOptions.QueryBy == 'Location'" v-model="ParkingAcqQueryOptions.TaskNameInput">
+                  </el-input></el-radio>
+              </el-radio-group>
             </div>
-            <div class="options">
-              <div class="title">位置</div>
-              <el-select @click="HandleParkLocSelectorClcik" v-model="ParkingAcqQueryOptions.Tag">
-                <el-option v-for="loc in ParkedLocList" :key="loc.tag" :value="loc.tag" :label="loc.tag + ':' + loc.name"></el-option>
-              </el-select>
+            <div>
               <el-button class="mx-1" @click="HandleParkingACQQueryBtnClick" type="primary">查詢</el-button>
-              <el-button v-if="this.ParkingAqcQuResults.length > 0" size="sm" type="primary" @click="HandleDownloadCSVBtnClick">Download CSV</el-button>
+              <el-button v-if="this.ParkingAqcQuResults.length > 0" type="primary" @click="HandleDownloadCSVBtnClick">Download CSV</el-button>
             </div>
           </div>
           <b-tabs v-loading="Loading">
@@ -77,9 +85,12 @@
             </b-tab>
             <b-tab title="表格">
               <div>
-                <el-table row-key="Time" size="small" :data="ParkingAqcQuResultsForPage" border style="width:850px;height: 400px;">
-                  <el-table-column class prop="Time" label="Time" width="190"></el-table-column>
-                  <el-table-column class prop="TaskName" label="任務名稱" width="200"></el-table-column>
+                <el-table row-key="Time" size="small" :data="ParkingAqcQuResultsForPage" border style="width:850px;height: 362px;">
+                  <el-table-column class prop="Time" label="Time" width="190">
+                    <template #default="scope"> {{ TimeFormat(scope.row.Time) }} </template>
+                  </el-table-column>
+                  <el-table-column prop="TaskName" label="任務名稱" width="200">
+                  </el-table-column>
                   <el-table-column class prop="ParkingTag" label="Tag" width="50"> </el-table-column>
                   <el-table-column class prop="ParkingLocation" label="Location" width="110"> </el-table-column>
                   <el-table-column class prop="X" label="X" width="50"></el-table-column>
@@ -117,6 +128,7 @@ import { LogAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
 import ChargeStatusQuery from './ChargeStatusQuery'
 import TranferLogView from './TranferLogView'
+import { CopyText } from '@/Tools.js'
 export default {
   components: {
     ChargeStatusQuery, TranferLogView
@@ -135,9 +147,14 @@ export default {
         StartTimeStr: "2023/09/08 10:00:00",
         EndTimeStr: "2023/09/08 11:00:00",
         Tag: 7,
+        TagSelect: 7,
+        TaskName: '',
+        TaskNameInput: '',
         Page: 1,
-        NumberPerPage: 11,
+        NumberPerPage: 10,
+        QueryBy: 'Location'
       },
+
       ParkedLocList: [],
       Results: {
         TotalCount: 0,
@@ -234,8 +251,16 @@ export default {
     async HandleParkingACQQueryBtnClick() {
       this.Loading = true;
       setTimeout(async () => {
-        this.chart_datas.chartOptions.title.text = `停車精度- Tag ${this.ParkingAcqQueryOptions.Tag}`
-        this.$refs['park_acq_chart'].updateOptions(this.chart_datas.chartOptions);
+
+        if (this.ParkingAcqQueryOptions.QueryBy == 'Location') {
+          this.ParkingAcqQueryOptions.TaskName = ''
+          this.ParkingAcqQueryOptions.Tag = this.ParkingAcqQueryOptions.TagSelect
+          this.chart_datas.chartOptions.title.text = `停車精度- Tag ${this.ParkingAcqQueryOptions.Tag}`
+        } else {
+          this.ParkingAcqQueryOptions.TaskName = this.ParkingAcqQueryOptions.TaskNameInput
+          this.ParkingAcqQueryOptions.Tag = -1
+          this.chart_datas.chartOptions.title.text = `停車精度-任務 ${this.ParkingAcqQueryOptions.TaskName}`;
+        }
         this.ParkingAqcQuResults = await LogAPI.QueryParkingAcq(this.ParkingAcqQueryOptions);
         this.chart_datas.series[0].data = []
         this.ParkingAqcQuResults.forEach(element => {
@@ -244,6 +269,7 @@ export default {
 
         this.ParkingAcqQueryOptions.Page = 1;
         this.Loading = false;
+        this.$refs['park_acq_chart'].updateOptions(this.chart_datas.chartOptions);
       }, 500);
 
     },
@@ -334,6 +360,12 @@ export default {
       link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvContent));
       link.setAttribute('download', fileName);
       link.click();
+    },
+    TimeFormat(date_time) {
+      return moment(date_time).format("yyyy/MM/DD HH:mm:ss")
+    },
+    HandleCopyText(text) {
+      CopyText(text);
     }
 
   },

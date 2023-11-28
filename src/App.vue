@@ -135,13 +135,13 @@ nav {
 body,
 html {
   height: 100%;
-  -webkit-user-select: none;
-  /* Chrome, Safari, Opera */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
+  // -webkit-user-select: none;
+  // /* Chrome, Safari, Opera */
+  // -moz-user-select: none;
+  // /* Firefox */
+  // -ms-user-select: none;
   /* IE 10+ */
-  user-select: none;
+  //user-select: none;
 }
 
 #vcs-alarms {
