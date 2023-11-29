@@ -5,9 +5,9 @@
             <el-table-column label="開始時間" prop="StartTime"></el-table-column>
             <el-table-column label="結束時間" prop="EndTime"></el-table-column>
             <el-table-column label="花費時間(秒)" prop="TimeSpend"></el-table-column>
-            <el-table-column label="來源機台" prop="From"></el-table-column>
-            <el-table-column label="終點機台" prop="To"></el-table-column>
-            <el-table-column label="起始位置" prop="StartLoc"></el-table-column>
+            <el-table-column label="來源機台" prop="FromName"></el-table-column>
+            <el-table-column label="終點機台" prop="ToName"></el-table-column>
+            <el-table-column label="起始位置" prop="StartLocName"></el-table-column>
             <el-table-column label="開始電量(%)" prop="BatLvStart"></el-table-column>
             <el-table-column label="結束電量(%)" prop="BatLvEnd"></el-table-column>
             <el-table-column label="電量損耗(%)" prop="BatLoss"></el-table-column>
