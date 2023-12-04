@@ -42,7 +42,7 @@
         </div>
       </b-tab>
       <b-tab title="停車精度">
-        <div class="parking-acq border text-start">
+        <div class="parking-acq border text-start p-2">
           <div class="border-bottom py-1 mb-1">
             <div class="d-flex flex-row">
               <div class="options">
@@ -77,7 +77,7 @@
               <el-button v-if="this.ParkingAqcQuResults.length > 0" type="primary" @click="HandleDownloadCSVBtnClick">Download CSV</el-button>
             </div>
           </div>
-          <b-tabs v-loading="Loading">
+          <b-tabs pills v-loading="Loading">
             <b-tab title="散佈圖">
               <div class="px-5" id="park_acq_chart" style="width: 100%;">
                 <apexchart ref="park_acq_chart" type="scatter" height="350" :options="chart_datas.chartOptions" :series="chart_datas.series"></apexchart>
@@ -119,6 +119,16 @@
           <TranferLogView></TranferLogView>
         </div>
       </b-tab>
+      <b-tab title="稼動率">
+        <div>
+          <Utilization></Utilization>
+        </div>
+      </b-tab>
+      <b-tab title="振動紀錄">
+        <div>
+          <VibrationHistoryQuery></VibrationHistoryQuery>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -127,11 +137,13 @@
 import { LogAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
 import ChargeStatusQuery from './ChargeStatusQuery'
+import VibrationHistoryQuery from './VibrationHistoryQuery'
+import Utilization from './Utilization'
 import TranferLogView from './TranferLogView'
 import { CopyText } from '@/Tools.js'
 export default {
   components: {
-    ChargeStatusQuery, TranferLogView
+    ChargeStatusQuery, TranferLogView, VibrationHistoryQuery, Utilization
   },
   data() {
     return {

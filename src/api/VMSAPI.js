@@ -214,13 +214,20 @@ export const Braker = {
 }
 
 export const AlarmTableAPI = {
-  async TotalAlarmCount(alarm_type = 'All') {
-    var ret = await axios_entity.get(`api/AlarmTable/Total?alarm_type=${alarm_type}`)
+  async TotalAlarmCount(from, to, alarm_type = 'All', code = -1) {
+    var ret = await axios_entity.get(`api/AlarmTable/Total?from=${from}&to=${to}&alarm_type=${alarm_type}&code=${code}`)
     return ret.data
   },
-  async QueryByPage(page = 1, page_size = 16, alarm_type = 'All') {
+  async QueryByPage(from, to, page = 1, page_size = 16, alarm_type = 'All', code = -1) {
     var ret = await axios_entity.get(
-      `api/AlarmTable/Query?page=${page}&page_size=${page_size}&alarm_type=${alarm_type}`,
+      `api/AlarmTable/Query?from=${from}&to=${to}&page=${page}&page_size=${page_size}&alarm_type=${alarm_type}&code=${code}`,
+    )
+    return ret.data
+  },
+
+  async GetAlarmClassifies() {
+    var ret = await axios_entity.get(
+      `api/AlarmTable/GetAlarmClassifies`,
     )
     return ret.data
   },
@@ -401,6 +408,14 @@ export const LogAPI = {
   },
   async GetTransferLogToday() {
     var ret = await axios_entity.get(`api/Log/GetTransferLogToday`)
+    return ret.data;
+  },
+  async QueryVibrationRecordsByTaskName(taskName) {
+    var ret = await axios_entity.get(`api/Log/QueryVibHistoryByTaskName?taskName=${taskName}`)
+    return ret.data;
+  },
+  async QueryVibrationRecordsByTime(from, to) {
+    var ret = await axios_entity.get(`api/Log/QueryVibHistoryByTime?from=${from}&to=${to}`)
     return ret.data;
   }
 }
