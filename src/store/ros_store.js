@@ -29,7 +29,6 @@ export var ROS_STORE = createStore({
             KeyboardControlEnable(enable)
         },
         update_module_info(state, module_info) {
-            debugger
             state.module_info = module_info
         }
     },

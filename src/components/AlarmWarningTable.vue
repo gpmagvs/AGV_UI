@@ -251,6 +251,6 @@ export default {
 }
 
 .alarm-tb-option-modal {
-  background-color: red;
+  
 }
 </style>

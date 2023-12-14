@@ -20,6 +20,12 @@
           <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
         </div>
       </b-tab>
+      <!-- Battery -->
+      <b-tab v-if="false" title="電池">
+        <div class="mt-3 border p-1">
+          <BatteryView></BatteryView>
+        </div>
+      </b-tab>
       <b-tab title="設備交握(E84)">
         <div class="mt-3 border p-1">
           <EQHandshakeView></EQHandshakeView>
@@ -31,7 +37,7 @@
           <CSTReader></CSTReader>
         </div>
       </b-tab>
-      <b-tab title="Overview">
+      <b-tab v-if="!IsVisitor" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview :AsMainPageMode="false"></AgvOverview>
         </div>
@@ -73,6 +79,7 @@ import CSTReader from '@/components/CSTReaderView.vue'
 import EQHandshakeView from '@/components/E84/EQHandshakeView.vue'
 import AgvOverview from '@/components/AGVStatusOverview.vue';
 import Notifier from "@/api/NotifyHelper.js";
+import BatteryView from "@/views/BatteryView.vue"
 import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
 import { UserStore, UIStore } from '@/store'
@@ -81,7 +88,7 @@ import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
 export default {
-  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery },
+  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery, BatteryView },
   props: {
     VMSData: {
       type: Object,

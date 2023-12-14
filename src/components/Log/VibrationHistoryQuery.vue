@@ -122,7 +122,8 @@ export default {
                     yaxis: {
                         title: {
                             text: "Vibration(m/s^2)"
-                        }, labels: {
+                        },
+                        labels: {
                             formatter: function (val) {
                                 // 四捨五入到最近的整數
                                 return val.toFixed(2)

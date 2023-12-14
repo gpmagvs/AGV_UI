@@ -21,7 +21,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "11.30.1",
+    UI_Version: "12.05.1B",
     PreviousControllRoute: 'move',
     CurrentTabSelected: 0
   },
@@ -281,6 +281,9 @@ export var AGVStatusStore = createStore({
     },
     SysLoading: state => {
       return state.AGVStatus.SysLoading
+    },
+    BatteryCount: state => {
+      return state.AGVStatus.BatteryStatus.length;
     }
 
   },

@@ -437,6 +437,14 @@ export const BatteryAPI = {
   }
 }
 
+
+export const DataAnalysisAPI = {
+  async QueryAvalibility(from, to) {
+    var ret = await axios_entity.get(`api/DataAnalysis/QueryAvalibility?from=${from}&to=${to}`)
+    return ret.data;
+  },
+}
+
 /**巡檢AGV API */
 export const InspectionAGVAPI = {
   async Localization(localization = clsLocalization) {
