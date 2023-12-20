@@ -27,12 +27,6 @@
                     @change="HandleParamChanged"
                     v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
                 </el-form-item>
-                <el-form-item label="斷開充電回路電壓閥值(mV)">
-                  <el-input-number
-                    @change="HandleParamChanged"
-                    size="small"
-                    v-model="settings.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
-                </el-form-item>
                 <el-form-item label="離線地圖圖資檔案路徑">
                   <el-input
                     @change="HandleParamChanged"
@@ -98,6 +92,31 @@
                   </el-form-item>
                 </el-form>
               </div>
+            </div>
+          </b-tab>
+          <b-tab title="電池">
+            <div class="border p-2">
+              <el-form :model="settings" label-width="250" label-position="left">
+                <el-form-item label="斷開充電回路電壓閥值(mV)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.BatteryModule.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
+                </el-form-item>
+                <el-form-item label="僅電量低於閥值才開啟充電迴路">
+                  <el-switch @change="HandleParamChanged" v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
+                </el-form-item>
+                <el-form-item label="充電迴路開啟閥值">
+                  <el-input-number
+                    step="1"
+                    precision="0"
+                    min="1"
+                    max="100"
+                    :disabled="!settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"
+                    @change="HandleParamChanged"
+                    v-model="settings.BatteryModule.ChargeLevelThreshold"></el-input-number>
+                </el-form-item>
+              </el-form>
             </div>
           </b-tab>
           <b-tab title="設備取/放貨">
