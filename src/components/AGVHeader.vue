@@ -5,7 +5,7 @@
         <div class="px-2" style="width:50px;position:absolute;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
-        <div @click="() => { VersionShowUI = !VersionShowUI }">GPM AGV</div>
+        <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
       </div>
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
@@ -56,6 +56,18 @@ export default {
   computed: {
     SubStatus() {
       return AGVStatusStore.getters.AGVStatus.SubState;
+    },
+    AGVBrandName() {
+      // 0:FORK, 1:SUBMERGED_SHIELD, 2:INSPECTION_AGV, 3:UNKNOWN
+      var _agv_type = AGVStatusStore.getters.AGVStatus.Agv_Type;
+      if (_agv_type == 0)
+        return 'GPM FORK AGV';
+      else if (_agv_type == 1)
+        return 'GPM Submarine AGV';
+      else if (_agv_type == 2)
+        return 'GPM Inspection AGV';
+      else
+        return 'GPM AGV'
     },
     AGVName() {
       return AGVStatusStore.getters.AGVStatus.CarName;
@@ -158,4 +170,5 @@ export default {
   .sys-name {
     background-color: rgb(0, 123, 255);
   }
-}</style>
+}
+</style>

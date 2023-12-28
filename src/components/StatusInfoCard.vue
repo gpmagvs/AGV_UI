@@ -53,7 +53,7 @@
             </td>
           </tr>
           <tr v-if="true" align="justify">
-            <td>定位狀態</td>
+            <td>{{ $t('localization-state') }}</td>
             <td>
               <b-form-input
                 size="sm"
@@ -61,7 +61,7 @@
                 v-model="LocStatusDisplay"
                 :state="LocStatusDisplay == 'OK'"></b-form-input>
             </td>
-            <td>地圖比對率</td>
+            <td>{{ $t('map-matching-rate') }}</td>
             <td>
               <b-form-input
                 size="sm"

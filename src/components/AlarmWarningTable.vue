@@ -3,7 +3,7 @@
     <div class="d-flex flex-row">
       <div class="flex-fill text-start">
         <i class="bi bi-sliders" @click="() => { drawer_show = !drawer_show }"></i>
-        <label class="text-danger"><b><i class="bi bi-three-dots-vertical"></i>警報類型</b></label>
+        <label class="text-danger"><b><i class="bi bi-three-dots-vertical"></i>{{ $t('alarm-type') }}</b></label>
         <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
           <el-option label="ALL" value="All"></el-option>
           <el-option label="Alarm" value="Alarm"></el-option>
@@ -250,7 +250,5 @@ export default {
   background-color: rgb(245, 198, 206);
 }
 
-.alarm-tb-option-modal {
-  
-}
+.alarm-tb-option-modal {}
 </style>

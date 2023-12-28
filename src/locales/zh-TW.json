@@ -1,11 +1,13 @@
 {
     "test":"測試",
     "initialize":"初始化",
+    "initializing":"初始化進行中",
     "reset_alarm":"異常排除",
     "buzzer_off":"蜂鳴器關閉",
     "cst-remove":"移除卡匣",
     "cst-remove-confirm-text":"確定要移除卡匣資料?",
     "login":"登入",
+    "logout":"登出",
     "connection-states":"連線狀態",
     "battery-level":"電量",
     "mileage":"里程數",
@@ -46,5 +48,15 @@
     "agv-auto-mode":"AGV 手動/自動模式切換確認",
     "agv-auto-mode-alert":"確定要將AGV 切換為自動模式?",
     "agv-manual-mode-alert":"確定要將AGV 切換為手動模式?",
-    "clear-alarm-data-confirm-text":"確定要清除異常紀錄?"
+    "clear-alarm-data-confirm-text":"確定要清除異常紀錄?",
+    "eq-handshake-e84":"設備交握(E84)",
+    "localization-state":"定位狀態",
+    "map-matching-rate": "地圖比對率",
+    "coordination": "座標",
+    "offset": "偏差值",
+    "angle": "角度",
+    "only-gpm-user-can-modify-hs-signal":"僅GPM權限使用者可手動變更AGV交握訊號",
+    "manual-operation":"手動操作",
+    "alarm-type":"警報類型",
+    "logout-confirm":"確定要登出?"
 }

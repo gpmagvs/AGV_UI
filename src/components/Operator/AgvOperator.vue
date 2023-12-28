@@ -27,7 +27,7 @@
             :isOutput="true"></IOTable>
         </div>
       </b-tab>
-      <b-tab title="手動操作">
+      <b-tab :title="$t('manual-operation')">
         <div class="mt-1 p-1">
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>

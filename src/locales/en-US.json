@@ -1,14 +1,18 @@
 {
     "test":"TEST",
-    "initialize":"Initialize",
+    "initialize":"Initialize",    
+    "initializing":"Initializing",
     "reset_alarm":"Reset Alarm",
     "buzzer_off":"Buzzer Off",
     "cst-remove":"Remove CST",
+    "cst-remove-confirm-text":"Do you confirm to remove cargo?",
+    "login":"Login",
+    "logout":"Logout",
     "connection-states":"Connect Status",
     "battery-level":"Battery Level",
     "mileage":"Mileage",
     "status":"Status",
-    "abnormal-record":"Abnormal Record",
+    "abnormal-record":"Alarm History",
     "operation":"Operation",
     "3d_model":"3D Model",
     "Status_info":"Status Info",
@@ -31,6 +35,7 @@
     "cancel_init_action_notify":"Are you sure you want to cancel the initialization process?",
     "start_init_action_notify_fork_has_loading":"Fork has cargo noew,Do you confirm to proceed with the initialization process? Once the initialization process starts, the Fork will descend. Please ensure that there are no goods on the Fork and check for any obstacles around the AGV.",
     "start_init_action_notify":"Do you confirm to proceed with the initialization process? Once the initialization process starts, the Fork will descend. Please ensure that there are no goods on the Fork and check for any obstacles around the AGV.",
+    "start_init_action_notify_submarin_agv":"Do you confirm to Initialize AGV?",
     "charging_current":"Charging Current",
     "wait_online_text":"AGV Online Process is running, Please wait...",
     "refresh":"Refresh",
@@ -43,7 +48,17 @@
     "agv-auto-mode":"AGV Auto/Manual Switch",
     "agv-auto-mode-alert":"AGV Auto Mode?",
     "agv-manual-mode-alert":"AGV Manual Mode?",
-    "clear-alarm-data-confirm-text":"Clear Alarm History Data?"
+    "clear-alarm-data-confirm-text":"Clear Alarm History Data?",
+    "eq-handshake-e84":"EQ Hanshake(E84)",
+    "localization-state":"Localization State",
+    "map-matching-rate":"Map Matching Rate",
+    "coordination": "Coordination",
+    "offset": "Offset",
+    "angle": "Angle",
+    "only-gpm-user-can-modify-hs-signal":"Only GPM Developer can chnage HS Signal by manual",
+    "manual-operation":"Manual Operation",
+    "alarm-type":"Alarm Type",
+    "logout-confirm":"Do you confirm to Logout ?"
 
 
 }

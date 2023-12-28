@@ -3,8 +3,7 @@
     <span
       @click="VersionTextClickHandle()"
       class="sys-time-display rounded px-1 text-light"
-      v-text="SystemTime"
-    ></span>
+      v-text="SystemTime"></span>
     <div class="system-controls">
       <div class="switchs py-2 text-start px-1 d-flex">
         <div class @click="HandleModeSwitchRequest('online')">
@@ -19,8 +18,7 @@
             inline-prompt
             size="large"
             width="80px"
-            :loading="OnlineModeSwitching"
-          ></el-switch>
+            :loading="OnlineModeSwitching"></el-switch>
           <!-- :before-change="mode.beforeChangeHandler"
           :loading="mode.loading"-->
           <!-- <jw-switch inactive_text="OFFLINE" active_text="ONLINE"></jw-switch> -->
@@ -37,8 +35,7 @@
             inline-prompt
             size="large"
             width="85px"
-            :loading="AutoModeSwitching"
-          ></el-switch>
+            :loading="AutoModeSwitching"></el-switch>
         </div>
       </div>
       <div class="status d-flex">
@@ -77,7 +74,6 @@
         <img src="@/assets/emo.png" width="100" alt />
       </div>
     </div>
-
     <login ref="loginShow"></login>
   </div>
 </template>
@@ -163,7 +159,7 @@ export default {
       if (this.IsLogin) {
         this.$swal.fire({
           title: `Logout Confirm`,
-          text: `Logout ?`,
+          text: this.$t('logout-confirm'),
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -275,6 +271,7 @@ export default {
 .home-view-footer {
   height: 120px;
   background-color: #ebe7e7;
+
   .sys-time-display {
     background-color: rgb(67 67 67);
     position: absolute;
@@ -283,6 +280,7 @@ export default {
     letter-spacing: 2px;
     right: 1px;
   }
+
   .system-controls {
     button {
       font-size: 25px;
@@ -294,28 +292,32 @@ export default {
       box-shadow: 3px -1px 13px -1px #959595;
     }
   }
+
   .switchs {
     width: 100%;
     background-color: black;
     color: white;
     font-weight: 900;
   }
+
   .icons {
     padding-right: 25px;
+
     .icon-containers {
       div {
         width: 70px;
         height: 60px;
       }
     }
+
     div {
       margin-inline: 2px;
     }
+
     img:hover {
       cursor: pointer;
       background-color: rgb(13, 110, 253);
       border: 1px solid black;
     }
   }
-}
-</style>
+}</style>

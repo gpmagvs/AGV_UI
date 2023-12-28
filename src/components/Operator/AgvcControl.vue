@@ -23,7 +23,7 @@
             </el-form-item>
           </div>
           <div class="row div-container mx-1 my-2">
-            <label class="text-start border-bottom">偏差值</label>
+            <label class="text-start border-bottom">{{ $t('offset') }}</label>
             <el-form-item class="col-6" label="X">
               <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.xValue"></b-form-input>
             </el-form-item>
@@ -32,7 +32,7 @@
             </el-form-item>
           </div>
           <div class="row div-container mx-1 my-2">
-            <label class="text-start border-bottom">角度</label>
+            <label class="text-start border-bottom">{{ $t('angle') }}</label>
             <el-form-item class="my-2">
               <b-form-input size="sm" disabled v-model.number="vms_data.BCR_State_MoveBase.theta"></b-form-input>
             </el-form-item>

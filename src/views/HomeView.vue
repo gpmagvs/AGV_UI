@@ -17,10 +17,11 @@
             <b-button
               :disabled="back_end_server_err || VMSData.IsSystemIniting"
               @click="AGVInitialize()"
-              class="mb-1 p-2"
-              v-bind:class="VMSData.SubState == '' || !VMSData.IsInitialized ? 'down' : VMSData.SubState.toLowerCase()"
+              class="mb-1 p-2 "
+              v-bind:class="VMSData.SubState == '' || (!VMSData.IsInitialized && VMSData.SubState != 'Initializing') ? 'down' : VMSData.SubState.toLowerCase()"
               block>
-              <b>{{ $t('initialize') }}</b>
+              <b v-if="VMSData.SubState != 'Initializing'">{{ $t('initialize') }}</b>
+              <b v-else>{{ $t('initializing') }}</b>
             </b-button>
             <b-button
               :disabled="back_end_server_err"
@@ -106,7 +107,7 @@
                 </b-form-input>
               </div>
               <div class="m-1">
-                <div class="state-title">座標</div>
+                <div class="state-title">{{ $t('coordination') }}</div>
                 <b-form-input
                   size="sm"
                   style="width:120px"
@@ -251,7 +252,7 @@ export default {
       if (this.IsLogin) {
         this.$swal.fire({
           title: `Logout Confirm`,
-          text: `Logout ?`,
+          text: this.$t('logout-confirm'),
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -479,7 +480,7 @@ export default {
       return UserStore.getters.CurrentUserRole != 0;
     },
     LoginBtnText() {
-      return this.IsLogin ? '登出' : '登入';
+      return this.IsLogin ? this.$t('logout') : this.$t('login');
     },
     alarmResetBtnVariant() {
       return (this.VMSData.AlarmCodes.length > 0) ? 'danger' : 'light'

@@ -1,7 +1,7 @@
 <template>
   <div class="w-100">
     <div v-if="IsE84UseEmu" class="p-1 text-danger">模擬模式!</div>
-    <div v-if="!IsUserLogin" class="p-1 text-danger">僅GPM權限使用者可手動變更AGV 交握訊號</div>
+    <div v-if="!IsUserLogin" class="p-1 text-danger">{{ $t('only-gpm-user-can-modify-hs-signal') }}</div>
     <div v-if="EQHSStatus.ConnectionType == 1" class="workstation-select d-flex justify-content-center bg-light">
       <label class=" mx-1" style="font-size:20px;">設備選擇</label>
       <el-select v-model="workstation_name_slected">

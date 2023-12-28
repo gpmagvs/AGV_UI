@@ -26,7 +26,7 @@
           <BatteryView></BatteryView>
         </div>
       </b-tab>
-      <b-tab title="設備交握(E84)">
+      <b-tab :title="$t('eq-handshake-e84')">
         <div class="mt-3 border p-1">
           <EQHandshakeView></EQHandshakeView>
         </div>

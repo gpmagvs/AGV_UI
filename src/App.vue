@@ -1,5 +1,7 @@
 <template>
-  <div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">
+  
+  <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
+  <div class="appcontainer" style="width:100vw">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
@@ -68,6 +70,7 @@ export default {
       return AGVStatusStore.getters.AGVName;
     },
     AppBorderStyle() {
+
       if (this.AlarmCodesGroup) {
 
         var alarms = Object.values(this.AlarmCodesGroup)
@@ -145,11 +148,11 @@ html {
 }
 
 #vcs-alarms {
-  position: absolute;
-  left: 49%;
-  z-index: 9999;
-  bottom: 27px;
-  width: 50%;
+ position: absolute;
+    left: 42%;
+    z-index: 9999;
+    bottom: 3px;
+    width: 57%;
 
   span {
     // color: rgb(0, 123, 255);
