@@ -389,7 +389,7 @@ export default {
             message: '系統參數設定成功',
             type: 'success',
             duration: 1000,
-            position: 'top-right'
+            position: 'bottom-right'
           });
         }
         this.last_setting_val_set_success_time = moment(Date.now()).format('YYYY/MM/DD HH:mm:ss');
@@ -398,7 +398,7 @@ export default {
           title: '系統參數設定',
           message: '系統參數設定失敗',
           type: 'error',
-          position: 'top-right',
+          position: 'bottom-right',
           duration: 1000,
         });
       }

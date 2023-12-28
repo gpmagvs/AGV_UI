@@ -54,6 +54,8 @@
               class="mb-1 p-2 border"
               block
               @click="ShowLogin()">
+              <i v-if="!IsLogin" class="bi bi-box-arrow-in-right mx-1"></i>
+              <i v-else class="bi bi-box-arrow-left mx-1"></i>
               <b>{{ LoginBtnText }}</b>
             </b-button>
             <login ref="login"></login>

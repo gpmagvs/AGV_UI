@@ -10,8 +10,10 @@
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
-        @dblclick="where_r_u()">{{ AGVName == "" ? "AGV" : AGVName }}</div>
-      <div class="account-name flex-fill">{{ UserName }}</div>
+        @dblclick="where_r_u()"><i class="bi bi-truck-front mx-1"></i>{{ AGVName == "" ? "AGV" : AGVName }}</div>
+      <div class="account-name flex-fill">
+        <i class="bi bi-people mx-1"></i> {{ UserName }}
+      </div>
       <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"

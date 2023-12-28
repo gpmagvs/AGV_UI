@@ -169,7 +169,7 @@ export default {
       path_plan_tags: [],
       contextMenu: {},
       agv_color_set: [
-        'lime', 'rgb(51, 194, 255)', 'yellow', 'rgb(64, 158, 255)', 'pink', 'gold', 'red', 'grey'
+        'red', 'rgb(51, 194, 255)', 'yellow', 'rgb(64, 158, 255)', 'pink', 'gold', 'red', 'grey'
       ],
       map_contextmenu_style: {
         position: 'absolute',
@@ -817,7 +817,7 @@ export default {
         var EqImg = new RegularShape({
           radius: 11,
           fill: new Fill({
-            color: isCharge ? 'pink' : 'lime',
+            color: isCharge ? 'pink' : 'grey',
           }),
           stroke: new Stroke({
             color: 'black',
@@ -844,7 +844,7 @@ export default {
             text: name,
             offsetX: -18,
             offsetY: -18,
-            font: 'bold 21px sans-serif',
+            font: 'bold 18px sans-serif',
             fill: new Fill({
               color: isEQOrCharge ? isCharge ? 'pink' : 'lime' : 'gold'
             }),

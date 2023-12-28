@@ -5,7 +5,7 @@
       <table class="status-tb w-100">
         <tbody>
           <tr align="justify">
-            <td>{{ $t('status') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('status') }}</td>
             <td class="val-column">
               <b-button
                 class="w-100 border"
@@ -13,18 +13,18 @@
                 <b>{{ vms_data.SubState == '' ? 'ERROR' : vms_data.SubState }}</b>
               </b-button>
             </td>
-            <td>Laser Mode</td>
+            <td><i class="bi bi-three-dots-vertical"></i>Laser Mode</td>
             <td>
               <b-form-input size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input>
             </td>
           </tr>
           <tr align="justify">
-            <td>{{ $t('current_position') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('current_position') }}</td>
             <td class="val-column">
               <b-form-input v-if="vms_data.Last_Visit_MapPoint.Graph" size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Graph.Display"></b-form-input>
               <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
             </td>
-            <td>{{ $t('target_position') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('target_position') }}</td>
             <td class="val-column">
               <b-form-input v-if="vms_data.NavInfo.DestinationMapPoint.Graph" size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Graph.Display"></b-form-input>
               <!-- <el-input disabled v-model="currentPosition"></el-input> -->
@@ -32,7 +32,7 @@
           </tr>
           <tr align="justify">
             <!-- 動作名稱 -->
-            <td>{{ $t('tag_read_status') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('tag_read_status') }}</td>
             <td class="val-column">
               <b-form-input
                 v-if="!IsInspectionAGV"
@@ -43,7 +43,7 @@
               </b-form-input>
             </td>
             <!-- 載物ID -->
-            <td v-if="vms_data.Agv_Type != 2">{{ $t('carrier_id') }}</td>
+            <td v-if="vms_data.Agv_Type != 2"><i class="bi bi-three-dots-vertical"></i>{{ $t('carrier_id') }}</td>
             <td v-if="vms_data.Agv_Type != 2" class="val-column">
               <b-form-input
                 size="sm"
@@ -53,7 +53,7 @@
             </td>
           </tr>
           <tr v-if="true" align="justify">
-            <td>{{ $t('localization-state') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('localization-state') }}</td>
             <td>
               <b-form-input
                 size="sm"
@@ -61,7 +61,7 @@
                 v-model="LocStatusDisplay"
                 :state="LocStatusDisplay == 'OK'"></b-form-input>
             </td>
-            <td>{{ $t('map-matching-rate') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('map-matching-rate') }}</td>
             <td>
               <b-form-input
                 size="sm"
@@ -71,7 +71,7 @@
             </td>
           </tr>
           <tr align="justify">
-            <td>{{ $t('abormal') }}</td>
+            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('abormal') }}</td>
             <td colspan="4">
               <b-form-textarea disabled v-model="NewestAlarm" :state="NewestAlarm == ''"></b-form-textarea>
               <!-- <el-input type="textarea" disabled v-model="NewestAlarm"></el-input> -->
@@ -84,7 +84,7 @@
             </td>
           </tr>
           <tr v-if="false" align="justify">
-            <td>AGV Direct</td>
+            <td><i class="bi bi-three-dots-vertical"></i>AGV Direct</td>
             <td>
               <b-form-input size="sm" disabled v-model="vms_data.AGV_Direct"></b-form-input>
             </td>
