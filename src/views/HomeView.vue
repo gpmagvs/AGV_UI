@@ -92,7 +92,7 @@
             </div>
           </div>
           <div class="connection-status bg-light border rounded m-1 p-3 py-1">
-            <div class="state-title">{{ $t('connection-states') }}</div>
+            <div class="state-title"> <i class="bi bi-ethernet mx-1"></i> {{ $t('connection-states') }}</div>
             <connection_state></connection_state>
           </div>
           <!-- 當前座標資訊 -->
@@ -123,7 +123,7 @@
           </div>
           <!-- 里程 -->
           <div class="mileage bg-light border rounded m-1 p-1 py-1">
-            <div class="state-title">{{ $t('mileage') }}</div>
+            <div class="state-title"><i class="bi bi-mastodon mx-1"></i>{{ $t('mileage') }}</div>
             <mileage></mileage>
           </div>
           <!-- <div>{{ time }}</div> -->
