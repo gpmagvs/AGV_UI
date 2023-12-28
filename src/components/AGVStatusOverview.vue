@@ -17,7 +17,7 @@
           <div class="item-text"> 目前位置 <span>System Error</span>
           </div>
           <div
-            class="item-val">{{ AGVStatesData.Last_Visit_MapPoint.Name + '(' + AGVStatesData.Last_Visited_Tag + ')' }}</div>
+            class="item-val">{{ AGVStatesData.Last_Visit_MapPoint.Graph.Display + '(' + AGVStatesData.Last_Visited_Tag + ')' }}</div>
         </div>
       </div>
       <div class="status-card-info">

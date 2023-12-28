@@ -183,6 +183,10 @@
         </b-modal>
       </div>
     </div>
+    <div v-if="IsLDULD_NO_Entry_Actived" class="w-100 bg-warning fixed-bottom p-2">
+      <span class="text-danger" style="font-weight:bold">空取空放模式運行中 </span>
+      <b-button variant="danger" size="sm" @click="HandleCloseLDULD_No_Entry_BtnClick">關閉</b-button>
+    </div>
   </div>
 </template>
 
@@ -194,7 +198,7 @@ import mileage from '@/components/Mileage.vue'
 import emo from '@/components/EMOButton.vue'
 import login from '@/components/Login.vue'
 import connection_state from '@/components/ConnectionStates.vue'
-import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher } from '@/api/VMSAPI'
+import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher, CloseLDULD_No_Entry } from '@/api/VMSAPI'
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
@@ -345,33 +349,6 @@ export default {
       })
 
     },
-
-    VMSDataWebsocketInit() {
-      this.ws = new WebSocketHelp('ws/AGVCState');
-      this.ws.Connect();
-      this.ws.onclose = (ev) => {
-        this.back_end_server_connecting = false;
-        this.server_err_state_text = "後端伺服器異常";
-        this.back_end_server_err = true;
-        this.ws.onclose = null;
-        var id = setInterval(() => {
-          console.info(this.ws.wssocket.readyState);
-          if (this.ws.wssocket.readyState == WebSocket.OPEN) {
-            this.ws.onmessage = null;
-            this.back_end_server_err = this.back_end_server_connecting = true;
-            clearInterval(id)
-            setTimeout(() => {
-              location.reload()
-            }, 500);
-            return;
-          }
-          if (this.ws.wssocket.readyState == WebSocket.CLOSED)
-            this.ws.ReconnectWorker();
-        }, 1000);
-
-      }
-
-    },
     ShowMaxSpeedLimitNotification(tag, speed_limit) {
       if (speed_limit == -1)
         return;
@@ -481,6 +458,11 @@ export default {
         name: this.VMSData.CarName,
         tags: this.VMSData.NavInfo.PathPlan
       })
+    },
+    async HandleCloseLDULD_No_Entry_BtnClick() {
+      await CloseLDULD_No_Entry()
+      Notifier.Success(`空取空放功能已關閉`, 'bottom', 1500);
+
     }
   },
   computed: {
@@ -545,6 +527,9 @@ export default {
     },
     WaitinInfo() {
       return `等待前往目的地-${this.VMSData.NavInfo.Destination}`
+    },
+    IsLDULD_NO_Entry_Actived() {
+      return this.VMSData.IsLDULD_No_Entry
     },
     /**
      *  DestineName ,

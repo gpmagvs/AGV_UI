@@ -6,17 +6,14 @@
           <h2 class="text-start">Settings</h2>
         </div>
       </template>
-      <div style="position: relative;top: -1rem;">
+      <div>
         <b-tabs v-model="selected_tab">
           <b-tab title="一般">
-            <div class="border p-2">
+            <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <!-- <el-form-item label="網頁鍵盤移動控制">
                   <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
                 </el-form-item> -->
-                <div class="text-start w-100 border-bottom">
-                  <b>Genernal</b>
-                </div>
                 <el-form-item label="蜂鳴器">
                   <el-switch
                     @change="HandleParamChanged"
@@ -32,16 +29,6 @@
                     @change="HandleParamChanged"
                     size="small"
                     v-model="settings.MapParam.LocalMapFileName"></el-input>
-                </el-form-item>
-                <el-form-item v-if="IsForkAGV" label="Z軸皮帶檢知Bypass">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.SensorBypass.BeltSensorBypass"></el-switch>
-                </el-form-item>
-                <el-form-item v-if="IsForkAGV" label="牙叉已在Home位置不需初始化">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
                 </el-form-item>
                 <el-form-item v-if="!IsInspectionAGV" label="初始化時有帳無料自動清帳">
                   <el-switch
@@ -71,7 +58,7 @@
             </div>
           </b-tab>
           <b-tab title="安全防護">
-            <div class="border p-2">
+            <div class="tabpage border p-2">
               <div class="text-start w-100 border-bottom">
                 <el-form :model="settings" label-width="150" label-position="left">
                   <b>碰撞偵測功能</b>
@@ -82,6 +69,7 @@
                   </el-form-item>
                   <el-form-item label="閥值">
                     <el-input-number
+                      size="small"
                       step="0.01"
                       precision="2"
                       min="0.01"
@@ -95,7 +83,7 @@
             </div>
           </b-tab>
           <b-tab title="電池">
-            <div class="border p-2">
+            <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="斷開充電回路電壓閥值(mV)">
                   <el-input-number
@@ -108,6 +96,7 @@
                 </el-form-item>
                 <el-form-item label="充電迴路開啟閥值">
                   <el-input-number
+                    size="small"
                     step="1"
                     precision="0"
                     min="1"
@@ -120,7 +109,7 @@
             </div>
           </b-tab>
           <b-tab title="設備取/放貨">
-            <div class="border p-2">
+            <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
@@ -211,6 +200,57 @@
               </el-form>
             </div>
           </b-tab>
+          <b-tab title="叉車AGV" v-if="IsForkAGV">
+            <div class="tabpage border p-2">
+              <el-form label-position="left" label-width="210">
+                <el-form-item label="行程上極限(cm)">
+                  <el-input-number
+                    size="small"
+                    step="0.1"
+                    precision="1"
+                    min="1"
+                    max="100"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.UplimitPose"></el-input-number>
+                </el-form-item>
+                <el-form-item label="行程下極限(cm)">
+                  <el-input-number
+                    size="small"
+                    step="0.1"
+                    precision="1"
+                    min="0"
+                    max="100"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.DownlimitPose"></el-input-number>
+                </el-form-item>
+                <el-form-item label="Z軸皮帶檢知Bypass">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.SensorBypass.BeltSensorBypass"></el-switch>
+                </el-form-item>
+                <el-form-item label="牙叉已在Home位置不必初始化">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
+                </el-form-item>
+                <el-form-item label="退出設備時不等待牙叉縮回完成">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitForkArmFinishAndMoveOutInWorkStation"></el-switch>
+                </el-form-item>
+                <el-form-item label="退出設備後Z軸同步回Home">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary"></el-switch>
+                </el-form-item>
+                <el-form-item label="退出充電站後Z軸同步回Home">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
+                </el-form-item>
+              </el-form>
+            </div>
+          </b-tab>
         </b-tabs>
       </div>
     </el-drawer>
@@ -222,7 +262,7 @@ import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
 import { SystemAPI } from '@/api/VMSAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
-
+import moment from 'moment'
 export default {
   data() {
     return {
@@ -303,7 +343,8 @@ export default {
         InspectionAGV: {
           CheckBatteryLockStateWhenInit: false
         }
-      }
+      },
+      last_setting_val_set_success_time: '1970/1/1 00:00:00'
     }
   },
   computed: {
@@ -333,22 +374,25 @@ export default {
         title: '系統參數設定',
         message: '系統參數讀取成功',
         type: 'success',
-        position: 'top-right',
-        duration: 1000,
+        position: 'bottom-right',
+        duration: 600,
       });
     },
     async HandleParamChanged() {
       var success = await SystemAPI.SaveSettings(this.settings)
       if (success) {
         SystemSettingsStore.commit('setSettings', this.settings)
+        if (this.DiffSecOfLastSettingSuccess() > 0.6) {
 
-        ElNotification({
-          title: '系統參數設定',
-          message: '系統參數設定成功',
-          type: 'success',
-          duration: 1000,
-          position: 'top-right'
-        });
+          ElNotification({
+            title: '系統參數設定',
+            message: '系統參數設定成功',
+            type: 'success',
+            duration: 1000,
+            position: 'top-right'
+          });
+        }
+        this.last_setting_val_set_success_time = moment(Date.now()).format('YYYY/MM/DD HH:mm:ss');
       } else {
         ElNotification({
           title: '系統參數設定',
@@ -358,9 +402,27 @@ export default {
           duration: 1000,
         });
       }
+    },
+    DiffSecOfLastSettingSuccess() {
+      var lastTime = moment(this.last_setting_val_set_success_time);
+      var now = moment();
+      var diff = now.diff(lastTime, 'seconds');
+      console.log(this.last_setting_val_set_success_time, diff);
+      return diff;
     }
   },
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.tabpage {
+  height: 85vh;
+  overflow-y: scroll;
+}
+
+.el-drawer__body {
+  position: absolute;
+  width: 100%;
+  top: 3rem;
+}
+</style>

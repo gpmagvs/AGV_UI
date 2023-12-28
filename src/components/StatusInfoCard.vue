@@ -21,12 +21,12 @@
           <tr align="justify">
             <td>{{ $t('current_position') }}</td>
             <td class="val-column">
-              <b-form-input size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Name"></b-form-input>
+              <b-form-input v-if="vms_data.Last_Visit_MapPoint.Graph" size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Graph.Display"></b-form-input>
               <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
             </td>
             <td>{{ $t('target_position') }}</td>
             <td class="val-column">
-              <b-form-input size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Name"></b-form-input>
+              <b-form-input v-if="vms_data.NavInfo.DestinationMapPoint.Graph" size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Graph.Display"></b-form-input>
               <!-- <el-input disabled v-model="currentPosition"></el-input> -->
             </td>
           </tr>

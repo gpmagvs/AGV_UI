@@ -134,6 +134,14 @@ export default {
     font-size: 22px;
     // letter-spacing: 2px;
     margin-right: 1px;
+    -webkit-user-select: none;
+    /* Chrome/Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+ */
+    user-select: none;
+    /* Standard syntax */
   }
 
   .lang-switch {
@@ -150,5 +158,4 @@ export default {
   .sys-name {
     background-color: rgb(0, 123, 255);
   }
-}
-</style>
+}</style>

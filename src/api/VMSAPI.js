@@ -64,6 +64,11 @@ export async function RemoveCassette() {
   return success;
 }
 
+/**關閉空取空放功能 */
+export async function CloseLDULD_No_Entry() {
+  await axios_entity.get('api/VMS/LDULDWithoutEntryControl?actived=false');
+}
+
 /**取得工位數據 */
 export async function GetWorkstationsData() {
   var ret = await axios_entity.get('api/VMS/GetWorkstations')
@@ -408,6 +413,10 @@ export const LogAPI = {
   },
   async GetTransferLogToday() {
     var ret = await axios_entity.get(`api/Log/GetTransferLogToday`)
+    return ret.data;
+  },
+  async GetTransferLog(from, to) {
+    var ret = await axios_entity.get(`api/Log/GetTransferLog?from=${from}&to=${to}`)
     return ret.data;
   },
   async QueryVibrationRecordsByTaskName(taskName) {

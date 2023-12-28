@@ -1,9 +1,25 @@
 <template>
     <div class="transfer-log-view">
-        <div class="py-1 w-100 text-start"><b-button @click="HandleRefreshClick" size="sm" variant="primary">重新整理</b-button></div>
+        <div class="d-flex flex-row w-100 m-2">
+            <span style="font-size:15px">開始時間</span>
+            <el-date-picker
+                class="mx-2"
+                v-model="QueryOptions.StartTimeStr"
+                type="datetime"
+                placeholder="Select date and time"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            <span style="font-size:15px">結束時間</span>
+            <el-date-picker
+                class="mx-2"
+                v-model="QueryOptions.EndTimeStr"
+                type="datetime"
+                placeholder="Select date and time"
+                value-format="YYYY/MM/DD HH:mm:ss" />
+            <b-button @click="HandleRefreshClick" size="sm" variant="primary">查詢</b-button>
+        </div>
         <el-table v-loading="loading" :data="transfer_data" border style="height: 600px;">
-            <el-table-column label="開始時間" prop="StartTime"></el-table-column>
-            <el-table-column label="結束時間" prop="EndTime"></el-table-column>
+            <el-table-column label="開始時間" prop="StartTime" :formatter="TimeFormater"></el-table-column>
+            <el-table-column label="結束時間" prop="EndTime" :formatter="TimeFormater"></el-table-column>
             <el-table-column label="花費時間(秒)" prop="TimeSpend"></el-table-column>
             <el-table-column label="來源機台" prop="FromName"></el-table-column>
             <el-table-column label="終點機台" prop="ToName"></el-table-column>
@@ -20,25 +36,43 @@
 
 <script>
 import { LogAPI } from '@/api/VMSAPI.js'
+import moment from 'moment';
 export default {
     data() {
         return {
             transfer_data: [],
             loading: false,
+            QueryOptions: {
+                StartTimeStr: '',
+                EndTimeStr: ''
+
+            }
         }
     },
     methods: {
+        SetDefaultTimeInterval() {
+            var _year = moment(Date.now()).year();
+            var _month = moment(Date.now()).month();
+            var _day = moment(Date.now()).date();
+
+            this.QueryOptions.StartTimeStr = moment(new Date(_year, _month, _day, 0, 0, 0)).format('yyyy/MM/DD HH:mm:ss')
+            this.QueryOptions.EndTimeStr = moment(new Date(_year, _month, _day, 23, 59, 59)).format('yyyy/MM/DD HH:mm:ss')
+        },
         async FetchTodayTransferData() {
             this.loading = true;
             this.transfer_data = [];
-            this.transfer_data = await LogAPI.GetTransferLogToday();
+            this.transfer_data = await LogAPI.GetTransferLog(this.QueryOptions.StartTimeStr, this.QueryOptions.EndTimeStr);
             this.loading = false
         },
         HandleRefreshClick() {
             this.FetchTodayTransferData()
+        },
+        TimeFormater(row, column, cellValue, index) {
+            return moment(cellValue).format('yyyy/MM/DD HH:mm:ss')
         }
     },
     mounted() {
+        this.SetDefaultTimeInterval();
         this.FetchTodayTransferData();
     }
 }
