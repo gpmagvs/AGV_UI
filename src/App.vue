@@ -1,5 +1,4 @@
 <template>
-  
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
   <div class="appcontainer" style="width:100vw">
     <div
@@ -23,6 +22,7 @@
       </keep-alive>
     </router-view>
     <SystemSettingsView></SystemSettingsView>
+    <EQHandshakingNotify></EQHandshakingNotify>
   </div>
 </template>
 
@@ -33,10 +33,11 @@ import { SystemMsgStore, AGVStatusStore } from '@/store'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
+import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 
 export default {
   components: {
-    SideMenuDrawer, SystemSettingsView
+    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify
   },
   data() {
     return {
@@ -148,11 +149,11 @@ html {
 }
 
 #vcs-alarms {
- position: absolute;
-    left: 42%;
-    z-index: 9999;
-    bottom: 3px;
-    width: 57%;
+  position: absolute;
+  left: 42%;
+  z-index: 9999;
+  bottom: 3px;
+  width: 57%;
 
   span {
     // color: rgb(0, 123, 255);
