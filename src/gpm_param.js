@@ -4,6 +4,7 @@ var param = {
     if (process.env.NODE_ENV == 'development') {
       return 'http://192.168.0.169:7025'
       return 'http://127.0.0.1:7025'
+      return 'http://192.168.0.101:7025'
       return 'http://10.22.141.218:7025'
       return 'http://192.168.0.200:7000'
     } else {
@@ -15,7 +16,6 @@ var param = {
     if (process.env.NODE_ENV == 'development') {
       return 'ws://192.168.0.169:9090'
       return 'ws://192.168.0.171:9090'
-      return 'ws://192.168.235.130:9090'
       return 'ws://10.22.141.219:9090'
     } else {
       return `ws://${window.location.hostname}:9090`

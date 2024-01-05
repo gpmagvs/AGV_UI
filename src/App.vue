@@ -24,6 +24,7 @@
       </keep-alive>
     </router-view>
     <SystemSettingsView></SystemSettingsView>
+    <EQHandshakingNotify></EQHandshakingNotify>
   </div>
 </template>
 
@@ -34,10 +35,11 @@ import { SystemMsgStore, AGVStatusStore } from '@/store'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
+import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 
 export default {
   components: {
-    SideMenuDrawer, SystemSettingsView
+    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify
   },
   data() {
     return {

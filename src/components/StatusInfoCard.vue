@@ -200,7 +200,7 @@ export default {
 
   .status-tb {
     .val-column {
-      width: 30%;
+      width: 27%;
     }
   }
 }
