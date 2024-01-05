@@ -1,18 +1,19 @@
 <template>
-  
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
   <div class="appcontainer" style="width:100vw">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+      id="vcs-alarms"
+    >
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
-          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN})`"></el-alert>
+          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN})`"
+        ></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -92,13 +93,11 @@ export default {
     bus.on('/god_mode_changed', (is_god_mode_now) => {
       this.showMenuToggleIcon = is_god_mode_now
     });
-    if (process.env.NODE_ENV != 'production') {
-      this.showMenuToggleIcon = true;
-    }
     bus.on('idle', (arg) => {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
     })
+
   },
 };
 </script>
@@ -148,11 +147,11 @@ html {
 }
 
 #vcs-alarms {
- position: absolute;
-    left: 42%;
-    z-index: 9999;
-    bottom: 3px;
-    width: 57%;
+  position: absolute;
+  left: 42%;
+  z-index: 9999;
+  bottom: 3px;
+  width: 57%;
 
   span {
     // color: rgb(0, 123, 255);

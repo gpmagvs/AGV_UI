@@ -6,7 +6,8 @@
     <div class="main-content">
       <div v-if="back_end_server_err" class="server-error py-1 border fixed-top">
         <div class="agv-name-in-alarm px-2">{{ VMSData.CarName }}</div>
-        <i class="bi bi-exclamation-diamond"></i> {{ $t('backend_server_error') }}
+        <i class="bi bi-exclamation-diamond"></i>
+        {{ $t('backend_server_error') }}
       </div>
       <!-- 電量至頂顯示 -->
       <BatteryGroup :battery_states="VMSData.BatteryStatus"></BatteryGroup>
@@ -17,9 +18,10 @@
             <b-button
               :disabled="back_end_server_err || VMSData.IsSystemIniting"
               @click="AGVInitialize()"
-              class="mb-1 p-2 "
+              class="mb-1 p-2"
               v-bind:class="VMSData.SubState == '' || (!VMSData.IsInitialized && VMSData.SubState != 'Initializing') ? 'down' : VMSData.SubState.toLowerCase()"
-              block>
+              block
+            >
               <b v-if="VMSData.SubState != 'Initializing'">{{ $t('initialize') }}</b>
               <b v-else>{{ $t('initializing') }}</b>
             </b-button>
@@ -28,7 +30,8 @@
               @click="AGVResetAlarm()"
               class="mb-1 p-2 border"
               block
-              :variant="alarmResetBtnVariant">
+              :variant="alarmResetBtnVariant"
+            >
               <b>{{ $t('reset_alarm') }}</b>
             </b-button>
             <b-button
@@ -36,32 +39,48 @@
               @click="AGVBuzzerOff()"
               variant="light"
               class="mb-1 p-2 border"
-              block>
-              <b><i v-if="IsBuzzerMute" class="bi bi-volume-mute-fill"></i>{{ $t('buzzer_off') }}</b>
+              block
+            >
+              <b>
+                <i v-if="IsBuzzerMute" class="bi bi-volume-mute-fill"></i>
+                {{ $t('buzzer_off') }}
+              </b>
             </b-button>
             <b-button
               v-if="VMSData.Agv_Type != 2"
               :disabled="back_end_server_err"
               @click="ShowRemoveCstDialog()"
               variant="light"
-              class="mb-1 p-2 border"
-              block>
+              class="w-100 mb-1 p-2 border"
+              block
+            >
               <b>{{ $t('cst-remove') }}</b>
             </b-button>
+            <el-badge
+              v-if="VMSData.Agv_Type != 2"
+              @click="ShowRemoveCstDialog()"
+              style="cursor:pointer;position: relative;bottom: 25px;left: 182px;"
+              :value="cargo_status_text"
+            >
+              <div @click="ShowRemoveCstDialog()" v-if="VMSData.Agv_Type != 2"></div>
+            </el-badge>
+
             <b-button
               :disabled="back_end_server_err"
-              :variant="IsLogin ? 'danger' : 'outline-dark'"
+              :variant="IsLogin ? 'danger' : 'light'"
               class="mb-1 p-2 border"
               block
-              @click="ShowLogin()">
+              @click="ShowLogin()"
+            >
               <i v-if="!IsLogin" class="bi bi-box-arrow-in-right mx-1"></i>
               <i v-else class="bi bi-box-arrow-left mx-1"></i>
               <b>{{ LoginBtnText }}</b>
             </b-button>
             <login ref="login"></login>
           </div>
+          <el-divider style="margin:auto"></el-divider>
           <!--模式切換Switch-->
-          <div class="modes bg-light border rounded m-1 p-3 py-1 px-3 text-start">
+          <div class="modes border rounded m-1 p-3 py-1 px-3 text-start">
             <div class="d-flex flex-row">
               <div class="mode-item-label py-2">Online Mode</div>
               <el-switch
@@ -74,7 +93,8 @@
                 inactive-text="Offline"
                 active-text="Online"
                 active-color="rgb(13, 110, 253)"
-                inactive-color="rgb(220, 53, 69)"></el-switch>
+                inactive-color="rgb(220, 53, 69)"
+              ></el-switch>
             </div>
             <div class="d-flex flex-row">
               <div class="mode-item-label py-2">Auto Mode</div>
@@ -88,15 +108,20 @@
                 inactive-text="Manual"
                 active-text="Auto"
                 active-color="rgb(13, 110, 253)"
-                inactive-color="rgb(220, 53, 69)"></el-switch>
+                inactive-color="rgb(220, 53, 69)"
+              ></el-switch>
             </div>
           </div>
-          <div class="connection-status bg-light border rounded m-1 p-3 py-1">
+          <el-divider style="margin:auto"></el-divider>
+
+          <div class="connection-status border rounded m-1 p-3 py-1">
             <div class="state-title">{{ $t('connection-states') }}</div>
             <connection_state></connection_state>
           </div>
+          <el-divider style="margin:auto"></el-divider>
+
           <!-- 當前座標資訊 -->
-          <div class="bg-light border rounded m-1 p-3 py-1">
+          <div class="coordination border rounded m-1 p-3 py-1">
             <div class="py-1 d-flex justify-content-center">
               <div class="m-1" v-if="!Is_TSMC_MiniAGV">
                 <div class="state-title">Tag</div>
@@ -105,8 +130,8 @@
                   style="width:70px"
                   disabled
                   v-model="VMSData.BCR_State_MoveBase.tagID"
-                  :state="VMSData.BCR_State_MoveBase.tagID > 0">
-                </b-form-input>
+                  :state="VMSData.BCR_State_MoveBase.tagID > 0"
+                ></b-form-input>
               </div>
               <div class="m-1">
                 <div class="state-title">{{ $t('coordination') }}</div>
@@ -115,14 +140,21 @@
                   style="width:120px"
                   disabled
                   :state="VMSData.LocStatus == 10"
-                  v-model="Coordination">
-                </b-form-input>
+                  v-model="Coordination"
+                ></b-form-input>
               </div>
             </div>
-            <el-button v-if="Is_TSMC_MiniAGV" effect="dark" size="small" @click="HandleLocalizationClick">定位</el-button>
+            <el-button
+              v-if="Is_TSMC_MiniAGV"
+              effect="dark"
+              size="small"
+              @click="HandleLocalizationClick"
+            >定位</el-button>
           </div>
+          <el-divider style="margin:auto"></el-divider>
+
           <!-- 里程 -->
-          <div class="mileage bg-light border rounded m-1 p-1 py-1">
+          <div class="mileage border rounded m-1 p-1 py-1">
             <div class="state-title">{{ $t('mileage') }}</div>
             <mileage></mileage>
           </div>
@@ -140,8 +172,8 @@
             type="warning"
             title="移動任務停等中..."
             :description="WaitinInfo"
-            :closable="false">
-          </el-alert>
+            :closable="false"
+          ></el-alert>
         </div>
         <div v-if="IsShowOrderStatus" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
           <el-alert
@@ -151,14 +183,11 @@
             :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'"
             :title="`派車系統任務-[${GetActionName}]`"
             :description="GetOrderDescription"
-            :closable="false">
-          </el-alert>
+            :closable="false"
+          ></el-alert>
         </div>
       </div>
-      <!-- <div class="battery-bottom p-0 bg-primary border w-100 fixed-bottom">
-      <span>電量</span>
-      <battery :showIcon="false" bHeight="2rem"></battery>
-      </div>-->
+
       <!--對話框們-->
       <div class="modals">
         <!--等待上線動作完成對話框 -->
@@ -171,23 +200,14 @@
           :noCloseOnEsc="true"
           :hideHeaderClose="true"
           header-bg-variant="primary"
-          header-text-variant="light">
-          <p class="py-3">{{ $t('wait_online_text') }}</p>
-        </b-modal>
-        <!--上線失敗警示對話框-->
-        <b-modal
-          v-model="ShowOnlineFailDialog"
-          header-bg-variant="danger"
           header-text-variant="light"
-          :centered="true"
-          title="上線請求失敗"
-          :ok-only="true">
-          <p ref="online-fail-msg"></p>
+        >
+          <p class="py-3">{{ $t('wait_online_text') }}</p>
         </b-modal>
       </div>
     </div>
     <div v-if="IsLDULD_NO_Entry_Actived" class="w-100 bg-warning fixed-bottom p-2">
-      <span class="text-danger" style="font-weight:bold">空取空放模式運行中 </span>
+      <span class="text-danger" style="font-weight:bold">空取空放模式運行中</span>
       <b-button variant="danger" size="sm" @click="HandleCloseLDULD_No_Entry_BtnClick">關閉</b-button>
     </div>
   </div>
@@ -246,7 +266,6 @@ export default {
       ws: null,
       previousAGVPoseIsError: false,
       ShowAGVPoseErrorModel: false,
-
     }
   },
   methods: {
@@ -386,6 +405,20 @@ export default {
       bus.emit('/z_axis_position', this.VMSData.ZAxisDriverState.position)
     },
     AutoModeSwitchHandle() {
+
+      if (!this.IsAutoMode && this.VMSData.MainState != 'IDLE') {
+        this.$swal.fire(
+          {
+            text: '當前狀態無法切換為自動模式',
+            title: '',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      }
+
       this.mode_switch_data.type = 'auto'
       this.mode_switch_data.state = !this.IsAutoMode;
 
@@ -406,7 +439,16 @@ export default {
     },
     OnlineModeSwitchHandle() {
       if (!this.IsOnlineMode && this.VMSData.MainState.toUpperCase() != 'IDLE' && this.VMSData.MainState.toUpperCase() != 'CHARGING') {
-        Notifier.Danger(`當前狀態無法上線(${this.VMSData.MainState})`, "top", 5000);
+
+        this.$swal.fire(
+          {
+            text: `當前狀態無法上線(${this.VMSData.MainState})`,
+            title: '',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
         return;
       }
 
@@ -435,14 +477,33 @@ export default {
         this.wait_online_request_dialog_show = true;
         var ret = await MODESwitcher.OnlineModeSwitch(this.IsOnlineMode ? 0 : 1)
         if (!ret.Success) {
-          this.$refs['online-fail-msg'].innerText = ret.Message;
-          this.ShowOnlineFailDialog = true;
-
+          this.$swal.fire(
+            {
+              text: '',
+              title: `上線請求失敗－${ret.Message}`,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
         }
 
         setTimeout(() => {
           this.wait_online_request_dialog_show = false;
-        }, 1000);
+          if (ret.Success) {
+            this.$swal.fire(
+              {
+                text: '',
+                title: this.IsOnlineMode ? 'AGV已上線' : 'AGV已下線',
+                icon: 'success',
+                showCancelButton: false,
+                showConfirmButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert',
+                timer: 1500
+              })
+          }
+        }, 700);
       }
     },
     HandleLocalizationClick() {
@@ -466,7 +527,7 @@ export default {
       await CloseLDULD_No_Entry()
       Notifier.Success(`空取空放功能已關閉`, 'bottom', 1500);
 
-    }
+    },
   },
   computed: {
     Is_TSMC_MiniAGV() {
@@ -533,6 +594,19 @@ export default {
     },
     IsLDULD_NO_Entry_Actived() {
       return this.VMSData.IsLDULD_No_Entry
+    },
+    cargo_status_text() {
+      var _hascargo = this.VMSData.CargoExist
+      var _hascargo_id = this.VMSData.CST_Data != ''
+      if (_hascargo && _hascargo_id)
+        return ''
+      if (!_hascargo && !_hascargo_id)
+        return ''
+      if (_hascargo && !_hascargo_id)
+        return '有料無帳'
+      if (!_hascargo && _hascargo_id)
+        return '有帳無料'
+
     },
     /**
      *  DestineName ,
@@ -601,17 +675,15 @@ export default {
   },
   mounted() {
 
-    // setInterval(async () => {
-    //   this.moduleInformation = await GetModuleInformation();
-    // }, 200);
-    // this.VMSDataWebsocketInit();
     setInterval(() => {
       this.time = moment(Date.now()).format('yyyy/MM/DD HH:mm:ss');
+
     }, 1000);
     setTimeout(() => {
       this.loading = false;
     }, 3000);
     setTimeout(() => {
+
       var handlerDataChanged = () => {
         this.back_end_server_err = false;
         this.back_end_server_connecting = false;
@@ -657,7 +729,6 @@ export default {
 .main-content {
   padding-top: 38px;
 }
-
 #waiting-go-alert {
   .el-alert__title {
     font-size: 25px;
@@ -789,7 +860,14 @@ export default {
 
 .side {
   width: 250px;
-
+  background: rgb(175 175 175 / 6%);
+  margin-top: 3px;
+  .mileage,
+  .modes,
+  .coordination,
+  .connection-status {
+    background: #e8e8e85e;
+  }
   .state-title {
     font-weight: bold;
     font-size: 18px;
