@@ -77,22 +77,15 @@
 
 
 @keyframes initializing-color-change {
-  0% {
+  0% ,100%{
     background-color: rgb(13, 110, 253);
     color: white;
   }
+  
   50% {
-    background-color: rgb(155, 155, 155);
+    background-color: #f8f9fa;
     color: rgb(13, 110, 253);
   }
-  100% {
-    background-color: rgb(13, 110, 253);
-    color: white;
-  }
-  // 100% {
-  //   background-color: red;
-  //   color: white;
-  // }
 }
 
 
