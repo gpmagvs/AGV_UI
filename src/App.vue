@@ -4,16 +4,14 @@
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms"
-    >
+      id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
-          :title="`${Timeformat(alarmObj.Alarm.Time)}-[${code}]`"
-          :description="`${alarmObj.Alarm.Description}(${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN})`"
-        ></el-alert>
+          :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>

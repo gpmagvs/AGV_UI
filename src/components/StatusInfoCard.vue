@@ -70,13 +70,12 @@
                 :state="vms_data.MapComparsionRate != 0"></b-form-input>
             </td>
           </tr>
-          <tr align="justify">
+          <!-- <tr align="justify">
             <td><i class="bi bi-three-dots-vertical"></i>{{ $t('abormal') }}</td>
             <td colspan="4">
               <b-form-textarea disabled v-model="NewestAlarm" :state="NewestAlarm == ''"></b-form-textarea>
-              <!-- <el-input type="textarea" disabled v-model="NewestAlarm"></el-input> -->
             </td>
-          </tr>
+          </tr> -->
           <tr align="justify">
             <td></td>
             <td colspan="4" class="text-end">

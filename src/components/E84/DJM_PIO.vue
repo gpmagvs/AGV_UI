@@ -101,7 +101,7 @@ export default {
       if (!this.IsGodUse) {
         return;
       }
-      bus.emit('show-settings', 1);
+      bus.emit('show-settings', 3);
     },
     async SignalWriteChangeHandler(owner, signal_name) {
       if (!this.IsGodUse) {

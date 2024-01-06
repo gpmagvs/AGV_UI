@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="sys-setting">
     <el-drawer v-model="drawer_show" size="50%" direction="rtl">
       <template #header>
         <div class="w-100 border-bottom">
           <h2 class="text-start">Settings</h2>
         </div>
       </template>
-      <div>
+      <div style="position: absolute; width:95%;top:80px">
         <b-tabs v-model="selected_tab">
           <b-tab title="一般">
             <div class="tabpage border p-2">
@@ -415,14 +415,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tabpage {
-  height: 85vh;
-  overflow-y: scroll;
-}
+.sys-setting {}
 
-.el-drawer__body {
-  position: absolute;
-  width: 100%;
-  top: 3rem;
+
+.tabpage {
+  // height: 85vh;
+  overflow-y: auto;
+  height: 84vh;
 }
 </style>
