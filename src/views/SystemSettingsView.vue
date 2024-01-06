@@ -85,6 +85,12 @@
           <b-tab title="電池">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
+                <el-form-item label="等待充電開始時間(秒)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.BatteryModule.WaitChargeStartDelayTimeWhenReachChargeTaskFinish"></el-input-number>
+                </el-form-item>
                 <el-form-item label="斷開充電回路電壓閥值(mV)">
                   <el-input-number
                     @change="HandleParamChanged"
