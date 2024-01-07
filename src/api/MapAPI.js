@@ -35,6 +35,16 @@ const MapAPI = {
         return undefined
       })
   },
+  GetNormalStations() {
+    return axios_entity
+      .get('api/Map/GetNormalStations')
+      .then((ret) => {
+        return ret.data
+      })
+      .catch((err) => {
+        return undefined
+      })
+  },
   SaveMap(_data) {
     return axios_entity
       .post('api/Map/SaveMap', _data)

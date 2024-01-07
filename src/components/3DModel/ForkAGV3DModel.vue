@@ -2,17 +2,14 @@
   <div class="agv-3d-state">
     <div class="state-info">
       <div class="text-start">
-        <b-button class="bg-primary" @click="showStatusCard=!showStatusCard" size="sm" squared>
-          狀態資訊
-          <i v-if="!showStatusCard" class="bi bi-chevron-down"></i>
+        <b-button class="bg-primary" @click="showStatusCard = !showStatusCard" size="sm" squared> 狀態資訊 <i v-if="!showStatusCard" class="bi bi-chevron-down"></i>
           <i v-else class="bi bi-chevron-up"></i>
         </b-button>
       </div>
       <div
         v-show="showStatusCard"
         class="px-3 py-3"
-        style="background-color: rgba(255, 255, 255, 0.4);"
-      >
+        style="background-color: rgba(255, 255, 255, 0.4);">
         <el-form>
           <el-form-item v-for="driver in DriversState" :key="driver.name" :label="driver.name">
             <el-form-item label="State" class="mx-2">
@@ -26,7 +23,6 @@
               </div>
             </el-form-item>
           </el-form-item>
-
           <el-form-item label="卡匣在席">
             <el-checkbox v-model="isCarrierExist"></el-checkbox>
           </el-form-item>
@@ -42,6 +38,8 @@
 <script>
 import { throttledRef } from '@vueuse/shared';
 import * as THREE from 'three'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { render } from '@vue/runtime-dom';
 import bus from '@/event-bus.js'
@@ -192,11 +190,20 @@ export default {
         renderer.render(scene, camera);
       }
       Animate();
+      //this.LoadAGVStlModel(scene)
       return renderer.domElement;
     },
 
     ForkPositionChange() {
 
+    },
+    LoadAGVStlModel(screen) {
+      const loader = new STLLoader();
+      loader.load('/submarine_agv_model.STL', function (geometry) {
+        const material = new THREE.MeshBasicMaterial({ color: 'grey' });
+        const mesh = new THREE.Mesh(geometry, material);
+        screen.add(mesh);
+      });
     }
   },
   mounted() {
@@ -218,6 +225,7 @@ export default {
 <style scoped lang="scss">
 .agv-3d-state {
   max-width: 740px;
+
   .state-info {
     position: absolute;
   }

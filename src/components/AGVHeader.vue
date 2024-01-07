@@ -2,7 +2,7 @@
   <div class="fixed-top">
     <div class="status d-flex flex-row bg-light">
       <div class="sys-name flex-fill">
-        <div class="px-2" style="width:50px;position:absolute;">
+        <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
         <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
@@ -158,10 +158,8 @@ export default {
     /* Standard syntax */
   }
 
-  .lang-switch {
-    // position: absolute;
-    // right: 9px;
-    // top: 67px;
+  .version-name {
+    cursor: pointer;
   }
 
   .account-name {
@@ -172,5 +170,4 @@ export default {
   .sys-name {
     background-color: rgb(0, 123, 255);
   }
-}
-</style>
+}</style>

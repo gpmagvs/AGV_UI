@@ -59,9 +59,9 @@
           </b-tab>
           <b-tab title="安全防護">
             <div class="tabpage border p-2">
-              <div class="text-start w-100 border-bottom">
+              <div class="text-start w-100 ">
                 <el-form :model="settings" label-width="150" label-position="left">
-                  <b>碰撞偵測功能</b>
+                  <div class="w-100 border-bottom"><b>碰撞偵測功能</b></div>
                   <el-form-item label="啟用">
                     <el-switch
                       @change="HandleParamChanged"
@@ -78,6 +78,20 @@
                       v-model="settings.ImpactDetection.ThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
+                  <div class="w-100 border-bottom"><b>禁止上線點位</b></div>
+                  <el-select
+                    class="my-2"
+                    v-model="settings.ForbidToOnlineTags"
+                    multiple
+                    placeholder="Select"
+                    @change="HandleParamChanged"
+                    style="width: 300px">
+                    <el-option
+                      v-for="station in normal_stations"
+                      :key="station.tag"
+                      :label="station.name"
+                      :value="station.tag" />
+                  </el-select>
                 </el-form>
               </div>
             </div>
@@ -229,6 +243,22 @@
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.DownlimitPose"></el-input-number>
                 </el-form-item>
+                <el-form-item label="安全高度(cm)">
+                  <el-input-number
+                    size="small"
+                    step="0.1"
+                    precision="1"
+                    min="1"
+                    max="100"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.SaftyPositionHeight"></el-input-number>
+                </el-form-item>
+                <el-form-item label="允許走行之牙叉位置限制">
+                  <el-select @change="HandleParamChanged" v-model="settings.ForkAGV.ForkSaftyStratrgy">
+                    <el-option label="牙叉位於原點" :value="0"></el-option>
+                    <el-option label="牙叉低於安全高度" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
                 <el-form-item label="Z軸皮帶檢知Bypass">
                   <el-switch
                     @change="HandleParamChanged"
@@ -267,6 +297,7 @@
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
 import { SystemAPI } from '@/api/VMSAPI.js'
+import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 export default {
@@ -350,6 +381,7 @@ export default {
           CheckBatteryLockStateWhenInit: false
         }
       },
+      normal_stations: [],
       last_setting_val_set_success_time: '1970/1/1 00:00:00'
     }
   },
@@ -383,6 +415,7 @@ export default {
         position: 'bottom-right',
         duration: 600,
       });
+      this.normal_stations = await MapAPI.GetNormalStations()
     },
     async HandleParamChanged() {
       var success = await SystemAPI.SaveSettings(this.settings)
