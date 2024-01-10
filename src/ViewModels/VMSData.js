@@ -25,6 +25,7 @@ class VMSData {
   IsInitialized = false
   IsSystemIniting = false
   IsLDULD_No_Entry = false
+  IsForkHeightAboveSafty = false
   LinearSpeed = 0
   Laser_Mode = 0
   Last_Visited_Tag = 1

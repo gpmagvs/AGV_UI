@@ -185,6 +185,30 @@
                     v-model="settings.TagParkingTolerance"></el-input-number>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
+                  <b>雷射偵測設備Port內障礙物</b>
+                </div>
+                <el-form-item label="啟用">
+                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.LsrObstacleDetectionEnable"></el-switch>
+                </el-form-item>
+                <el-form-item label="雷射組數">
+                  <el-input-number
+                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    @change="HandleParamChanged"
+                    size="small"
+                    :min="0"
+                    :max="16"
+                    v-model="settings.LDULDParams.LsrObsLaserModeNumber"></el-input-number>
+                </el-form-item>
+                <el-form-item label="偵測異常發報等級">
+                  <el-select 
+                  :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable" 
+                  v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel"
+                  @change="HandleParamChanged">
+                    <el-option label="Warning" :value="0"></el-option>
+                    <el-option label="Alarm" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
                 </div>
                 <el-form-item label="TA1_Wait_L_U_REQ_ON">

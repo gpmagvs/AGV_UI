@@ -1,95 +1,114 @@
 <template>
   <div class="status-card">
-    <h4 class="text-start">{{ $t('Status_info') }}</h4>
-    <div class="w-100 border p-3">
-      <table class="status-tb w-100">
-        <tbody>
-          <tr align="justify">
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('status') }}</td>
-            <td class="val-column">
-              <b-button
-                class="w-100 border"
-                v-bind:class="vms_data.SubState == '' ? 'down' : vms_data.SubState.toLowerCase()">
-                <b>{{ vms_data.SubState == '' ? 'ERROR' : vms_data.SubState }}</b>
-              </b-button>
-            </td>
-            <td><i class="bi bi-three-dots-vertical"></i>Laser Mode</td>
-            <td>
-              <b-form-input size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input>
-            </td>
-          </tr>
-          <tr align="justify">
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('current_position') }}</td>
-            <td class="val-column">
-              <b-form-input v-if="vms_data.Last_Visit_MapPoint.Graph" size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Graph.Display"></b-form-input>
-              <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
-            </td>
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('target_position') }}</td>
-            <td class="val-column">
-              <b-form-input v-if="vms_data.NavInfo.DestinationMapPoint.Graph" size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Graph.Display"></b-form-input>
-              <!-- <el-input disabled v-model="currentPosition"></el-input> -->
-            </td>
-          </tr>
-          <tr align="justify">
-            <!-- 動作名稱 -->
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('tag_read_status') }}</td>
-            <td class="val-column">
-              <b-form-input
+    <!-- <h4 class="text-start">{{ $t('Status_info') }}</h4> -->
+    <div class="w-100  p-3">
+      <el-row class="w-100 row">
+        <el-col :span="5">{{ $t('status') }}</el-col>
+        <el-col :span="7" class="val-column status">
+          <b-button
+            class="w-100 border"
+            v-bind:class="vms_data.SubState == '' ? 'down' : vms_data.SubState.toLowerCase()">
+            <b>{{ vms_data.SubState == '' ? 'ERROR' : vms_data.SubState }}</b>
+          </b-button>
+        </el-col>
+        <el-col :span="5">Laser Mode</el-col>
+        <el-col :span="7">
+          <el-tag class="w-100" type="info" size="large" v-model="vms_data.Current_LASER_MODE">{{ vms_data.Current_LASER_MODE }}</el-tag>
+          <!-- <b-form-input class="border" size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input> -->
+        </el-col>
+      </el-row>
+      <el-row class="w-100 row">
+        <el-col :span="5">{{ $t('current_position') }}</el-col>
+        <el-col :span="7" class="val-column">
+          <el-tag type="info" v-if="vms_data.Last_Visit_MapPoint.Graph" class="w-100" size="large">{{ vms_data.Last_Visit_MapPoint.Graph.Display }}</el-tag>
+          <!-- <b-form-input v-if="vms_data.Last_Visit_MapPoint.Graph" size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Graph.Display"></b-form-input> -->
+          <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
+        </el-col>
+        <el-col :span="5">{{ $t('target_position') }}</el-col>
+        <el-col :span="7" class="val-column">
+          <el-tag type="info" v-if="vms_data.NavInfo.DestinationMapPoint.Graph" class="w-100" size="large">{{ vms_data.NavInfo.DestinationMapPoint.Graph.Display }}</el-tag>
+          <!-- <b-form-input v-if="vms_data.NavInfo.DestinationMapPoint.Graph" size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Graph.Display"></b-form-input> -->
+          <!-- <el-input disabled v-model="currentPosition"></el-input> -->
+        </el-col>
+      </el-row>
+      <el-row class="w-100 row">
+        <!-- 動作名稱 -->
+        <el-col :span="5">{{ $t('tag_read_status') }}</el-col>
+        <el-col :span="7" class="val-column">
+          <!-- <b-form-input
                 v-if="!IsInspectionAGV"
                 size="sm"
                 disabled
                 v-model="vms_data.BCR_State_MoveBase.tagID"
                 :state="vms_data.BCR_State_MoveBase.tagID > 0">
-              </b-form-input>
-            </td>
-            <!-- 載物ID -->
-            <td v-if="vms_data.Agv_Type != 2"><i class="bi bi-three-dots-vertical"></i>{{ $t('carrier_id') }}</td>
-            <td v-if="vms_data.Agv_Type != 2" class="val-column">
-              <b-form-input
+              </b-form-input> -->
+          <el-tag v-if="!IsInspectionAGV" class="w-100"
+            :type="vms_data.BCR_State_MoveBase.tagID > 0 ? 'success' : 'danger'"
+            size="large">{{ vms_data.BCR_State_MoveBase.tagID }}</el-tag>
+        </el-col>
+        <!-- 載物ID -->
+        <el-col :span="5" v-if="vms_data.Agv_Type != 2">{{ $t('carrier_id') }}</el-col>
+        <el-col :span="7" v-if="vms_data.Agv_Type != 2" class="val-column">
+          <el-tag class="w-100"
+            :type="vms_data.CST_Data != '' ? 'success' : 'danger'"
+            size="large">{{ vms_data.CST_Data }}</el-tag>
+          <!-- <b-form-input
                 size="sm"
                 disabled
                 v-model="vms_data.CST_Data"
-                :state="vms_data.CST_Data != ''"></b-form-input>
-            </td>
-          </tr>
-          <tr v-if="true" align="justify">
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('localization-state') }}</td>
-            <td>
-              <b-form-input
+                :state="vms_data.CST_Data != ''"></b-form-input> -->
+        </el-col>
+      </el-row>
+      <el-row class="w-100 row" v-if="true">
+        <el-col :span="5">{{ $t('localization-state') }}</el-col>
+        <el-col :span="7" class="val-column">
+          <el-tag class="w-100"
+            :type="LocStatusDisplay == 'OK' ? 'success' : 'danger'"
+            size="large">{{ LocStatusDisplay }}</el-tag>
+          <!-- <b-form-input
                 size="sm"
                 disabled
                 v-model="LocStatusDisplay"
-                :state="LocStatusDisplay == 'OK'"></b-form-input>
-            </td>
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('map-matching-rate') }}</td>
-            <td>
-              <b-form-input
+                :state="LocStatusDisplay == 'OK'"></b-form-input> -->
+        </el-col>
+        <el-col :span="5">{{ $t('map-matching-rate') }}</el-col>
+        <el-col :span="7" class="val-column">
+          <el-tag class="w-100"
+            :type="vms_data.MapComparsionRate != 0 ? 'success' : 'danger'"
+            size="large">{{ vms_data.MapComparsionRate }}</el-tag>
+          <!-- <b-form-input
                 size="sm"
                 disabled
                 v-model="vms_data.MapComparsionRate"
-                :state="vms_data.MapComparsionRate != 0"></b-form-input>
-            </td>
-          </tr>
-          <!-- <tr align="justify">
-            <td><i class="bi bi-three-dots-vertical"></i>{{ $t('abormal') }}</td>
-            <td colspan="4">
-              <b-form-textarea disabled v-model="NewestAlarm" :state="NewestAlarm == ''"></b-form-textarea>
-            </td>
-          </tr> -->
-          <tr align="justify">
-            <td></td>
-            <td colspan="4" class="text-end">
-              <p style="font-size:12px;color:grey">RAM :{{ Memory }} Mb</p>
-            </td>
-          </tr>
-          <tr v-if="false" align="justify">
-            <td><i class="bi bi-three-dots-vertical"></i>AGV Direct</td>
-            <td>
-              <b-form-input size="sm" disabled v-model="vms_data.AGV_Direct"></b-form-input>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                :state="vms_data.MapComparsionRate != 0"></b-form-input> -->
+        </el-col>
+      </el-row>
+      <!--Fork高度狀態 -->
+      <el-row class="w-100 row" v-if="vms_data.Agv_Type == 0">
+        <el-col :span="5">牙叉高度</el-col>
+        <el-col :span="19">
+          <el-tag class="w-100"
+            :type="!vms_data.IsForkHeightAboveSafty ? 'success' : 'danger'"
+            size="large">{{ for_position_safe_state }}</el-tag>
+          <!-- <b-form-input
+                size="sm"
+                disabled
+                v-model="for_position_safe_state"
+                :state="!vms_data.IsForkHeightAboveSafty"></b-form-input> -->
+        </el-col>
+      </el-row>
+      <el-row class="w-100 row">
+        <el-col :span="5"></el-col>
+        <el-col :span="19" class="text-end">
+          <p style="    font-size: 28px;    color: #e1e1e1;">RAM :{{ Memory }} Mb</p>
+        </el-col>
+      </el-row>
+      <el-row class="w-100 row" v-if="false">
+        <el-col :span="6">AGV Direct</el-col>
+        <el-col :span="6">
+          <b-form-input size="sm" disabled v-model="vms_data.AGV_Direct"></b-form-input>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -109,6 +128,10 @@ export default {
     }
   },
   computed: {
+    for_position_safe_state() {
+      var forkHeight = this.vms_data.ZAxisDriverState.position.toFixed(2);
+      return `${forkHeight} cm (${this.vms_data.IsForkHeightAboveSafty ? '高於安全位置' : "安全"})`
+    },
     state_btn_variant() {
       var _state = this.vms_data.SubState.toUpperCase();
       if (_state == "DOWN" | _state == "ALARM" | _state == "STOP" | _state == "SYSTEM_INIT") {
@@ -182,25 +205,29 @@ export default {
 
 <style lang="scss">
 .status-card {
+  .row {
+    margin: 36px auto;
+    border-bottom: 1px solid #f3f3f3;
+    padding-bottom: 13px;
+
+    .el-col {
+      text-align: left;
+      font-size: 19px;
+      font-weight: bold;
+      color: rgb(103 103 103);
+    }
+
+    .val-column {
+      width: 100%;
+    }
+  }
+
   h4 {
     font-weight: bold;
   }
 
-  tr {
-    height: 50px;
-  }
-
-  td {
-    //width: 120px;
-    font-weight: bold;
-    font-size: small;
-    padding: 0px 10px;
-  }
-
-  .status-tb {
-    .val-column {
-      width: 27%;
-    }
+  .el-tag__content {
+    font-size: 20px;
   }
 }
 </style>

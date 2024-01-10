@@ -1,5 +1,5 @@
 <template>
-    <div class="handshaking-notify bg-warning " v-bind:style="minimize ? miniSizeStyle : {}" v-bind:class="EQHSStatus.IsHandshaking ? 'show-notify' : 'hidden-notify'">
+    <div class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}" v-bind:class="EQHSStatus.IsHandshaking ? 'show-notify' : 'hidden-notify'">
         <div class="w-100">
             <span class="">設備交握中</span>
             <span class="mx-1">{{ dot_animation_str }}</span>
@@ -81,7 +81,7 @@ export default {
     position: absolute;
     top: 40%;
     left: 10px;
-    border: 4px solid red;
+    border: 4px solid 4px solid #c3c3c3;
     opacity: .8;
     font-size: 50px;
     display: flex;
@@ -95,7 +95,7 @@ export default {
         font-size: smaller;
         color: #ffffff;
         letter-spacing: normal;
-        background: #db5807;
+        background: #000000;
     }
 
     #close-btn {
