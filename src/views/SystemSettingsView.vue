@@ -200,10 +200,10 @@
                     v-model="settings.LDULDParams.LsrObsLaserModeNumber"></el-input-number>
                 </el-form-item>
                 <el-form-item label="偵測異常發報等級">
-                  <el-select 
-                  :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable" 
-                  v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel"
-                  @change="HandleParamChanged">
+                  <el-select
+                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel"
+                    @change="HandleParamChanged">
                     <el-option label="Warning" :value="0"></el-option>
                     <el-option label="Alarm" :value="1"></el-option>
                   </el-select>
@@ -307,6 +307,69 @@
                   <el-switch
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
+                </el-form-item>
+              </el-form>
+            </div>
+          </b-tab>
+          <b-tab title="終端機Log顯示">
+            <div class="tabpage border p-2">
+              <el-form label-position="left" label-width="210">
+                <el-form-item label="Trace Log">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Log.ConsoleTraceShow"></el-switch>
+                </el-form-item>
+                <el-form-item label="Info Log">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Log.ConsoleInfoShow"></el-switch>
+                </el-form-item>
+                <el-form-item label="Warning Log">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Log.ConsoleWarningShow"></el-switch>
+                </el-form-item>
+                <el-form-item label="Error Log">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Log.ConsoleErrorShow"></el-switch>
+                </el-form-item>
+                <el-form-item label="Critical Log">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.Log.ConsoleCriticalShow"></el-switch>
+                </el-form-item>
+              </el-form>
+            </div>
+          </b-tab>
+          <b-tab title="派車系統">
+            <div class="tabpage border p-2">
+              <el-form label-position="left" label-width="210">
+                <el-form-item label="Host">
+                  <el-row>
+                    <el-col :span="3"> IP</el-col>
+                    <el-col :span="10">
+                      <el-input
+                        @change="HandleParamChanged"
+                        size="small"
+                        v-model="settings.Connections.AGVS.IP"></el-input>
+                    </el-col>
+                    <el-col :span="3"> Port</el-col>
+                    <el-col :span="5">
+                      <el-input-number
+                        @change="HandleParamChanged"
+                        size="small"
+                        v-model="settings.Connections.AGVS.Port"></el-input-number>
+                    </el-col>
+                  </el-row>
+                </el-form-item>
+                <el-form-item label="連線類型">
+                  <el-select
+                    v-model="settings.VMSParam.Protocol"
+                    @change="HandleParamChanged">
+                    <el-option label="TCP/IP" :value="0"></el-option>
+                    <el-option label="Web API" :value="1"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-form>
             </div>
@@ -432,13 +495,13 @@ export default {
       console.log(_settings)
       this.settings = _settings
       SystemSettingsStore.commit('setSettings', _settings)
-      ElNotification({
-        title: '系統參數設定',
-        message: '系統參數讀取成功',
-        type: 'success',
-        position: 'bottom-right',
-        duration: 600,
-      });
+      // ElNotification({
+      //   title: '系統參數設定',
+      //   message: '系統參數讀取成功',
+      //   type: 'success',
+      //   position: 'bottom-right',
+      //   duration: 600,
+      // });
       this.normal_stations = await MapAPI.GetNormalStations()
     },
     async HandleParamChanged() {

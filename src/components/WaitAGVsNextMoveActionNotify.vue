@@ -1,12 +1,13 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
+        <div class="wait-next-task-move-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}" v-show="IsSegmentTaskAndIDLE">
             <div class="w-100">
-                <span class="">設備交握中</span>
+                <i class="bi bi-stoplights"></i>
+                <span class="">交管停等中</span>
                 <span class="mx-1">{{ dot_animation_str }}</span>
-                <div class="sub-title mx-1" v-bind:class="EQHSStatus.HandshakingInfoText && EQHSStatus.HandshakingInfoText.includes('交握失敗') ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
+                <div class="sub-title mx-1">{{ WaitinInfo }}</div>
             </div>
-            <b-button @click="() => { minimize = !minimize }" variant="danger" id="close-btn" class="my-2">{{ minimize ? '還原' : '縮小' }}</b-button>
+            <b-button @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '還原' : '縮小' }}</b-button>
         </div>
     </transition>
 </template>
@@ -34,8 +35,11 @@ export default {
         }
     },
     computed: {
-        EQHSStatus() {
-            return AGVStatusStore.getters.AGVStatus.HandshakeStatus
+        IsSegmentTaskAndIDLE() {
+            return AGVStatusStore.getters.AGVStatus.NavInfo.IsSegmentTaskExecuting;
+        },
+        WaitinInfo() {
+            return `等待前往目的地-${AGVStatusStore.getters.AGVStatus.NavInfo.Destination}`
         },
     },
     methods: {
@@ -58,6 +62,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.show-wait-notify {
+    visibility: visible;
+    z-index: 3;
+}
+
+.hidden-wait-notify {
+    visibility: hidden;
+    z-index: -1;
+}
+
 .minimize-mode {
     visibility: visible;
     width: 200px;
@@ -65,30 +79,33 @@ export default {
     right: 3px;
 }
 
-.handshaking-notify {
+.wait-next-task-move-notify {
     width: 98%;
-    height: 160px;
+    height: 193px;
     border-radius: 8px;
     // color: white;
     position: absolute;
     top: 40%;
     left: 10px;
-    border: 4px solid 4px solid #c3c3c3;
-    opacity: .8;
+    border: 4px solid #ebd516;
+    opacity: .9;
     font-size: 50px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    letter-spacing: 4px;
+    letter-spacing: 7px;
     z-index: 4000;
 
     .sub-title {
         font-size: smaller;
         color: #ffffff;
         letter-spacing: normal;
-        background: #000000;
+        background: #f1c447;
+        height: 87px;
+        padding: 15px;
+        border-radius: 8px;
     }
 
     #close-btn {

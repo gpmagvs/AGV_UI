@@ -1,6 +1,7 @@
 <template>
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
-  <div class="appcontainer" style="width:100vw">
+  <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading" element-loading-text="GPM AGV"
+    element-loading-background="rgba(0,0,0, 0.8)">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
@@ -23,6 +24,7 @@
     </router-view>
     <SystemSettingsView></SystemSettingsView>
     <EQHandshakingNotify></EQHandshakingNotify>
+    <WaitAGVsNextMoveActionNotify></WaitAGVsNextMoveActionNotify>
   </div>
 </template>
 
@@ -34,15 +36,15 @@ import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
 import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
-
+import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNotify.vue"
 export default {
   components: {
-    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify
+    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify
   },
   data() {
     return {
       showMenuToggleIcon: false,
-
+      loading: true
     }
   },
   methods: {
@@ -80,7 +82,7 @@ export default {
           border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
         }
       }
-    }
+    },
 
   },
   watch: {
@@ -97,7 +99,9 @@ export default {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
     })
-
+    setTimeout(() => {
+      this.loading = false;
+    }, 1000);
   },
 };
 </script>

@@ -94,7 +94,7 @@ class VMSData {
 export class clsOrderInfo {
   DestineName = ""
   SourceName = ""
-  ActionName = 0
+  ActionName = 999
   DisplayText = ""
 
 }
