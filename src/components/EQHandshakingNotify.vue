@@ -2,11 +2,11 @@
     <transition name="el-zoom-in-center">
         <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
-                <span class="">設備交握中</span>
-                <span class="mx-1">{{ dot_animation_str }}</span>
-                <div class="sub-title mx-1" v-bind:class="EQHSStatus.HandshakingInfoText && EQHSStatus.HandshakingInfoText.includes('交握失敗') ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
+                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ IsHandshakeFail ? '交握失敗' : '設備交握中' }}</span>
+                <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
+                <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
             </div>
-            <b-button @click="() => { minimize = !minimize }" variant="danger" id="close-btn" class="my-2">{{ minimize ? '還原' : '縮小' }}</b-button>
+            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
         </div>
     </transition>
 </template>
@@ -21,9 +21,9 @@ export default {
             sub_title_text: 'sub',
             minimize: false,
             miniSizeStyle: {
-                width: '330px',
+                width: '450px',
                 height: '120px',
-                fontSize: '30px',
+                fontSize: '28px',
                 position: 'absolute',
                 left: 'auto',
                 top: 'auto',
@@ -37,6 +37,9 @@ export default {
         EQHSStatus() {
             return AGVStatusStore.getters.AGVStatus.HandshakeStatus
         },
+        IsHandshakeFail() {
+            return this.EQHSStatus.HandshakingInfoText && this.EQHSStatus.HandshakingInfoText.includes('交握失敗');
+        }
     },
     methods: {
         animation() {
@@ -73,7 +76,7 @@ export default {
     position: absolute;
     top: 40%;
     left: 10px;
-    border: 4px solid 4px solid #c3c3c3;
+    border: 2px solid #3a3a3a;
     opacity: .8;
     font-size: 50px;
     display: flex;

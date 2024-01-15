@@ -1,6 +1,6 @@
 <template>
   <div class="task-delivery">
-    <div class="my-1 d-flex">
+    <div v-if="false" class="my-1 d-flex">
       <div>
         <div class="item">
           <div class="title">動作</div>

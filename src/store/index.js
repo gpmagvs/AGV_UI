@@ -346,6 +346,11 @@ export var UserStore = createStore({
     },
     CurrentUserRole: state => {
       return state.UserState.Role;
+    },
+    Operationable: (state, getters) => {
+      if (getters.IsGodUser)
+        return true;
+      return (getters.IsUserLogin && !AGVStatusStore.getters.IsAuto && !AGVStatusStore.getters.IsOnline)
     }
 
   },

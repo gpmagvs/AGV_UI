@@ -141,7 +141,7 @@
             <div class="mileage border rounded m-1 p-1 py-1">
               <div class="w-100 d-flex">
                 <div class="w-100" v-if="Is_Fork_AGV">
-                  <div class="state-title"><i class="bi bi-arrow-down-up"></i>牙叉高度</div>
+                  <div @click="HandleForkHeightTitleClick" class="state-title"><i class="bi bi-arrow-down-up"></i>牙叉高度</div>
                   <fork_height></fork_height>
                 </div>
                 <div class="w-100">
@@ -160,7 +160,7 @@
         <transition name="el-zoom-in-bottom">
           <MainContent v-show="header_show" :VMSData="VMSData"></MainContent>
         </transition>
-        <div v-if="IsShowOrderStatus" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
+        <div v-if="IsShowOrderStatus && !IsHandshaking" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
           <el-alert
             id="order-go-alert"
             :class="order_info_title_class"
@@ -512,6 +512,9 @@ export default {
       Notifier.Success(`空取空放功能已關閉`, 'bottom', 1500);
 
     },
+    HandleForkHeightTitleClick() {
+      bus.emit('on-fork-height-click')
+    }
   },
   computed: {
     Is_TSMC_MiniAGV() {
@@ -660,7 +663,10 @@ export default {
           right: '9px',
           bottom: '0'
         }
-    }
+    },
+    IsHandshaking() {
+      return AGVStatusStore.getters.AGVStatus.HandshakeStatus.IsHandshaking
+    },
 
   },
   mounted() {

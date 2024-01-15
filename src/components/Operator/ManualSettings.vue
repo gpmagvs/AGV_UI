@@ -2,7 +2,8 @@
   <div class="manual_settings border px-3 mx-3">
     <div class="d-flex flex-row py-3">
       <div class="item-label">Laser Mode</div>
-      <div>
+      <LaserModeSwitcher></LaserModeSwitcher>
+      <!-- <div>
         <b-input-group>
           <b-form-input
             size="lg"
@@ -29,7 +30,7 @@
         :disabled="!enabled"
         squared
         class="mx-1"
-        variant="primary">Modify</b-button>
+        variant="primary">Modify</b-button> -->
     </div>
     <div class="d-flex flex-row py-3">
       <div class="item-label">Current Laser Mode</div>
@@ -122,11 +123,12 @@
 import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl, ForkAPI } from '@/api/VMSAPI.js'
 import Notifier from '@/api/NotifyHelper';
 import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
+import LaserModeSwitcher from '@/components/LaserModeSwitcher.vue'
 import { AGVStatusStore, DIOStore, UserStore } from '@/store'
 
 export default {
   components: {
-    SimpleKeyboard,
+    SimpleKeyboard, LaserModeSwitcher
   },
   props: {
   },
@@ -156,22 +158,8 @@ export default {
     CurrentLaserMode() {
       return AGVStatusStore.getters.CurrentLaserMode
     },
-    IsUserLogin() {
-      return UserStore.getters.CurrentUserRole != 0;
-    },
-    IsGodUser() {
-      return UserStore.getters.IsGodUser;
-    },
-    IsAuto() {
-      return AGVStatusStore.getters.IsAuto;
-    },
-    IsOnline() {
-      return AGVStatusStore.getters.IsOnline;
-    },
     enabled() {
-      if (this.IsGodUser)
-        return true;
-      return (this.IsUserLogin && !this.IsAuto && !this.IsOnline)
+      return UserStore.getters.Operationable
     }
   },
   methods: {

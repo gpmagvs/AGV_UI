@@ -1,14 +1,17 @@
 <template>
   <div>
     <div class="d-flex fle-row border-bottom py-1 my-1">
-      <el-button :disabled="!HasAnyChange" type="primary" @click="SaveHandler">儲存</el-button>
+      <el-button type="primary" @click="SaveHandler">儲存</el-button>
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
     </div>
+    <el-select v-model="selected_tag" @change="HandleStationSelected">
+      <el-option value="all" label="ALL"></el-option>
+      <el-option v-for="opt in StationOptions" :key="opt.value" :value="opt.value" :label="opt.text"></el-option>
+    </el-select>
     <el-table
       @cell-click="HandleCellClicked"
-      :data="TeachDatas"
-      height="600"
+      :data="TeachDatasShown"
       size="small"
       v-loading="loading">
       <el-table-column label="Tag" prop="Tag">
@@ -149,7 +152,8 @@ export default {
       OriDataJson: undefined,
       HasAnyChange: false,
       loading: false,
-      selected_data: {}
+      selected_data: {},
+      selected_tag: 'all'
     }
   },
   watch: {
@@ -158,6 +162,21 @@ export default {
     }
   },
   computed: {
+    StationOptions() {
+      return this.TeachDatas.sort(d => d.Tag).map(dat => {
+        return {
+          value: dat.Tag,
+          text: `${dat.Tag}-${dat.Name}`
+        }
+      })
+    },
+    TeachDatasShown() {
+      if (this.selected_tag == 'all')
+        return this.TeachDatas;
+      else
+        return this.TeachDatas.filter(dt => dt.Tag == this.selected_tag)
+
+    },
     NewTagNumber() {
       var teachDataLen = this.TeachDatas.length;
       if (teachDataLen == 0)
@@ -198,6 +217,9 @@ export default {
     },
   },
   methods: {
+    HandleStationSelected(tag) {
+
+    },
     reload() {
       this.LoadTeachDataFromServer()
       this.HasAnyChange = false;
@@ -260,7 +282,8 @@ export default {
     AddTagTeachHandler() {
       this.TeachDatas.push({
         Tag: this.NewTagNumber,
-        Layers: this.NewTagLayerDataTemplate
+        Layers: this.NewTagLayerDataTemplate,
+        NeedHandshake: true
       })
       this.HasAnyChange = true;
     },

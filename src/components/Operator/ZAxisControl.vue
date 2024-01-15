@@ -81,7 +81,7 @@
       <el-drawer
         v-model="show_teach_page"
         direction="btt"
-        size="80%"
+        size="90%"
         @close="TeachDrawerClosingHandle"
         title="FORK TEACH">
         <forkTeachEditor ref="fork_teach"></forkTeachEditor>

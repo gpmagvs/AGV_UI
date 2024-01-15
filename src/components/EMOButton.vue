@@ -1,6 +1,6 @@
 <template>
   <div class="emo-button" @click="EMO()">
-    <img src="@/assets/emo.png" width="100" />
+    <img src="@/assets/emo.png" width="80" />
   </div>
 </template>
 
@@ -33,6 +33,7 @@ export default {
     padding: 2px;
   }
 }
+
 /* .emo-button:active {
 } */
 </style>

@@ -547,6 +547,8 @@ export default {
 .tabpage {
   // height: 85vh;
   overflow-y: auto;
-  height: 84vh;
+  height: 76vh;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 </style>

@@ -16,7 +16,7 @@
           @click="ClearAlarmAlert()"
           size="sm">{{ $t('clear_alarm_records') }}</b-button>
       </div>
-      <div>
+      <div v-if="false">
         <span class="m-2">Search :</span>
         <el-input size="small" style="width:168px"></el-input>
       </div>

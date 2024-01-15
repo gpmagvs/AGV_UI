@@ -1,7 +1,7 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs @activate-tab="HandleTabpageChanged" pills>
+    <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills>
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
@@ -54,7 +54,7 @@
         </div>
       </b-tab>
       <!-- 3D Model Display -->
-      <b-tab v-if="IsGodMod" :title="$t('3d_model')">
+      <b-tab v-if="false" :title="$t('3d_model')">
         <div class="mt-3 border p-1">
           <ForkAGV3D></ForkAGV3D>
         </div>
@@ -99,10 +99,17 @@ export default {
   },
   data() {
     return {
+      current_tab: 0
     }
+  },
+  mounted() {
+    bus.on('on-fork-height-click', () => {
+      this.current_tab = 2;
+    });
   },
   methods: {
     HandleTabpageChanged(currentTabs, previousTabs) {
+      this.current_tab = currentTabs;
       UIStore.commit('SetCurrentTabSelected', currentTabs)
       if (currentTabs == previousTabs)
         return;

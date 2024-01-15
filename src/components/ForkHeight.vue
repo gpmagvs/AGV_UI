@@ -1,6 +1,6 @@
 <template>
-  <div class="fork-height">
-    <div> {{ height }} <span>cm</span>
+  <div @click="HandleClicked" class="fork-height">
+    <div v-bind:class="IsForkHeightAboveSafty ? 'bg-warning text-light border' : ''"> {{ height }} <span>cm</span>
     </div>
     <!-- <div>{{ time }}</div> -->
   </div>
@@ -16,7 +16,16 @@ export default {
   },
   computed: {
     height() {
-      return AGVStatusStore.getters.AGVStatus.ZAxisDriverState.position.toFixed(3)
+      return AGVStatusStore.getters.AGVStatus.ZAxisDriverState.position.toFixed(3);
+    },
+    IsForkHeightAboveSafty() {
+      return AGVStatusStore.getters.AGVStatus.IsForkHeightAboveSafty;
+    },
+
+  },
+  methods: {
+    HandleClicked() {
+      bus.emit('on-fork-height-click');
     }
   },
   mounted() {

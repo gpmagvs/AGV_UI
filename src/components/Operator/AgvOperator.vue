@@ -1,6 +1,6 @@
 <template>
   <div class="agv-operator">
-    <b-tabs pills small @activate-tab="HandleTabpageChanged">
+    <b-tabs :model-value="current_tab" pills small @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')" active>
         <div class="mt-1 p-1">
           <AgvControl></AgvControl>
@@ -61,11 +61,15 @@ export default {
       DIOTableData: new clsDIOTable(),
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
-      modal_key: ''
+      modal_key: '',
+      current_tab: 0
     }
   },
   mounted() {
     this.DIOTableWSInit();
+    bus.on('on-fork-height-click', () => {
+      this.current_tab = 1;
+    });
   },
   methods: {
     DIOTableWSInit() {
@@ -105,6 +109,7 @@ export default {
       }
     },
     HandleTabpageChanged(currentTabs, previousTabs) {
+      this.current_tab = currentTabs;
       if (currentTabs == previousTabs)
         return;
       ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)

@@ -335,6 +335,11 @@ export async function RechargeCircuit() {
   return ret.data //boolean 
 }
 
+export const WorkStationAPI = {
+  async GetWorkStationSettings() {
+    return (await axios_entity.get('api/VMS/WorkStationData')).data;
+  }
+}
 
 /**控制Fork */
 export const ForkAPI = {
