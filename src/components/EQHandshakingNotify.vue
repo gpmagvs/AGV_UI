@@ -2,7 +2,7 @@
     <transition name="el-zoom-in-center">
         <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
-                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ IsHandshakeFail ? '交握失敗' : '設備交握中' }}</span>
+                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ IsHandshakeFail ? '取放貨作業失敗' : '取放貨作業中' }}</span>
                 <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
                 <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
             </div>
