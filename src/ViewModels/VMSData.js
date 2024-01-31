@@ -9,6 +9,7 @@ class VMSData {
   Angle = 0
   AlarmCodes = []
   AGV_Direct = 'STOP'
+  InitializingStatusText = ""
   BCR_State_MoveBase = {
     state: 0,
     tagID: 0,

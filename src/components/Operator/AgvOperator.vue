@@ -27,7 +27,7 @@
             :isOutput="true"></IOTable>
         </div>
       </b-tab>
-      <b-tab :title="$t('manual-operation')">
+      <b-tab v-show="operation_enabled_return" :title="operation_enabled_return ? $t('manual-operation') : ''">
         <div class="mt-1 p-1">
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
@@ -69,6 +69,9 @@ export default {
     this.DIOTableWSInit();
     bus.on('on-fork-height-click', () => {
       this.current_tab = 1;
+    });
+    bus.on('on-manual-lsr-setting-show-invoke', () => {
+      this.current_tab = 4;
     });
   },
   methods: {

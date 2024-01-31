@@ -1,15 +1,15 @@
 <template>
   <div class="home h-100">
     <!-- Top Header  -->
-    <AGVHeader></AGVHeader>
+    <AGVHeader :IsBackendDisconnected="back_end_server_err"></AGVHeader>
     <AGVLocalization ref="localization_dialog"></AGVLocalization>
     <div class="main-content">
-      <div v-if="back_end_server_err" class="server-error py-1 border fixed-top">
+      <div v-if="back_end_server_err" class="server-error py-1 border fixed-bottom">
         <div class="agv-name-in-alarm px-2">{{ VMSData.CarName }}</div>
         <i class="bi bi-exclamation-diamond"></i> {{ $t('backend_server_error') }}
       </div>
       <!-- 電量至頂顯示 -->
-      <BatteryGroup :battery_states="VMSData.BatteryStatus"></BatteryGroup>
+      <BatteryGroup :IsBackendDisconnected="back_end_server_err" :battery_states="VMSData.BatteryStatus"></BatteryGroup>
       <div class="d-flex flex-row h-100">
         <!--Side 左側邊-->
         <transition name="el-zoom-in-top">
@@ -160,7 +160,7 @@
         <transition name="el-zoom-in-bottom">
           <MainContent v-show="header_show" :VMSData="VMSData"></MainContent>
         </transition>
-        <div v-if="IsShowOrderStatus && !IsHandshaking" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
+        <div v-if="showOrderInfo && IsShowOrderStatus && !IsHandshaking" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
           <el-alert
             id="order-go-alert"
             :class="order_info_title_class"
@@ -227,7 +227,7 @@ export default {
       time: '2022/12/12 19:00:09',
       version_text_click_count: 0,
       trigger_admin_dialog_count: 7,
-      back_end_server_err: false,
+      back_end_server_err: true,
       back_end_server_connecting: true,
       loading: true,
       dialogTableVisible: false,
@@ -249,7 +249,8 @@ export default {
       ws: null,
       previousAGVPoseIsError: false,
       ShowAGVPoseErrorModel: false,
-      header_show: false
+      header_show: false,
+      showOrderInfo: false
     }
   },
   methods: {
@@ -499,13 +500,7 @@ export default {
         Current_Tag: this.VMSData.Tag,
         State: this.VMSData.MainState,
         IsOnline: this.VMSData.OnlineMode == 1,
-        Rotation: 0
       }])
-
-      bus.emit('/nav_path_update', {
-        name: this.VMSData.CarName,
-        tags: this.VMSData.NavInfo.PathPlan
-      })
     },
     async HandleCloseLDULD_No_Entry_BtnClick() {
       await CloseLDULD_No_Entry()
@@ -675,6 +670,18 @@ export default {
       this.time = moment(Date.now()).format('yyyy/MM/DD HH:mm:ss');
 
     }, 1000);
+    setInterval(() => {
+      bus.emit('/agv_position', {
+        AGV_Name: this.VMSData.CarName,
+        Current_Tag: this.VMSData.Tag,
+        Rotation: 0,
+        Current_Tag: this.VMSData.Tag,
+        State: this.VMSData.MainState,
+        IsOnline: this.VMSData.OnlineMode == 1,
+        Coordination: [this.VMSData.Pose.position.x, this.VMSData.Pose.position.y]
+      })
+
+    }, 200);
 
     setTimeout(() => {
       this.header_show = true;
@@ -682,7 +689,7 @@ export default {
         this.back_end_server_err = false;
         this.back_end_server_connecting = false;
         if (this.VMSData.Tag > 0) {
-          this.MapDataPublishOut();
+          //this.MapDataPublishOut();
           if (this.VMSData.Tag != this.previous_tagID) {
             Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
           }
@@ -798,23 +805,24 @@ export default {
 }
 
 .server-error {
-  animation: server-errorcolor-change 1s infinite;
+  height: 50px;
+  font-size: 25px;
+  animation: server-errorcolor-change 2s infinite;
+  letter-spacing: 0.4rem;
+  font-weight: bold;
 }
 
 @keyframes server-errorcolor-change {
-  0% {
+
+  0%,
+  100% {
     background-color: red;
     color: white;
   }
 
   50% {
-    background-color: rgb(255, 170, 170);
-    color: black;
-  }
-
-  100% {
-    background-color: red;
-    color: white;
+    background-color: rgb(255, 255, 255);
+    color: red;
   }
 }
 

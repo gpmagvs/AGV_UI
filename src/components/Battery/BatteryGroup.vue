@@ -10,10 +10,10 @@
         style="color:limegreen"
         class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'"></i>
-      <b-progress class="flex-fill h-100" :max="100" animated @click="HandleBatteryClick">
+      <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
         <b-progress-bar
-          animated
-          :value="GetBatteryStatus(i).BatteryLevel"
+          :animated="!IsBackendDisconnected"
+          :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).BatteryLevel"
           :label="GetLabel(GetBatteryStatus(i))"
           v-bind:class="GetClass(GetBatteryStatus(i))"
           style="font-size:16px;"></b-progress-bar>
@@ -60,6 +60,10 @@ export default {
       type: String,
       default: "horizon"
     },
+    IsBackendDisconnected: {
+      type: Boolean,
+      default: true
+    },
   },
   computed: {
     IsMiniAGV() {
@@ -88,6 +92,9 @@ export default {
       }
     },
     GetLabel(bat_status = new BatteryStatus) {
+      if (this.IsBackendDisconnected)
+        return '電池狀態未知'
+
       if (!bat_status.IsCharging)
         return bat_status.BatteryLevel + "%";
       else {
@@ -95,6 +102,9 @@ export default {
       }
     },
     GetClass(bat_status = new BatteryStatus) {
+      if (this.IsBackendDisconnected)
+        return 'bg-danger'
+
       var batLevel = bat_status.BatteryLevel;
       if (!bat_status.IsCharging) {
         if (batLevel < 20)
@@ -117,7 +127,8 @@ export default {
       else
         this.show_battery_info = true;
       setTimeout(() => {
-        this.$refs['battery_detail'].UpdateChargeCircuitState();
+        if (this.$refs['battery_detail'])
+          this.$refs['battery_detail'].UpdateChargeCircuitState();
       }, 500);
     }
   },

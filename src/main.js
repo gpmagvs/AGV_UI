@@ -16,7 +16,6 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 import './my_style.scss'
 import './AGVDataFetchWorker.js'
 import VueApexCharts from "vue3-apexcharts";
-
 import './idling_detector'
 const i18n = createI18n({
   legacy: false,
@@ -32,6 +31,7 @@ const Sweetalert_options = {
   confirmButtonColor: 'rgb(13, 110, 253)',
   cancelButtonColor: '#ff7674',
 }
+
 
 const app = createApp(App)
 

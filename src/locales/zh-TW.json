@@ -40,7 +40,7 @@
     "wait_online_text":"AGV正在執行上下線請求，請稍後...",
     "refresh":"重新整理",
     "clear_alarm_records":"清除異常紀錄",
-    "backend_server_error":"後端服務器連線異常",
+    "backend_server_error":"車載系統異常",
     "connecting":"連線中",
     "agv-online":"AGV上/下線確認",
     "agv-online-alert":"確定要將AGV ONLINE?",

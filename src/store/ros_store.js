@@ -7,6 +7,15 @@ export var ROS_STORE = createStore({
     state: {
         keyboard_move_enable: false,
         module_info: {
+            IMU: {
+                imuData: {
+                    linear_acceleration: {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    }
+                }
+            }
         }
     },
     getters: {
@@ -21,6 +30,14 @@ export var ROS_STORE = createStore({
         },
         Module_Information: state => {
             return state.module_info
+        },
+        ImuData_Acc: state => {
+            var _acc_data = state.module_info.IMU.imuData.linear_acceleration;
+            return {
+                x: _acc_data.x,
+                y: _acc_data.y,
+                z: _acc_data.z
+            }
         }
     },
     mutations: {

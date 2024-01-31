@@ -7,7 +7,7 @@
                 <span class="mx-1">{{ dot_animation_str }}</span>
                 <div class="sub-title mx-1">{{ WaitinInfo }}</div>
             </div>
-            <b-button @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '還原' : '縮小' }}</b-button>
+            <b-button @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
         </div>
     </transition>
 </template>

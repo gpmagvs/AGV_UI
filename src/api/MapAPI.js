@@ -1,5 +1,6 @@
 import axios from 'axios'
 import param from '@/gpm_param'
+import { map_store } from '@/store'
 var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
@@ -9,7 +10,10 @@ const MapAPI = {
     return axios_entity
       .get('api/map/GetMapFromServer')
       .then((ret) => {
-        return ret.data
+        var _data = ret.data;
+        map_store.commit('SetMapData', _data)
+        console.info('download map data from server ..');
+        return _data
       })
       .catch((er) => {
         return undefined

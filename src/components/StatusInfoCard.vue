@@ -14,7 +14,7 @@
           </el-col>
           <el-col :span="5">Laser Mode</el-col>
           <el-col :span="7">
-            <el-tag class="w-100" type="info" size="large" v-model="vms_data.Current_LASER_MODE">{{ vms_data.Current_LASER_MODE }}</el-tag>
+            <el-tag @click="HandleLsrModeTagClick" class="w-100" type="info" size="large" v-model="vms_data.Current_LASER_MODE">{{ vms_data.Current_LASER_MODE }}</el-tag>
             <!-- <b-form-input class="border" size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input> -->
           </el-col>
         </el-row>
@@ -98,6 +98,12 @@
                 :state="!vms_data.IsForkHeightAboveSafty"></b-form-input> -->
           </el-col>
         </el-row>
+        <el-row class="w-100 row border-top py-1" v-if="IsGodUser">
+          <el-col :span="5">ROS</el-col>
+          <el-col :span="19">
+            <b-button class="border" variant="light" @click="() => { show_module_info_drawer = true }">顯示Module Information</b-button>
+          </el-col>
+        </el-row>
         <el-row class="w-100 row">
           <el-col :span="5"></el-col>
           <el-col :span="19" class="text-end">
@@ -111,6 +117,11 @@
           </el-col>
         </el-row>
       </div>
+      <el-drawer title="Module Information" size="50%" v-model="show_module_info_drawer">
+        <pre class="w-100 border rounded bg-light text-start">
+        {{ module_information }}
+        </pre>
+      </el-drawer>
     </div>
   </transition>
 </template>
@@ -118,7 +129,8 @@
 <script>
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
-
+import { ROS_STORE } from '@/store/ros_store'
+import { UserStore } from '@/store'
 export default {
   props: {
 
@@ -127,10 +139,14 @@ export default {
     return {
       currentPosition: '123',
       vms_data: new VMSData(),
-      show: false
+      show: false,
+      show_module_info_drawer: false,
     }
   },
   computed: {
+    IsGodUser() {
+      return UserStore.getters.IsGodUser
+    },
     for_position_safe_state() {
       var forkHeight = this.vms_data.ZAxisDriverState.position.toFixed(2);
       return `${forkHeight} cm (${this.vms_data.IsForkHeightAboveSafty ? '高於安全位置' : "安全"})`
@@ -195,9 +211,19 @@ export default {
     },
     Memory() {
       return this.vms_data.SysLoading ? this.vms_data.SysLoading.Memory : -1;
+    },
+    module_information() {
+      return ROS_STORE.getters.Module_Information
     }
   },
-
+  methods: {
+    HandleLsrModeTagClick() {
+      if (!this.IsGodUser)
+        return;
+      bus.emit('on-manual-lsr-setting-show-invoke')
+    }
+  }
+  ,
   mounted() {
     bus.on('/vms_data', (data) => {
       this.vms_data = data

@@ -61,6 +61,12 @@
             <div class="tabpage border p-2">
               <div class="text-start w-100 ">
                 <el-form :model="settings" label-width="150" label-position="left">
+                  <div class="w-100 border-bottom"><b>IMU 數據</b> </div>
+                  <el-form-item label="加速度">
+                    <code>
+                        {{ IMU_ACC_Data }}
+                      </code>
+                  </el-form-item>
                   <div class="w-100 border-bottom"><b>碰撞偵測功能</b></div>
                   <el-form-item label="啟用">
                     <el-switch
@@ -76,6 +82,32 @@
                       max="4"
                       @change="HandleParamChanged"
                       v-model="settings.ImpactDetection.ThresHold"></el-input-number>
+                    <span class="mx-2">G</span>
+                  </el-form-item>
+                  <div class="w-100 border-bottom"><b>姿態異常偵測(傾倒偵測)</b></div>
+                  <el-form-item label="啟用">
+                    <el-switch
+                      @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.PitchErrorDetection"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="異常檢出警報等級">
+                    <el-select
+                      :disabled="!settings.ImpactDetection.PitchErrorDetection"
+                      v-model="settings.ImpactDetection.PitchErrorAlarmLevel"
+                      @change="HandleParamChanged">
+                      <el-option label="Warning" :value="0"></el-option>
+                      <el-option label="Alarm" :value="1"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="閥值">
+                    <el-input-number
+                      size="small"
+                      step="0.01"
+                      precision="2"
+                      min="0.01"
+                      max="4"
+                      @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.PitchErrorThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
                   <div class="w-100 border-bottom"><b>禁止上線點位</b></div>
@@ -374,6 +406,14 @@
               </el-form>
             </div>
           </b-tab>
+          <b-tab title="進階">
+            <div class="tabpage border p-2 ">
+              <div class="w-100 d-flex">
+                <b-button class="w-50 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
+                <b-button class="w-50 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
+              </div>
+            </div>
+          </b-tab>
         </b-tabs>
       </div>
     </el-drawer>
@@ -387,6 +427,7 @@ import { SystemAPI } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
+import { ROS_STORE } from "@/store/ros_store";
 export default {
   data() {
     return {
@@ -478,6 +519,9 @@ export default {
     },
     IsInspectionAGV() {
       return AGVStatusStore.getters.IsInspectionAGV;
+    },
+    IMU_ACC_Data() {
+      return ROS_STORE.getters.ImuData_Acc;
     }
   },
   mounted() {
@@ -490,6 +534,79 @@ export default {
     this.DownloadSettings();
   },
   methods: {
+    async HandleSystemCloseBtnClick() {
+      this.SystemOptConfirmAndDoAction('確定要關閉車載系統?', async () => {
+        var _response = await SystemAPI.CloseSystem();
+        if (_response.confirm) {
+          this.drawer_show = false;
+          this.$swal.fire(
+            {
+              title: '系統將於一秒後關閉...',
+              text: '',
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        } else {
+          this.$swal.fire(
+            {
+              title: _response.message,
+              text: '',
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+      })
+
+
+    },
+    async HandleSystemRestartBtnClick() {
+
+      this.SystemOptConfirmAndDoAction('確定要重新啟動車載系統?', async () => {
+        var _response = await SystemAPI.RestartSystem();
+        if (_response.confirm) {
+          this.drawer_show = false;
+          this.$swal.fire(
+            {
+              text: '',
+              title: '系統將於一秒後重新啟動...',
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        } else {
+          this.$swal.fire(
+            {
+              text: '',
+              title: _response.message,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+      });
+
+    },
+    SystemOptConfirmAndDoAction(opt_text, handler_action) {
+      return this.$swal.fire(
+        {
+          title: opt_text,
+          text: '',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (res.isConfirmed) {
+            handler_action();
+          }
+        })
+    },
     async DownloadSettings() {
       var _settings = await SystemAPI.GetSettings()
       console.log(_settings)
@@ -541,7 +658,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sys-setting {}
+.sys-setting {
+  z-index: 1099999
+}
 
 
 .tabpage {

@@ -25,6 +25,7 @@
     <SystemSettingsView></SystemSettingsView>
     <EQHandshakingNotify></EQHandshakingNotify>
     <WaitAGVsNextMoveActionNotify></WaitAGVsNextMoveActionNotify>
+    <AGVInitalizingNotify></AGVInitalizingNotify>
   </div>
 </template>
 
@@ -37,9 +38,10 @@ import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
 import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNotify.vue"
+import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
 export default {
   components: {
-    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify
+    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify
   },
   data() {
     return {
@@ -153,7 +155,7 @@ html {
 #vcs-alarms {
   position: absolute;
   left: 42%;
-  z-index: 9999;
+  z-index: 2027;
   bottom: 3px;
   width: 57%;
 

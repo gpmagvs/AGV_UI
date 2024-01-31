@@ -1,12 +1,13 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
+        <div class="wait-next-task-move-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}" v-show="IsAGVInitializing">
             <div class="w-100">
-                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ IsHandshakeFail ? '取放貨作業失敗' : '取放貨作業中' }}</span>
-                <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
-                <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
+                <i class="bi bi-stoplights"></i>
+                <span class="">AGV 初始化..</span>
+                <span class="mx-1">{{ dot_animation_str }}</span>
+                <div class="sub-title mx-1 text-primary" v-bind:class="minimize ? 'sub-title-mini' : ''">{{ InitializingStatusText }}</div>
             </div>
-            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
+            <b-button @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
         </div>
     </transition>
 </template>
@@ -30,15 +31,16 @@ export default {
                 right: '3px',
                 bottom: '3px',
 
+
             }
         }
     },
     computed: {
-        EQHSStatus() {
-            return AGVStatusStore.getters.AGVStatus.HandshakeStatus
+        IsAGVInitializing() {
+            return AGVStatusStore.getters.IsAGVInitializing;
         },
-        IsHandshakeFail() {
-            return this.EQHSStatus.HandshakingInfoText && this.EQHSStatus.HandshakingInfoText.includes('Handshake_Fail');
+        InitializingStatusText() {
+            return AGVStatusStore.getters.InitializingStatusText
         }
     },
     methods: {
@@ -61,6 +63,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.show-wait-notify {
+    visibility: visible;
+    z-index: 3;
+}
+
+.hidden-wait-notify {
+    visibility: hidden;
+    z-index: -1;
+}
+
 .minimize-mode {
     visibility: visible;
     width: 200px;
@@ -68,30 +80,39 @@ export default {
     right: 3px;
 }
 
-.handshaking-notify {
+.wait-next-task-move-notify {
     width: 98%;
-    height: 160px;
+    height: 193px;
     border-radius: 8px;
     // color: white;
     position: absolute;
     top: 40%;
     left: 10px;
-    border: 2px solid #3a3a3a;
-    opacity: .8;
+    border: 2px solid #464646;
+    opacity: .9;
     font-size: 50px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    letter-spacing: 4px;
+    letter-spacing: 7px;
     z-index: 4000;
 
     .sub-title {
         font-size: smaller;
-        color: #ffffff;
+        color: #383838;
         letter-spacing: normal;
-        background: #000000;
+        background: #ffffff;
+        height: 87px;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .sub-title-mini {
+        height: 50px;
+        top: 7px;
+        position: relative;
     }
 
     #close-btn {

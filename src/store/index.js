@@ -21,7 +21,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "01.16.1",
+    UI_Version: "01.31.1",
     PreviousControllRoute: 'move',
     CurrentTabSelected: 0
   },
@@ -140,6 +140,12 @@ export var AGVStatusStore = createStore({
     },
     IsAuto: state => {
       return state.AGVStatus.AutoMode == 1;
+    },
+    IsAGVInitializing: state => {
+      return state.AGVStatus.SubState == 'Initializing'
+    },
+    InitializingStatusText: state => {
+      return state.AGVStatus.InitializingStatusText;
     },
     AGVName: state => {
       return state.AGVStatus.CarName;
@@ -284,7 +290,23 @@ export var AGVStatusStore = createStore({
     },
     BatteryCount: state => {
       return state.AGVStatus.BatteryStatus.length;
+    },
+    MapUseState: state => {
+      return {
+        AGV_Name: state.AGVStatus.CarName,
+        Current_Tag: state.AGVStatus.Tag,
+        Rotation: state.AGVStatus.Angle,
+        State: state.AGVStatus.MainState,
+        IsOnline: state.AGVStatus.OnlineMode == 1,
+        Coordination: [state.AGVStatus.Pose.position.x, state.AGVStatus.Pose.position.y],
+        CargoExist: state.AGVStatus.CargoExist,
+        CargoID: state.AGVStatus.CST_Data,
+      }
+    },
+    AGV_Naving_Tags: state => {
+      return state.AGVStatus.NavInfo.PathPlan;
     }
+
 
   },
   mutations: {
@@ -411,6 +433,37 @@ export var DIOStore = createStore({
         outputs.push(register_state.State ? 1 : 0)
       }
       return outputs
+    },
+    DemoMiniAGVBatteryStatus: state => {
+
+      var bat1_exist_1 = state.DIOStates.Inputs.find(reg => reg.Address + '' == 'X0017').State;
+      var bat1_exist_2 = state.DIOStates.Inputs.find(reg => reg.Address + '' == 'X0018').State;
+
+      var bat2_exist_1 = state.DIOStates.Inputs.find(reg => reg.Address + '' == 'X0010').State;
+      var bat2_exist_2 = state.DIOStates.Inputs.find(reg => reg.Address + '' == 'X0011').State;
+
+      var bat1Installed = !bat1_exist_1 && bat1_exist_2;
+      var bat2Installed = !bat2_exist_1 && bat2_exist_2;
+
+      var bat1Installing = bat1_exist_1 && bat1_exist_2;
+      var bat2Installing = bat2_exist_1 && bat2_exist_2;
+
+      var bat1Removed = bat1_exist_1 && !bat1_exist_2;
+      var bat2Removed = bat2_exist_1 && !bat2_exist_2;
+
+      var GetState = (isInstalled, isInstalling, IsRemoved) => {
+        if (isInstalled)
+          return 'installed';
+        else if (isInstalling)
+          return 'installing';
+        else if (IsRemoved)
+          return 'removed';
+      }
+      return {
+        battery1: GetState(bat1Installed, bat1Installing, bat1Removed),
+        battery2: GetState(bat2Installed, bat2Installing, bat2Removed),
+      }
+
     },
     E84_EQ: state => {
 
@@ -621,6 +674,31 @@ export var WorkstationStore = createStore({
       return WorkStationModbusIOTest(tag).then(dat => {
         return dat
       })
+    }
+  }
+})
+
+export var map_store = createStore({
+  state: {
+    MapData: {}
+  },
+  getters: {
+    GetMapData: state => {
+      return state.MapData;
+    }
+  },
+  mutations: {
+    SetMapData(state, data) {
+      var keys = Object.keys(data.Points);
+      keys.forEach(key => {
+        var point = data.Points[key];
+        if (point && (point.X > 500 || point.Y > 500)) {
+          console.log(`Point[${point.Graph.Display}] remove because coordination too large .(${point.X},${point.Y})`);
+          delete data.Points[key]
+        }
+      });
+
+      state.MapData = data;
     }
   }
 })

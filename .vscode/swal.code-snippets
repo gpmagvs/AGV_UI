@@ -9,25 +9,25 @@
   "Show swal confirm dialog_warning": {
     "scope": "javascript,typescript",
     "prefix": "swalwarning",
-    "body": ["this.\\$swal.fire(\r\n{\r\ntext:'$1',\r\ntitle:'$2',\r\nicon:'warning',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
+    "body": ["this.\\$swal.fire(\r\n{\r\ntitle:'$1',\r\ntext:'$2',\r\nicon:'warning',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
     "description": "Log output to console"
   },
   "Show swal confirm dialog_question": {
     "scope": "javascript,typescript",
     "prefix": "swalquestion",
-    "body": ["this.\\$swal.fire(\r\n{\r\ntext:'$1',\r\ntitle:'$2',\r\nicon:'question',\r\nshowCancelButton:true,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
+    "body": ["this.\\$swal.fire(\r\n{\r\ntitle:'$1',\r\ntext:'$2',\r\nicon:'question',\r\nshowCancelButton:true,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
     "description": "Log output to console"
   },
   "Show swal confirm dialog_error": {
     "scope": "javascript,typescript",
     "prefix": "swalerror",
-    "body": ["this.\\$swal.fire(\r\n{\r\ntext:'$1',\r\ntitle:'$2',\r\nicon:'error',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
+    "body": ["this.\\$swal.fire(\r\n{\r\ntitle:'$1',\r\ntext:'$2',\r\nicon:'error',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
     "description": "Log output to console"
   },
   "Show swal confirm dialog_success": {
     "scope": "javascript,typescript",
     "prefix": "swalsuccess",
-    "body": ["this.\\$swal.fire(\r\n{\r\ntext:'$1',\r\ntitle:'$2',\r\nicon:'success',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
+    "body": ["this.\\$swal.fire(\r\n{\r\ntitle:'$1',\r\ntext:'$2',\r\nicon:'success',\r\nshowCancelButton:false,\r\nconfirmButtonText:'OK',\r\ncustomClass: 'my-sweetalert'\r\n})"],
     "description": "Log output to console"
   }
 }

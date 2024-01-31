@@ -6,7 +6,7 @@
           <el-button @click="OriginalZomm()"><i class="bi bi-house-door-fill"></i></el-button>
         </el-tooltip>
         <el-tooltip content="Go to Location Of AGV">
-          <el-button @click="GoToAGVLoc(0)"><i class="bi bi-geo-alt-fill"></i></el-button>
+          <el-button @click="GoToAGVLoc()"><i class="bi bi-geo-alt-fill"></i></el-button>
         </el-tooltip>
         <div class="w-100 d-flex flex-row justify-content-end">
           <span class="p-1">MAP</span>
@@ -119,7 +119,6 @@
 <script>
 import 'ol/ol.css';
 import ContextMenu from 'ol-contextmenu';
-
 import { Map, View, Feature } from 'ol';
 import { Layer, Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
@@ -130,6 +129,7 @@ import LineString from 'ol/geom/LineString';
 import MapAPI from '@/api/MapAPI'
 import bus from '@/event-bus'
 import Notifier from '@/api/NotifyHelper';
+import { map_store, AGVStatusStore, UIStore } from '@/store'
 // import MapPointSettingDrawer from '@/components/MapPointSettingDrawer.vue'
 
 export default {
@@ -218,30 +218,12 @@ export default {
   },
   async mounted() {
     this.loading = true;
-    setTimeout(() => {
-      this.FetchMap();
-
-
-      // class info{
-      //     AGV_Name
-      //     Current_Tag
-      //     State
-      //     IsOnline
-      //     Rotation
-      // }
-      //agv_data: info[] 
-      bus.on('/agv_name_list', (agv_data) => {
-        this.UpdateAGVLayer(agv_data);
-
-      });
-      bus.on('/nav_path_update', (dto) => {
-        this.UpdateNavPathRender(dto.name, dto.tags)
-      })
-
-    }, 1000);
-
+    this.FetchMap();
   },
   computed: {
+    isViewing() {
+      return UIStore.getters.CurrentTabSelected == 7;
+    },
     current_select_featureID() {
       if (this.selected_feature) {
         return this.selected_feature.getId();
@@ -273,7 +255,6 @@ export default {
       return this.map.getLayers().item(this.layer_index.station_line);
     },
     AGV_Layer() {
-      console.info('AGV_Layer');
       return this.map.getLayers().item(this.layer_index.agv);
     },
     Nav_Path_Layer() {
@@ -291,76 +272,169 @@ export default {
       //TODO RELOAD MAP
     },
     FetchMap() {
-
-      MapAPI.GetMapFromServer().then((map) => {
-        this.loading = false;
-        if (map == undefined) {
-          Notifier.Danger('圖資取得失敗(後端伺服器異常)', 'bottom', 3000);
-        }
-        else if (map.Points == undefined) {
-          Notifier.Danger('圖資取得失敗(AGVS伺服器異常)', 'bottom', 3000);
-        }
-        else {
-          Notifier.Success('Success Fetch Map Data From Server.', 'bottom', 2000);
-
-          this.map_data = map;
-          this.map_name = map.Name;
-
-          this.stations = [];
-          Object.keys(map.Points).forEach(index => {
-            var Graph = map.Points[index].Graph
-            var _tagID = map.Points[index].TagNumber;
-            var _x = map.Points[index].X;
-            var _y = map.Points[index].Y;
-            var _IsVirtual = map.Points[index].IsVirtualPoint;
-            var _name = map.Points[index].Graph.Display;
-            if (_name == "" | _name == undefined) {
-              _name = map.Points[index].Name;
-            }
-            var _station_type = map.Points[index].StationType;
-            var _is_eq_station = map.Points[index].IsEquipment;
-            var _is_charge_station = map.Points[index].IsCharge;
-            var _feature = new Feature({
-              geometry: new Point([_x * 10000, _y * 10000]),
-              name: index,
-            });
-            _feature.setId(_tagID);
-            _feature.set('name', _name)
-            _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
-            _feature.set('isVirtual', _IsVirtual)
-
-            this.stations.push(
-              {
-                index: parseInt(index),
-                tag: _tagID,
-                feature: _feature
-              }
-
-            );
-          })
-
-          this.MapInitializeRender();
-
-        }
-
-      });
-    },
-    get_agv_position(name) {
-      var agv = this.agvList.find(agv => agv.name == name);
-      var station = this.stations.find(st => st.tag == agv.current_tag);
-      if (station == undefined)
-        return [0, 0];
+      var map = map_store.getters.GetMapData;
+      this.loading = false;
+      if (map == undefined || map.Points == undefined) {
+        Notifier.Danger('圖資取得失敗(後端伺服器異常)', 'bottom', 3000);
+      }
       else {
-        return station.feature.getGeometry().getCoordinates();
+        Notifier.Success('Success Fetch Map Data From Server.', 'bottom', 2000);
+
+        this.map_data = map;
+        this.map_name = map.Name;
+
+        this.stations = [];
+        Object.keys(map.Points).forEach(index => {
+          var Graph = map.Points[index].Graph
+          var _tagID = map.Points[index].TagNumber;
+          var _x = map.Points[index].X;
+          var _y = map.Points[index].Y;
+          var _IsVirtual = map.Points[index].IsVirtualPoint;
+          var _name = map.Points[index].Graph.Display;
+          if (_name == "" | _name == undefined) {
+            _name = map.Points[index].Name;
+          }
+          var _station_type = map.Points[index].StationType;
+          var _is_eq_station = map.Points[index].IsEquipment;
+          var _is_charge_station = map.Points[index].IsCharge;
+          var _feature = new Feature({
+            geometry: new Point([_x, _y]),
+            name: index,
+          });
+          _feature.setId(_tagID);
+          _feature.set('name', _name)
+          _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
+          _feature.set('isVirtual', _IsVirtual)
+
+          this.stations.push(
+            {
+              index: parseInt(index),
+              tag: _tagID,
+              feature: _feature
+            }
+
+          );
+        })
+
+        this.MapInitializeRender();
+        this.CreateAGVFeature();
+
+        setInterval(() => {
+          if (this.isViewing)
+            this.UpdateAGVState();
+        }, 100)
+
       }
     },
-    GoToAGVLoc(agv_index) {
-      var agv_name = this.agvList[agv_index].name;
-      var agv_coordination = this.get_agv_position(agv_name)
-      this.map.getView().setCenter(agv_coordination)
+    CreateAGVFeature() {
+      var _agv_state = AGVStatusStore.getters.MapUseState;
+      console.log(_agv_state.Coordination)
+      var _geometry = new LineString(_agv_state.Coordination)
+      console.info('agv state updated' + `${JSON.stringify(_agv_state)}`);
+      var agv_feature = new Feature({
+        geometry: new Point(_agv_state.Coordination),
+        name: _agv_state.AGV_Name,
+      })
+      var cargo_feature = new Feature({
+        geometry: new Point(_agv_state.Coordination),
+      })
+      agv_feature.setId(_agv_state.AGV_Name);
+      agv_feature.setStyle(new Style({
+        image: new Icon({
+          src: '/agv.png', // 设置PNG图像的路径
+          scale: .8, // 设置PNG图像的缩放比例
+          anchor: [0.5, 0.5], // 设置PNG图像的锚点，即图片的中心点位置
+          size: [70, 70],// 设置PNG图像的大小
+          opacity: 1,
+
+        }),
+        text: new Text({
+          text: _agv_state.AGV_Name,
+          offsetX: 4,
+          offsetY: 46,
+          font: 'bold 18px Arial',
+          fill: new Fill({
+            color: _agv_state.State == 'DOWN' ? 'red' : _agv_state.State == 'RUN' ? 'rgb(0, 139, 0)' : 'orange',
+          }),
+          backgroundFill: new Fill({
+            color: 'rgb(186, 219, 255,0.7)',
+          })
+        }),
+      }));
+      cargo_feature.setStyle(new Style({
+        image: new Icon({
+          src: '/images/tray.png', // 设置PNG图像的路径
+          scale: 1, // 设置PNG图像的缩放比例
+          anchor: [-0.0, .7], // 设置PNG图像的锚点，即图片的中心点位置
+          size: [70, 70],// 设置PNG图像的大小
+          opacity: 0,
+        }),
+        text: new Text({
+          text: '',
+          offsetX: 55,
+          offsetY: -52,
+          font: 'bold 12px Arial',
+          fill: new Fill({
+            color: 'blue',
+          })
+        })
+      }))
+      agv_feature.set('cargo_feature', cargo_feature)
+      var _agv_layer_source = this.AGV_Layer.getSource();
+      // this.AGV_Layer.getSource().changed();
+      console.info('AGV Feature created.');
+      _agv_layer_source.addFeature(agv_feature);
+      _agv_layer_source.addFeature(cargo_feature);
+    },
+    GoToAGVLoc() {
+      var agv_map_state = AGVStatusStore.getters.MapUseState;
+      this.map.getView().setCenter(agv_map_state.Coordination)
+    },
+    UpdateAGVState() {
+      var _agv_state = AGVStatusStore.getters.MapUseState;
+      var _agv_layer_source = this.AGV_Layer.getSource();
+      var _agv_feature = _agv_layer_source.getFeatures().find(feature => feature.getId() == _agv_state.AGV_Name);
+      if (!_agv_feature)
+        return;
+      var style = _agv_feature.getStyle();
+      var text = style.getText();
+      if (text) {
+        var fill = text.getFill()
+        fill.setColor(_agv_state.State == 'DOWN' ? 'red' : _agv_state.State == 'RUN' ? 'rgb(0, 139, 0)' : 'Orange')
+        text.setFill(fill);
+        text.setText(`${_agv_state.AGV_Name}\r\n(${_agv_state.State})`);
+      }
+      var image = style.getImage()
+      if (image) {
+        image.setRotation((_agv_state.Rotation - 90) * -1 * Math.PI / 180.0)
+        style.setImage(image)
+      }
+      _agv_feature.setStyle(style)
+      _agv_feature.setGeometry(new Point(_agv_state.Coordination))
+
+      var SetCargoVisible = (agv_feature, agv_state) => {
+        var _agv_corrdination = agv_feature.getGeometry().getCoordinates();
+        var _cargo_feature = agv_feature.get('cargo_feature')
+        if (!_cargo_feature)
+          return;
+        var _style = _cargo_feature.getStyle().clone();
+        var _cargo_image = _style.getImage();
+        _cargo_image.setOpacity(agv_state.CargoExist ? 1 : 0)
+        _cargo_feature.setGeometry(new Point(_agv_corrdination))
+        _style.setImage(_cargo_image)
+
+        var text = _style.getText();
+        if (text) {
+          text.setText(agv_state.CargoID);
+          _style.setText(text);
+        }
+        _cargo_feature.setStyle(_style);
+      }
+      SetCargoVisible(_agv_feature, _agv_state)
+      this.UpdateNavPathRender(_agv_state.AGV_Name, AGVStatusStore.getters.AGV_Naving_Tags)
     },
     OriginalZomm() {
-      this.GoToAGVLoc(0);
+      this.GoToAGVLoc();
       this.map.getView().setZoom(this.original_zoom);
 
     },
@@ -589,24 +663,6 @@ export default {
       }
       this.map.addLayer(mesh_vectorLayer);
     },
-    UpdateAGVLayer(agv_data) {
-
-      try {
-        var output = this.CreateAGVFeatures(agv_data);
-
-        var agv_layer_source = this.AGV_Layer.getSource()
-        agv_layer_source.clear();
-        agv_layer_source.addFeatures(output.agv_features);
-        agv_layer_source.changed();
-
-        var agv_nav_path_layer_source = this.Nav_Path_Layer.getSource()
-        agv_nav_path_layer_source.clear();
-        agv_nav_path_layer_source.addFeatures(output.agv_nav_path_features);
-        agv_nav_path_layer_source.changed();
-      } catch {
-
-      }
-    },
     GetAgvProp(agv_name) {
       return this.agvList.find(av => av.name == agv_name);
     },
@@ -616,81 +672,6 @@ export default {
         prop.isOnline = false
       })
       this.GetAgvProp(agv_name).heighlight = true;
-    },
-    CreateAGVFeatures(agv_data = []) {
-
-      var agv_features = [];
-      var agv_nav_path_features = [];
-      var idx = 0;
-      agv_data.forEach(info => {
-        var agv_name = info.AGV_Name;
-        var agv_current_tag = info.Current_Tag
-        var agv_state = info.State
-        var isOnline = info.IsOnline
-        var agv_theta = info.Rotation
-
-        var agv_prop_exist = this.GetAgvProp(agv_name);
-        if (agv_prop_exist) {
-          agv_prop_exist.current_tag = agv_current_tag;
-          agv_prop_exist.theta = info.Rotation;
-          agv_prop_exist.state = agv_state;
-        } else {
-          agv_prop_exist = {
-            name: agv_name,
-            current_tag: agv_current_tag,
-            previous_tag: -1,
-            color: this.agv_color_set[idx],
-            theta: agv_theta,
-            state: agv_state,
-            heighlight: false
-          }
-          console.info(agv_prop_exist);
-          this.agvList.push(agv_prop_exist)
-        }
-        var agv_position = this.get_agv_position(agv_name);
-        var agv_feature = new Feature({
-          geometry: new Point(agv_position),
-          name: agv_name,
-        })
-        agv_feature.setId('AGV_' + agv_name);
-        agv_features.push(agv_feature);
-
-        var agvIcon = new Icon({
-          src: '/station.png', // 设置PNG图像的路径
-          scale: .5, // 设置PNG图像的缩放比例
-          anchor: [0.5, 0.5], // 设置PNG图像的锚点，即图片的中心点位置
-          size: [70, 70],// 设置PNG图像的大小
-          opacity: 1,
-
-        })
-
-        agv_feature.setStyle(new Style({
-          image: agvIcon,
-          text: new Text({
-            text: agv_name + `\r\n(${agv_state})`,
-            offsetX: 10,
-            offsetY: 38,
-            font: 'bold 18px Arial',
-            fill: new Fill({
-              color: agv_state == 'DOWN' ? 'red' : agv_state == 'RUN' ? 'Lime' : 'Orange',
-
-            }),
-            stroke: new Stroke({
-              color: agv_prop_exist.heighlight ? 'red' : 'black',
-              width: 3
-            })
-          }),
-        }));
-        agv_feature.getStyle().getImage().setRotation(-agv_prop_exist.theta);//設定旋轉角度
-
-        var nav_path_feature = new Feature({
-          geometry: new Point(agv_position),
-          name: agv_name
-        })
-        agv_nav_path_features.push(nav_path_feature);
-        idx += 1;
-      });
-      return { agv_features: agv_features, agv_nav_path_features: agv_nav_path_features }
     },
     handleEditModeMenuClick(action) {
       console.log(action);
@@ -867,16 +848,11 @@ export default {
       this.AGVDisplayControl(this.agv_display_mode_selected == 'show');
     },
     UpdateNavPathRender(agv_name, tags) {
-      // if (tags.length == 0){
-
-      //   return;
-      // }
       var layerName = `agv_path_layer_${agv_name}`
       var layer = this.map.getLayers().getArray().find(layer => layer.get('id') == layerName);
       if (layer) {
         this.map.removeLayer(layer);
       }
-
       // 创建一个矢量图层和矢量数据源
       var path_vectorSource = new VectorSource();
       var path_vectorLayer = new VectorLayer({
@@ -886,17 +862,9 @@ export default {
       });
       this.map.addLayer(path_vectorLayer)
       let source = path_vectorLayer.getSource();
-
-      var _agv = this.agvList.find(agv => agv.name == agv_name);
-      if (_agv) {
-        var color = _agv.color;
-        if (color) {
-          var features = this.CreateLineFeaturesOfPath(tags, color);
-        }
-        _agv.PathPlan = tags;
-        source.addFeatures(features)
-        source.changed();
-      }
+      var features = this.CreateLineFeaturesOfPath(tags, 'red');
+      source.addFeatures(features)
+      source.changed();
     },
     UpdatePathPlanRender(tags = []) {
 

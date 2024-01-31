@@ -5,7 +5,7 @@
         <tr>
           <td>
             <div>
-              <i :class="'connected bi bi-circle-fill'"></i> UI Server
+              <i :class="'connected  bi bi-circle-fill'"></i> UI Server
             </div>
           </td>
           <td>
@@ -26,7 +26,6 @@
             </div>
           </td>
         </tr>
-
         <!-- <tr>
           <td>
             <div :class="rosbridge_state">
@@ -104,12 +103,15 @@ export default {
   .disconnect {
     color: red;
   }
+
   .connected {
     color: limegreen;
   }
+
   .connecting {
     color: yellow;
   }
+
   td div {
     text-align: left;
     font-weight: bold;

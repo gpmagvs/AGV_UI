@@ -10,12 +10,11 @@
       :auto-upload="false"
       :on-success="handleUploadSuccess"
       :on-error="handleUploadError"
-      multiple
-    >
+      multiple>
       <el-button ref="select_file" type="primary">選擇更新檔</el-button>
     </el-upload>
     <el-button id="upload-button" @click="submitUpload">上傳</el-button>
-    <div>共 {{fileList.length}}個檔案，已完成上傳 {{uploaded_cnt}}</div>
+    <div>共 {{ fileList.length }}個檔案，已完成上傳 {{ uploaded_cnt }}</div>
   </div>
 </template>
 
@@ -78,6 +77,6 @@ export default {
 #upload-button {
   position: absolute;
   top: 85px;
-  right: 203px;
+  right: 133px;
 }
 </style>

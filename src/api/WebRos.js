@@ -45,7 +45,6 @@ ros.on('connection', function () {
         messageType: 'gpm_msgs/ModuleInformation'
     })
     module_info_listener.subscribe(function (module_info) {
-
         ROS_STORE.commit('update_module_info', module_info)
     })
 })

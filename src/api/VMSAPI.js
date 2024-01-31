@@ -18,6 +18,14 @@ export var SystemAPI = {
   async SaveSettings(settings) {
     var ret = await axios_entity.post('api/System/SaveParameters', settings)
     return ret.data
+  },
+  async RestartSystem() {
+    var ret = await axios_entity.post('api/System/RestartSystem')
+    return ret.data
+  },
+  async CloseSystem() {
+    var ret = await axios_entity.post('api/System/CloseSystem')
+    return ret.data
   }
 }
 

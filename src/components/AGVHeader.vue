@@ -1,7 +1,7 @@
 <template>
   <div class="fixed-top">
     <div class="status d-flex flex-row bg-light">
-      <div class="sys-name flex-fill">
+      <div class="sys-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
         <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
@@ -11,13 +11,14 @@
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
         @dblclick="where_r_u()"><i class="bi bi-truck-front mx-1"></i>{{ AGVName == "" ? "AGV" : AGVName }}</div>
-      <div class="account-name flex-fill">
+      <div class="account-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
         <i class="bi bi-people mx-1"></i> {{ UserName }}
       </div>
-      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
+      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill" v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"
-          class="bi bi-cloud-upload"></i>
+          class="bi bi-cloud-upload">
+        </i>
       </div>
       <!--語系切換按鈕-->
       <div class="lang-switch  ">
@@ -131,7 +132,13 @@ export default {
     },
   },
   mounted() {
-  }
+  },
+  props: {
+    IsBackendDisconnected: {
+      type: Boolean,
+      default: true
+    },
+  },
 }
 </script>
 
@@ -170,4 +177,10 @@ export default {
   .sys-name {
     background-color: rgb(0, 123, 255);
   }
-}</style>
+
+  .backend-disconnected {
+    background-color: rgb(255, 67, 67);
+    color: white;
+  }
+}
+</style>

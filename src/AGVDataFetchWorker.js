@@ -2,6 +2,8 @@ import { AGVStatusStore, DIOStore, RDTestDataStore } from "./store";
 import WebSocketHelp from "./api/WebSocketHepler";
 import param from "./gpm_param";
 import bus from '@/event-bus.js'
+import MapAPI from './api/MapAPI'
+
 var agv_status_ws = new WebSocketHelp('/ws/AGVCState')
 var agv_dio_ws = new WebSocketHelp('ws/DIOTableData')
 var rd_test_ws = new WebSocketHelp('ws/RDTestData')
@@ -66,3 +68,7 @@ agv_status_ws.onmessage = StateWsOnmessageHandler
 
 DIOWS();
 RDTESTWS();
+
+setTimeout(() => {
+    MapAPI.GetMapFromServer()
+}, 500);

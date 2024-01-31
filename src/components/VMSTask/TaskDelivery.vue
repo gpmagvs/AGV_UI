@@ -63,7 +63,7 @@
       ref="map"></MapShowVue>
     <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt">
       <template #header>
-        <h2 class="text-start">Tag-{{ SelectedFeature == undefined ? "" : SelectedFeature.getId() }} <div v-if="SelectedFeatureIsVirtualPt" class="text-danger"> 虛擬點不可操作移動任務</div>
+        <h2 class="text-start"> {{ GetTitleText(SelectedFeature) }}<div v-if="SelectedFeatureIsVirtualPt" class="text-danger"> 虛擬點不可為終點站</div>
         </h2>
       </template>
       <div class="px-1 d-flex flex-row justify-content-around">
@@ -87,7 +87,7 @@
           <i class="bi bi-box-arrow-in-down-left"></i>取貨 </b-button>
         <b-button
           class="my-1 action-button"
-          variant="success"
+          variant="warning"
           @click="handleTaskAllocatModeMenuClick('Charge')"
           :disabled="!SelectedFeatureChargable">
           <i class="bi bi-battery-charging"></i>充電 </b-button>
@@ -235,7 +235,14 @@ export default {
     }
   },
   methods: {
+    GetTitleText(feature) {
+      if (!feature)
+        return "";
 
+      var _station_name = feature.get('name')
+      var _tag = feature.getId()
+      return `${_station_name} (Tag-${_tag})`
+    },
     TaskDeliveryBtnClickHandle() {
 
       if (this.selectedAction == 'Carry' && (this.selectedToTag == '' | this.selectedToTag == undefined)) {

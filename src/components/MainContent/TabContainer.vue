@@ -5,7 +5,7 @@
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
-          <status_card></status_card>
+          <status_card @on_lsr_tag_click="HandleLsrTagClicked"></status_card>
         </div>
       </b-tab>
       <!--Alarm Table-->
@@ -36,8 +36,7 @@
         <div class="mt-3 border p-1">
           <CSTReader></CSTReader>
         </div>
-      </b-tab>
-      <b-tab v-if="!IsVisitor" title="Overview">
+      </b-tab>IsGodUser <b-tab v-if="!IsVisitor" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview :AsMainPageMode="false"></AgvOverview>
         </div>
@@ -48,7 +47,7 @@
         </div>
       </b-tab>
       <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod | IsDevUser" title="Local派工">
+      <b-tab v-if="IsGodMod || IsDevUser" title="Local派工">
         <div class="mt-3 border p-1">
           <TaskDeliveryVue></TaskDeliveryVue>
         </div>
@@ -104,6 +103,9 @@ export default {
   },
   mounted() {
     bus.on('on-fork-height-click', () => {
+      this.current_tab = 2;
+    });
+    bus.on('on-manual-lsr-setting-show-invoke', () => {
       this.current_tab = 2;
     });
   },

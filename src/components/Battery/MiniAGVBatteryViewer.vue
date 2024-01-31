@@ -3,44 +3,39 @@
     <div class="battery-container d-flex flex-row">
       <!-- <div class="battery-img bat1" v-bind:style="bat1_style.leveing"></div>
       <div class="battery-img bat2" v-bind:style="bat2_style.leveing"></div>-->
-      <div class="battery-img bat1" v-bind:style="Bat1Style"></div>
       <div class="battery-img bat2" v-bind:style="Bat2Style"></div>
+      <div class="battery-img bat1" v-bind:style="Bat1Style"></div>
       <div
         class="bat-ctl bat_tex justify-content-center d-flex flex-row"
-        style="position:absolute;width:100%;top:75%;font-size:30px;"
-      >
+        style="position:absolute;width:100%;top:75%;font-size:30px;">
         <div class="rounded border p-2 text-start" style="position:relative; left:-74px;">
-          <span class="p-2">Battery-1</span>
-          <div>
-            <b-button
-              @click="BatteryLockHandler(1,true)"
-              :disabled="!Bat1Lockable"
-              variant="primary"
-              class="mx-1"
-            >Lock</b-button>
-            <b-button
-              @click="BatteryLockHandler(1,false)"
-              :disabled="!Bat1UnLockable"
-              variant="primary"
-              class="mx-1"
-            >Unlock</b-button>
-          </div>
-        </div>
-        <div class="rounded border p-2 text-start" style="position:relative; left:-69px;">
           <span class="p-2">Battery-2</span>
           <div>
             <b-button
-              @click="BatteryLockHandler(2,true)"
+              @click="BatteryLockHandler(2, true)"
               :disabled="!Bat2Lockable"
               variant="primary"
-              class="mx-1"
-            >Lock</b-button>
+              class="mx-1">Lock</b-button>
             <b-button
-              @click="BatteryLockHandler(2,false)"
+              @click="BatteryLockHandler(2, false)"
               :disabled="!Bat2UnLockable"
               variant="primary"
-              class="mx-1"
-            >Unlock</b-button>
+              class="mx-1">Unlock</b-button>
+          </div>
+        </div>
+        <div class="rounded border p-2 text-start" style="position:relative; left:-69px;">
+          <span class="p-2">Battery-1</span>
+          <div>
+            <b-button
+              @click="BatteryLockHandler(1, true)"
+              :disabled="!Bat1Lockable"
+              variant="primary"
+              class="mx-1">Lock</b-button>
+            <b-button
+              @click="BatteryLockHandler(1, false)"
+              :disabled="!Bat1UnLockable"
+              variant="primary"
+              class="mx-1">Unlock</b-button>
           </div>
         </div>
       </div>
@@ -49,7 +44,7 @@
 </template>
 
 <script>
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, SystemSettingsStore, DIOStore } from '@/store'
 import { BatteryLockCtrl } from '@/api/VMSAPI.js'
 
 export default {
@@ -84,6 +79,9 @@ export default {
     }
   },
   computed: {
+    AGVVersion() {
+      return SystemSettingsStore.getters.Settings.Version;
+    },
     Battery1Status() {
       try {
         return AGVStatusStore.getters.BatteryStatus.filter(bat => bat.BatteryID == 1)[0]
@@ -98,9 +96,31 @@ export default {
         return undefined
       }
     },
+    Bat1Style_DemoAGV() {
+      var batStatus = DIOStore.getters.DemoMiniAGVBatteryStatus.battery1;
+      if (batStatus == 'installed')
+        return this.bat1_style.installed;
+      else if (batStatus == 'installing')
+        return this.bat1_style.leveing;
+      else if (batStatus == 'removed')
+        return this.bat1_style.no_exist;
+    },
+
+    Bat2Style_DemoAGV() {
+      var batStatus = DIOStore.getters.DemoMiniAGVBatteryStatus.battery2;
+      if (batStatus == 'installed')
+        return this.bat2_style.installed;
+      else if (batStatus == 'installing')
+        return this.bat2_style.leveing;
+      else if (batStatus == 'removed')
+        return this.bat2_style.no_exist;
+    },
     Bat1Style() {
       if (!this.Battery1Status)
         return this.bat1_style.no_exist
+
+      if (this.AGVVersion == 2)
+        return this.Bat1Style_DemoAGV
 
       if (this.Battery1Status.SensorInfo.IsExistSensor1ON && this.Battery1Status.SensorInfo.IsDockingSensor1ON)
         return this.bat1_style.installed
@@ -112,6 +132,9 @@ export default {
     Bat2Style() {
       if (!this.Battery2Status)
         return this.bat2_style.no_exist
+
+      if (this.AGVVersion == 2)
+        return this.Bat2Style_DemoAGV
 
       if (this.Battery2Status.SensorInfo.IsExistSensor1ON && this.Battery2Status.SensorInfo.IsDockingSensor1ON)
         return this.bat2_style.installed
@@ -159,6 +182,7 @@ export default {
     width: 105px;
   }
 }
+
 .battery-container {
   background: url("../../assets/images/Battery/Battery_Container.png");
   background-repeat: no-repeat;
@@ -175,6 +199,7 @@ export default {
     background-size: 318px;
     height: 100%;
     width: 100%;
+
     span {
       position: absolute;
       bottom: -0px;
