@@ -1,6 +1,6 @@
 <template>
   <div class="sys-setting">
-    <el-drawer v-model="drawer_show" size="50%" direction="rtl">
+    <el-drawer v-model="drawer_show" size="60%" direction="rtl">
       <template #header>
         <div class="w-100 border-bottom">
           <h2 class="text-start">Settings</h2>
@@ -62,10 +62,27 @@
               <div class="text-start w-100 ">
                 <el-form :model="settings" label-width="150" label-position="left">
                   <div class="w-100 border-bottom"><b>IMU 數據</b> </div>
-                  <el-form-item label="加速度">
-                    <code>
-                        {{ IMU_ACC_Data }}
-                      </code>
+                  <el-form-item label="加速度(G)">
+                    <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ IMU_ACC_Data }}</code>
+                  </el-form-item>
+                  <el-form-item v-if="IMUMaxMinRecord" label="最大值紀錄(G)">
+                    <div>
+                      <div>
+                        <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ IMUMaxMinRecord.MaxMag }}</code>
+                      </div>
+                      <div>
+                        <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ { x: IMUMaxMinRecord.AccVal.x.toFixed(2), y: IMUMaxMinRecord.AccVal.y.toFixed(2), z: IMUMaxMinRecord.AccVal.z.toFixed(2) } }}</code>
+                      </div>
+                      <div>
+                        <el-tag effect="dark" style="width:70px" for="">發生時間</el-tag> <code>{{ TimeFormat(IMUMaxMinRecord.Time) }}</code>
+                      </div>
+                      <div>
+                        <el-tag effect="dark" style="width:70px" for="">發生座標</el-tag> <code>{{ { X: IMUMaxMinRecord.Coordination.x, Y: IMUMaxMinRecord.Coordination.y } }}</code>
+                      </div>
+                      <div>
+                        <el-button @click="HandleIMUDataResetButtonClick" type="danger">RESET</el-button>
+                      </div>
+                    </div>
                   </el-form-item>
                   <div class="w-100 border-bottom"><b>碰撞偵測功能</b></div>
                   <el-form-item label="啟用">
@@ -105,12 +122,12 @@
                       step="0.01"
                       precision="2"
                       min="0.01"
-                      max="4"
+                      max="9.8"
                       @change="HandleParamChanged"
                       v-model="settings.ImpactDetection.PitchErrorThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
-                  <div class="w-100 border-bottom"><b>禁止上線點位</b></div>
+                  <div v-if="settings.ForbidToOnlineTags" class="w-100 border-bottom"><b>禁止上線點位</b></div>
                   <el-select
                     class="my-2"
                     v-model="settings.ForbidToOnlineTags"
@@ -343,7 +360,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab title="終端機Log顯示">
+          <b-tab v-if="settings.Log" title="終端機Log顯示">
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Trace Log">
@@ -423,7 +440,7 @@
 <script>
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
-import { SystemAPI } from '@/api/VMSAPI.js'
+import { SystemAPI, IMUAPI } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
@@ -520,8 +537,16 @@ export default {
     IsInspectionAGV() {
       return AGVStatusStore.getters.IsInspectionAGV;
     },
+    IMUMaxMinRecord() {
+      return AGVStatusStore.getters.IMUMaxMinRecord
+    },
     IMU_ACC_Data() {
-      return ROS_STORE.getters.ImuData_Acc;
+      var _data = ROS_STORE.getters.ImuData_Acc;
+      return {
+        x: (_data.x / 9.8).toFixed(2),
+        y: (_data.y / 9.8).toFixed(2),
+        z: (_data.z / 9.8).toFixed(2),
+      }
     }
   },
   mounted() {
@@ -652,6 +677,24 @@ export default {
       var diff = now.diff(lastTime, 'seconds');
       console.log(this.last_setting_val_set_success_time, diff);
       return diff;
+    },
+    TimeFormat(time) {
+      return moment(time).format("YYYY/MM/DD HH:mm:ss")
+    },
+    HandleIMUDataResetButtonClick() {
+      this.$swal.fire(
+        {
+          text: '',
+          title: '確定要重置IMU紀錄?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (!res.isConfirmed)
+            return;
+          IMUAPI.ResetMAXMINRecord();
+        })
     }
   },
 }

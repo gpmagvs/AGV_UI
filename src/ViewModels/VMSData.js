@@ -91,6 +91,7 @@ class VMSData {
   SysLoading = new clsSysLoading()
   HandshakeStatus = new clsEQHandshake()
   OrderInfo = new clsOrderInfo()
+  IMUMaxMinValRecord = new clsMaxMinGvalDataSaveModel()
 }
 export class clsOrderInfo {
   DestineName = ""
@@ -123,6 +124,13 @@ export class AlarmCode {
   Description = ''
   CN = ''
   EAlarmCode = 0
+}
+
+export class clsMaxMinGvalDataSaveModel {
+  Time = ""
+  Coordination = { x: 0, y: 0, z: 0 }
+  AccVal = { x: 0, y: 0, z: 0 }
+  MaxMag = 0
 }
 
 export default VMSData

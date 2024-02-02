@@ -483,3 +483,11 @@ export const InspectionAGVAPI = {
     }
   }
 }
+
+/**IMU API */
+export const IMUAPI = {
+  /**重置IMU 最大/最小值紀錄 */
+  async ResetMAXMINRecord() {
+    var ret = await axios_entity.get(`api/IMU/ResetMAXMINRecord`)
+  }
+}

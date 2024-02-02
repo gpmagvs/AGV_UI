@@ -305,6 +305,9 @@ export var AGVStatusStore = createStore({
     },
     AGV_Naving_Tags: state => {
       return state.AGVStatus.NavInfo.PathPlan;
+    },
+    IMUMaxMinRecord: state => {
+      return state.AGVStatus.IMUMaxMinValRecord
     }
 
 
