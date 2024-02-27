@@ -81,6 +81,25 @@
         </div>
       </div>
     </div>
+    <div v-if="IsForkARMControlable && IsPinMounted" class="d-flex flex-row py-3">
+      <div class="item-label">浮動牙叉</div>
+      <div class="battery py-1">
+        <div class="d-flex flex-row mb-1">
+          <b-button
+            :disabled="PinState.pose == 'lock' || pin_action_running"
+            @click="ForkFloatPinDriverControlHandler(true)"
+            squared
+            variant="primary">LOCK</b-button>
+          <b-button
+            :disabled="PinState.pose == 'release' || pin_action_running"
+            @click="ForkFloatPinDriverControlHandler(false)"
+            squared
+            variant="primary">RELEASE</b-button>
+          <div style="font-size: smaller;">目前狀態:{{ PinState.pose.toUpperCase() }}</div>
+          <!-- {{ PinState }} -->
+        </div>
+      </div>
+    </div>
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">煞車功能</div>
       <b-button
@@ -124,7 +143,8 @@ import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl, ForkAPI } from '@/ap
 import Notifier from '@/api/NotifyHelper';
 import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
 import LaserModeSwitcher from '@/components/LaserModeSwitcher.vue'
-import { AGVStatusStore, DIOStore, UserStore } from '@/store'
+import { AGVStatusStore, DIOStore, UserStore, SystemSettingsStore } from '@/store'
+import { ROS_STORE } from '@/store/ros_store';
 
 export default {
   components: {
@@ -136,7 +156,8 @@ export default {
     return {
       laser_mode: 0,
       modifyLaserModeDialogShow: false,
-      show_keyboard: false
+      show_keyboard: false,
+      pin_action_running: false,
 
     }
   },
@@ -160,6 +181,12 @@ export default {
     },
     enabled() {
       return UserStore.getters.Operationable
+    },
+    IsPinMounted() {
+      return SystemSettingsStore.getters.Settings.ForkAGV.IsPinMounted;
+    },
+    PinState() {
+      return ROS_STORE.getters.Pin_State;
     }
   },
   methods: {
@@ -189,11 +216,31 @@ export default {
       await BatteryLockCtrl(bat_no, islock)
     },
     async ForkArmPoseControlHandler(isExtend) {
+      this.pin_action_running = true;
       var result = { confirm: false, message: '' }
       if (isExtend)
         result = await ForkAPI.ARM_Extend();
       else
         result = await ForkAPI.ARM_Shorten();
+      this.pin_action_running = false;
+      if (!result.confirm) {
+        this.$swal.fire(
+          {
+            text: '',
+            title: result.message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+    },
+    async ForkFloatPinDriverControlHandler(isLock) {
+      var result = { confirm: false, message: '' }
+      if (isLock)
+        result = await ForkAPI.PIN_LOCK();
+      else
+        result = await ForkAPI.PIN_RELEASE();
       if (!result.confirm) {
         this.$swal.fire(
           {

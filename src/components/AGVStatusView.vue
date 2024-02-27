@@ -89,8 +89,7 @@
           fill="transparent"
           :stroke="GetSensorColorByStatus(data.status)" />
         <SensorStatusTooltipVue
-          v-if="!only_show_abnormal_sensors | data.status != 0 | data.always_show_info"
-          :sensorName="data.name"
+          v-if="!only_show_abnormal_sensors || data.status != 0 || data.always_show_info"
           :sensorData="data"
           :position="data.textPosition"
           :xOffset="-data.position.x" />
@@ -210,7 +209,6 @@ export default {
       }
     },
     SensorDotMouseHover(e) {
-      console.info(e)
       this.sensorTooltipStyle.top = `${e.pageY - 20}px`
       this.sensorTooltipStyle.left = `${e.pageX + 20}px`
       this.sensorTooltipStyle.visibility = 'visible'

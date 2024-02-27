@@ -90,6 +90,15 @@
                       @change="HandleParamChanged"
                       v-model="settings.ImpactDetection.Enabled"></el-switch>
                   </el-form-item>
+                  <el-form-item label="異常檢出警報等級">
+                    <el-select
+                      :disabled="!settings.ImpactDetection.Enabled"
+                      v-model="settings.ImpactDetection.ImpactingAlarmLevel"
+                      @change="HandleParamChanged">
+                      <el-option label="Warning" :value="0"></el-option>
+                      <el-option label="Alarm" :value="1"></el-option>
+                    </el-select>
+                  </el-form-item>
                   <el-form-item label="閥值">
                     <el-input-number
                       size="small"
@@ -302,7 +311,7 @@
                     step="0.1"
                     precision="1"
                     min="1"
-                    max="100"
+                    :max="settings.ForkAGV.UplimitPoseSettingMax"
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.UplimitPose"></el-input-number>
                 </el-form-item>

@@ -15,6 +15,20 @@ export var ROS_STORE = createStore({
                         z: 0
                     }
                 }
+            },
+            PinsState: {
+                PinState: [
+                    {
+                        name: '',
+                        state: '',
+                        ORG_S: '',
+                        INPOSITION: '',
+                        READY: '',
+                        SERVO_S: '',
+                        ALARM: '',
+                        pose: '',
+                    }
+                ]
             }
         }
     },
@@ -38,6 +52,9 @@ export var ROS_STORE = createStore({
                 y: _acc_data.y,
                 z: _acc_data.z
             }
+        },
+        Pin_State: state => {
+            return state.module_info.PinsState.PinState[0]
         }
     },
     mutations: {

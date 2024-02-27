@@ -5,7 +5,7 @@
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
-          <status_card @on_lsr_tag_click="HandleLsrTagClicked"></status_card>
+          <status_card></status_card>
         </div>
       </b-tab>
       <!--Alarm Table-->

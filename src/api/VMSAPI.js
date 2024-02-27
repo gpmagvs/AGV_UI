@@ -406,7 +406,17 @@ export const ForkAPI = {
 
   async SetTagHeightLimit(tag_id, pose_loc, layer, height) {
     return true
-  }
+  },
+  /**浮動牙叉鎖定 */
+  async PIN_LOCK() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Pin/Lock`)
+    return ret.data;
+  },
+  /**浮動牙叉Release */
+  async PIN_RELEASE() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Pin/Release`)
+    return ret.data;
+  },
 
 }
 
