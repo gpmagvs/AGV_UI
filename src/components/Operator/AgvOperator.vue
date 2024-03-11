@@ -35,7 +35,6 @@
     </b-tabs>
   </div>
 </template>
-
 <script>
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
@@ -43,7 +42,6 @@ import IOTable from './IOTable.vue';
 import { param } from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
 import ManualSettings from './ManualSettings.vue';
-import WebSocketHelp from '@/api/WebSocketHepler'
 import bus from '@/event-bus.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserStore, DIOStore } from '@/store'
@@ -58,7 +56,7 @@ export default {
   data() {
     return {
       type: '',
-      DIOTableData: new clsDIOTable(),
+
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
       modal_key: '',
@@ -66,7 +64,6 @@ export default {
     }
   },
   mounted() {
-    this.DIOTableWSInit();
     bus.on('on-fork-height-click', () => {
       this.current_tab = 1;
     });
@@ -75,14 +72,6 @@ export default {
     });
   },
   methods: {
-    DIOTableWSInit() {
-      var ws = new WebSocketHelp('ws/DIOTableData')
-      ws.Connect();
-      ws.onmessage = (evt) => {
-        this.DIOTableData = JSON.parse(evt.data)
-        DIOStore.commit('updateStatus', this.DIOTableData)
-      }
-    },
     VersionTextClickHandle() {
       this.version_text_click_count += 1;
       if (this.version_text_click_count > this.trigger_admin_dialog_count) {
@@ -151,11 +140,13 @@ export default {
         return true;
       else
         return this.operation_enabled
+    },
+    DIOTableData() {
+      return DIOStore.getters.DIOStates
     }
   }
 }
 </script>
-
 <style scoped lang="scss">
 .admin-dialog-modal {
   p {

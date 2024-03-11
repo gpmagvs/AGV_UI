@@ -1,74 +1,52 @@
-import { AGVStatusStore, DIOStore, RDTestDataStore } from "./store";
-import WebSocketHelp from "./api/WebSocketHepler";
+import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore } from "./store";
 import param from "./gpm_param";
-import bus from '@/event-bus.js'
 import MapAPI from './api/MapAPI'
 
-var agv_status_ws = new WebSocketHelp('/ws/AGVCState')
-var agv_dio_ws = new WebSocketHelp('ws/DIOTableData')
-var rd_test_ws = new WebSocketHelp('ws/RDTestData')
 
-var previous_vms_data_json = ''
-var previous_DIOTableData_json = ''
-
-
-
-function DIOWS() {
-    previous_DIOTableData_json = '';
-    agv_dio_ws.Connect();
-    agv_dio_ws.onmessage = (evt) => {
-        if (evt.data != previous_DIOTableData_json) {
-            var DIOTableData = JSON.parse(evt.data)
-            previous_DIOTableData_json = evt.data;
-            DIOStore.commit('updateStatus', DIOTableData)
+function Throttle(func, limit) {
+    let inThrottle;
+    return function () {
+        const context = this, args = arguments;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
         }
-
-    }
+    };
 }
-
-function RDTESTWS() {
-
-    rd_test_ws.Connect();
-    rd_test_ws.onmessage = (evt) => {
-        var testData = JSON.parse(evt.data)
-        RDTestDataStore.commit('SetData', testData)
+function generateRandomUserID(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
+    return result;
 }
+var backend_ws_host = param.backend_host.replace('http', 'ws')
+var user_id = generateRandomUserID(8);
 
-var StateWsOnmessageHandler = (evt) => {
-    agv_status_ws.connected = true;
-    if (evt.data != previous_vms_data_json) {
-        var VMSData = JSON.parse(evt.data);
-        previous_vms_data_json = evt.data;
+const throttledHandleBackendData = Throttle(function (event) {
+    if (event.data != 'error' && event.data != 'closed') {
+        var ConnectionData = event.data.ConnectionStatesVM;
+        var VMSData = event.data.VMSStatesVM;
+        var DIOTableData = event.data.DIOTableVM;
+        var testData = event.data.RDTestData;
+        UIStore.commit("StoreConnectionState", ConnectionData);
         AGVStatusStore.commit('updateStatus', VMSData)
+        DIOStore.commit('updateStatus', DIOTableData);
+        RDTestDataStore.commit('SetData', testData)
+
     }
-}
-
-agv_status_ws.Connect();
-agv_status_ws.onclose = () => {
-    console.log('vms ws disconnected...')
-    bus.emit('ws_disconnect');
-    agv_status_ws.connected = false;
-
-    var interval_ = setInterval(() => {
-        if (!agv_status_ws.connected) {
-            agv_status_ws.Connect();
-            agv_status_ws.onmessage = StateWsOnmessageHandler
-        }
-        else {
-            clearInterval(interval_);
-            setTimeout(() => {
-                location.reload();
-            }, 500);
-        }
-    }, 1000);
-}
-agv_status_ws.onmessage = StateWsOnmessageHandler
+}, 33);
 
 
-DIOWS();
-RDTESTWS();
+const backend_websocket_worker = new Worker('/websocket_worker.js')
+backend_websocket_worker.onmessage = (event) => throttledHandleBackendData(event)
+backend_websocket_worker.postMessage({ command: 'connect', ws_url: backend_ws_host + `/ws?user_id=${user_id}` });
+
 
 setTimeout(() => {
     MapAPI.GetMapFromServer()
 }, 500);
+

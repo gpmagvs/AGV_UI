@@ -302,7 +302,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab title="叉車AGV" v-if="IsForkAGV">
+          <b-tab title="叉車AGV" v-if="IsForkAGV && settings.ForkAGV">
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="行程上極限(cm)">
@@ -445,7 +445,6 @@
     </el-drawer>
   </div>
 </template>
-
 <script>
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
@@ -454,6 +453,26 @@ import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import { ROS_STORE } from "@/store/ros_store";
+
+class ForkLifer {
+  constructor() {
+    this.forkLiferEnable = true;
+    this.vehicleLengthWithForkArmExtend = 160.0;
+    this.uplimitPose = 35;
+    this.downlimitPose = 0;
+    this.uplimitPoseSettingMax = 35;
+    this.isPinMounted = true;
+    this.isForkIsExtendable = true;
+    this.noWaitForkArmFinishAndMoveOutInWorkStation = true;
+    this.noWaitParkingFinishAndForkGoHomeWhenBackToSecondary = true;
+    this.noWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation = true;
+    this.forkSaftyStrategy = 'UNDER_SAFTY_POSITION';
+    this.saftyPositionHeight = 20;
+    this.initParams = {};
+  }
+}
+
+
 export default {
   data() {
     return {
@@ -533,7 +552,8 @@ export default {
         },
         InspectionAGV: {
           CheckBatteryLockStateWhenInit: false
-        }
+        },
+        ForkAGV: new ForkLifer()
       },
       normal_stations: [],
       last_setting_val_set_success_time: '1970/1/1 00:00:00'
@@ -708,7 +728,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .sys-setting {
   z-index: 1099999

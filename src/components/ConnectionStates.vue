@@ -5,24 +5,19 @@
         <tr>
           <td>
             <div>
-              <i :class="'connected  bi bi-circle-fill'"></i> UI Server
+              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i> 派車系統
             </div>
           </td>
           <td>
             <div>
-              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i> AGVS
+              <i v-bind:class="rosbridge_state" class="bi bi-circle-fill"></i> 車控系統
             </div>
           </td>
         </tr>
         <tr>
           <td>
             <div>
-              <i v-bind:class="rosbridge_state" class="bi bi-circle-fill"></i> ROS
-            </div>
-          </td>
-          <td>
-            <div>
-              <i v-bind:class="wago_state" class="bi bi-circle-fill"></i> WAGO
+              <i v-bind:class="wago_state" class="bi bi-circle-fill"></i> IO模組
             </div>
           </td>
         </tr>
@@ -42,20 +37,18 @@
     </table>
   </div>
 </template>
-
 <script>
 import param from '@/gpm_param'
-import WebSocketHelp from '@/api/WebSocketHepler'
-
+import { UIStore } from '@/store'
 export default {
   data() {
     return {
-      ws: undefined,
-      connections: {},
-
     }
   },
   computed: {
+    connections() {
+      return UIStore.getters.ConnectionState;
+    },
     rosbridge_state() {
       if (this.connections.RosbridgeServer != undefined)
         return this.connections.RosbridgeServer.toLocaleLowerCase()
@@ -82,23 +75,12 @@ export default {
     }
   },
   methods: {
-    WebSocketConnect() {
-
-      var _ws = new WebSocketHelp('ws/ConnectionState');
-      _ws.Connect();
-      _ws.onmessage = (ev) => {
-        var data = JSON.parse(ev.data)
-        this.connections = data;
-      }
-    }
   },
   mounted() {
-    this.WebSocketConnect();
   },
 }
 </script>
-
-<style lang ="scss">
+<style lang="scss">
 .connection-states {
   .disconnect {
     color: red;

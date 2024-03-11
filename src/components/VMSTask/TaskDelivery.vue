@@ -119,7 +119,6 @@
     </b-modal>
   </div>
 </template>
-  
 <script>
 import Notifier from '@/api/NotifyHelper';
 import { NavigationAPI } from '@/api/VMSAPI';
@@ -282,8 +281,6 @@ export default {
     },
     GetNormalStationTagsFromMap() {
       var normal_stations = this.$refs['map'].GetNormalStations();
-      console.info(normal_stations);
-
       function compare(a, b) {
         if (a.TagNumber < b.TagNumber) {
           return -1;
@@ -397,7 +394,6 @@ export default {
   },
 };
 </script>
-
 <style scoped lang="scss">
 .task-delivery {
   padding: 10px;
@@ -421,4 +417,3 @@ export default {
   }
 }
 </style>
-  

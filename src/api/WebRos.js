@@ -42,7 +42,9 @@ ros.on('connection', function () {
     var module_info_listener = new ROSLIB.Topic({
         ros: ros,
         name: '/module_information',
-        messageType: 'gpm_msgs/ModuleInformation'
+        messageType: 'gpm_msgs/ModuleInformation',
+        throttle_rate: 100,
+        queue_length: 5
     })
     module_info_listener.subscribe(function (module_info) {
         ROS_STORE.commit('update_module_info', module_info)

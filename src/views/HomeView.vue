@@ -194,7 +194,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import AGVHeader from '@/components/AGVHeader.vue'
 import battery from '@/components/Battery/Battery.vue'
@@ -208,7 +207,6 @@ import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, M
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
-import WebSocketHelp from '@/api/WebSocketHepler'
 import { ElNotification } from 'element-plus'
 import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
@@ -725,8 +723,7 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" >
+<style lang="scss">
 .main-content {
   padding-top: 38px;
 }

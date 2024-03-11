@@ -23,66 +23,55 @@
                 <el-switch
                   v-model="option.initalizeBeforeTest"
                   :active-value="true"
-                  :inactive-value="false"
-                ></el-switch>
+                  :inactive-value="false"></el-switch>
               </el-form-item>
-
               <el-form-item label="使用Random位置">
                 <el-switch
                   v-model="option.useRandomPose"
                   :active-value="true"
-                  :inactive-value="false"
-                ></el-switch>
+                  :inactive-value="false"></el-switch>
               </el-form-item>
-
               <el-form-item label="次數達四分位數暫停">
                 <el-switch
                   v-model="option.pauseWhenReachQuarter"
                   :active-value="true"
-                  :inactive-value="false"
-                ></el-switch>
+                  :inactive-value="false"></el-switch>
               </el-form-item>
               <el-form-item label="Current Position">
-                <el-tag style="width:100px" effect="dark" type="info">{{ current_pose}}</el-tag>
+                <el-tag style="width:100px" effect="dark" type="info">{{ current_pose }}</el-tag>
               </el-form-item>
-
               <el-form-item label="測試狀態">
-                <el-tag style="width:100px" effect="dark">{{ forkTestState.state}}</el-tag>
+                <el-tag style="width:100px" effect="dark">{{ forkTestState.state }}</el-tag>
               </el-form-item>
               <el-form-item label="Fork動作">
-                <el-tag style="width:100px" effect="dark">{{ forkTestState.fork_action}}</el-tag>
+                <el-tag style="width:100px" effect="dark">{{ forkTestState.fork_action }}</el-tag>
               </el-form-item>
               <el-form-item label="已完成次數">
                 <el-tag
                   style="width:100px"
                   effect="dark"
-                  type="info"
-                >{{ forkTestState.complete_loop_num}}/{{option.loopNum }}</el-tag>
+                  type="info">{{ forkTestState.complete_loop_num }}/{{ option.loopNum }}</el-tag>
               </el-form-item>
               <div class="my-1">
                 <b-button
                   :disabled="start_btn_disabled"
                   class="w-100"
                   variant="primary"
-                  @click="ForkTestStart"
-                >Start</b-button>
+                  @click="ForkTestStart">Start</b-button>
               </div>
               <div class="my-1">
                 <b-button
                   :disabled="abort_btn_disabled"
                   class="w-100"
                   variant="danger"
-                  @click="ForkTestAbort"
-                >中斷</b-button>
+                  @click="ForkTestAbort">中斷</b-button>
               </div>
             </el-form>
             <ForkAGV3D class="mx-5"></ForkAGV3D>
           </div>
-
           <b-modal v-model="show_reject_modal" :centered="true" :ok-only="true">
             <p>{{ ack_response.Message }}</p>
           </b-modal>
-
           <b-modal
             v-model="show_test_paused_model"
             :centered="true"
@@ -93,9 +82,8 @@
             :no-close-on-esc="true"
             cancel-variant="danger"
             @ok="ContiunTestWhenPause"
-            @cancel="ForkTestAbort"
-          >
-            <p>{{ `測試暫停中，已達${forkTestState.complete_loop_num}`}}</p>
+            @cancel="ForkTestAbort">
+            <p>{{ `測試暫停中，已達${forkTestState.complete_loop_num}` }}</p>
           </b-modal>
         </div>
       </el-tab-pane>
@@ -106,17 +94,16 @@
               <el-tag
                 effect="dark"
                 class="text-center px-5"
-                :type="rotation_test_state==1?'warning':'success'"
-              >{{rotation_test_state==1?'IDLE':'RUNNING'}}</el-tag>
+                :type="rotation_test_state == 1 ? 'warning' : 'success'">{{ rotation_test_state == 1 ? 'IDLE' : 'RUNNING' }}</el-tag>
             </el-form-item>
             <el-form-item label="角度">
               <el-input-number v-model="move_test_options.theta_move"></el-input-number>
             </el-form-item>
             <el-form-item label="當前角度">
-              <div class="text-center px-5">{{current_theta}}</div>
+              <div class="text-center px-5">{{ current_theta }}</div>
             </el-form-item>
             <el-form-item label="當前TAG">
-              <div class="text-center px-5">{{current_tag}}</div>
+              <div class="text-center px-5">{{ current_tag }}</div>
             </el-form-item>
             <el-form-item label="持續時間(秒)">
               <el-input-number v-model="move_test_options.duration"></el-input-number>
@@ -128,9 +115,7 @@
               <el-input-number :step="0.1" v-model="move_test_options.rotation_speed"></el-input-number>
             </el-form-item>
             <el-form-item label="歷時">
-              <div class="text-center px-5">
-                {{rotation_test_period }}
-                <span class="mx-3">秒</span>
+              <div class="text-center px-5"> {{ rotation_test_period }} <span class="mx-3">秒</span>
               </div>
             </el-form-item>
           </el-form>
@@ -143,10 +128,8 @@
     </el-tabs>
   </div>
 </template>
-
 <script>
 import { FORKTEST, clsForkTesetOption, clsForkTestState, MoveTEST } from '@/api/RDTestAPI'
-import WebSocketHelp from '@/api/WebSocketHepler'
 import bus from '@/event-bus.js'
 import ForkAGV3D from '@/components/3DModel/ForkAGV3DModel.vue'
 import { AGVStatusStore, RDTestDataStore } from '@/store'
@@ -159,7 +142,6 @@ export default {
     return {
       current_pose: -1,
       option: new clsForkTesetOption(),
-      forkTestState: new clsForkTestState(),
       ack_response: {
         Success: true, Message: ''
       },
@@ -170,7 +152,6 @@ export default {
         delay_time: 1,
         rotation_speed: 0.3
       },
-
       timer: undefined
     }
   },
@@ -211,6 +192,9 @@ export default {
     }
   },
   computed: {
+    forkTestState() {
+      return RDTestDataStore.getters.testData;
+    },
     abort_btn_disabled() {
       return this.forkTestState.state != "RUNNING"
     },
@@ -240,13 +224,6 @@ export default {
     bus.on('/z_axis_position', (pose) => {
       this.current_pose = pose
     })
-    var ws = new WebSocketHelp('fork_test_state');
-    ws.Connect();
-    ws.wssocket.onmessage = (evt) => {
-      var state = JSON.parse(evt.data);
-      this.forkTestState = state;
-    }
-
     var options_stored = localStorage.getItem('fork-test-options');
     if (options_stored) {
       this.option = JSON.parse(options_stored);
@@ -255,6 +232,4 @@ export default {
   },
 }
 </script>
-
-<style>
-</style>
+<style></style>

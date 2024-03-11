@@ -21,9 +21,10 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "01.31.1",
+    UI_Version: "03.11.1",
     PreviousControllRoute: 'move',
-    CurrentTabSelected: 0
+    CurrentTabSelected: 0,
+    ConnectionStateData: {},
   },
   getters: {
     CurrentUIVersion: state => {
@@ -32,7 +33,8 @@ export var UIStore = createStore({
     PreviousControllRoute: state => {
       return state.PreviousControllRoute;
     },
-    CurrentTabSelected: state => state.CurrentTabSelected
+    CurrentTabSelected: state => state.CurrentTabSelected,
+    ConnectionState: state => state.ConnectionStateData
   },
   mutations: {
     SetPreviousControllerRoute(state, route) {
@@ -40,6 +42,9 @@ export var UIStore = createStore({
     },
     SetCurrentTabSelected(state, tab) {
       state.CurrentTabSelected = tab;
+    },
+    StoreConnectionState(state, payload) {
+      state.ConnectionStateData = payload;
     }
   },
   actions: {

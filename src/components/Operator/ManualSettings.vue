@@ -137,7 +137,6 @@
     </b-modal>
   </div>
 </template>
-
 <script>
 import { LaserMode, Braker, Reset_Mileage, BatteryLockCtrl, ForkAPI } from '@/api/VMSAPI.js'
 import Notifier from '@/api/NotifyHelper';
@@ -183,10 +182,18 @@ export default {
       return UserStore.getters.Operationable
     },
     IsPinMounted() {
+      if (!this.IsForkARMControlable || !SystemSettingsStore.getters.Settings.ForkAGV)
+        return false;
       return SystemSettingsStore.getters.Settings.ForkAGV.IsPinMounted;
     },
     PinState() {
-      return ROS_STORE.getters.Pin_State;
+      if (ROS_STORE.getters.Pin_State)
+        return ROS_STORE.getters.Pin_State;
+      else {
+        return {
+          pose: ''
+        }
+      }
     }
   },
   methods: {
@@ -269,7 +276,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .manual_settings {
   button {
