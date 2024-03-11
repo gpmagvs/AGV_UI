@@ -35,6 +35,7 @@ function TryReConnect() {
     _socket.onopen = (ev) => {
         socket = _socket
         socket.onmessage = (ev) => {
+            self.postMessage('reconnected')
             // setTimeout(() => {
             //     var data_json = ev.data;
             //     if (data_json != previous_data_json) {
@@ -47,10 +48,13 @@ function TryReConnect() {
         }
     }
     _socket.onclose = (ev) => {
+        self.postMessage('closed')
         TryReConnect()
     }
 }
 self.onmessage = function (event) {
+    console.log(event);
+
     const data = event.data;
     if (data.command == 'connect') {
         initWebsocket(data.ws_url)
