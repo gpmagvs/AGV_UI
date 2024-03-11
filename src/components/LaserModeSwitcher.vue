@@ -1,4 +1,4 @@
-<template >
+<template>
     <div class="laser-mode-switcher w-100  border rounded">
         <div class="w-100 text-start">
             <b-button :disabled="!enabled" squared class="border" @click="ButtonClicked(number)" v-for="number in [0, 1, 2, 3, 4, 5, 6, 7]" :key="number" :variant="IsModeBeSetting(number) ? 'primary' : 'light'">{{ number }}</b-button>
@@ -8,7 +8,6 @@
         </div>
     </div>
 </template>
-
 <script>
 import { AGVStatusStore, UserStore } from '@/store';
 import { LaserMode } from '@/api/VMSAPI.js'
@@ -44,7 +43,7 @@ export default {
                 var extractedNumber = match[1];
                 return extractedNumber
             } else {
-                console.log("未找到匹配的數字");
+                return 0;
             }
         },
         IsUserLogin() {
@@ -88,7 +87,6 @@ export default {
     },
 }
 </script>
-
 <style lang="scss" scoped>
 .laser-mode-switcher {
     margin-left: 30px;
