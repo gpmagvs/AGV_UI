@@ -3,8 +3,8 @@
     <div class="battery-container d-flex flex-row">
       <!-- <div class="battery-img bat1" v-bind:style="bat1_style.leveing"></div>
       <div class="battery-img bat2" v-bind:style="bat2_style.leveing"></div>-->
-      <div class="battery-img bat2" v-bind:style="Bat2Style"></div>
-      <div class="battery-img bat1" v-bind:style="Bat1Style"></div>
+      <div class="battery-img bat2" v-bind:style="Bat1Style"></div>
+      <div class="battery-img bat1" v-bind:style="Bat2Style"></div>
       <div
         class="bat-ctl bat_tex justify-content-center d-flex flex-row"
         style="position:absolute;width:100%;top:75%;font-size:30px;">
@@ -42,7 +42,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { AGVStatusStore, SystemSettingsStore, DIOStore } from '@/store'
 import { BatteryLockCtrl } from '@/api/VMSAPI.js'
@@ -83,18 +82,22 @@ export default {
       return SystemSettingsStore.getters.Settings.Version;
     },
     Battery1Status() {
-      try {
-        return AGVStatusStore.getters.BatteryStatus.filter(bat => bat.BatteryID == 1)[0]
-      } catch (error) {
-        return undefined
-      }
+      return AGVStatusStore.getters.Battery1Status
     },
     Battery2Status() {
-      try {
-        return AGVStatusStore.getters.BatteryStatus.filter(bat => bat.BatteryID == 2)[0]
-      } catch (error) {
-        return undefined
-      }
+      return AGVStatusStore.getters.Battery2Status
+    },
+    Bat1Lockable() {
+      return AGVStatusStore.getters.Bat1Lockable
+    },
+    Bat1UnLockable() {
+      return AGVStatusStore.getters.Bat1UnLockable
+    },
+    Bat2Lockable() {
+      return AGVStatusStore.getters.Bat2Lockable
+    },
+    Bat2UnLockable() {
+      return AGVStatusStore.getters.Bat2UnLockable
     },
     Bat1Style_DemoAGV() {
       var batStatus = DIOStore.getters.DemoMiniAGVBatteryStatus.battery1;
@@ -143,30 +146,6 @@ export default {
       else
         return this.bat2_style.no_exist
     },
-    Bat1Lockable() {
-      if (!this.Battery1Status)
-        return true;
-      var bat1_lock_sensor_info = this.Battery1Status.SensorInfo;
-      return bat1_lock_sensor_info.IsUnlockSensorON | (!bat1_lock_sensor_info.IsUnlockSensorON && !bat1_lock_sensor_info.IsLockSensorON);
-    },
-    Bat1UnLockable() {
-      if (!this.Battery1Status)
-        return true;
-      var bat1_lock_sensor_info = this.Battery1Status.SensorInfo;
-      return bat1_lock_sensor_info.IsLockSensorON | (!bat1_lock_sensor_info.IsUnlockSensorON && !bat1_lock_sensor_info.IsLockSensorON);
-    },
-    Bat2Lockable() {
-      if (!this.Battery2Status)
-        return true;
-      var bat1_lock_sensor_info = this.Battery2Status.SensorInfo;
-      return bat1_lock_sensor_info.IsUnlockSensorON | (!bat1_lock_sensor_info.IsUnlockSensorON && !bat1_lock_sensor_info.IsLockSensorON);
-    },
-    Bat2UnLockable() {
-      if (!this.Battery2Status)
-        return true;
-      var bat1_lock_sensor_info = this.Battery2Status.SensorInfo;
-      return bat1_lock_sensor_info.IsLockSensorON | (!bat1_lock_sensor_info.IsUnlockSensorON && !bat1_lock_sensor_info.IsLockSensorON);
-    }
   },
   methods: {
     async BatteryLockHandler(bat_no, islock) {
@@ -175,7 +154,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 .bat-ctl {
   button {

@@ -175,8 +175,48 @@ export var AGVStatusStore = createStore({
     CurrentAngle: state => {
       return state.AGVStatus.Angle;
     },
-    BatteryStatus: state => {
+    BatteryStatus: (state, getters) => {
       return state.AGVStatus.BatteryStatus
+    },
+    Battery1Status: (state, getters) => {
+      try {
+        return getters.BatteryStatus.filter(bat => bat.BatteryID == 1)[0]
+      } catch (error) {
+        return undefined
+      }
+    },
+    Battery2Status: (state, getters) => {
+      try {
+        return getters.BatteryStatus.filter(bat => bat.BatteryID == 2)[0]
+      } catch (error) {
+        return undefined
+      }
+    },
+    Bat1Lockable: (state, getters) => {
+      if (!getters.Battery1Status)
+        return true;
+      var bat_lock_sensor_info = getters.Battery1Status.SensorInfo;
+      return bat_lock_sensor_info.IsLockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
+
+    },
+    Bat1UnLockable: (state, getters) => {
+      if (!getters.Battery1Status)
+        return true;
+      var bat_lock_sensor_info = getters.Battery1Status.SensorInfo;
+      return bat_lock_sensor_info.IsLockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
+
+    },
+    Bat2Lockable: (state, getters) => {
+      if (!getters.Battery2Status)
+        return true;
+      var bat_lock_sensor_info = getters.Battery2Status.SensorInfo;
+      return bat_lock_sensor_info.IsUnlockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
+    },
+    Bat2UnLockable: (state, getters) => {
+      if (!getters.Battery2Status)
+        return true;
+      var bat_lock_sensor_info = getters.Battery2Status.SensorInfo;
+      return bat_lock_sensor_info.IsLockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
     },
     ForkHeight: state => {
       return state.AGVStatus.ZAxisDriverState.position
