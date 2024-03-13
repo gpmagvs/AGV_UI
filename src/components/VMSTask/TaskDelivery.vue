@@ -104,7 +104,7 @@
       <p>
         <span>Action:{{ selectedAction }}</span>
       </p>
-      <p>確定要派送此任務?</p>
+      <p>{{ $t('VMSTask.TaskDelivery.DDD') }}?</p>
     </b-modal>
     <b-modal
       v-model="notify_dialog_show"
@@ -352,7 +352,7 @@ export default {
       this.selectedToTag = this.SelectedFeature.getId();
       this.ShowTaskAllocateDrawer = false;
       this.$swal.fire({
-        title: '任務派送確認',
+        title: `${this.$t('VMSTask.TaskDelivery.TaskDispatchConfirm')}`,
         text: `確定要執行${this.ActionText} 任務?(Tag ${this.selectedToTag})`,
         icon: 'question',
         showCancelButton: true,
