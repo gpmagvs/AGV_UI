@@ -3,7 +3,7 @@ import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
 import clsSensorStatus from '@/ViewModels/clsSensorStatus';
-import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest } from '@/api/VMSAPI.js'
+import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest, MapAPI } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
 import { ROS_STORE } from './ros_store';
 export default createStore({
@@ -747,6 +747,22 @@ export var map_store = createStore({
       });
 
       state.MapData = data;
+
+      console.log('map stored', state.MapData)
+    }
+  },
+  actions: {
+    async ReloadMapFromAGVS({ commit }, currentMapName) {
+      var res = await MapAPI.ReloadMapFromAGVS(currentMapName);
+      console.log(res)
+
+      if (!res || !res.confirm) {
+
+      } else {
+        commit("SetMapData", res.map)
+      }
+
+      return res;
     }
   }
 })

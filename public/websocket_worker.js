@@ -35,7 +35,7 @@ function TryReConnect() {
     _socket.onopen = (ev) => {
         socket = _socket
         socket.onmessage = (ev) => {
-            self.postMessage('reconnected')
+            //self.postMessage('reconnected')
             // setTimeout(() => {
             //     var data_json = ev.data;
             //     if (data_json != previous_data_json) {

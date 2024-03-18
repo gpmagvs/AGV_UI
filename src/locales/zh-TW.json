@@ -64,5 +64,9 @@
       "DDD": "eeee"
     }
   },
-  "VMSTask.TaskDelivery.TaskDispatchConfirm": "確定要派送此任務?"
+  "VMSTask.TaskDelivery.TaskDispatchConfirm": "確定要派送此任務?",
+  "VMSTask.MapShow.ReLoadMapFromAGVS": "從派車系統重新下載圖資",
+  "ConnectionStates.AGVS": "派車系統",
+  "ConnectionStates.AGVControlSys": "車控系統",
+  "ConnectionStates.IOModule": "IO模組"
 }

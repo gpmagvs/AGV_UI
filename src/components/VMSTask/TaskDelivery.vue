@@ -86,11 +86,19 @@
           :disabled="!SelectedFeatureLDULDable">
           <i class="bi bi-box-arrow-in-down-left"></i>取貨 </b-button>
         <b-button
+          v-if="!SelectedFeatureBatExchangable"
           class="my-1 action-button"
           variant="warning"
           @click="handleTaskAllocatModeMenuClick('Charge')"
           :disabled="!SelectedFeatureChargable">
           <i class="bi bi-battery-charging"></i>充電 </b-button>
+        <b-button
+          v-if="SelectedFeatureBatExchangable"
+          class="my-1 action-button"
+          variant="warning"
+          @click="handleTaskAllocatModeMenuClick('ExchangeBattery')"
+          :disabled="!SelectedFeatureBatExchangable">
+          <i class="bi bi-battery-charging"></i>交換電池 </b-button>
       </div>
     </el-drawer>
     <MoveTestDrawer ref="move_test"></MoveTestDrawer>
@@ -161,6 +169,10 @@ export default {
         { id: 50, name: '充電站(TAG-50)' },
         { id: 70, name: '充電站(TAG-70)' },
       ],
+      batExchangable_tags: [ // tag_id選項
+        { id: 50, name: '充電站(TAG-50)' },
+        { id: 70, name: '充電站(TAG-70)' },
+      ],
       lduldable_tags: [ // tag_id選項
         { id: 50, name: '充電站(TAG-50)' },
         { id: 70, name: '充電站(TAG-70)' },
@@ -219,6 +231,13 @@ export default {
       var l = this.chargable_tags.filter(i => i.id == this.SelectedFeature.getId())
       return l.length == 1;
     },
+    SelectedFeatureBatExchangable() {
+      if (!this.SelectedFeature)
+        return false;
+      this.GetBatExchangerStationTagsFromMap();
+      var l = this.batExchangable_tags.filter(i => i.id == this.SelectedFeature.getId())
+      return l.length == 1;
+    },
     ActionText() {
       if (this.selectedAction == 'None')
         return '移動';
@@ -228,6 +247,8 @@ export default {
         return '放貨';
       if (this.selectedAction == 'Unload')
         return '取貨';
+      if (this.selectedAction == 'ExchangeBattery')
+        return '電池交換';
     },
     MoveTestPanel() {
       return this.$refs['move_test']
@@ -325,6 +346,30 @@ export default {
       })
 
     },
+    GetBatExchangerStationTagsFromMap() {
+      var batexchanger_stations = this.$refs['map'].GetBatExchangerStations();
+      console.info(batexchanger_stations);
+
+      function compare(a, b) {
+        if (a.TagNumber < b.TagNumber) {
+          return -1;
+        }
+        if (a.TagNumber > b.TagNumber) {
+          return 1;
+        }
+        return 0;
+      }
+      batexchanger_stations.sort(compare);
+      this.batExchangable_tags = [];
+      batexchanger_stations.forEach(station => {
+
+        this.batExchangable_tags.push({
+          id: station.TagNumber,
+          name: '(Bat_Exchange)' + station.TagNumber
+        });
+      })
+
+    },
     GetLDULDStationTagsFromMap() {
       var lduld_stations = this.$refs['map'].GetSTKStations();
       function compare(a, b) {
@@ -412,7 +457,7 @@ export default {
 
   .action-button {
     font-size: 40px;
-    width: 200px;
+    width: 240px;
     height: 80px;
   }
 }

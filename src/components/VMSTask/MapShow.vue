@@ -8,6 +8,7 @@
         <el-tooltip content="Go to Location Of AGV">
           <el-button @click="GoToAGVLoc()"><i class="bi bi-geo-alt-fill"></i></el-button>
         </el-tooltip>
+        <el-button @click="ReloadMapFromAGVS()">{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
         <div class="w-100 d-flex flex-row justify-content-end">
           <span class="p-1">MAP</span>
           <div>
@@ -115,7 +116,6 @@
     <!-- <MapPointSettingDrawer ref="point-setting-drawer"></MapPointSettingDrawer> -->
   </div>
 </template>
-  
 <script>
 import 'ol/ol.css';
 import ContextMenu from 'ol-contextmenu';
@@ -390,6 +390,36 @@ export default {
       var agv_map_state = AGVStatusStore.getters.MapUseState;
       this.map.getView().setCenter(agv_map_state.Coordination)
     },
+    async ReloadMapFromAGVS() {
+      var result = await map_store.dispatch('ReloadMapFromAGVS', "abc");
+      console.log(result)
+      if (!result || !result.confirm) {
+        this.$swal.fire(
+          {
+            title: '地圖下載失敗',
+            text: '',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      } else {
+        this.map.setTarget(null);
+        this.FetchMap();
+        this.$swal.fire(
+          {
+            title: '地圖重新下載成功!',
+            text: '',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+
+
+    },
     UpdateAGVState() {
       var _agv_state = AGVStatusStore.getters.MapUseState;
       var _agv_layer_source = this.AGV_Layer.getSource();
@@ -456,6 +486,13 @@ export default {
       if (!this.map_data)
         return [];
       const chargable_types = [3, 5, 6];
+      var stations = Object.values(this.map_data.Points);
+      return stations.filter(st => chargable_types.includes(st.StationType));
+    },
+    GetBatExchangerStations() {
+      if (!this.map_data)
+        return [];
+      const chargable_types = [7];
       var stations = Object.values(this.map_data.Points);
       return stations.filter(st => chargable_types.includes(st.StationType));
     },
@@ -942,7 +979,6 @@ export default {
   },
 };
 </script>
-  
 <style>
 .map-show {}
 
@@ -956,4 +992,3 @@ export default {
   width: 100%;
 }
 </style>
-  

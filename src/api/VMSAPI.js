@@ -284,6 +284,14 @@ export const MapAPI = {
         return undefined
       })
   },
+  ReloadMapFromAGVS(currentMapName) {
+    return axios_entity.get(`api/Map/ReloadMapFromAGVS?mapName=${currentMapName}`).then((ret) => {
+      return ret.data
+    })
+      .catch((err) => {
+        return undefined
+      })
+  }
 }
 
 /**觸發Tray Reader 拍照 回傳 barcode  */

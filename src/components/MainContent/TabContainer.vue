@@ -66,7 +66,6 @@
     </b-tabs>
   </div>
 </template>
-
 <script>
 import status_card from "@/components/StatusInfoCard.vue"
 import alarm_warn_table from '@/components/AlarmWarningTable.vue'
@@ -149,5 +148,4 @@ export default {
   }
 }
 </script>
-
 <style lang="scss"></style>

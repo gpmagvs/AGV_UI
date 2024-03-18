@@ -2,7 +2,7 @@ import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore } from "./store";
 import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
 import bus from "./event-bus";
-
+console.log('Fetch Worker Start');
 function Throttle(func, limit) {
     let inThrottle;
     return function () {
@@ -35,10 +35,15 @@ const throttledHandleBackendData = Throttle(function (event) {
         var VMSData = event.data.VMSStatesVM;
         var DIOTableData = event.data.DIOTableVM;
         var testData = event.data.RDTestData;
-        UIStore.commit("StoreConnectionState", ConnectionData);
-        AGVStatusStore.commit('updateStatus', VMSData)
-        DIOStore.commit('updateStatus', DIOTableData);
-        RDTestDataStore.commit('SetData', testData)
+
+        if (VMSData)
+            AGVStatusStore.commit('updateStatus', VMSData)
+        if (ConnectionData)
+            UIStore.commit("StoreConnectionState", ConnectionData);
+        if (DIOTableData)
+            DIOStore.commit('updateStatus', DIOTableData);
+        if (testData)
+            RDTestDataStore.commit('SetData', testData)
 
     } else {
         _isDisconnceted = true;

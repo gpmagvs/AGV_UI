@@ -59,5 +59,9 @@
   "manual-operation": "Manual Operation",
   "alarm-type": "Alarm Type",
   "logout-confirm": "Do you confirm to Logout ?",
-  "VMSTask.TaskDelivery.TaskDispatchConfirm": "TASK DISPATCH CONFIRM"
+  "VMSTask.TaskDelivery.TaskDispatchConfirm": "TASK DISPATCH CONFIRM",
+  "VMSTask.MapShow.ReLoadMapFromAGVS": "Reload Map From AGVS",
+  "ConnectionStates.AGVS": "AGVS",
+  "ConnectionStates.AGVControlSys": "CONTROL",
+  "ConnectionStates.IOModule": "IO-MODULE"
 }
