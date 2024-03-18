@@ -13,7 +13,7 @@
               <div class="goal-val">{{ goal.pose }}</div>
             </div>
           </div>
-          <el-button @click="HandleForkMoveBtnClick" type="primary">移動牙叉至此位置</el-button>
+          <el-button @click="HandleForkMoveBtnClick" type="primary">{{ $t('Move Fork There') }}</el-button>
         </div>
         <div class>
           <SimpleKeyboardVue KeyboardVue keyboard_type="number" @onKeyPress="KeyboardInputChanged"></SimpleKeyboardVue>
@@ -21,7 +21,9 @@
             <div class="d-flex">
               <h6>牙叉位置調整</h6>
               <span class="mx-3">
-                <span>當前高度:</span> {{ current_position }} <span>cm</span>
+                <span>當前高度:</span>
+                {{ current_position }}
+                <span>cm</span>
               </span>
             </div>
             <div class="d-flex">
