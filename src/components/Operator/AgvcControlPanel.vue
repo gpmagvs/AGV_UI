@@ -86,7 +86,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft } from '@/api/WebRos';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
@@ -101,6 +100,7 @@ export default {
   data() {
     return {
       linear_speed: 0.05,
+      backward_speed: 0.1,
       rotation_speed: 0.05,
       speed_modifyable: false,
       linear_action: 'stop',
@@ -122,10 +122,7 @@ export default {
       if (this.linear_action != 'down')
         this.MOVE_STOP();
       this.linear_action = 'down'
-      this.linear_speed += 0.05;
-      if (this.linear_speed >= 1)
-        this.linear_speed = 1
-      AGVMoveDown(this.linear_speed);
+      AGVMoveDown(this.backward_speed);
     },
     async MOVE_LEFT() {
       if (this.IsMiniAGV) {
@@ -207,7 +204,6 @@ export default {
   },
 }
 </script>
-
 <style scoped lang="scss">
 .agv-control-panel-container {
 

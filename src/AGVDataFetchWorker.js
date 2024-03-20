@@ -66,3 +66,6 @@ setTimeout(() => {
     MapAPI.GetMapFromServer()
 }, 500);
 
+window.addEventListener('beforeunload', function (event) {
+    backend_websocket_worker.postMessage({ command: 'disconnect' });
+});

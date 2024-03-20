@@ -21,7 +21,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "03.11.1",
+    UI_Version: "03.20.1",
     PreviousControllRoute: 'move',
     CurrentTabSelected: 0,
     ConnectionStateData: {},

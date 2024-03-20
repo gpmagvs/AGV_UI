@@ -5,7 +5,9 @@ var auto_reconnect = true;
 function initWebsocket(ws_url) {
     _ws_url = ws_url;
     socket = new WebSocket(ws_url)
-    socket.onopen = () => { }
+    socket.onopen = () => {
+        SendKeepAlive(socket);
+    }
     socket.onmessage = (ev) => {
         var data_json = ev.data;
         self.postMessage(JSON.parse(data_json))
@@ -30,21 +32,27 @@ function handleMessage(message) {
 
 var previous_data_json = ''
 
+function SendKeepAlive(socket) {
+    var timer = setInterval(() => {
+
+        if (socket.readyState != 1) {
+            clearInterval(timer);
+            return;
+        }
+        console.log(socket.readyState);
+        socket.send('ping');
+
+    }, 1000);
+
+}
 function TryReConnect() {
     var _socket = new WebSocket(_ws_url)
+
     _socket.onopen = (ev) => {
+        SendKeepAlive(_socket)
         socket = _socket
         socket.onmessage = (ev) => {
-            //self.postMessage('reconnected')
-            // setTimeout(() => {
-            //     var data_json = ev.data;
-            //     if (data_json != previous_data_json) {
-            //         self.postMessage(JSON.parse(ev.data))
-            //         previous_data_json = ev.data
-            //     }
-            // }, 100)
             self.postMessage(JSON.parse(ev.data))
-
         }
     }
     _socket.onclose = (ev) => {
@@ -61,5 +69,10 @@ self.onmessage = function (event) {
     }
     if (data.command == 'disconnect') {
         closeWebsocket(false)
+    }
+    if (data.command == 'disconnect') {
+        socket.send('close');
+        socket.close();
+        console.log('websocket closed');
     }
 }
