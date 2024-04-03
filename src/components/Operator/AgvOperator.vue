@@ -32,6 +32,11 @@
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
       </b-tab>
+      <b-tab v-if="operation_enabled_return && isAMCAGV" :title="operation_enabled_return ? 'Sensor/儀器控制' : ''">
+        <div class="mt-1 p-1">
+          <SensorAndEquipmentControl></SensorAndEquipmentControl>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -42,16 +47,17 @@ import IOTable from './IOTable.vue';
 import { param } from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
 import ManualSettings from './ManualSettings.vue';
+import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';
 import bus from '@/event-bus.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UserStore, DIOStore } from '@/store'
+import { UserStore, DIOStore, AGVStatusStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
 
 export default {
 
   components: {
-    AgvControl, ZAxisControl, IOTable, ManualSettings
+    AgvControl, ZAxisControl, IOTable, ManualSettings, SensorAndEquipmentControl
   },
   data() {
     return {
@@ -140,6 +146,9 @@ export default {
         return true;
       else
         return this.operation_enabled
+    },
+    isAMCAGV() {
+      return AGVStatusStore.getters.IsInspectionAGV
     },
     DIOTableData() {
       return DIOStore.getters.DIOStates

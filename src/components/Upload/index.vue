@@ -17,7 +17,6 @@
     <div>共 {{ fileList.length }}個檔案，已完成上傳 {{ uploaded_cnt }}</div>
   </div>
 </template>
-
 <script>
 import param from '@/gpm_param'
 export default {
@@ -72,7 +71,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 #upload-button {
   position: absolute;

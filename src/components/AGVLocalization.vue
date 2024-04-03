@@ -33,9 +33,9 @@
         </el-dialog>
     </div>
 </template>
-
 <script>
 import { InspectionAGVAPI } from '@/api/VMSAPI.js'
+import { AGVStatusStore } from '@/store';
 import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization';
 
 export default {
@@ -47,6 +47,7 @@ export default {
     },
     methods: {
         Show() {
+            this.localization.currentID = AGVStatusStore.getters.AGVStatus.Last_Visited_Tag
             this.ShowDialog = true;
         },
         async HandleLocClick() {
@@ -64,7 +65,6 @@ export default {
     },
 }
 </script>
-
 <style lang="scss" scoped>
 .localization {
     .block {

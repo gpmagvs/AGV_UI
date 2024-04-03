@@ -33,6 +33,25 @@ export default {
                 14: '14',
                 15: '15',
                 16: '16-Bypass',
+            },
+            LserMap_AMC: {
+                0: '0-Bypass',
+                1: '1-Normal',
+                2: '2-Normal',
+                3: '3-Unknown',
+                4: '4-Bay',
+                5: '5-Turning',
+                6: '6-Turning',
+                7: '7-Unknown',
+                8: '8-Unknown',
+                9: '9-Bay',
+                10: '10-Unknown',
+                11: '11-Charge',
+                12: '12-Left Move',
+                13: '13-Right Move',
+                14: '14-Obstacle Go Back',
+                15: '15-Bypass',
+                16: '16-Bypass',
             }
         }
     },
@@ -64,10 +83,11 @@ export default {
     },
     methods: {
         ButtonClicked(number) {
+            var laserMap = AGVStatusStore.getters.IsInspectionAGV ? this.LserMap_AMC : this.LserMap
             this.$swal.fire(
                 {
                     text: '',
-                    title: `Change Laser Mode to : ${this.LserMap[number]}?`,
+                    title: `Change Laser Mode to : ${laserMap[number]}?`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'OK',

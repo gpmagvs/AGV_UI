@@ -8,7 +8,20 @@ var axios_entity = axios.create({
   baseURL: param.backend_host,
 })
 
-
+/**
+ * 播放音效API
+ */
+export var SoundsAPI = {
+  Alarm: async () => {
+    await axios_entity.get('api/Sounds/Alarm')
+  },
+  Action: async () => {
+    await axios_entity.get('api/Sounds/Action')
+  },
+  Move: async () => {
+    await axios_entity.get('api/Sounds/Moving')
+  }
+}
 /**系統相關api */
 export var SystemAPI = {
   async GetSettings() {
@@ -295,6 +308,19 @@ export const MapAPI = {
 }
 
 /**觸發Tray Reader 拍照 回傳 barcode  */
+export async function TriggerCSTReaderWithCargoType(_type) {
+  try {
+
+    var ret = await axios_entity.get(
+      `api/VMS/TriggerCSTReaderWithCargoType?cargo_type=${_type}`
+    )
+    return ret.data.barcode;
+  } catch (error) {
+
+    return "Network Error";
+  }
+}
+/**觸發Tray Reader 拍照 回傳 barcode  */
 export async function TriggerCSTReader() {
   try {
 
@@ -307,7 +333,6 @@ export async function TriggerCSTReader() {
     return "Network Error";
   }
 }
-
 
 /**停止Tray Reader 拍照*/
 export async function StopCSTReader() {
@@ -499,6 +524,14 @@ export const InspectionAGVAPI = {
         Message: ex.message
       }
     }
+  },
+  async EquipmentStateControl(equipment, state) {
+    var ret = await axios_entity.get(`api/VMS/EquipmentStateControl?equipment=${equipment}&state=${state}`)
+    return ret.data;
+  },
+  async SensorStateControl(sensor, state) {
+    var ret = await axios_entity.get(`api/VMS/SensorStateControl?sensor=${sensor}&state=${state}`)
+    return ret.data;
   }
 }
 

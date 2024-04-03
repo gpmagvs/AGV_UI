@@ -21,7 +21,7 @@ export default createStore({
 
 export var UIStore = createStore({
   state: {
-    UI_Version: "03.20.1",
+    UI_Version: "01.22.1",
     PreviousControllRoute: 'move',
     CurrentTabSelected: 0,
     ConnectionStateData: {},
@@ -140,6 +140,9 @@ export var AGVStatusStore = createStore({
     AGVStatus: state => {
       return state.AGVStatus;
     },
+    AMCAGVSensorState: state => {
+      return state.AGVStatus.AMCAGVSensorState
+    },
     IsOnline: state => {
       return state.AGVStatus.OnlineMode == 1;
     },
@@ -169,6 +172,8 @@ export var AGVStatusStore = createStore({
     IsForkAGV: state => {
       return state.AGVStatus.Agv_Type == 0;
     },
+    /**是否可伸縮牙叉 */
+    IsForkExtenable: state => state.AGVStatus.IsForkExtenable,
     CurrentPose: state => {
       return state.AGVStatus.Pose;
     },
@@ -196,7 +201,7 @@ export var AGVStatusStore = createStore({
       if (!getters.Battery1Status)
         return true;
       var bat_lock_sensor_info = getters.Battery1Status.SensorInfo;
-      return bat_lock_sensor_info.IsLockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
+      return bat_lock_sensor_info.IsUnlockSensorON || (!bat_lock_sensor_info.IsUnlockSensorON && !bat_lock_sensor_info.IsLockSensorON);
 
     },
     Bat1UnLockable: (state, getters) => {

@@ -8,7 +8,7 @@
         <el-tooltip content="Go to Location Of AGV">
           <el-button @click="GoToAGVLoc()"><i class="bi bi-geo-alt-fill"></i></el-button>
         </el-tooltip>
-        <el-button @click="ReloadMapFromAGVS()">{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
+        <el-button type="primary" :loading="reloadMapRequesting" @click="ReloadMapFromAGVS()">{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
         <div class="w-100 d-flex flex-row justify-content-end">
           <span class="p-1">MAP</span>
           <div>
@@ -18,7 +18,7 @@
         </div>
       </div>
       <div
-        v-loading="loading"
+        v-loading="loading || reloadMapRequesting"
         ref="map"
         :key="reload_key"
         class="map border"
@@ -166,6 +166,7 @@ export default {
       showTaskAllocationMenu: false,
       showNoPointSelectedMenu: false,
       showAGVMenu: false,
+      reloadMapRequesting: false,
       path_plan_tags: [],
       contextMenu: {},
       agv_color_set: [
@@ -391,8 +392,10 @@ export default {
       this.map.getView().setCenter(agv_map_state.Coordination)
     },
     async ReloadMapFromAGVS() {
+      this.reloadMapRequesting = true;
       var result = await map_store.dispatch('ReloadMapFromAGVS', "abc");
       console.log(result)
+      this.reloadMapRequesting = false;
       if (!result || !result.confirm) {
         this.$swal.fire(
           {

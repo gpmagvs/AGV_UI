@@ -61,10 +61,11 @@
       class="flex-fill"
       style="height:600px"
       ref="map"></MapShowVue>
-    <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt">
+    <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt" :size="IsInspectAGV ? '50%' : ''">
       <template #header>
         <h2 class="text-start"> {{ GetTitleText(SelectedFeature) }}<div v-if="SelectedFeatureIsVirtualPt" class="text-danger"> 虛擬點不可為終點站</div>
         </h2>
+        <h6>{{ SelectedFeatureCoordination }}</h6>
       </template>
       <div class="px-1 d-flex flex-row justify-content-around">
         <b-button
@@ -100,6 +101,13 @@
           :disabled="!SelectedFeatureBatExchangable">
           <i class="bi bi-battery-charging"></i>交換電池 </b-button>
       </div>
+      <div v-if="IsInspectAGV" class="px-1 d-flex flex-row justify-content-around">
+        <b-button
+          class="my-1 action-button"
+          variant="info"
+          @click="HandleLocatingBtnClick">
+          <i class="bi bi-crosshair"></i>定位</b-button>
+      </div>
     </el-drawer>
     <MoveTestDrawer ref="move_test"></MoveTestDrawer>
     <b-modal
@@ -129,12 +137,13 @@
 </template>
 <script>
 import Notifier from '@/api/NotifyHelper';
-import { NavigationAPI } from '@/api/VMSAPI';
+import { NavigationAPI, InspectionAGVAPI } from '@/api/VMSAPI';
 import MapShowVue from './MapShow.vue';
-import { UserStore } from '@/store';
+import { UserStore, AGVStatusStore } from '@/store';
 import MoveTestDrawer from './MoveTestDrawer.vue'
 import bus from '@/event-bus.js'
 import { Feature } from 'ol';
+import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization';
 export default {
   components: {
     MapShowVue, MoveTestDrawer
@@ -190,6 +199,9 @@ export default {
     IsGodUse() {
       return UserStore.getters.IsGodUser;
     },
+    IsInspectAGV() {
+      return AGVStatusStore.getters.IsInspectionAGV;
+    },
     From_Lable_display() {
       if (this.selectedAction === 'None' | this.selectedAction === 'Park')
         return "目的地"
@@ -211,7 +223,15 @@ export default {
       var l = this.moveable_tags.filter(i => i.id == this.SelectedFeature.getId())
       return l.length == 1;
     },
+    SelectedFeatureCoordination() {
+      if (!this.SelectedFeature)
+        return ""
+      var geom = this.SelectedFeature.getGeometry();
+      if (!geom)
+        return ""
 
+      return geom.getCoordinates();
+    },
     SelectedFeatureIsVirtualPt() {
       if (!this.SelectedFeature)
         return false;
@@ -255,6 +275,13 @@ export default {
     }
   },
   methods: {
+    async HandleLocatingBtnClick() {
+      var tag = this.SelectedFeature.getId();
+      var coordinate = this.SelectedFeatureCoordination;
+      var x = coordinate[0];
+      var y = coordinate[1];
+      await InspectionAGVAPI.Localization(new clsLocalization(tag, x, y, -1))
+    },
     GetTitleText(feature) {
       if (!feature)
         return "";

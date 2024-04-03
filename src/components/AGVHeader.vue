@@ -1,7 +1,10 @@
 <template>
   <div class="fixed-top">
     <div class="status d-flex flex-row bg-light">
-      <div class="sys-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+      <div
+        class="sys-name flex-fill"
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
+      >
         <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
@@ -10,25 +13,40 @@
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
-        @dblclick="where_r_u()"><i class="bi bi-truck-front mx-1"></i>{{ AGVName == "" ? "AGV" : AGVName }}</div>
-      <div class="account-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
-        <i class="bi bi-people mx-1"></i> {{ UserName }}
+        @dblclick="where_r_u()"
+      >
+        <i class="bi bi-truck-front mx-1"></i>
+        {{ AGVName == "" ? "AGV" : AGVName }}
       </div>
-      <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill" v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
+      <div
+        class="account-name flex-fill"
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
+      >
+        <i class="bi bi-people mx-1"></i>
+        {{ UserName }}
+      </div>
+      <div
+        @dblclick="VersionTextClickHandle()"
+        class="version-name flex-fill"
+        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"
+      >
+        {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
+        <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"
-          class="bi bi-cloud-upload">
-        </i>
+          class="bi bi-cloud-upload"
+        ></i>
       </div>
       <!--語系切換按鈕-->
-      <div class="lang-switch  ">
+      <div class="lang-switch">
         <jw_switch
           @switch="LangChangeHandle"
           :default="IsUseChinese"
           active_text="CH"
           active_color="rgb(0, 204, 0)"
           inactive_text="EN"
-          inactive_color="rgb(9, 76, 176)"></jw_switch>
+          inactive_color="rgb(9, 76, 176)"
+        ></jw_switch>
       </div>
       <el-dialog draggable title="File Upload" v-model="uploadVisible">
         <uploader></uploader>
@@ -36,7 +54,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { AGVStatusStore, UserStore, UIStore } from '@/store'
 import { Where_r_u } from '@/api/VMSAPI'
@@ -66,9 +83,13 @@ export default {
       if (_agv_type == 0)
         return 'GPM FORK AGV';
       else if (_agv_type == 1)
-        return 'GPM Submarine AGV';
+        return 'GPM YTFORK';
       else if (_agv_type == 2)
         return 'GPM Inspection AGV';
+      else if (_agv_type == 3)
+        return 'GPM Submarine AGV';
+      else if (_agv_type == 4)
+        return 'GPM Parts AGV';
       else
         return 'GPM AGV'
     },
@@ -141,7 +162,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .status {
   height: 37px;

@@ -3,34 +3,6 @@
     <div class="d-flex flex-row py-3">
       <div class="item-label">Laser Mode</div>
       <LaserModeSwitcher></LaserModeSwitcher>
-      <!-- <div>
-        <b-input-group>
-          <b-form-input
-            size="lg"
-            class="centered-text"
-            :disabled="!enabled"
-            v-model="laser_mode"
-            type="number"
-            min="0"
-            max="16"
-            text-align="center"
-            @click="() => show_keyboard = true"></b-form-input>
-          <div class="updown-btns">
-            <b-input-group-append>
-              <b-button :disabled="!enabled" squared @click="LaserMode_Increase">▲</b-button>
-            </b-input-group-append>
-            <b-input-group-prepend>
-              <b-button :disabled="!enabled" squared @click="LaserMode_decrease">▼</b-button>
-            </b-input-group-prepend>
-          </div>
-        </b-input-group>
-      </div>
-      <b-button
-        @click="modifyLaserModeDialogShow = true"
-        :disabled="!enabled"
-        squared
-        class="mx-1"
-        variant="primary">Modify</b-button> -->
     </div>
     <div class="d-flex flex-row py-3">
       <div class="item-label">Current Laser Mode</div>
@@ -51,15 +23,15 @@
     <div v-if="IsBatteryLockControlable" class="d-flex flex-row py-3">
       <div class="item-label">電池鎖定</div>
       <div class="battery py-1">
-        <div class="d-flex flex-row mb-1">
-          <label>電池 1</label>
-          <b-button @click="BatteryLockHandler(1, true)" squared variant="primary">Lock</b-button>
-          <b-button @click="BatteryLockHandler(1, false)" squared variant="danger">Unlock</b-button>
+        <div class="d-flex flex-row py-2 my-2 border-bottom">
+          <label>電池 1(近PC側)</label>
+          <b-button :disabled="!Bat1Lockable" @click="BatteryLockHandler(1, true)" squared variant="primary">Lock</b-button>
+          <b-button :disabled="Bat1Lockable" @click="BatteryLockHandler(1, false)" squared variant="danger">Unlock</b-button>
         </div>
         <div class="d-flex flex-row">
-          <label>電池 2</label>
-          <b-button @click="BatteryLockHandler(2, true)" squared variant="primary">Lock</b-button>
-          <b-button @click="BatteryLockHandler(2, false)" squared variant="danger">Unlock</b-button>
+          <label>電池 2(近天線側)</label>
+          <b-button :disabled="!Bat2Lockable" @click="BatteryLockHandler(2, true)" squared variant="primary">Lock</b-button>
+          <b-button :disabled="Bat2Lockable" @click="BatteryLockHandler(2, false)" squared variant="danger">Unlock</b-button>
         </div>
       </div>
     </div>
@@ -81,7 +53,7 @@
         </div>
       </div>
     </div>
-    <div v-if="IsForkARMControlable && IsPinMounted" class="d-flex flex-row py-3">
+    <div v-if="IsPinMounted" class="d-flex flex-row py-3">
       <div class="item-label">浮動牙叉</div>
       <div class="battery py-1">
         <div class="d-flex flex-row mb-1">
@@ -165,6 +137,9 @@ export default {
       return AGVStatusStore.getters.IsInspectionAGV
     },
     IsForkARMControlable() {
+      return AGVStatusStore.getters.IsForkExtenable
+    },
+    IsForkAGV() {
       return AGVStatusStore.getters.IsForkAGV
     },
     FORK_ARM_Status() {
@@ -182,7 +157,7 @@ export default {
       return UserStore.getters.Operationable
     },
     IsPinMounted() {
-      if (!this.IsForkARMControlable || !SystemSettingsStore.getters.Settings.ForkAGV)
+      if (!this.IsForkAGV || !SystemSettingsStore.getters.Settings.ForkAGV)
         return false;
       return SystemSettingsStore.getters.Settings.ForkAGV.IsPinMounted;
     },
@@ -194,7 +169,13 @@ export default {
           pose: ''
         }
       }
-    }
+    },
+    Bat1Lockable() {
+      return AGVStatusStore.getters.Bat1Lockable
+    },
+    Bat2Lockable() {
+      return AGVStatusStore.getters.Bat2Lockable
+    },
   },
   methods: {
     LaserMode_Increase() {
@@ -315,6 +296,9 @@ export default {
 
     label {
       margin-right: 10px;
+      font-size: 20px;
+      width: 150px;
+      text-align: left;
     }
 
     button {

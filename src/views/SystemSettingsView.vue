@@ -13,11 +13,9 @@
               <el-form :model="settings" label-width="250" label-position="left">
                 <!-- <el-form-item label="網頁鍵盤移動控制">
                   <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
-                </el-form-item> -->
+                </el-form-item>-->
                 <el-form-item label="蜂鳴器">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.BuzzerOn"></el-switch>
+                  <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
                 <el-form-item label="一般走行開啟車頭燈">
                   <el-switch
@@ -59,32 +57,41 @@
           </b-tab>
           <b-tab title="安全防護">
             <div class="tabpage border p-2">
-              <div class="text-start w-100 ">
+              <div class="text-start w-100">
                 <el-form :model="settings" label-width="150" label-position="left">
-                  <div class="w-100 border-bottom"><b>IMU 數據</b> </div>
+                  <div class="w-100 border-bottom">
+                    <b>IMU 數據</b>
+                  </div>
                   <el-form-item label="加速度(G)">
-                    <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ IMU_ACC_Data }}</code>
+                    <el-tag effect="dark" style="width:70px" for>數值</el-tag>
+                    <code>{{ IMU_ACC_Data }}</code>
                   </el-form-item>
                   <el-form-item v-if="IMUMaxMinRecord" label="最大值紀錄(G)">
                     <div>
                       <div>
-                        <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ IMUMaxMinRecord.MaxMag }}</code>
+                        <el-tag effect="dark" style="width:70px" for>數值</el-tag>
+                        <code>{{ IMUMaxMinRecord.MaxMag }}</code>
                       </div>
                       <div>
-                        <el-tag effect="dark" style="width:70px" for="">數值</el-tag> <code>{{ { x: IMUMaxMinRecord.AccVal.x.toFixed(2), y: IMUMaxMinRecord.AccVal.y.toFixed(2), z: IMUMaxMinRecord.AccVal.z.toFixed(2) } }}</code>
+                        <el-tag effect="dark" style="width:70px" for>數值</el-tag>
+                        <code>{{ { x: IMUMaxMinRecord.AccVal.x.toFixed(2), y: IMUMaxMinRecord.AccVal.y.toFixed(2), z: IMUMaxMinRecord.AccVal.z.toFixed(2) } }}</code>
                       </div>
                       <div>
-                        <el-tag effect="dark" style="width:70px" for="">發生時間</el-tag> <code>{{ TimeFormat(IMUMaxMinRecord.Time) }}</code>
+                        <el-tag effect="dark" style="width:70px" for>發生時間</el-tag>
+                        <code>{{ TimeFormat(IMUMaxMinRecord.Time) }}</code>
                       </div>
                       <div>
-                        <el-tag effect="dark" style="width:70px" for="">發生座標</el-tag> <code>{{ { X: IMUMaxMinRecord.Coordination.x, Y: IMUMaxMinRecord.Coordination.y } }}</code>
+                        <el-tag effect="dark" style="width:70px" for>發生座標</el-tag>
+                        <code>{{ { X: IMUMaxMinRecord.Coordination.x, Y: IMUMaxMinRecord.Coordination.y } }}</code>
                       </div>
                       <div>
                         <el-button @click="HandleIMUDataResetButtonClick" type="danger">RESET</el-button>
                       </div>
                     </div>
                   </el-form-item>
-                  <div class="w-100 border-bottom"><b>碰撞偵測功能</b></div>
+                  <div class="w-100 border-bottom">
+                    <b>碰撞偵測功能</b>
+                  </div>
                   <el-form-item label="啟用">
                     <el-switch
                       @change="HandleParamChanged"
@@ -110,7 +117,9 @@
                       v-model="settings.ImpactDetection.ThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
-                  <div class="w-100 border-bottom"><b>姿態異常偵測(傾倒偵測)</b></div>
+                  <div class="w-100 border-bottom">
+                    <b>姿態異常偵測(傾倒偵測)</b>
+                  </div>
                   <el-form-item label="啟用">
                     <el-switch
                       @change="HandleParamChanged"
@@ -136,7 +145,9 @@
                       v-model="settings.ImpactDetection.PitchErrorThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
-                  <div v-if="settings.ForbidToOnlineTags" class="w-100 border-bottom"><b>禁止上線點位</b></div>
+                  <div v-if="settings.ForbidToOnlineTags" class="w-100 border-bottom">
+                    <b>禁止上線點位</b>
+                  </div>
                   <el-select
                     class="my-2"
                     v-model="settings.ForbidToOnlineTags"
@@ -170,7 +181,9 @@
                     v-model="settings.BatteryModule.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
                 </el-form-item>
                 <el-form-item label="僅電量低於閥值才開啟充電迴路">
-                  <el-switch @change="HandleParamChanged" v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
                 </el-form-item>
                 <el-form-item label="充電迴路開啟閥值">
                   <el-input-number
@@ -202,7 +215,9 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="CST ID讀取值與任務不符時">
-                  <el-select @change="HandleParamChanged" v-model="settings.Cst_ID_Not_Match_Action">
+                  <el-select
+                    @change="HandleParamChanged"
+                    v-model="settings.Cst_ID_Not_Match_Action">
                     <el-option label="上報讀取之ID" :value="0"></el-option>
                     <el-option label="向派車查詢虛擬ID" :value="1"></el-option>
                   </el-select>
@@ -246,7 +261,9 @@
                   <b>雷射偵測設備Port內障礙物</b>
                 </div>
                 <el-form-item label="啟用">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.LsrObstacleDetectionEnable"></el-switch>
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LsrObstacleDetectionEnable"></el-switch>
                 </el-form-item>
                 <el-form-item label="雷射組數">
                   <el-input-number
@@ -336,7 +353,9 @@
                     v-model="settings.ForkAGV.SaftyPositionHeight"></el-input-number>
                 </el-form-item>
                 <el-form-item label="允許走行之牙叉位置限制">
-                  <el-select @change="HandleParamChanged" v-model="settings.ForkAGV.ForkSaftyStratrgy">
+                  <el-select
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.ForkSaftyStratrgy">
                     <el-option label="牙叉位於原點" :value="0"></el-option>
                     <el-option label="牙叉低於安全高度" :value="1"></el-option>
                   </el-select>
@@ -373,24 +392,16 @@
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Trace Log">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.Log.ConsoleTraceShow"></el-switch>
+                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleTraceShow"></el-switch>
                 </el-form-item>
                 <el-form-item label="Info Log">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.Log.ConsoleInfoShow"></el-switch>
+                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleInfoShow"></el-switch>
                 </el-form-item>
                 <el-form-item label="Warning Log">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.Log.ConsoleWarningShow"></el-switch>
+                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleWarningShow"></el-switch>
                 </el-form-item>
                 <el-form-item label="Error Log">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.Log.ConsoleErrorShow"></el-switch>
+                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleErrorShow"></el-switch>
                 </el-form-item>
                 <el-form-item label="Critical Log">
                   <el-switch
@@ -405,14 +416,14 @@
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Host">
                   <el-row>
-                    <el-col :span="3"> IP</el-col>
+                    <el-col :span="3">IP</el-col>
                     <el-col :span="10">
                       <el-input
                         @change="HandleParamChanged"
                         size="small"
                         v-model="settings.Connections.AGVS.IP"></el-input>
                     </el-col>
-                    <el-col :span="3"> Port</el-col>
+                    <el-col :span="3">Port</el-col>
                     <el-col :span="5">
                       <el-input-number
                         @change="HandleParamChanged"
@@ -422,9 +433,7 @@
                   </el-row>
                 </el-form-item>
                 <el-form-item label="連線類型">
-                  <el-select
-                    v-model="settings.VMSParam.Protocol"
-                    @change="HandleParamChanged">
+                  <el-select v-model="settings.VMSParam.Protocol" @change="HandleParamChanged">
                     <el-option label="TCP/IP" :value="0"></el-option>
                     <el-option label="Web API" :value="1"></el-option>
                   </el-select>
@@ -433,11 +442,53 @@
             </div>
           </b-tab>
           <b-tab title="進階">
-            <div class="tabpage border p-2 ">
+            <div class="tabpage border p-2">
               <div class="w-100 d-flex">
-                <b-button class="w-50 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
+                <b-button
+                  class="w-50 mx-3"
+                  variant="primary"
+                  @click="HandleSystemRestartBtnClick">系統重啟</b-button>
                 <b-button class="w-50 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
               </div>
+            </div>
+          </b-tab>
+          <b-tab title="音效">
+            <div class="tabpage border p-2 souns-page">
+              <div class="border-button">
+                <b-button variant="danger">停止播放</b-button>
+              </div>
+              <el-form label-width="100px" label-position="left">
+                <el-form-item label="Alarm">
+                  <div class="d-flex flex-row">
+                    <i class="bi bi-play-circle" @click="PlayAlarm"></i>
+                    <uploader music_type="Alarm"></uploader>
+                  </div>
+                </el-form-item>
+                <el-form-item label="Move">
+                  <div class="d-flex flex-row">
+                    <i class="bi bi-play-circle" @click="PlayMove"></i>
+                    <uploader music_type="Move"></uploader>
+                  </div>
+                </el-form-item>
+                <el-form-item label="Action">
+                  <div class="d-flex flex-row">
+                    <i class="bi bi-play-circle" @click="PlayAction"></i>
+                    <uploader music_type="Action"></uploader>
+                  </div>
+                </el-form-item>
+              </el-form>
+            </div>
+          </b-tab>
+          <b-tab title="Cst Reader">
+            <div class="tabpage border p-2 cst-reader">
+              <el-form label-width="100px" label-position="left">
+                <el-form-item label="Tray Reader">
+                  <el-checkbox v-model="settings.HasTrayCstReader" @change="HandleParamChanged"></el-checkbox>
+                </el-form-item>
+                <el-form-item label="Rack Reader">
+                  <el-checkbox v-model="settings.HasRackCstReader" @change="HandleParamChanged"></el-checkbox>
+                </el-form-item>
+              </el-form>
             </div>
           </b-tab>
         </b-tabs>
@@ -448,11 +499,13 @@
 <script>
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
-import { SystemAPI, IMUAPI } from '@/api/VMSAPI.js'
+import { SystemAPI, IMUAPI, SoundsAPI } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import { ROS_STORE } from "@/store/ros_store";
+import uploader from '@/components/Upload/music_upload.vue'
+
 
 class ForkLifer {
   constructor() {
@@ -474,6 +527,9 @@ class ForkLifer {
 
 
 export default {
+  components: {
+    uploader,
+  },
   data() {
     return {
       drawer_show: false,
@@ -580,10 +636,10 @@ export default {
   },
   mounted() {
     bus.on('show-settings', async (tabIndex) => {
-      await this.DownloadSettings();
       if (tabIndex)
         this.selected_tab = tabIndex;
       this.drawer_show = true
+      await this.DownloadSettings();
     })
     this.DownloadSettings();
   },
@@ -662,18 +718,15 @@ export default {
         })
     },
     async DownloadSettings() {
-      var _settings = await SystemAPI.GetSettings()
-      console.log(_settings)
-      this.settings = _settings
-      SystemSettingsStore.commit('setSettings', _settings)
-      // ElNotification({
-      //   title: '系統參數設定',
-      //   message: '系統參數讀取成功',
-      //   type: 'success',
-      //   position: 'bottom-right',
-      //   duration: 600,
-      // });
-      this.normal_stations = await MapAPI.GetNormalStations()
+      try {
+        var _settings = await SystemAPI.GetSettings()
+        console.log(_settings)
+        this.settings = _settings
+        SystemSettingsStore.commit('setSettings', _settings)
+        this.normal_stations = await MapAPI.GetNormalStations()
+      } catch {
+        alert("!!")
+      }
     },
     async HandleParamChanged() {
       var success = await SystemAPI.SaveSettings(this.settings)
@@ -724,15 +777,31 @@ export default {
             return;
           IMUAPI.ResetMAXMINRecord();
         })
+    },
+    PlayAlarm() {
+      SoundsAPI.Alarm();
+    },
+    PlayAction() {
+      SoundsAPI.Action();
+    },
+    PlayMove() {
+      SoundsAPI.Move();
     }
   },
 }
 </script>
 <style lang="scss" scoped>
 .sys-setting {
-  z-index: 1099999
-}
+  z-index: 1099999;
 
+  .souns-page {
+    i {
+      font-size: 30px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+  }
+}
 
 .tabpage {
   // height: 85vh;

@@ -120,6 +120,14 @@
                     v-model="VMSData.BCR_State_MoveBase.tagID"
                     :state="VMSData.BCR_State_MoveBase.tagID > 0"></b-form-input>
                 </div>
+                <div class="m-1" v-else>
+                  <div class="state-title">Location</div>
+                  <b-form-input
+                    size="sm"
+                    style="width:70px"
+                    disabled
+                    v-model="VMSData.Last_Visited_Tag"></b-form-input>
+                </div>
                 <div class="m-1">
                   <div class="state-title">{{ $t('coordination') }}</div>
                   <b-form-input
