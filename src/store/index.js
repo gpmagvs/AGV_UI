@@ -463,6 +463,8 @@ export var UserStore = createStore({
 export var DIOStore = createStore({
   state: {
     DIOStates: {
+      Inputs: [],
+      Outputs: []
     }
   },
   getters: {

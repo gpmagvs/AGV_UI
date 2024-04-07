@@ -77,6 +77,11 @@ const routes = [
     path: '/idle',
     name: 'idle',
     component: () => import('../views/IdleView.vue')
+  },
+  {
+    path: '/playground',
+    name: 'playground',
+    component: () => import('../views/Playground.vue')
   }
 ]
 

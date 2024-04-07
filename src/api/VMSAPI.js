@@ -224,6 +224,18 @@ export const DIO = {
       `api/VMS/DIO/Set${owner}HsSignalState?signal_name=${signal}&state=${state}`,
     )
     return ret.data
+  },
+  async UpdateInputMap(data) {
+    var ret = await axios_entity.post(
+      `api/VMS/UpdateINPUTSettings`, data
+    )
+    return ret.data
+  },
+  async UpdateOutputMap(data) {
+    var ret = await axios_entity.post(
+      `api/VMS/UpdateOUTPUTSettings`, data
+    )
+    return ret.data
   }
 }
 
