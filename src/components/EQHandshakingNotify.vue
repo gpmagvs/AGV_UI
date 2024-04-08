@@ -2,7 +2,7 @@
     <transition name="el-zoom-in-center">
         <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
-                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ IsHandshakeFail ? '取放貨作業失敗' : '取放貨作業中' }}</span>
+                <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
                 <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
                 <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
             </div>
@@ -10,7 +10,6 @@
         </div>
     </transition>
 </template>
-
 <script>
 import { AGVStatusStore } from '@/store'
 
@@ -34,12 +33,24 @@ export default {
         }
     },
     computed: {
+        MessageTitle() {
+            if (this.IsHandshakeFail) {
+                return this.IsExchangeBatteryTask ? '電池交換作業失敗' : '取放貨作業失敗';
+            } else {
+                return this.IsExchangeBatteryTask ? '電池交換作業中' : '取放貨作業中';
+            }
+
+        },
         EQHSStatus() {
             return AGVStatusStore.getters.AGVStatus.HandshakeStatus
         },
         IsHandshakeFail() {
             return this.EQHSStatus.HandshakingInfoText && this.EQHSStatus.HandshakingInfoText.includes('Handshake_Fail');
+        },
+        IsExchangeBatteryTask() {
+            return AGVStatusStore.getters.AGVStatus.OrderInfo.ActionName == 14;
         }
+
     },
     methods: {
         animation() {
@@ -59,7 +70,6 @@ export default {
     }
 }
 </script>
-
 <style lang="scss" scoped>
 .minimize-mode {
     visibility: visible;
