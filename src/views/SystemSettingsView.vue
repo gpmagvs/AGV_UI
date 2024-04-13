@@ -341,6 +341,11 @@
               </el-form>
             </div>
           </b-tab>
+          <b-tab title="I/O定義">
+            <div class="tabpage border p-2 io-setting x-2">
+              <IOSetting></IOSetting>
+            </div>
+          </b-tab>
         </b-tabs>
       </div>
     </el-drawer>
@@ -355,7 +360,7 @@ import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
 import { ROS_STORE } from "@/store/ros_store";
 import uploader from '@/components/Upload/music_upload.vue'
-
+import IOSetting from '@/components/IOSetting.vue'
 
 class ForkLifer {
   constructor() {
@@ -378,7 +383,7 @@ class ForkLifer {
 
 export default {
   components: {
-    uploader,
+    uploader, IOSetting
   },
   data() {
     return {
@@ -660,4 +665,6 @@ export default {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
+.io-setting {}
 </style>

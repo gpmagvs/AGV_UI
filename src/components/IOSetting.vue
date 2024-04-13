@@ -1,16 +1,16 @@
 <template>
     <div class="d-flex flex-column bg-light m-2 w-100">
         <b-tabs @activate-tab="TabSelectChange">
-            <b-tab title="X"></b-tab>
-            <b-tab title="Y"></b-tab>
+            <b-tab title="INPUT"></b-tab>
+            <b-tab title="OUTPUT"></b-tab>
         </b-tabs>
         <div class="d-flex py-2">
             <el-button @click="Save" size="large">儲存-{{ regionName }}</el-button>
         </div>
         <div class="border">
-            <el-table border row-key="index" :data="tableData" height="600">
+            <el-table border row-key="index" table-layout="auto" :data="tableData" max-height="450">
                 <el-table-column prop="index" label="Index" min-width="20"></el-table-column>
-                <el-table-column prop="address" label="Address"></el-table-column>
+                <el-table-column prop="address" min-width="20" label="Address"></el-table-column>
                 <el-table-column prop="name" label="Name">
                     <template #default="scope">
                         <el-select-v2
