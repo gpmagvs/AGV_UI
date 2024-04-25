@@ -296,9 +296,10 @@
           </b-tab>
           <b-tab title="進階">
             <div class="tabpage border p-2">
-              <div class="w-100 d-flex">
-                <b-button class="w-50 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
-                <b-button class="w-50 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
+              <div class="w-100">
+                <b-button class="w-50 my-1 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
+                <b-button class="w-50 my-1 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
+                <b-button class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
           </b-tab>
@@ -361,6 +362,8 @@ import moment from 'moment'
 import { ROS_STORE } from "@/store/ros_store";
 import uploader from '@/components/Upload/music_upload.vue'
 import IOSetting from '@/components/IOSetting.vue'
+import param from '@/gpm_param'
+import axios from 'axios'
 
 class ForkLifer {
   constructor() {
@@ -554,6 +557,22 @@ export default {
               customClass: 'my-sweetalert'
             })
         }
+      });
+
+    },
+    async HandleOTAUpdateBtnClick() {
+      this.SystemOptConfirmAndDoAction('確定進行系統更新?', async () => {
+        this.$swal.fire(
+          {
+            text: '',
+            title: '系統更新中...',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        var response = await axios.get(param.OTA_Update_URL)
+
       });
 
     },

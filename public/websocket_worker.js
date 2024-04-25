@@ -46,19 +46,23 @@ function SendKeepAlive(socket) {
 
 }
 function TryReConnect() {
-    var _socket = new WebSocket(_ws_url)
 
-    _socket.onopen = (ev) => {
-        SendKeepAlive(_socket)
-        socket = _socket
-        socket.onmessage = (ev) => {
-            self.postMessage(JSON.parse(ev.data))
+    setTimeout(() => {
+        var _socket = new WebSocket(_ws_url)
+
+        _socket.onopen = (ev) => {
+            SendKeepAlive(_socket)
+            socket = _socket
+            socket.onmessage = (ev) => {
+                self.postMessage(JSON.parse(ev.data))
+            }
         }
-    }
-    _socket.onclose = (ev) => {
-        self.postMessage('closed')
-        TryReConnect()
-    }
+        _socket.onclose = (ev) => {
+            self.postMessage('closed')
+            TryReConnect()
+        }
+    }, 3000);
+
 }
 self.onmessage = function (event) {
     console.log(event);

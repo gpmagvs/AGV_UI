@@ -58,13 +58,11 @@ function DisconnectHandler() {
 
 }
 
-backend_websocket_worker.onmessage = (event) => throttledHandleBackendData(event)
-backend_websocket_worker.postMessage({ command: 'connect', ws_url: backend_ws_host + `/ws?user_id=${user_id}` });
-
-
 setTimeout(() => {
     MapAPI.GetMapFromServer()
-}, 500);
+    backend_websocket_worker.onmessage = (event) => throttledHandleBackendData(event)
+    backend_websocket_worker.postMessage({ command: 'connect', ws_url: backend_ws_host + `/ws?user_id=${user_id}` });
+}, 1000);
 
 window.addEventListener('beforeunload', function (event) {
     backend_websocket_worker.postMessage({ command: 'disconnect' });
