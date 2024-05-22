@@ -246,6 +246,9 @@
                 <el-form-item label="退出充電站後Z軸同步回Home">
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
                 </el-form-item>
+                <el-form-item lable="手動操作移動速度(%)">
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.ManualModeOperationSpeed.MoveToPoseSpeed"></el-input-number>
+                </el-form-item>
               </el-form>
             </div>
           </b-tab>
