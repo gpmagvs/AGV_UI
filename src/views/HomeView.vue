@@ -103,14 +103,33 @@
               </div>
             </div>
             <el-divider style="margin:auto"></el-divider>
-            <div class="connection-status border rounded m-1 p-3 py-1">
+            <div v-if="!isBrakeSwitchRelease" class="connection-status border rounded m-1 p-3 py-1">
               <div class="state-title"><i class="bi bi-ethernet mx-1"></i> {{ $t('connection-states') }}</div>
               <connection_state></connection_state>
             </div>
             <el-divider style="margin:auto"></el-divider>
             <!-- 當前座標資訊 -->
             <div class="coordination border rounded m-1 p-3 py-1">
-              <div class="py-1 d-flex justify-content-center">
+              <div v-if="isBrakeSwitchRelease" class="w-100 d-flex">
+                <div>
+                  <div class="state-title" style="text-align: center;">Tag</div>
+                  <el-tag
+                    style="width:100px;height: 85px;font-size: 58px;"
+                    class=""
+                    :type="VMSData.BCR_State_MoveBase.tagID == 0 ?'danger':'success'"
+                    >{{ VMSData.BCR_State_MoveBase.tagID }}</el-tag>
+                </div>
+                <div class="mx-2  w-100">
+                  <div class="state-title" style="text-align: center;">偏移量</div>
+                  <el-form-item class="" label="X">
+                    <b-form-input size="sm" disabled v-model.number="VMSData.BCR_State_MoveBase.xValue"></b-form-input>
+                  </el-form-item>
+                  <el-form-item class="" label="Y">
+                    <b-form-input size="sm" disabled v-model.number="VMSData.BCR_State_MoveBase.yValue"></b-form-input>
+                  </el-form-item>
+                </div>
+              </div>
+              <div v-else class="py-1 d-flex justify-content-center">
                 <div class="m-1" v-if="!Is_TSMC_MiniAGV">
                   <div class="state-title">Tag</div>
                   <b-form-input
@@ -216,7 +235,7 @@ import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
 import { ElNotification } from 'element-plus'
-import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore } from '@/store'
+import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore, DIOStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
@@ -601,6 +620,9 @@ export default {
         return ''
       if (!_hascargo && _hascargo_id)
         return 'has-id-but-cargo-not-exist'
+    },
+    isBrakeSwitchRelease() {
+      return DIOStore.getters.IsBrakeSwitchRelease;
     },
     /**
      *  DestineName ,

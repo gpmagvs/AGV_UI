@@ -105,10 +105,17 @@
           </el-col>
         </el-row>
         <el-row class="w-100 row">
-          <el-col :span="5"></el-col>
-          <el-col :span="19" class="text-end">
-            <p style="    font-size: 28px;    color: #e1e1e1;">RAM :{{ Memory }} Mb</p>
+          <el-col :span="12" class="">
+            <div class="d-flex  w-100" style="font-size: 28px;color: #e1e1e1;">
+              <div style="width:80px" class="">RAM</div>
+              <div>{{ Memory }}</div><span class="py-3 px-2" style="font-size: small">Mb</span>
+            </div>
+            <div class="d-flex" style="font-size: 28px;color: #e1e1e1;">
+              <div style="width:80px" class="">CPU</div>
+              <div>{{ CPU }}</div> <span class="py-3 px-2" style="font-size: small">%</span>
+            </div>
           </el-col>
+          <el-col :span="12"></el-col>
         </el-row>
         <el-row class="w-100 row" v-if="false">
           <el-col :span="6">AGV Direct</el-col>
@@ -125,7 +132,6 @@
     </div>
   </transition>
 </template>
-
 <script>
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
@@ -212,6 +218,9 @@ export default {
     Memory() {
       return this.vms_data.SysLoading ? this.vms_data.SysLoading.Memory : -1;
     },
+    CPU() {
+      return this.vms_data.SysLoading ? this.vms_data.SysLoading.CPU : -1;
+    },
     module_information() {
       return ROS_STORE.getters.Module_Information
     }
@@ -234,7 +243,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss">
 .status-card {
   .row {

@@ -2,7 +2,7 @@ import { UserStore } from './store';
 var idleTime = 0
 var interval = setInterval(() => {
     idleTime += 1;
-    if (idleTime >= 300) {
+    if (idleTime >= 600) {
         UserStore.dispatch('Logout')
         location.reload()
         resetTimer()

@@ -675,7 +675,19 @@ export var DIOStore = createStore({
       var Inputs = state.DIOStates.Inputs;
       return !Inputs.find(reg => reg.Address == 'X0011').State
     },
+    IsBrakeSwitchRelease: state => {
+      if (state.DIOStates.Inputs == undefined)
+        return false
+      var Inputs = state.DIOStates.Inputs;
+      var switch_off = !Inputs.find(reg => reg.Address == 'X000C').State
 
+      if (!switch_off)
+        return false;
+
+      var emo_pushed = !Inputs.find(reg => reg.Address == 'X0008').State
+      return emo_pushed && switch_off;
+
+    }
 
   },
   mutations: {
