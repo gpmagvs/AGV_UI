@@ -1,7 +1,6 @@
 <template>
   <div :class="keyboardClass"></div>
 </template>
-  
 <script>
 import Keyboard from "simple-keyboard";
 import "simple-keyboard/build/css/index.css";
@@ -66,6 +65,9 @@ export default {
       this.keyboard.setOptions({
         layoutName: shiftToggle
       });
+    },
+    setInput(input) {
+      this.keyboard.setInput(input);
     }
   },
   watch: {
@@ -74,12 +76,10 @@ export default {
     }
   }
 };
-  </script>
-  
-  <!-- Add "scoped" attribute to limit CSS to this component only -->
-  <style scoped>
+</script>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
 .simple-keyboard {
   font-size: 30px;
 }
 </style>
-  

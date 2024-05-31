@@ -116,8 +116,7 @@
                   <el-tag
                     style="width:100px;height: 85px;font-size: 58px;"
                     class=""
-                    :type="VMSData.BCR_State_MoveBase.tagID == 0 ?'danger':'success'"
-                    >{{ VMSData.BCR_State_MoveBase.tagID }}</el-tag>
+                    :type="VMSData.BCR_State_MoveBase.tagID == 0 ? 'danger' : 'success'">{{ VMSData.BCR_State_MoveBase.tagID }}</el-tag>
                 </div>
                 <div class="mx-2  w-100">
                   <div class="state-title" style="text-align: center;">偏移量</div>
@@ -219,6 +218,22 @@
       <span class="text-danger" style="font-weight:bold">空取空放模式運行中</span>
       <b-button variant="danger" size="sm" @click="HandleCloseLDULD_No_Entry_BtnClick">關閉</b-button>
     </div>
+    <el-dialog v-loading="buildCstDataDialog.loading" width="85vw" v-model="buildCstDataDialog.show" :modal="false" draggable title="貨物帳籍建立">
+      <div class="d-flex my-2">
+        <el-input :disabled="buildCstDataDialog.loading" ref="cargo_id_input" placeholder="在此輸入貨物ID" v-model="buildCstDataDialog.cargo_id" clearable size="large" @input="HandleCargoIDInputChanged"></el-input>
+        <el-button :disabled="buildCstDataDialog.loading" class="mx-1" size="large" type="primary" @click="HandleCstIDBuildConfirm">確認</el-button>
+        <el-button :disabled="buildCstDataDialog.loading" size="large" type="danger" @click="() => {
+          buildCstDataDialog.show = false;
+          buildCstDataDialog.cargo_id = ''
+          HandleCargoIDInputChanged('')
+        }">取消</el-button>
+      </div>
+      <div class="d-flex">
+        <el-button class="mx-1" size="large" type="" @click="HandleUseReaderButClick(200)">使用 Tray READER</el-button>
+        <el-button class="mx-1" size="large" type="" @click="HandleUseReaderButClick(201)">使用 Rack READER</el-button>
+      </div>
+      <SimpleKeyboard ref="cargoIdEditKeyboard" @onChange="HandleCargoIDKeyboardInput"></SimpleKeyboard>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -230,7 +245,7 @@ import fork_height from '@/components/ForkHeight.vue'
 import emo from '@/components/EMOButton.vue'
 import login from '@/components/Login.vue'
 import connection_state from '@/components/ConnectionStates.vue'
-import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher, CloseLDULD_No_Entry } from '@/api/VMSAPI'
+import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, MODESwitcher, CloseLDULD_No_Entry, TriggerCSTReaderWithCargoType, StopCSTReader, BuildCargoID } from '@/api/VMSAPI'
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
@@ -240,11 +255,12 @@ import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
 import { watch } from 'vue'
+import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
 // @ is an alias to /src
 export default {
   name: 'HomeView',
   components: {
-    AGVHeader, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization, fork_height
+    AGVHeader, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization, fork_height, SimpleKeyboard
   },
   data() {
     return {
@@ -275,10 +291,69 @@ export default {
       previousAGVPoseIsError: false,
       ShowAGVPoseErrorModel: false,
       header_show: false,
-      showOrderInfo: false
+      showOrderInfo: false,
+      buildCstDataDialog: {
+        show: false,
+        cargo_id: '',
+        loading: false
+      }
     }
   },
   methods: {
+    HandleCargoIDInputChanged(_input) {
+      this.$refs['cargoIdEditKeyboard'].setInput(_input);
+    },
+    HandleCargoIDKeyboardInput(_input) {
+      this.buildCstDataDialog.cargo_id = _input;
+      setTimeout(() => {
+        this.$refs['cargo_id_input'].focus();
+      }, 100);
+    },
+    async HandleCstIDBuildConfirm() {
+      var response = await BuildCargoID(this.buildCstDataDialog.cargo_id);
+      if (response.confirm) {
+        this.$swal.fire(
+          {
+            title: '貨物帳籍修改成功',
+            text: '',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      } else {
+        this.$swal.fire(
+          {
+            title: '貨物帳籍修改失敗',
+            text: response.message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+    },
+    async HandleUseReaderButClick(cst_type) {
+      this.buildCstDataDialog.loading = true;
+      setTimeout(async () => {
+        var barcode = await TriggerCSTReaderWithCargoType(cst_type);
+        if (barcode != 'Network Error' && barcode.toUpperCase() != 'ERROR') {
+          this.buildCstDataDialog.cargo_id = barcode;
+          this.HandleCargoIDInputChanged(barcode);
+        } else {
+          this.$swal.fire(
+            {
+              title: 'CST ID　讀取失敗',
+              text: '',
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+        this.buildCstDataDialog.loading = false;
+      }, 100);
+    },
     ShowLogin() {
       if (this.IsLogin) {
         this.$swal.fire({
@@ -315,12 +390,20 @@ export default {
             this.isInitializing = true;
             var result = await Initialize();
             if (!result.confirm) {
+              var has_cargo_but_no_data = result.has_cargo_but_no_data;
+
               this.$swal.fire({
                 title: 'AGV Initialize Fail',
-                text: result.message,
+                text: result.message + (result.message_eng ? `(${result.message_eng})` : ''),
                 icon: 'error',
-                showCancelButton: false,
+                showCancelButton: has_cargo_but_no_data,
+                cancelButtonText: has_cargo_but_no_data ? 'OK' : '',
+                confirmButtonText: has_cargo_but_no_data ? "建立帳籍" : 'OK',
                 customClass: 'my-sweetalert'
+              }).then(res => {
+                if (res.isConfirmed && has_cargo_but_no_data) {
+                  this.buildCstDataDialog.show = true;
+                }
               })
             }
           }

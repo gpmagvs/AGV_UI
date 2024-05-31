@@ -109,8 +109,7 @@ export default {
   },
   methods: {
     async MOVE_UP() {
-      if (this.linear_action != 'up')
-        this.MOVE_STOP();
+
       this.linear_action = 'up'
       this.linear_speed += 0.05;
       if (this.linear_speed >= 1)
@@ -119,8 +118,7 @@ export default {
       // await MOVEControl.AGVMove_UP(this.linear_speed);
     },
     async MOVE_DOWN() {
-      if (this.linear_action != 'down')
-        this.MOVE_STOP();
+
       this.linear_action = 'down'
       AGVMoveDown(this.backward_speed);
     },

@@ -360,6 +360,19 @@ export async function StopCSTReader() {
   }
 }
 
+//[HttpPost("BuildCargoID")]
+export async function BuildCargoID(cst_id = '') {
+  try {
+
+    var ret = await axios_entity.post(
+      `api/VMS/BuildCargoID?id=${cst_id}`
+    )
+    return ret.data;
+  } catch (error) {
+
+    return { confirm: false, message: error.message };
+  }
+}
 
 /**FindTagCenter*/
 export async function FindTagCenter() {

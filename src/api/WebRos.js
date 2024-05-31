@@ -39,16 +39,6 @@ ros.on('connection', function () {
     linear_speed = 0.0
     angular_speed = 0.0
 
-    var module_info_listener = new ROSLIB.Topic({
-        ros: ros,
-        name: '/module_information',
-        messageType: 'gpm_msgs/ModuleInformation',
-        throttle_rate: 100,
-        queue_length: 5
-    })
-    module_info_listener.subscribe(function (module_info) {
-        ROS_STORE.commit('update_module_info', module_info)
-    })
 })
 ros.on('error', function () {
     console.warn('ROS Connection not estimated');
@@ -58,11 +48,27 @@ var keyboard_move_topic = new ROSLIB.Topic({
     name: '/cmd_vel',
     messageType: 'geometry_msgs/Twist'
 })
+export function subscribeModuleInfoAndStore() {
 
+    var module_info_listener = new ROSLIB.Topic({
+        ros: ros,
+        name: '/module_information',
+        messageType: 'gpm_msgs/ModuleInformation',
+        throttle_rate: 300,
+        queue_length: 1,
+
+    })
+    module_info_listener.subscribe(function (module_info) {
+        ROS_STORE.commit('update_module_info', module_info)
+    })
+}
 export function AGVMoveUp(speed) {
+    if (Math.abs(linear_speed) >= 1)
+        return;
+    linear_speed = linear_speed + 0.1;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
-            x: speed,
+            x: linear_speed,
             y: 0,
             z: 0,
         },
@@ -74,9 +80,12 @@ export function AGVMoveUp(speed) {
     }))
 }
 export function AGVMoveDown(speed) {
+    if (Math.abs(linear_speed) >= 1)
+        return;
+    linear_speed = linear_speed - 0.1;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
-            x: -speed,
+            x: linear_speed,
             y: 0,
             z: 0,
         },
@@ -210,6 +219,7 @@ export function AGVMove_ShiftRight(linear) {
 }
 
 export function AGVStop() {
+    linear_speed = 0;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,
