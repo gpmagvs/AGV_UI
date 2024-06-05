@@ -605,7 +605,15 @@ export default {
         SystemSettingsStore.commit('setSettings', _settings)
         this.normal_stations = await MapAPI.GetNormalStations()
       } catch {
-        alert("!!")
+        this.$swal.fire(
+          {
+            title: 'SOMETHING WRONG',
+            text: 'Backend Server Error',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
       }
     },
     async HandleParamChanged() {

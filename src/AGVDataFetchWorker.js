@@ -7,11 +7,11 @@ import { ElNotification, ElLoading } from "element-plus";
 import { subscribeModuleInfoAndStore } from './api/WebRos'
 import * as signalR from "@microsoft/signalr";
 
-ElLoading.service({
-    lock: true,
-    text: 'Loading',
-    background: 'rgba(0, 0, 0, 0.7)',
-})
+// ElLoading.service({
+//     lock: true,
+//     text: 'Loading',
+//     background: 'rgba(0, 0, 0, 0.7)',
+// })
 console.log('Fetch Worker Start');
 const channel = new BroadcastChannel('vcs_data');
 const rosDataChannel = new BroadcastChannel('ros_data');
@@ -97,7 +97,7 @@ function FetchDataUsWebsocket() {
 function StartHubConnection() {
     HubConnection = new signalR.HubConnectionBuilder()
         .withUrl(`${param.backend_host}/FrontendHub`)
-        .withAutomaticReconnect([0, 2000, 1000, 5000])
+        .withAutomaticReconnect([0, 1000, 2000, 3000])
         .build();
     HubConnection.on('ReceiveData', (user, data) => {
         StoreData(data);
@@ -107,11 +107,28 @@ function StartHubConnection() {
         }
         channel.postMessage(postData)
     })
+    HubConnection.onreconnecting(() => {
+        console.warn('reconnecting');
+    })
+    HubConnection.onclose(() => {
+        console.log('SignalR  Disconnect');
+        bus.emit('ws_disconnect', undefined);
+        setTimeout(() => {
+            StartHubConnection();
+        }, 1000);
+    })
     try {
-        HubConnection.start();
-
+        HubConnection.start()
+            .then(() => {
+                console.info('SignalR Connected!');
+            })
+            .catch(er => {
+                console.log('SignalR Connection Error');
+                setTimeout(() => {
+                    StartHubConnection();
+                }, 10000);
+            });
     } catch {
-
     }
 }
 
@@ -166,34 +183,37 @@ function checkLeaderAlive() {
 
 }
 
+export function Start() {
 
-setTimeout(() => {
+    setTimeout(() => {
 
-    rosDataChannel.onmessage = (event) => {
-        if (_isLeader)
-            return;
-        if (event.data.type == 'data') {
-            var moduleInfoData = JSON.parse(event.data.payload)
-            ROS_STORE.commit('update_module_info', moduleInfoData)
+        rosDataChannel.onmessage = (event) => {
+            if (_isLeader)
+                return;
+            if (event.data.type == 'data') {
+                var moduleInfoData = JSON.parse(event.data.payload)
+                ROS_STORE.commit('update_module_info', moduleInfoData)
+            }
         }
-    }
 
-    lastHeartbeat = Date.now();
-    channel.onmessage = (event) => {
-        if (_isLeader)
-            return;
-        if (event.data.type == 'data') {
-            lastHeartbeat = Date.now();
-            _hasData = true;
-            var _data = event.data.payload;
-            StoreData(_data);
-        } else if (event.data.type == 'heartbeat') {
-            _hasData = true;
-            lastHeartbeat = Date.now();
+        lastHeartbeat = Date.now();
+        channel.onmessage = (event) => {
+            if (_isLeader)
+                return;
+            if (event.data.type == 'data') {
+                lastHeartbeat = Date.now();
+                _hasData = true;
+                var _data = event.data.payload;
+                StoreData(_data);
+            } else if (event.data.type == 'heartbeat') {
+                _hasData = true;
+                lastHeartbeat = Date.now();
+            }
         }
-    }
-    checkLeaderAlive();
+        checkLeaderAlive();
 
-}, 800);
-MapAPI.GetMapFromServer()
+    }, 800);
+    MapAPI.GetMapFromServer()
+}
+
 

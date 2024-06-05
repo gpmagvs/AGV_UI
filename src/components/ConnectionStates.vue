@@ -51,25 +51,25 @@ export default {
     },
     rosbridge_state() {
       if (this.connections.RosbridgeServer != undefined)
-        return this.connections.RosbridgeServer.toLocaleLowerCase()
+        return this.connections.RosbridgeServer == 0 ? 'connected' : 'disconnect'
       else
         return 'disconnect'
     },
     agvc_state() {
       if (this.connections.AGVC != undefined)
-        return this.connections.AGVC.toLocaleLowerCase()
+        return this.connections.AGVC == 0 ? 'connected' : 'disconnect'
       else
         return 'disconnect'
     },
     vms_state() {
       if (this.connections.VMS != undefined)
-        return this.connections.VMS.toLocaleLowerCase()
+        return this.connections.VMS == 0 ? 'connected' : 'disconnect'
       else
         return 'disconnect'
     },
     wago_state() {
       if (this.connections.WAGO != undefined)
-        return this.connections.WAGO.toLocaleLowerCase()
+        return this.connections.WAGO == 0 ? 'connected' : 'disconnect'
       else
         return 'disconnect'
     }

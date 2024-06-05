@@ -28,7 +28,6 @@
     <AGVInitalizingNotify></AGVInitalizingNotify>
   </div>
 </template>
-
 <script>
 import bus from '@/event-bus.js'
 import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
@@ -39,6 +38,8 @@ import SystemSettingsView from '@/views/SystemSettingsView.vue'
 import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNotify.vue"
 import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
+import { Start } from './AGVDataFetchWorker.js'
+
 export default {
   components: {
     SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify
@@ -93,6 +94,7 @@ export default {
     }
   },
   mounted() {
+    Start();
     document.title = "GPM AGV";
     bus.on('/god_mode_changed', (is_god_mode_now) => {
       this.showMenuToggleIcon = is_god_mode_now
@@ -103,11 +105,10 @@ export default {
     })
     setTimeout(() => {
       this.loading = false;
-    }, 1000);
+    }, 2000);
   },
 };
 </script>
-
 <style lang="scss">
 .menu-toggle-icon {
   position: absolute;

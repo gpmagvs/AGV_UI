@@ -676,6 +676,8 @@ export var DIOStore = createStore({
       return !Inputs.find(reg => reg.Address == 'X0011').State
     },
     IsBrakeSwitchRelease: state => {
+      if (!state)
+        return false;
       if (state.DIOStates.Inputs == undefined)
         return false
       var Inputs = state.DIOStates.Inputs;
