@@ -8,6 +8,7 @@ import { SystemSettingsStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store";
 console.log('ros url:' + param.ros_bridge_url);
 
+var lastInput = Date.now();
 /**直線速度 */
 export var linear_speed = 0.0
 /**角速度 */
@@ -32,7 +33,14 @@ export function Stop() {
     angular_speed = 0.0
 }
 
-
+function checkInputInterval() {
+    if (Date.now() - lastInput > 100) {
+        lastInput = Date.now();
+        return true;
+    } else {
+        return false;
+    }
+}
 
 ros.on('connection', function () {
     console.log('ros bridge server connected!');
@@ -63,9 +71,14 @@ export function subscribeModuleInfoAndStore() {
     })
 }
 export function AGVMoveUp(speed) {
-    if (Math.abs(linear_speed) >= 1)
+
+
+    if (!checkInputInterval())
         return;
-    linear_speed = linear_speed + 0.1;
+
+    if (Math.abs(linear_speed) >= _max_linear_speed)
+        return;
+    linear_speed = linear_speed + 0.05;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: linear_speed,
@@ -80,9 +93,11 @@ export function AGVMoveUp(speed) {
     }))
 }
 export function AGVMoveDown(speed) {
-    if (Math.abs(linear_speed) >= 1)
+    if (!checkInputInterval())
         return;
-    linear_speed = linear_speed - 0.1;
+    if (Math.abs(linear_speed) >= _max_linear_speed)
+        return;
+    linear_speed = linear_speed - 0.05;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: linear_speed,
@@ -98,6 +113,11 @@ export function AGVMoveDown(speed) {
 }
 
 export function AGVMoveRight(speed) {
+    if (!checkInputInterval())
+        return;
+    if (Math.abs(angular_speed) >= _max_angular_speed)
+        return;
+    angular_speed = angular_speed - 0.05;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,
@@ -107,13 +127,18 @@ export function AGVMoveRight(speed) {
         angular: {
             x: 0,
             y: 0,
-            z: -speed,
+            z: angular_speed,
         }
     }))
 }
 
 
 export function AGVMoveLeft(speed) {
+    if (!checkInputInterval())
+        return;
+    if (Math.abs(angular_speed) >= _max_angular_speed)
+        return;
+    angular_speed = angular_speed + 0.05;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,
@@ -123,7 +148,7 @@ export function AGVMoveLeft(speed) {
         angular: {
             x: 0,
             y: 0,
-            z: speed,
+            z: angular_speed,
         }
     }))
 }
@@ -219,7 +244,7 @@ export function AGVMove_ShiftRight(linear) {
 }
 
 export function AGVStop() {
-    linear_speed = 0;
+    linear_speed = angular_speed = 0;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: 0,

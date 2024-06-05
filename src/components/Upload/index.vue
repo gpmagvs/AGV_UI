@@ -9,8 +9,7 @@
       :file-list="fileList"
       :auto-upload="false"
       :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
-      multiple>
+      :on-error="handleUploadError">
       <el-button ref="select_file" type="primary">選擇更新檔</el-button>
     </el-upload>
     <el-button id="upload-button" @click="submitUpload">上傳</el-button>
@@ -29,7 +28,7 @@ export default {
   },
   computed: {
     action_api() {
-      return `${param.backend_host}/api/Upload`
+      return `${param.backend_host}/api/Upload/UploadSystemUpdateZipFile`
     },
 
   },

@@ -103,14 +103,14 @@
               </div>
             </div>
             <el-divider style="margin:auto"></el-divider>
-            <div v-if="!isBrakeSwitchRelease" class="connection-status border rounded m-1 p-3 py-1">
+            <div v-if="Is_TSMC_MiniAGV || !isBrakeSwitchRelease" class="connection-status border rounded m-1 p-3 py-1">
               <div class="state-title"><i class="bi bi-ethernet mx-1"></i> {{ $t('connection-states') }}</div>
               <connection_state></connection_state>
             </div>
             <el-divider style="margin:auto"></el-divider>
             <!-- 當前座標資訊 -->
             <div class="coordination border rounded m-1 p-3 py-1">
-              <div v-if="isBrakeSwitchRelease" class="w-100 d-flex">
+              <div v-if="isBrakeSwitchRelease && !Is_TSMC_MiniAGV" class="w-100 d-flex">
                 <div>
                   <div class="state-title" style="text-align: center;">Tag</div>
                   <el-tag

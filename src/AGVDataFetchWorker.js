@@ -5,6 +5,7 @@ import MapAPI from './api/MapAPI'
 import bus from "./event-bus";
 import { ElNotification, ElLoading } from "element-plus";
 import { subscribeModuleInfoAndStore } from './api/WebRos'
+import * as signalR from "@microsoft/signalr";
 
 ElLoading.service({
     lock: true,
@@ -16,6 +17,8 @@ const channel = new BroadcastChannel('vcs_data');
 const rosDataChannel = new BroadcastChannel('ros_data');
 let _hasData = true;
 let _isLeader = false;
+var HubConnection = null;
+
 function Throttle(func, limit) {
     let inThrottle;
     return function () {
@@ -90,6 +93,28 @@ function FetchDataUsWebsocket() {
     });
 }
 
+
+function StartHubConnection() {
+    HubConnection = new signalR.HubConnectionBuilder()
+        .withUrl(`${param.backend_host}/FrontendHub`)
+        .withAutomaticReconnect([0, 2000, 1000, 5000])
+        .build();
+    HubConnection.on('ReceiveData', (user, data) => {
+        StoreData(data);
+        var postData = {
+            type: 'data',
+            payload: data
+        }
+        channel.postMessage(postData)
+    })
+    try {
+        HubConnection.start();
+
+    } catch {
+
+    }
+}
+
 function BecomeLeader() {
     if (_isLeader)
         return;
@@ -99,13 +124,12 @@ function BecomeLeader() {
         payload: {}
     }
     channel.postMessage(postData)
-
     channel.postMessage({
         type: 'heartbeat'
     })
     _isLeader = true;
     subscribeModuleInfoAndStore();
-    FetchDataUsWebsocket();
+    StartHubConnection();
     console.log('As data brocaster');
     setInterval(() => {
         channel.postMessage({
@@ -114,7 +138,6 @@ function BecomeLeader() {
     }, 50);
     setInterval(() => {
         var dataPayload = ROS_STORE.getters.Module_Information;
-
         rosDataChannel.postMessage({
             type: 'data',
             payload: JSON.stringify(dataPayload)

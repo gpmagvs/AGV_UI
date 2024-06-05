@@ -117,7 +117,7 @@
               </div>
             </div>
           </b-tab>
-          <b-tab title="電池">
+          <b-tab v-if="!Is_TSMC_MiniAGV" title="電池">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="等待充電開始時間(秒)">
@@ -134,6 +134,9 @@
                 </el-form-item>
               </el-form>
             </div>
+          </b-tab>
+          <b-tab v-if="Is_TSMC_MiniAGV" title="電池交換">
+            <div class="tabpage border p-2"></div>
           </b-tab>
           <b-tab title="設備取/放貨">
             <div class="tabpage border p-2">
@@ -333,7 +336,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab title="Cst Reader">
+          <b-tab v-if="!Is_TSMC_MiniAGV" title="Cst Reader">
             <div class="tabpage border p-2 cst-reader">
               <el-form label-width="100px" label-position="left">
                 <el-form-item label="Tray Reader">

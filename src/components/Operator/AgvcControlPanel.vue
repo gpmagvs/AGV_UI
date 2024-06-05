@@ -126,8 +126,7 @@ export default {
       if (this.IsMiniAGV) {
         AGVMove_ShiftLeft(this.linear_speed);
       } else {
-        if (this.rotation_action != 'left')
-          this.MOVE_STOP();
+
         this.rotation_action = 'left'
         this.rotation_speed += 0.05;
         if (this.rotation_speed >= 0.3)
@@ -139,8 +138,7 @@ export default {
       if (this.IsMiniAGV)
         AGVMove_ShiftRight(this.linear_speed);
       else {
-        if (this.rotation_action != 'right')
-          this.MOVE_STOP();
+
         this.rotation_action = 'right'
         this.rotation_speed += 0.05;
         if (this.rotation_speed >= 0.3)
