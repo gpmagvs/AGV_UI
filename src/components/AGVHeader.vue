@@ -3,8 +3,7 @@
     <div class="status d-flex flex-row bg-light">
       <div
         class="sys-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
-      >
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
         <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
@@ -13,29 +12,21 @@
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
-        @dblclick="where_r_u()"
-      >
-        <i class="bi bi-truck-front mx-1"></i>
-        {{ AGVName == "" ? "AGV" : AGVName }}
+        @dblclick="where_r_u()">
+        <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
       </div>
       <div
         class="account-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
-      >
-        <i class="bi bi-people mx-1"></i>
-        {{ UserName }}
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <i class="bi bi-people mx-1"></i> {{ UserName }}
       </div>
       <div
         @dblclick="VersionTextClickHandle()"
         class="version-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"
-      >
-        {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
-        <i
+        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
           v-if="IsGodUser"
           @click="() => { uploadVisible = true }"
-          class="bi bi-cloud-upload"
-        ></i>
+          class="bi bi-cloud-upload"></i>
       </div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
@@ -45,11 +36,12 @@
           active_text="CH"
           active_color="rgb(0, 204, 0)"
           inactive_text="EN"
-          inactive_color="rgb(9, 76, 176)"
-        ></jw_switch>
+          inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
-      <el-dialog draggable title="File Upload" v-model="uploadVisible">
-        <uploader></uploader>
+      <el-dialog draggable title="更新檔上傳" v-model="uploadVisible" @closed="() => {
+        $refs.uploader.handleRemove();
+      }">
+        <uploader ref="uploader"></uploader>
       </el-dialog>
     </div>
   </div>
@@ -100,7 +92,7 @@ export default {
       return AGVStatusStore.getters.AGVStatus.APPVersion;
     },
     UIVersion() {
-      return UIStore.getters.CurrentUIVersion
+      return process.env.PACKAGE_VERSION
     },
     UserName() {
       return UserStore.getters.CurrentUserName

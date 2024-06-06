@@ -109,6 +109,7 @@ function StartHubConnection() {
     })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
+        bus.emit('hub-reconnecting');
     })
     HubConnection.onclose(() => {
         console.log('SignalR  Disconnect');
@@ -121,6 +122,7 @@ function StartHubConnection() {
         HubConnection.start()
             .then(() => {
                 console.info('SignalR Connected!');
+                bus.emit('hub-connected');
             })
             .catch(er => {
                 console.log('SignalR Connection Error');
