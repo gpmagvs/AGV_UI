@@ -1,11 +1,11 @@
 {
   "name": "agv_ui",
-  "version": "1.33.4",
+  "version": "1.33.5",
   "private": true,
   "scripts": {
     "version": "standard-version",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "standard-version;vue-cli-service build"
   },
   "dependencies": {
     "@microsoft/signalr": "^8.0.0",
