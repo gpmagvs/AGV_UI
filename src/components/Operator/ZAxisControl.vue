@@ -10,7 +10,7 @@
       :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'">
       <div class="d-flex flex-column w-50">
         <div class="d-flex flex-row">
-          <div class="label-item">Hardware Limited</div>
+          <div class="label-item">極限SENSOR BYPASS</div>
           <!-- <b-button size="sm" :disabled="!enabled">Chceked</b-button> -->
           <el-checkbox v-model="hardware_limit_enable" :disabled="!enabled"></el-checkbox>
         </div>
@@ -89,7 +89,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore, UserStore } from '@/store'
@@ -169,7 +168,6 @@ export default {
   },
 }
 </script>
-
 <style scoped lang="scss">
 .z-axis-control {
   width: 720px;

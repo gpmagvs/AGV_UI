@@ -10,36 +10,32 @@
       <div class="flex-fill"></div>
       <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">升降控制</span>
-        <b-button @click="ForkAction('up')" variant="primary my-1">上點位</b-button>
+        <b-button @click="ForkAction('up_limit')" variant="primary my-1">上點位</b-button>
         <b-button @click="ForkAction('up')" variant="primary my-1">Up</b-button>
         <b-button @click="ForkAction('home')" variant="success my-1">Home</b-button>
         <b-button @click="ForkAction('stop')" variant="danger my-1">Stop</b-button>
         <b-button @click="ForkAction('down')" variant="primary my-1">下</b-button>
-        <b-button @click="ForkAction('down')" variant="primary my-1">下點位</b-button>
-        <b-button @click="()=>{teach_data_visible=true}" variant="warning my-1">教點</b-button>
+        <b-button @click="ForkAction('down_limit')" variant="primary my-1">下點位</b-button>
+        <b-button @click="() => { teach_data_visible = true }" variant="warning my-1">教點</b-button>
       </div>
       <div class="control-buttons px-2 border m-1 d-flex flex-column justify-content-start">
         <span class="border-bottom">伸縮控制</span>
         <b-button
-          :disabled="FORK_ARM_Status.IsArmAtEndPose&&!FORK_ARM_Status.IsArmAtHomePose"
+          :disabled="FORK_ARM_Status.IsArmAtEndPose && !FORK_ARM_Status.IsArmAtHomePose"
           @click="ForkArmPoseControlHandler(true)"
-          variant="primary my-1"
-        >牙叉伸出</b-button>
+          variant="primary my-1">牙叉伸出</b-button>
         <b-button
-          :disabled="FORK_ARM_Status.IsArmAtHomePose&&!FORK_ARM_Status.IsArmAtEndPose"
+          :disabled="FORK_ARM_Status.IsArmAtHomePose && !FORK_ARM_Status.IsArmAtEndPose"
           @click="ForkArmPoseControlHandler(false)"
-          variant="primary my-1"
-        >牙叉縮回</b-button>
+          variant="primary my-1">牙叉縮回</b-button>
         <b-button @click="ForkArmStopHandler" variant="danger my-1">牙叉停止動作</b-button>
       </div>
     </div>
-
     <el-dialog v-model="teach_data_visible" draggable width="90%">
       <forkTeachEditor></forkTeachEditor>
     </el-dialog>
   </div>
 </template>
-
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore, DIOStore } from '@/store'
@@ -121,19 +117,22 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .fork-controller {
   .control-buttons {
     width: 160px;
+
     button {
       height: 50px;
     }
+
     span {
       color: grey;
     }
   }
+
   padding-left: 30px;
+
   .fork {
     position: relative;
     height: 30px;
@@ -145,6 +144,7 @@ export default {
     border-bottom-right-radius: 5px;
 
     cursor: pointer;
+
     span {
       font-size: 30px;
       position: relative;
