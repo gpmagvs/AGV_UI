@@ -140,6 +140,9 @@ export var AGVStatusStore = createStore({
     AGVStatus: state => {
       return state.AGVStatus;
     },
+    OrderInfo: state => {
+      return state.AGVStatus.OrderInfo;
+    },
     AMCAGVSensorState: state => {
       return state.AGVStatus.AMCAGVSensorState
     },
