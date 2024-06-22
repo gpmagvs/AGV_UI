@@ -137,7 +137,8 @@
         <div v-if="showOrderInfo && IsShowOrderStatus && !IsHandshaking" style="z-index:9999" v-bind:style="orderInfoContinerStyle">
           <el-alert id="order-go-alert" :class="order_info_title_class" show-icon :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'" :title="`派車系統任務-[${GetActionName}]`" :description="GetOrderDescription" :closable="false"></el-alert>
         </div>
-      </div> {{ OrderInfo }} <!--對話框們-->
+      </div>
+      <!--對話框們-->
       <div class="modals">
         <!--等待上線動作完成對話框 -->
         <b-modal v-model="wait_online_request_dialog_show" title="AGV Online Requesting" :centered="true" :hideFooter="true" :noCloseOnBackdrop="true" :noCloseOnEsc="true" :hideHeaderClose="true" header-bg-variant="primary" header-text-variant="light">
@@ -586,7 +587,7 @@ export default {
       return AGVStatusStore.getters.AGVStatus;
     },
     IsBuzzerMute() {
-      return !SystemSettingsStore.getters.Settings.BuzzerOn
+      return !SystemSettingsStore.getters.Settings?.BuzzerOn
     },
     IsShowOrderStatus() {
       return this.OrderInfo.ActionName != 999;

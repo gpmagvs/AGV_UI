@@ -1,9 +1,4 @@
-import axios from 'axios'
-import param from '@/gpm_param'
-var _axios = axios.create({
-    baseURL: param.backend_host,
-})
-
+import axios_entity from '@/axios';
 /** */
 export async function EQAbnormalWhenEQBusyEmu() {
     var ret = await _axios.get('api/EQHandshakeEmu/EQAlarmWhenEQBusySimulation');

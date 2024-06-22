@@ -157,9 +157,9 @@ export default {
       return UserStore.getters.Operationable
     },
     IsPinMounted() {
-      if (!this.IsForkAGV || !SystemSettingsStore.getters.Settings.ForkAGV)
+      if (!this.IsForkAGV || !SystemSettingsStore.getters.Settings)
         return false;
-      return SystemSettingsStore.getters.Settings.ForkAGV.IsPinMounted;
+      return SystemSettingsStore.getters.Settings.ForkAGV?.IsPinMounted;
     },
     PinState() {
       if (ROS_STORE.getters.Pin_State)

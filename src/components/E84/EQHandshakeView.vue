@@ -26,7 +26,6 @@
     </el-drawer>
   </div>
 </template>
-
 <script>
 import DJM_PIO from './DJM_PIO.vue';
 import { UserStore, DIOStore, AGVStatusStore, WorkstationStore } from '@/store'
@@ -116,5 +115,4 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped></style>

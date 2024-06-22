@@ -61,24 +61,6 @@
     </div>
     <AGVStatusView class="flex-fill" status="safe" :sensor_data="SensorStatus"></AGVStatusView>
     <div v-if="AsMainPageMode" class="text-start" style="padding-top:62px;">
-      <div class="status-card-info my-5">
-        <div class>
-          <div class="item-text"> 速度資訊 <span>Velocity</span>
-          </div>
-          <div class="velocitys d-flex my-2">
-            <div class="item-val d-flex flex-column">
-              <span class="linear-text">Linear</span>
-              <div> {{ AGVStatesData.LinearSpeed }} <span class="unit">m/s</span>
-              </div>
-            </div>
-            <div class="item-val d-flex flex-column mx-4">
-              <span class="linear-text">Angular</span>
-              <div> {{ AGVStatesData.AngularSpeed }} <span class="unit">rad/s</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="status-card-info">
         <div class>
           <div class="item-text"> 座標資訊 <span>Location</span>
@@ -97,7 +79,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { AGVStatusStore } from '@/store';
 import AGVStatusView from '@/components/AGVStatusView.vue'
@@ -147,7 +128,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 .status-overview {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

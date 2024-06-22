@@ -23,7 +23,7 @@ var _max_angular_speed = 0.5;
 var _keyboardControlEnable = false;
 
 export function KeyboardControlEnable(enable) {
-    if (SystemSettingsStore.getters.Settings.WebKeyboardMoveControl) {
+    if (SystemSettingsStore.getters.Settings?.WebKeyboardMoveControl) {
         _keyboardControlEnable = enable;
     }
 }

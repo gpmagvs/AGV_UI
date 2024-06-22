@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import vcs_axios from './axios.js'
 import { ROS_STORE } from './store/ros_store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -30,7 +31,6 @@ const Sweetalert_options = {
   cancelButtonColor: '#ff7674',
 }
 
-
 const app = createApp(App)
 
 app.use(store)
@@ -40,5 +40,7 @@ app.use(ElementPlus)
 app.use(i18n)
 app.use(VueSweetalert2, Sweetalert_options)
 app.use(VueApexCharts);
+
+app.config.globalProperties.$axios = vcs_axios;
 
 app.mount('#app')

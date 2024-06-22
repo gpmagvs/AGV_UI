@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="my-1 timer">
-      <el-table size="small" :header-row-style="{ backgroundColor: 'black' }" border :data="HsTimerData" @click="HandleTimerTBClick">
+      <el-table style="width: 100%; height: auto;" size="small" :header-row-style="{ backgroundColor: 'black' }" border :data="HsTimerData" @click="HandleTimerTBClick">
         <el-table-column label="Timer" prop="name"></el-table-column>
         <el-table-column label="設定值" prop="sv"></el-table-column>
         <el-table-column label="當前值" prop="pv"></el-table-column>
@@ -33,7 +33,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { AGVStatusStore, UserStore, SystemSettingsStore } from '@/store'
 import { DIO } from '@/api/VMSAPI'
@@ -92,7 +91,7 @@ export default {
       return data;
     },
     HSTimerSettings() {
-      return SystemSettingsStore.getters.Settings.EQHSTimeouts
+      return SystemSettingsStore.getters.Settings?.EQHSTimeouts
     }
 
   },
@@ -113,7 +112,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .djm-pio {}
 

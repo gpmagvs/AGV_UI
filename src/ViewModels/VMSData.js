@@ -28,21 +28,10 @@ class VMSData {
   IsLDULD_No_Entry = false
   IsForkHeightAboveSafty = false
   IsForkExtenable = false
-  LinearSpeed = 0
   Laser_Mode = 0
   Last_Visited_Tag = 1
   Last_Visit_MapPoint = { Name: 'UNKNOWN' }
   LocStatus = 10
-  LightsStates = {
-    Front: false,
-    Back: false,
-    Right: false,
-    Left: false,
-    Run: false,
-    Down: false,
-    Idle: false,
-    Online: false,
-  }
   MapComparsionRate = -1
   Mileage = 0
   MainState = 'DOWN'
@@ -50,7 +39,6 @@ class VMSData {
   NavInfo = {
     /**任務終點 */
     Destination: '',
-    Speed_max_limit: -1,
     /**任務軌跡 */
     PathPlan: [],
     DestinationMapPoint: {
@@ -77,7 +65,6 @@ class VMSData {
   Simulation = false
   SubState = 'DOWN'
   Tag = -1
-  UltrSensorState = new UltrasonicSensorState()
   ZAxisDriverState = new clsDriverState()
   ZAxisActionName = ''
   ForkHasLoading = false
@@ -109,15 +96,6 @@ export class clsSysLoading {
 export class clsEQHandshake {
   ConnectionType = 0
   Connected = false
-}
-export class UltrasonicSensorState {
-  state = 1
-  errorCode = 1
-  errorString = '通訊異常'
-  dirFront = 0
-  dirRear = 0
-  dirLeft = 0
-  dirRight = 0
 }
 
 export class AlarmCode {

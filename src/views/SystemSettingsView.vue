@@ -46,6 +46,18 @@
               <div class="text-start w-100">
                 <el-form :model="settings" label-width="150" label-position="left">
                   <div class="w-100 border-bottom">
+                    <b>安全Sensor防護</b>
+                  </div>
+                  <el-form-item label="左方雷射 Bypass">
+                    <el-switch v-model="settings.SensorBypass.LeftSideLaserBypass" @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="右方雷射 Bypass">
+                    <el-switch v-model="settings.SensorBypass.RightSideLaserBypass" @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="車體限動Sensor Bypass">
+                    <el-switch v-model="settings.SensorBypass.AGVBodyLimitSensorBypass" @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+                  <div class="w-100 border-bottom">
                     <b>IMU 數據</b>
                   </div>
                   <el-form-item label="加速度(G)">
@@ -117,7 +129,7 @@
               </div>
             </div>
           </b-tab>
-          <b-tab v-if="!Is_TSMC_MiniAGV" title="電池">
+          <b-tab v-if="!IsInspectionAGV" title="電池">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="等待充電開始時間(秒)">
@@ -135,7 +147,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab v-if="Is_TSMC_MiniAGV" title="電池交換">
+          <b-tab v-if="IsInspectionAGV" title="電池交換">
             <div class="tabpage border p-2"></div>
           </b-tab>
           <b-tab title="設備取/放貨">
@@ -336,7 +348,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab v-if="!Is_TSMC_MiniAGV" title="Cst Reader">
+          <b-tab v-if="!IsInspectionAGV" title="Cst Reader">
             <div class="tabpage border p-2 cst-reader">
               <el-form label-width="100px" label-position="left">
                 <el-form-item label="Tray Reader">

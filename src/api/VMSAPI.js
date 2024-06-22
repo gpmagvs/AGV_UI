@@ -1,13 +1,9 @@
-import axios from 'axios'
-import param from '@/gpm_param'
+import axios_entity from '@/axios';
 import MoveTestVM from '@/ViewModels/MoveTestDto.js'
 import bus from '@/event-bus.js'
 import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization'
 
-var axios_entity = axios.create({
-  baseURL: param.backend_host,
-})
-
+console.warn(axios_entity);
 /**
  * 播放音效API
  */
@@ -25,8 +21,11 @@ export var SoundsAPI = {
 /**系統相關api */
 export var SystemAPI = {
   async GetSettings() {
-    var ret = await axios_entity.get('api/System/Settings')
-    return ret.data
+    try {
+      var ret = await axios_entity.get('api/System/Settings')
+      return ret.data
+    } catch (error) {
+    }
   },
   async SaveSettings(settings) {
     var ret = await axios_entity.post('api/System/SaveParameters', settings)
