@@ -7,8 +7,6 @@ const vcs_axios = axios.create({
 })
 vcs_axios.interceptors.request.use(
     (config) => {
-        console.info(config);
-        console.log('攔截請求,url:' + config.url);
         return config
     },
     (err) => {
@@ -23,7 +21,6 @@ vcs_axios.interceptors.request.use(
 
 vcs_axios.interceptors.response.use(
     (res) => {
-        console.log('攔截回應' + res.request);
         return res
     },
     (err) => {

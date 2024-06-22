@@ -40,7 +40,6 @@ app.use(ElementPlus)
 app.use(i18n)
 app.use(VueSweetalert2, Sweetalert_options)
 app.use(VueApexCharts);
-
 app.config.globalProperties.$axios = vcs_axios;
 
 app.mount('#app')

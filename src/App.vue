@@ -39,6 +39,7 @@ import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNotify.vue"
 import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
+import Vue3DeviceDetector from 'vue3-device-detector';
 
 export default {
   components: {
@@ -47,7 +48,8 @@ export default {
   data() {
     return {
       showMenuToggleIcon: false,
-      loading: true
+      loading: true,
+      isMobile: false
     }
   },
   methods: {
@@ -85,13 +87,18 @@ export default {
           border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
         }
       }
-    },
-
+    }
   },
   watch: {
     VehicleName(newValue, oldValue) {
       document.title = 'GPM-' + newValue;
     }
+  },
+  created() {
+    const deviceDetector = Vue3DeviceDetector();
+    this.isMobile = deviceDetector.isMobile
+    console.info(this.isMobile)
+    console.info(deviceDetector.device.model)
   },
   mounted() {
     Start();
