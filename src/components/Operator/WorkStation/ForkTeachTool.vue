@@ -13,11 +13,15 @@
               <div class="goal-val">{{ goal.pose }}</div>
             </div>
           </div>
-          <el-button @click="HandleForkMoveBtnClick" type="primary">{{ $t('Move Fork There') }}</el-button>
+          <el-button
+            v-if="!isTagInput"
+            @click="HandleForkMoveBtnClick"
+            type="primary"
+          >{{ $t('Move Fork There') }}</el-button>
         </div>
         <div class>
           <SimpleKeyboardVue KeyboardVue keyboard_type="number" @onKeyPress="KeyboardInputChanged"></SimpleKeyboardVue>
-          <div class="text-start border-top py-2">
+          <div v-if="!isTagInput" class="text-start border-top py-2">
             <div class="d-flex">
               <h6>牙叉位置調整</h6>
               <span class="mx-3">
@@ -64,6 +68,7 @@ export default {
   data() {
     return {
       show: false,
+      isTagInput: false,
       number: 0.0,
       input_sum: '',
       title_: '',
@@ -108,7 +113,8 @@ export default {
     }
   },
   methods: {
-    Show(info) {
+    Show(info, isTagInput = false) {
+      this.isTagInput = isTagInput;
       this.goal = info
       this.input_sum = this.goal.value + ''
       this.number = this.goal.value
@@ -181,6 +187,10 @@ export default {
 
     },
     KeyboardInputChanged(e) {
+      if (e == 'enter') {
+        this.show = false;
+        return;
+      }
       if (e == 'back') {
 
         var remain_char_num = this.input_sum.length - 1;

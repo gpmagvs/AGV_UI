@@ -5,41 +5,51 @@
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
     </div>
-    <el-select v-model="selected_tag" @change="HandleStationSelected">
-      <el-option value="all" label="ALL"></el-option>
-      <el-option v-for="opt in StationOptions" :key="opt.value" :value="opt.value" :label="opt.text"></el-option>
-    </el-select>
+    <div class="text-start py-1">
+      <span>設備選擇:</span>
+      <el-select v-model="selected_tag" @change="HandleStationSelected" class="mx-2">
+        <el-option value="all" label="ALL"></el-option>
+        <el-option
+          v-for="opt in StationOptions"
+          :key="opt.value"
+          :value="opt.value"
+          :label="opt.text"
+        ></el-option>
+      </el-select>
+    </div>
     <el-table
       @cell-click="HandleCellClicked"
       :data="TeachDatasShown"
       size="small"
-      v-loading="loading">
+      v-loading="loading"
+      :row-class-name="GetRowClass"
+    >
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
             <el-input
-              @click="InputClicked"
+              @click="TagNumberInputClicked"
               @change="InputChanged"
               type="number"
-              v-model="scope.row.Tag"></el-input>
+              v-model="scope.row.Tag"
+            ></el-input>
           </div>
         </template>
       </el-table-column>
       <el-table-column label="設備名稱" prop="Name">
         <template #default="scope">
           <div>
-            <el-input
-              disabled
-              @change="InputChanged"
-              v-model="scope.row.Name"></el-input>
+            <el-input disabled @change="InputChanged" v-model="scope.row.Name"></el-input>
           </div>
         </template>
-      </el-table-column> <el-table-column label="需交握" prop="NeedHandshake">
+      </el-table-column>
+      <el-table-column label="需交握" prop="NeedHandshake">
         <template #default="scope">
           <div>
             <el-checkbox
               @change="HandleNeedHandshakeCkbChanged(scope.row)"
-              v-model="scope.row.NeedHandshake"></el-checkbox>
+              v-model="scope.row.NeedHandshake"
+            ></el-checkbox>
           </div>
         </template>
       </el-table-column>
@@ -53,7 +63,8 @@
               step="0.01"
               min="0"
               v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Up_Pose"></el-input>
+              v-model="scope.row.Layers[index].Value.Up_Pose"
+            ></el-input>
           </template>
         </el-table-column>
         <el-table-column label="Down Pose(cm)" :prop="`Down_Pose:${index}`">
@@ -65,7 +76,8 @@
               step="0.01"
               min="0"
               v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Down_Pose"></el-input>
+              v-model="scope.row.Layers[index].Value.Down_Pose"
+            ></el-input>
           </template>
         </el-table-column>
       </el-table-column>
@@ -185,38 +197,49 @@ export default {
       return this.TeachDatas[teachDataLen - 1].Tag + 1;
     },
     NewTagLayerDataTemplate() {
-      var teachDataLen = this.TeachDatas.length;
-      if (teachDataLen == 0)
-        return [
-          {
-            Key: 0,
-            Value: {
-              Name: "1-0",
-              Up_Pose: 12.2,
-              Down_Pose: 9
-            }
-          },
-          {
-            Key: 1,
-            Value: {
-              Name: "1-1",
-              Up_Pose: 12.2,
-              Down_Pose: 9
-            }
-          },
-          {
-            Key: 2,
-            Value: {
-              Name: "1-2",
-              Up_Pose: 12.2,
-              Down_Pose: 9
-            }
-          },
-        ];
-      return JSON.parse(JSON.stringify(this.TeachDatas[teachDataLen - 1].Layers)); //deep clone
+
+      return [
+        {
+          Key: 0,
+          Value: {
+            Name: "1-0",
+            Up_Pose: 0,
+            Down_Pose: 0
+          }
+        },
+        {
+          Key: 1,
+          Value: {
+            Name: "1-1",
+            Up_Pose: 0,
+            Down_Pose: 0
+          }
+        },
+        {
+          Key: 2,
+          Value: {
+            Name: "1-2",
+            Up_Pose: 0,
+            Down_Pose: 0
+          }
+        },
+      ];
     },
   },
   methods: {
+    GetRowClass(data) {
+      console.log(data.row)
+      if (data.row.IsNewAdd || data.row.Tag == 0)
+        return 'bg-info'
+      else {
+
+        var itemsWithTag = this.TeachDatasShown.filter(item => item.Tag == data.row.Tag);
+        if (itemsWithTag.length > 1)
+          return 'bg-warning'
+
+        return 'bg-light'
+      }
+    },
     HandleStationSelected(tag) {
 
     },
@@ -239,6 +262,38 @@ export default {
       }, 100);
     },
     async SaveHandler() {
+
+      //檢查TAG為0
+      const tagZeroItems = this.TeachDatas.filter(item => item.Tag == 0);
+      if (tagZeroItems.length != 0) {
+        this.$swal.fire(
+          {
+            title: '請確認Tag設置不可為0',
+            text: '',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      }
+
+      //檢查Tag重覆設置
+      const tagCollections = this.TeachDatas.map(item => item.Tag);
+      const tagDistineCollections = [...new Set(tagCollections)]
+
+      if (tagCollections.length != tagDistineCollections.length) {
+        this.$swal.fire(
+          {
+            title: 'Tag重覆設置!',
+            text: '',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      }
 
       const transformedData = {};
       this.TeachDatas.forEach((item) => {
@@ -279,12 +334,20 @@ export default {
       }, 100)
 
     },
+    TagNumberInputClicked(ele) {
+      setTimeout(() => {
+        this.$refs['teach_tool'].Show(this.selected_data, true)
+      }, 100)
+
+    },
     AddTagTeachHandler() {
-      this.TeachDatas.push({
-        Tag: this.NewTagNumber,
+      var newAry = [{
+        Tag: 0,
         Layers: this.NewTagLayerDataTemplate,
-        NeedHandshake: true
-      })
+        NeedHandshake: true,
+        IsNewAdd: true
+      }]
+      this.TeachDatas = [...newAry, ...this.TeachDatas];
       this.HasAnyChange = true;
     },
     RemoveTagTeachSetting(tagTeach) {
@@ -331,7 +394,6 @@ export default {
       }
       this.InputChanged()
     }
-
   },
   mounted() {
     this.reload();
