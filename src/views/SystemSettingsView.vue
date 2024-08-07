@@ -312,15 +312,6 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab title="進階">
-            <div class="tabpage border p-2">
-              <div class="w-100">
-                <b-button class="w-50 my-1 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
-                <b-button class="w-50 my-1 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
-                <b-button class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
-              </div>
-            </div>
-          </b-tab>
           <b-tab title="音效">
             <div class="tabpage border p-2 souns-page">
               <div class="border-button">
@@ -363,6 +354,15 @@
           <b-tab title="I/O定義">
             <div class="tabpage border p-2 io-setting x-2">
               <IOSetting></IOSetting>
+            </div>
+          </b-tab>
+          <b-tab title="進階">
+            <div class="tabpage border p-2">
+              <div class="w-100">
+                <b-button class="w-50 my-1 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
+                <b-button class="w-50 my-1 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
+                <b-button class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
+              </div>
             </div>
           </b-tab>
         </b-tabs>
