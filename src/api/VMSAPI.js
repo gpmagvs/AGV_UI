@@ -95,6 +95,15 @@ export async function GetWorkstationsData() {
   return ret.data;
 }
 
+export async function DownloadEQHsSettings() {
+  var ret = await axios_entity.get('api/VMS/DownloadEQHsSettings')
+  return ret.data;
+}
+export async function SaveEQHsSettings(configs) {
+  var ret = await axios_entity.post('api/VMS/SaveEQHsSettings', configs)
+  return ret.data;
+}
+
 /**與指定TAG之工位進行IO測試(MODBUS )) */
 export async function WorkStationModbusIOTest(tag) {
   var ret = await axios_entity.post(`api/VMS/WorkstationModbusIOTest?Tag=${tag}`)

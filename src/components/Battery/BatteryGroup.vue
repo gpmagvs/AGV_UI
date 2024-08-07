@@ -3,35 +3,59 @@
     <div
       class="bat d-flex flex-row"
       v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'"
-      v-for="i in IsMiniAGV ? [1, 2] : [0]"
-      :key="i">
+      v-for="i in IsMiniAGV ? [2, 1] : [0]"
+      :key="i"
+    >
       <i
         v-if="GetBatteryStatus(i).IsCharging"
         style="color:limegreen"
-        class="bi bi-battery-charging"></i>
+        class="bi bi-battery-charging"
+      ></i>
       <i v-else :class="'bi bi-battery-full'"></i>
-      <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
+      <b-progress
+        class="flex-fill h-100"
+        :max="100"
+        :animated="!IsBackendDisconnected"
+        @click="HandleBatteryClick"
+      >
         <b-progress-bar
           :animated="!IsBackendDisconnected"
           :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).BatteryLevel"
           :label="GetLabel(GetBatteryStatus(i))"
           v-bind:class="GetClass(GetBatteryStatus(i))"
-          style="font-size:16px;"></b-progress-bar>
+          style="font-size:16px;"
+        ></b-progress-bar>
       </b-progress>
-      <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
-        <label for>充電電流:</label> {{ GetBatteryStatus(i).ChargeCurrent }} <span
+      <div class="d-flex px-2" style="color:grey">
+        {{ (GetBatteryStatus(i).Voltage/1000.0).toFixed(2) }}
+        <span
           class="px-1"
-          style="font-size:smaller;">mA</span>
+          style="font-size:smaller;"
+        >V</span>
+      </div>
+      <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
+        <label for>充電電流:</label>
+        {{ GetBatteryStatus(i).ChargeCurrent }}
+        <span
+          class="px-1"
+          style="font-size:smaller;"
+        >mA</span>
       </div>
     </div>
-    <el-drawer v-model="show_inspection_agv_battery_viewer" direction="btt" size="600px" :show-close="false">
+    <el-drawer
+      v-model="show_inspection_agv_battery_viewer"
+      direction="btt"
+      size="600px"
+      :show-close="false"
+    >
       <template #header="{ close }">
         <el-button
           class="border-bottom"
           style="z-index:9999"
           type="danger"
           size="large"
-          @click="close">Close</el-button>
+          @click="close"
+        >Close</el-button>
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>

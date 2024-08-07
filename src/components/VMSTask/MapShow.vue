@@ -3,12 +3,20 @@
     <div class="w-100">
       <div class="my-1 d-flex flex-row justify-content-between">
         <el-tooltip content="Go to Location Of AGV">
-          <el-button @click="OriginalZomm()"><i class="bi bi-house-door-fill"></i></el-button>
+          <el-button @click="OriginalZomm()">
+            <i class="bi bi-house-door-fill"></i>
+          </el-button>
         </el-tooltip>
         <el-tooltip content="Go to Location Of AGV">
-          <el-button @click="GoToAGVLoc()"><i class="bi bi-geo-alt-fill"></i></el-button>
+          <el-button @click="GoToAGVLoc()">
+            <i class="bi bi-geo-alt-fill"></i>
+          </el-button>
         </el-tooltip>
-        <el-button type="primary" :loading="reloadMapRequesting" @click="ReloadMapFromAGVS()">{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
+        <el-button
+          type="primary"
+          :loading="reloadMapRequesting"
+          @click="ReloadMapFromAGVS()"
+        >{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
         <div class="w-100 d-flex flex-row justify-content-end">
           <span class="p-1">MAP</span>
           <div>
@@ -23,26 +31,32 @@
         :key="reload_key"
         class="map border"
         @contextmenu.prevent="showContextMenu"
-        @click="HideAllMenus">
+        @click="HideAllMenus"
+      >
         <!--編輯模式選單(有站點被選擇)-->
         <div
           class="edit-mode-menu bg-light border rounded"
           v-if="showStationMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style">
-          <div class="p-2 text-start"> Tag: <b>{{ current_select_featureID }}</b>
+          :style="map_contextmenu_style"
+        >
+          <div class="p-2 text-start">
+            Tag:
+            <b>{{ current_select_featureID }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="danger"
-              @click="handleEditModeMenuClick('remove')">移除</b-button>
+              @click="handleEditModeMenuClick('remove')"
+            >移除</b-button>
             <b-button
               variant="primary"
               class="w-100 my-1"
               size="sm"
-              @click="handleEditModeMenuClick('point_setting')">點位設定</b-button>
+              @click="handleEditModeMenuClick('point_setting')"
+            >點位設定</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
@@ -51,13 +65,15 @@
           class="edit-mode-menu bg-light border rounded"
           v-if="showNoPointSelectedMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style">
+          :style="map_contextmenu_style"
+        >
           <div class="px-1" style="position:absolute;left:6px">
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="danger"
-              @click="handleNoPointSelectedMenuClick('add_point')">新增站點</b-button>
+              @click="handleNoPointSelectedMenuClick('add_point')"
+            >新增站點</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
@@ -66,7 +82,8 @@
           class="edit-mode-menu bg-light border rounded"
           v-if="showTaskAllocationMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style">
+          :style="map_contextmenu_style"
+        >
           <div class="p-2 text-start">
             <span v-show="!is_agv_feature_selected">Tag:</span>
             <span v-show="is_agv_feature_selected">AGV:</span>
@@ -77,17 +94,20 @@
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('move')">移動</b-button>
+              @click="handleTaskAllocatModeMenuClick('move')"
+            >移動</b-button>
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('load')">放貨</b-button>
+              @click="handleTaskAllocatModeMenuClick('load')"
+            >放貨</b-button>
             <b-button
               class="w-100 my-1"
               size="sm"
               variant="primary"
-              @click="handleTaskAllocatModeMenuClick('unload')">取貨</b-button>
+              @click="handleTaskAllocatModeMenuClick('unload')"
+            >取貨</b-button>
           </div>
         </div>
         <!--AGV選單-->
@@ -95,7 +115,8 @@
           class="edit-mode-menu bg-light border rounded"
           v-if="showAGVMenu"
           ref="contextMenu"
-          :style="map_contextmenu_style">
+          :style="map_contextmenu_style"
+        >
           <div class="p-2 text-start border-bottom">
             <span>AGV :</span>
             <b>{{ current_select_agv_name }}</b>
@@ -303,6 +324,7 @@ export default {
             name: index,
           });
           _feature.setId(_tagID);
+          _feature.set('data', map.Points[index]);
           _feature.set('name', _name)
           _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
           _feature.set('isVirtual', _IsVirtual)
@@ -825,6 +847,7 @@ export default {
         var station = this.stations.find(st => st.feature == feature);
         var showTagNumber = this.display_selected == 'Tag';
         var showName = this.display_selected == 'Name';
+        var stationData = station.feature.get('data');
         var station_name = station.feature.get('name')
         var station_type = station.feature.get('station_type') //'eq','normal'
         //_feature.set('station_type', _is_eq_station ? 'eq' : 'normal')
@@ -832,7 +855,8 @@ export default {
         const name = (showTagNumber ? station.tag : (showName ? station_name : station.index)) + '';
         var nameInt = parseInt(name);
         var isCharge = station_type == 'charge';
-        var isEQOrCharge = station_type == 'eq' || isCharge
+        var isAutoDoor = stationData.StationType == 33;
+        var isNonNormalPoint = station_type != 'normal' || isCharge || isAutoDoor
 
 
         var EqImg = new RegularShape({
@@ -860,14 +884,14 @@ export default {
         })
 
         feature.setStyle(new Style({
-          image: isEQOrCharge ? EqImg : NormalPtImg,
+          image: isNonNormalPoint ? EqImg : NormalPtImg,
           text: new Text({
             text: name,
             offsetX: -18,
             offsetY: -18,
             font: 'bold 18px sans-serif',
             fill: new Fill({
-              color: isEQOrCharge ? isCharge ? 'pink' : 'lime' : 'gold'
+              color: isNonNormalPoint ? isCharge ? 'pink' : 'lime' : 'gold'
             }),
             stroke: new Stroke({
               color: 'black',
@@ -983,7 +1007,8 @@ export default {
 };
 </script>
 <style>
-.map-show {}
+.map-show {
+}
 
 .ol-zoom .ol-zoom-in,
 .ol-zoom .ol-zoom-out {
