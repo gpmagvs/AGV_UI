@@ -1,11 +1,24 @@
 <template>
   <div class="eq-station-hs-configuration">
     <!-- <h6>eq-station-hs-configuration</h6> -->
+    <el-divider>General</el-divider>
+    <el-form-item label="從派車同步下載">
+      <div class="d-flex w-100">
+        <el-checkbox
+          v-model="SyncFromAGVSBind"
+          class="flex-fill"
+          @change="(val)=>{
+          $emit('onSyncAGVSCheckBoxChanged',val)
+        }"
+        ></el-checkbox>
+        <el-button type="primary">Sync From AGVS</el-button>
+      </div>
+    </el-form-item>
+    <el-divider class="my-5">Configuration</el-divider>
     <div class="w-100 my-2 text-start">
       <el-button type="primary" @click="SaveConfiguration">儲存</el-button>
       <el-button type="info" @click="DownloadConfiguration">重新載入</el-button>
       <el-button type="warning" @click="CreateNew">新增</el-button>
-      <el-button type="info" class="float-end">Sync From AGVS</el-button>
     </div>
     <el-table
       :data="configList"
@@ -72,10 +85,17 @@
 import { DownloadEQHsSettings, SaveEQHsSettings } from '@/api/VMSAPI'
 import { AGVStatusStore } from '@/store';
 export default {
+  props: {
+    SyncFromAGVS: {
+      type: Boolean,
+      default: false
+    },
+  },
   data() {
     return {
       loading: false,
-      configList: []
+      configList: [],
+      SyncFromAGVSBind: false
     }
   },
   computed: {
@@ -198,6 +218,9 @@ export default {
   mounted() {
     this.DownloadConfiguration();
   },
+  created() {
+    this.SyncFromAGVSBind = this.SyncFromAGVS;
+  }
 }
 </script>
 

@@ -244,6 +244,12 @@
           <b-tab title="設備取/放貨">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
+                <el-form-item label="退出設備須需要詢問派車">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
+                  ></el-switch>
+                </el-form-item>
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
@@ -567,7 +573,13 @@
           </b-tab>
           <b-tab title="設備交握設定">
             <div class="tabpage border p-2">
-              <EQHandshakeConfiguration></EQHandshakeConfiguration>
+              <EQHandshakeConfiguration
+                :SyncFromAGVS="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
+                @onSyncAGVSCheckBoxChanged="(val)=>{
+                  settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS=val;
+                  HandleParamChanged();
+                }"
+              ></EQHandshakeConfiguration>
             </div>
           </b-tab>
           <b-tab title="進階">
