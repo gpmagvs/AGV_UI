@@ -3,7 +3,8 @@
     <div class="status d-flex flex-row bg-light">
       <div
         class="sys-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
+      >
         <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
@@ -12,22 +13,23 @@
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
-        @dblclick="where_r_u()">
-        <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
+        @dblclick="where_r_u()"
+      >
+        <i class="bi bi-truck-front mx-1"></i>
+        {{ AGVName == "" ? "AGV" : AGVName }}
       </div>
       <div
         class="account-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
-        <i class="bi bi-people mx-1"></i> {{ UserName }}
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
+      >
+        <i class="bi bi-people mx-1"></i>
+        {{ UserName }}
       </div>
       <div
         @dblclick="VersionTextClickHandle()"
         class="version-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"> {{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }} <i
-          v-if="IsGodUser"
-          @click="() => { uploadVisible = true }"
-          class="bi bi-cloud-upload"></i>
-      </div>
+        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"
+      >{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
         <jw_switch
@@ -36,11 +38,38 @@
           active_text="CH"
           active_color="rgb(0, 204, 0)"
           inactive_text="EN"
-          inactive_color="rgb(9, 76, 176)"></jw_switch>
+          inactive_color="rgb(9, 76, 176)"
+        ></jw_switch>
       </div>
-      <el-dialog draggable title="更新檔上傳" v-model="uploadVisible" @closed="() => {
+      <!--視窗與電腦控制-->
+      <div v-if="IsGodUser" class="system-control">
+        <b-dropdown variant="danger" right>
+          <template #button-content>
+            <i class="bi bi-three-dots-vertical me-1"></i>
+            SYSTEM
+          </template>
+          <b-dropdown-item @click="toggleFullScreen">
+            <i class="bi bi-fullscreen me-2"></i>全螢幕
+          </b-dropdown-item>
+          <b-dropdown-item v-if="false" @click="restart">
+            <i class="bi bi-arrow-clockwise me-2"></i>重新啟動
+          </b-dropdown-item>
+          <b-dropdown-item v-if="false" @click="shutdown">
+            <i class="bi bi-power me-2"></i> 關機
+          </b-dropdown-item>
+          <b-dropdown-item @click="() => { uploadVisible = true }">
+            <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
+          </b-dropdown-item>
+        </b-dropdown>
+      </div>
+      <el-dialog
+        draggable
+        title="更新檔上傳"
+        v-model="uploadVisible"
+        @closed="() => {
         $refs.uploader.handleRemove();
-      }">
+      }"
+      >
         <uploader ref="uploader"></uploader>
       </el-dialog>
     </div>
@@ -143,6 +172,47 @@ export default {
         Notifier.Primary("Language:English", 'bottom', 800);
       }
     },
+    toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    },
+    shutdown() {
+      this.$swal.fire(
+        {
+          title: '確定要關閉車載電腦?',
+          text: '',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (!res.isConfirmed)
+            return;
+
+        })
+    },
+    restart() {
+      this.$swal.fire(
+        {
+          title: '確定要重新啟動車載電腦?',
+          text: '',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (!res.isConfirmed)
+            return;
+
+        })
+    }
   },
   mounted() {
   },
@@ -193,6 +263,43 @@ export default {
   .backend-disconnected {
     background-color: rgb(255, 67, 67);
     color: white;
+  }
+  .system-control {
+    height: 100%;
+    margin-left: 2px;
+    ::v-deep .b-dropdown {
+      height: 100%;
+
+      .btn {
+        height: 100%;
+        border-radius: 0 !important; // 使用 !important 来确保覆盖
+        padding-left: 1rem;
+        padding-right: 1rem;
+        // 移除所有可能的圆角和过渡效果
+        &,
+        &:hover,
+        &:focus,
+        &:active {
+          border-radius: 0 !important;
+          transition: none;
+        }
+      }
+
+      .dropdown-menu {
+        margin-top: 0;
+        border-radius: 0; // 移除下拉菜单的所有圆角
+      }
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+
+        i {
+          font-size: 1.1em;
+          margin-right: 0.5rem;
+        }
+      }
+    }
   }
 }
 </style>

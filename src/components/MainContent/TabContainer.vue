@@ -1,7 +1,7 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills>
+    <b-tabs :lazy="false" :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills>
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active>
         <div class="mt-3 border p-1">
@@ -36,7 +36,8 @@
         <div class="mt-3 border p-1">
           <CSTReader></CSTReader>
         </div>
-      </b-tab>IsGodUser <b-tab v-if="!IsVisitor" title="Overview">
+      </b-tab>IsGodUser
+      <b-tab v-if="!IsVisitor" title="Overview">
         <div class="mt-3 border p-1">
           <AgvOverview :AsMainPageMode="false"></AgvOverview>
         </div>

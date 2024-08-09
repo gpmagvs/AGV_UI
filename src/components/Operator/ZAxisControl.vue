@@ -2,12 +2,15 @@
   <div class="z-axis-control border p-1">
     <div
       v-show="!enabled"
-      class="disable-notify text-start my-2">{{ $t('zaxis_control_notify_text') }}</div>
+      class="disable-notify text-start my-2"
+    >{{ $t('zaxis_control_notify_text') }}</div>
     <!-- <div class="d-flex" v-loading="!enabled" :element-loading-spinner="false"> -->
-    <div class="d-flex"
+    <div
+      class="d-flex"
       v-loading="!enabled"
       :element-loading-spinner="false"
-      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'">
+      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
+    >
       <div class="d-flex flex-column w-50">
         <div class="d-flex flex-row">
           <div class="label-item">極限SENSOR BYPASS</div>
@@ -22,7 +25,8 @@
             class="py-1"
             center
             v-model="ForkHeight"
-            disabled></el-input>
+            disabled
+          ></el-input>
         </div>
         <div v-if="enabled" class="p-2 my-2 border rounded">
           <b-button @click="ShowTeachView">牙叉位置校點</b-button>
@@ -36,54 +40,73 @@
           class="w-100 border mb-3"
           variant="light"
           @click="ForkAction('up_limit')"
-          block>
-          <i class="bi bi-chevron-bar-up"></i> {{ $t('up_limit_pose') }} </b-button>
+          block
+        >
+          <i class="bi bi-chevron-bar-up"></i>
+          {{ $t('up_limit_pose') }}
+        </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('up')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block>
-          <i class="bi bi-chevron-up"></i> {{ $t('up') }} </b-button>
+          block
+        >
+          <i class="bi bi-chevron-up"></i>
+          {{ $t('up') }}
+        </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('home')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block>
-          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i> {{ $t('original') }} </b-button>
+          block
+        >
+          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>
+          {{ $t('original') }}
+        </b-button>
         <b-button
           @click="ForkAction('stop')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block>
-          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i> {{ $t('stop') }} </b-button>
+          block
+        >
+          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>
+          {{ $t('stop') }}
+        </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('down')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block>
-          <i class="bi bi-chevron-down"></i> {{ $t('down') }} </b-button>
+          block
+        >
+          <i class="bi bi-chevron-down"></i>
+          {{ $t('down') }}
+        </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
           @click="ForkAction('down_limit')"
-          block>
-          <i class="bi bi-chevron-bar-down"></i> {{ $t('down_limit_pose') }} </b-button>
+          block
+        >
+          <i class="bi bi-chevron-bar-down"></i>
+          {{ $t('down_limit_pose') }}
+        </b-button>
       </div>
       <el-drawer
         v-model="show_teach_page"
         direction="btt"
         size="90%"
         @close="TeachDrawerClosingHandle"
-        title="FORK TEACH">
+        title="FORK TEACH"
+      >
         <forkTeachEditor ref="fork_teach"></forkTeachEditor>
       </el-drawer>
     </div>
@@ -94,6 +117,7 @@ import { ForkAPI } from '@/api/VMSAPI';
 import { AGVStatusStore, ForkTeachStore, UserStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
 import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
+import bus from '@/event-bus';
 export default {
   components: {
     AdminFork, forkTeachEditor
@@ -166,6 +190,11 @@ export default {
       }
     }
   },
+  created() {
+    bus.on('open-fork-teach-table', () => {
+      this.ShowTeachView();
+    });
+  }
 }
 </script>
 <style scoped lang="scss">

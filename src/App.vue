@@ -1,18 +1,25 @@
 <template>
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
-  <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading" element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)">
+  <div
+    class="appcontainer"
+    style="width:100vw;height:100vh"
+    v-loading.fullscreen.lock="loading"
+    element-loading-text="GPM AGV"
+    element-loading-background="rgba(0,0,0, 0.8)"
+  >
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+      id="vcs-alarms"
+    >
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
+        ></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -31,7 +38,7 @@
 <script>
 import bus from '@/event-bus.js'
 import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
-import { SystemMsgStore, AGVStatusStore } from '@/store'
+import { SystemMsgStore, AGVStatusStore, UserStore } from '@/store'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
@@ -87,6 +94,9 @@ export default {
           border: alarms.length == 0 ? '' : any_alarm ? '5px solid red' : '5px solid gold'
         }
       }
+    },
+    IsVisitorUsing() {
+      return UserStore.getters.IsVisitor;
     }
   },
   watch: {
@@ -109,6 +119,40 @@ export default {
     bus.on('idle', (arg) => {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
+    })
+    bus.on('AGV-Notify-Message-Recieved', obj => {
+      const title = obj.title;
+      const message = obj.message;
+      const alarmCode = obj.alarmCode;
+      if (alarmCode == 10052) {
+        this.$swal.fire(
+          {
+            title: title,
+            text: `[${alarmCode}]${message}`,
+            icon: 'error',
+            showCancelButton: !this.IsVisitorUsing,
+            confirmButtonText: 'OK',
+            cancelButtonText: '前往設置',
+            customClass: 'my-sweetalert'
+          }).then(res => {
+            if (!res.isConfirmed) {
+              //show teach tools
+              bus.emit('on-fork-height-click')
+              bus.emit('open-fork-teach-table');
+            }
+          })
+        return;
+      }
+      //alert(message)
+      this.$swal.fire(
+        {
+          title: title,
+          text: `[${alarmCode}]${message}`,
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        })
     })
     setTimeout(() => {
       this.loading = false;

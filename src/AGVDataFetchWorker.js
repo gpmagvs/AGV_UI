@@ -107,6 +107,9 @@ function StartHubConnection() {
         }
         channel.postMessage(postData)
     })
+    HubConnection.on('AGV-Notify-Message', (obj) => {
+        bus.emit('AGV-Notify-Message-Recieved', obj)
+    })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
         bus.emit('hub-reconnecting');
