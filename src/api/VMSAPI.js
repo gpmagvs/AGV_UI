@@ -38,6 +38,11 @@ export var SystemAPI = {
   async CloseSystem() {
     var ret = await axios_entity.post('api/System/CloseSystem')
     return ret.data
+  },
+  /**車載電腦關機 */
+  async ShutdownPC() {
+    var ret = await axios_entity.post('api/System/ShutDownPC')
+    return ret.data
   }
 }
 

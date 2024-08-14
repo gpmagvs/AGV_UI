@@ -49,16 +49,21 @@
             SYSTEM
           </template>
           <b-dropdown-item @click="toggleFullScreen">
-            <i class="bi bi-fullscreen me-2"></i>全螢幕
+            <i class="bi bi-fullscreen me-2"></i>
+            {{isFullScreenNow?'離開全螢幕':'全螢幕'}}
+          </b-dropdown-item>
+          <b-dropdown-item @click="() => { uploadVisible = true }">
+            <i class="bi bi-pin-map me-2"></i> 車輛定位
+          </b-dropdown-item>
+
+          <b-dropdown-item @click="() => { uploadVisible = true }">
+            <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
+          </b-dropdown-item>
+          <b-dropdown-item @click="shutdown">
+            <i class="bi bi-power me-2"></i> 關機
           </b-dropdown-item>
           <b-dropdown-item v-if="false" @click="restart">
             <i class="bi bi-arrow-clockwise me-2"></i>重新啟動
-          </b-dropdown-item>
-          <b-dropdown-item v-if="false" @click="shutdown">
-            <i class="bi bi-power me-2"></i> 關機
-          </b-dropdown-item>
-          <b-dropdown-item @click="() => { uploadVisible = true }">
-            <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -77,7 +82,7 @@
 </template>
 <script>
 import { AGVStatusStore, UserStore, UIStore } from '@/store'
-import { Where_r_u } from '@/api/VMSAPI'
+import { Where_r_u, SystemAPI } from '@/api/VMSAPI'
 import uploader from '@/components/Upload'
 import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
@@ -91,7 +96,8 @@ export default {
       uploadVisible: false,
       IsUseChinese: true,
       APPVersionDisplay: '',
-      VersionShowUI: false
+      VersionShowUI: false,
+      isFullScreenNow: false
     }
   },
   computed: {
@@ -195,7 +201,7 @@ export default {
         }).then(res => {
           if (!res.isConfirmed)
             return;
-
+          SystemAPI.ShutdownPC();
         })
     },
     restart() {
@@ -212,9 +218,17 @@ export default {
             return;
 
         })
-    }
+    },
+    handleFullscreenChange() {
+      this.isFullScreenNow = !!document.fullscreenElement;
+    },
   },
   mounted() {
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
+  },
+  beforeUnmount() {
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+
   },
   props: {
     IsBackendDisconnected: {

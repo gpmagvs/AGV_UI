@@ -27,6 +27,7 @@
         ></b-progress-bar>
       </b-progress>
       <div class="d-flex px-2" style="color:grey">
+        [{{ i }}]
         {{ (GetBatteryStatus(i).Voltage/1000.0).toFixed(2) }}
         <span
           class="px-1"
