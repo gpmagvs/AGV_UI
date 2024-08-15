@@ -753,8 +753,10 @@ export default {
     bus.on('show-settings', async (tabIndex) => {
       if (tabIndex)
         this.selected_tab = tabIndex;
+      setTimeout(() => {
+        this.DownloadSettings();
+      }, 100);
       this.drawer_show = true
-      await this.DownloadSettings();
     })
     this.DownloadSettings();
   },

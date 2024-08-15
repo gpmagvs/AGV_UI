@@ -27,7 +27,10 @@
       height="500"
       v-loading="loading"
       :row-class-name="GetRowClassName"
+      style="width: 100%;"
+      row-key="Index"
     >
+      <el-table-column v-if="false" label="Index" prop="Index" width="80"></el-table-column>
       <el-table-column label="Tag" prop="Tag" width="80">
         <template #default="scope">
           <el-input type="number" :step="1" v-model="scope.row.Tag"></el-input>
@@ -40,35 +43,47 @@
       </el-table-column>
       <el-table-column label="是否交握" prop="HandShakeModeHandShakeMode">
         <template #default="scope">
-          <el-select v-model="scope.row.HandShakeModeHandShakeMode">
-            <el-option label="不需交握" :value="0"></el-option>
-            <el-option label="需交握" :value="1"></el-option>
-          </el-select>
+          <el-select-v2
+            v-model="scope.row.HandShakeModeHandShakeMode"
+            :options="[
+              { value: 0, label: '不需交握' },
+              { value: 1, label: '需交握' }
+            ]"
+          ></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column label="轉移模式" prop="CargoTransferMode">
         <template #default="scope">
-          <el-select v-model="scope.row.CargoTransferMode">
-            <el-option label="設備動作" :value="0"></el-option>
-            <el-option label="AGV動作" :value="1"></el-option>
-          </el-select>
+          <el-select-v2
+            v-model="scope.row.CargoTransferMode"
+            :options="[
+              { value: 0, label: '設備動作' },
+              { value: 1, label: 'AGV動作' }
+            ]"
+          ></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column label="交握通訊方式" prop="HandShakeConnectionMode">
         <template #default="scope">
-          <el-select v-model="scope.row.HandShakeConnectionMode">
-            <el-option label="光IO" :value="0"></el-option>
-            <el-option label="Modbus" :value="1"></el-option>
-            <el-option label="模擬" :value="2"></el-option>
-          </el-select>
+          <el-select-v2
+            v-model="scope.row.HandShakeConnectionMode"
+            :options="[
+              { value: 0, label: '光IO' },
+              { value: 1, label: 'Modbus' },
+              { value: 2, label: '模擬' }
+            ]"
+          ></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column label="牙叉伸出" prop="ForkArmExtend" v-if="IsForkAGV">
         <template #default="scope">
-          <el-select v-model="scope.row.ForkArmExtend ">
-            <el-option label="不需" :value="false"></el-option>
-            <el-option label="需要" :value="true"></el-option>
-          </el-select>
+          <el-select-v2
+            v-model="scope.row.ForkArmExtend"
+            :options="[
+              { value: false, label: '不需' },
+              { value: true, label: '需要' }
+            ]"
+          ></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column>
@@ -109,10 +124,13 @@ export default {
       var response = await DownloadEQHsSettings();
       //key:tag, value:{}
       var _list = [];
+      var index = 0;
       Object.keys(response).forEach(tagStr => {
         var opt = response[tagStr];
         const tagInt = Number.parseInt(tagStr)
         opt.Tag = tagInt;
+        opt.Index = index;
+        index += 1;
         _list.push(opt)
       });
       console.log(_list)
@@ -216,6 +234,7 @@ export default {
     }
   },
   mounted() {
+    console.log('mounted')
     this.DownloadConfiguration();
   },
   created() {
