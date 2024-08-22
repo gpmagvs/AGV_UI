@@ -13,9 +13,21 @@
     >
       <div class="d-flex flex-column w-50">
         <div class="d-flex flex-row">
-          <div class="label-item">極限SENSOR BYPASS</div>
-          <!-- <b-button size="sm" :disabled="!enabled">Chceked</b-button> -->
-          <el-checkbox v-model="hardware_limit_enable" :disabled="!enabled"></el-checkbox>
+          <div class="label-item">極限SENSOR狀態</div>
+          <el-tag
+            v-if="Vertical_Hardware_limit_bypass"
+            type="danger"
+            size="large"
+            effect="dark"
+            @click="ControlHardwareLimitSensor(true)"
+          >Bypass</el-tag>
+          <el-tag
+            v-else
+            type="success"
+            effect="dark"
+            size="large"
+            @click="ControlHardwareLimitSensor(false)"
+          >已開啟</el-tag>
         </div>
         <div class="d-flex flex-row my-2">
           <div class="label-item">Current Position</div>
@@ -114,7 +126,7 @@
 </template>
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
-import { AGVStatusStore, ForkTeachStore, UserStore } from '@/store'
+import { AGVStatusStore, ForkTeachStore, UserStore, DIOStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
 import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
 import bus from '@/event-bus';
@@ -130,6 +142,15 @@ export default {
       isZAxisMoving: false,
       show_teach_page: false,
       hardware_limit_enable: true
+    }
+  },
+  watch: {
+    Vertical_Hardware_limit_bypass(newValue) {
+      this.$notify({
+        message: `牙叉極限Sensor ${newValue ? '已經Bypass' : '作用中'}`,
+        type: newValue ? 'error' : 'success',
+        duration: 1000 // 持續時間，單位為毫秒
+      })
     }
   },
   computed: {
@@ -152,10 +173,30 @@ export default {
       if (this.IsGodUser)
         return true;
       return (this.IsUserLogin && !this.IsAuto && !this.IsOnline)
+    },
+    Vertical_Hardware_limit_bypass() {
+      return DIOStore.getters.Vertical_Hardware_limit_bypass;
     }
   },
   methods: {
     async ForkAction(action, pose = 0, speed = 0) {
+
+      var canceled = false;
+      if (action != 'home' && action != 'stop' && this.Vertical_Hardware_limit_bypass) {
+        await this.$swal.fire(
+          {
+            title: `極限Sensor目前為Bypass狀態，確定要進行[${action}]動作?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          }).then(res => {
+            canceled = !res.isConfirmed
+          })
+      }
+      if (canceled)
+        return;
+
       this.isZAxisMoving = true;
       var ret = await ForkAPI.Action(action, pose, speed);
       this.isZAxisMoving = false;
@@ -167,7 +208,26 @@ export default {
         })
       }
     },
+    ControlHardwareLimitSensor(active) {
+      if (!active) {
+        this.$swal.fire(
+          {
+            title: '確定要將Z軸極限Sensor Bypass?',
+            text: '',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            cancelButtonText: '取消',
+            customClass: 'my-sweetalert'
+          }).then(res => {
+            if (!res.isConfirmed)
+              return;
+            DIOStore.dispatch('ControlHardwareLimiSensor', true)
 
+          })
+      } else
+        DIOStore.dispatch('ControlHardwareLimiSensor', !active)
+    },
     ShowTeachView() {
       if (this.$refs['fork_teach'])
         this.$refs['fork_teach'].reload();

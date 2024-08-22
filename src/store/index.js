@@ -3,7 +3,7 @@ import { Login } from '@/api/UserAPI';
 import UserInfo from '@/ViewModels/UserInfo.js'
 import VMSData from '@/ViewModels/VMSData';
 import clsSensorStatus from '@/ViewModels/clsSensorStatus';
-import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest, MapAPI } from '@/api/VMSAPI.js'
+import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest, MapAPI, DIO } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
 import { ROS_STORE } from './ros_store';
 export default createStore({
@@ -692,6 +692,13 @@ export var DIOStore = createStore({
       var emo_pushed = !Inputs.find(reg => reg.Address == 'X0008').State
       return emo_pushed && switch_off;
 
+    },
+    Vertical_Hardware_limit_bypass: state => {
+      var vhlb = state.DIOStates.Outputs.find(reg => reg.Name == "Vertical_Hardware_limit_bypass");
+      if (vhlb)
+        return vhlb.State;
+      else
+        return false;
     }
 
   },
@@ -699,6 +706,13 @@ export var DIOStore = createStore({
     updateStatus(state, data) {
       state.DIOStates = data
     }
+  },
+  actions: {
+    async ControlHardwareLimiSensor({ commit, state }, active) {
+      var vhlb = state.DIOStates.Outputs.find(reg => reg.Name == "Vertical_Hardware_limit_bypass");
+      var address = vhlb.Address;
+      DIO.DO_State_Change(address, active);
+    },
   }
 })
 
