@@ -61,7 +61,6 @@
               @change="InputChanged"
               type="number"
               step="0.01"
-              min="0"
               v-if="scope.row.Layers[index] != undefined"
               v-model="scope.row.Layers[index].Value.Up_Pose"
             ></el-input>
@@ -74,7 +73,6 @@
               @change="InputChanged"
               type="number"
               step="0.01"
-              min="0"
               v-if="scope.row.Layers[index] != undefined"
               v-model="scope.row.Layers[index].Value.Down_Pose"
             ></el-input>

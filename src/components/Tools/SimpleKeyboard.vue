@@ -34,7 +34,7 @@ export default {
         onChange: this.onChange,
         onKeyPress: this.onKeyPress,
         layout: {
-          default: ["  back", "1 2 3", "4 5 6", "7 8 9", ". 0 enter"],
+          default: ["+ - back", "1 2 3", "4 5 6", "7 8 9", ". 0 enter"],
         },
         theme: "hg-theme-default hg-layout-numeric numeric-theme"
 
