@@ -42,7 +42,7 @@
         ></jw_switch>
       </div>
       <!--視窗與電腦控制-->
-      <div v-if="IsGodUser" class="system-control">
+      <div class="system-control">
         <b-dropdown variant="danger" right>
           <template #button-content>
             <i class="bi bi-three-dots-vertical me-1"></i>
@@ -50,13 +50,13 @@
           </template>
           <b-dropdown-item @click="toggleFullScreen">
             <i class="bi bi-fullscreen me-2"></i>
-            {{isFullScreenNow?'離開全螢幕':'全螢幕'}}
+            全螢幕切換
           </b-dropdown-item>
-          <b-dropdown-item @click="() => { uploadVisible = true }">
+          <b-dropdown-item v-if="IsGodUser" @click="HandleAGVLocating">
             <i class="bi bi-pin-map me-2"></i> 車輛定位
           </b-dropdown-item>
 
-          <b-dropdown-item @click="() => { uploadVisible = true }">
+          <b-dropdown-item v-if="IsGodUser" @click="() => { uploadVisible = true }">
             <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
           </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
@@ -82,7 +82,7 @@
 </template>
 <script>
 import { AGVStatusStore, UserStore, UIStore } from '@/store'
-import { Where_r_u, SystemAPI } from '@/api/VMSAPI'
+import { Localization, Where_r_u, SystemAPI } from '@/api/VMSAPI'
 import uploader from '@/components/Upload'
 import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
@@ -134,7 +134,7 @@ export default {
     },
     IsGodUser() {
       return UserStore.getters.IsGodUser
-    }
+    },
   },
   methods: {
     async where_r_u() {
@@ -182,10 +182,12 @@ export default {
       if (!document.fullscreenElement) {
         if (document.documentElement.requestFullscreen) {
           document.documentElement.requestFullscreen();
+          this.isFullScreenNow = true;
         }
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
+          this.isFullScreenNow = false;
         }
       }
     },
@@ -219,15 +221,37 @@ export default {
 
         })
     },
-    handleFullscreenChange() {
-      this.isFullScreenNow = !!document.fullscreenElement;
+    async HandleAGVLocating() {
+      var response = await Localization();//{Success,Message}
+      if (response.Success) {
+        this.$swal.fire(
+          {
+            title: '定位完成',
+            text: '',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      } else {
+        this.$swal.fire(
+          {
+            title: '定位失敗',
+            text: response.Message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
     },
+
   },
   mounted() {
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   },
   beforeUnmount() {
-    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+    //document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
 
   },
   props: {

@@ -36,11 +36,11 @@
       </div>
       <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
         <label for>充電電流:</label>
-        {{ GetBatteryStatus(i).ChargeCurrent }}
+        {{ ( GetBatteryStatus(i).ChargeCurrent/1000.0).toFixed(2) }}
         <span
           class="px-1"
           style="font-size:smaller;"
-        >mA</span>
+        >A</span>
       </div>
     </div>
     <el-drawer

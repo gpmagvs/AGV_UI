@@ -46,6 +46,23 @@ export var SystemAPI = {
   }
 }
 
+
+/**
+ * 會嘗試使用當前所在TAG之 X Y 座標與BarcodeReader角度讀值進行定位
+ */
+export async function Localization() {
+  try {
+    var ret = await axios_entity.post(`api/AGV/LocalizationWithCurrentTag`)
+    return ret.data;
+  }
+  catch (ex) {
+    return {
+      Success: false,
+      Message: ex.message
+    }
+  }
+}
+
 export async function EMO() {
   var ret = await axios_entity.post('api/VMS/EMO')
   return ret
