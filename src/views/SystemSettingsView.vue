@@ -49,22 +49,13 @@
                     v-model="settings.ActionTimeout"
                   ></el-input-number>
                 </el-form-item>
-                <div v-if="IsInspectionAGV" class="text-start w-100 border-bottom">
-                  <b>巡檢AGV</b>
-                </div>
-                <el-form-item v-if="IsInspectionAGV" label="初始化檢查電池鎖定">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"
-                  ></el-switch>
-                </el-form-item>
               </el-form>
             </div>
           </b-tab>
           <b-tab title="安全防護">
             <div class="tabpage border p-2">
               <div class="text-start w-100">
-                <el-form :model="settings" label-width="150" label-position="left">
+                <el-form :model="settings" label-width="210" label-position="left">
                   <div class="w-100 border-bottom">
                     <b>安全Sensor防護</b>
                   </div>
@@ -83,6 +74,12 @@
                   <el-form-item label="車體限動Sensor Bypass">
                     <el-switch
                       v-model="settings.SensorBypass.AGVBodyLimitSensorBypass"
+                      @change="HandleParamChanged"
+                    ></el-switch>
+                  </el-form-item>
+                  <el-form-item v-if="IsForkAGV" label="牙叉前方障礙物Sensor Bypass">
+                    <el-switch
+                      v-model="settings.SensorBypass.ForkFrontendObsSensorBypass"
                       @change="HandleParamChanged"
                     ></el-switch>
                   </el-form-item>
@@ -238,10 +235,88 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab v-if="IsInspectionAGV" title="電池交換">
-            <div class="tabpage border p-2"></div>
+          <b-tab v-if="IsInspectionAGV" title="巡檢AGV">
+            <div class="tabpage border p-2">
+              <el-form label-width="250" label-position="left">
+                <div class="text-start w-100 border-bottom">
+                  <b>初始化</b>
+                </div>
+                <el-form-item label="初始化檢查電池鎖定">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"
+                  ></el-switch>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom">
+                  <b>電池交換</b>
+                </div>
+                <el-form-item label="需交換電池最小電量">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="0"
+                    :max="100"
+                    v-model="settings.InspectionAGV.ExchangeBatLevelThresholdVal"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交換電池數量">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="2"
+                    v-model="settings.InspectionAGV.BatteryChangeNum"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP1">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP1"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP2">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP2"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP3">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP3"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP4">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP4"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP5">
+                  <el-input
+                    @change="HandleParamChanged"
+                    type="number"
+                    :min="1"
+                    :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP5"
+                  ></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
           </b-tab>
-          <b-tab title="設備取/放貨">
+          <b-tab v-if="!IsInspectionAGV" title="設備取/放貨">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="退出設備須需要詢問派車">
@@ -571,7 +646,7 @@
               <IOSetting></IOSetting>
             </div>
           </b-tab>
-          <b-tab title="設備交握設定">
+          <b-tab v-if="!IsInspectionAGV" title="設備交握設定">
             <div class="tabpage border p-2">
               <EQHandshakeConfiguration
                 :SyncFromAGVS="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
@@ -624,18 +699,18 @@ import EQHandshakeConfiguration from '@/components/EQHandshakeConfiguration.vue'
 
 class ForkLifer {
   constructor() {
-    this.forkLiferEnable = true;
-    this.vehicleLengthWithForkArmExtend = 160.0;
-    this.uplimitPose = 35;
-    this.downlimitPose = 0;
-    this.uplimitPoseSettingMax = 35;
-    this.isPinMounted = true;
-    this.isForkIsExtendable = true;
-    this.noWaitForkArmFinishAndMoveOutInWorkStation = true;
-    this.noWaitParkingFinishAndForkGoHomeWhenBackToSecondary = true;
-    this.noWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation = true;
-    this.forkSaftyStrategy = 'UNDER_SAFTY_POSITION';
-    this.saftyPositionHeight = 20;
+    this.ForkLifer_Enable = true;
+    this.VehielLengthWitchForkArmExtend = 160.0;
+    this.UplimitPose = 35;
+    this.DownlimitPose = 0;
+    this.UplimitPoseSettingMax = 35;
+    this.IsPinMounted = true;
+    this.IsForkIsExtendable = true;
+    this.NoWaitForkArmFinishAndMoveOutInWorkStation = true;
+    this.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary = true;
+    this.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation = true;
+    this.ForkSaftyStrategy = 'UNDER_SAFTY_POSITION';
+    this.SaftyPositionHeight = 20;
     this.initParams = {};
   }
 }
@@ -712,7 +787,11 @@ export default {
           After_EQ_Busy_Off: false
         },
         SensorBypass: {
-          BeltSensorBypass: true
+          BeltSensorBypass: false,
+          LeftSideLaserBypass: false,
+          RightSideLaserBypass: false,
+          AGVBodyLimitSensorBypass: false,
+          ForkFrontendObsSensorBypass: false
         },
         EQHSTimeouts: {
           TA1_Wait_L_U_REQ_ON: 5,
@@ -722,7 +801,18 @@ export default {
           TA5_Wait_L_U_REQ_OFF: 5
         },
         InspectionAGV: {
-          CheckBatteryLockStateWhenInit: false
+          CheckBatteryLockStateWhenInit: false,
+          ExchangeBatLevelThresholdVal: 100,
+          MeasureSimulation: true,
+          BatteryExhcnageSimulation: true,
+          BatteryChangeNum: 1,
+          BatExchangeTimeout: {
+            TP1: 60,
+            TP2: 10,
+            TP3: 30,
+            TP4: 30,
+            TP5: 2
+          }
         },
         ForkAGV: new ForkLifer()
       },

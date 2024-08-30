@@ -200,10 +200,33 @@ export default {
           showCancelButton: true,
           confirmButtonText: 'OK',
           customClass: 'my-sweetalert'
-        }).then(res => {
+        }).then(async (res) => {
           if (!res.isConfirmed)
             return;
-          SystemAPI.ShutdownPC();
+          await SystemAPI.ShutdownPC();
+          let timerInterval;
+          this.$swal.fire({
+            title: "PC Close!",
+            icon: 'warning',
+            html: "PC will close in <b></b> seconds...",
+            timer: 5000,
+            timerProgressBar: true,
+            didOpen: () => {
+              this.$swal.showLoading();
+              const timer = this.$swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${(this.$swal.getTimerLeft() / 1000).toFixed(1)}`;
+              }, 1000);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === this.$swal.DismissReason.timer) {
+              console.log("I was closed by the timer");
+            }
+          });
         })
     },
     restart() {
