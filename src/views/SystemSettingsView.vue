@@ -493,6 +493,17 @@
                     v-model="settings.ForkAGV.SaftyPositionHeight"
                   ></el-input-number>
                 </el-form-item>
+                <el-form-item label="待命點高度(cm)">
+                  <el-input-number
+                    size="small"
+                    :step="0.1"
+                    :precision="1"
+                    :min="-100"
+                    :max="100"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.StandbyPose"
+                  ></el-input-number>
+                </el-form-item>
                 <el-form-item label="允許走行之牙叉位置限制">
                   <el-select
                     @change="HandleParamChanged"
@@ -501,6 +512,13 @@
                     <el-option label="牙叉位於原點" :value="0"></el-option>
                     <el-option label="牙叉低於安全高度" :value="1"></el-option>
                   </el-select>
+                </el-form-item>
+
+                <el-form-item label="使用待命點為動作原點">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HomePoseUseStandyPose"
+                  ></el-switch>
                 </el-form-item>
                 <el-form-item label="Z軸皮帶檢知Bypass">
                   <el-switch
@@ -703,6 +721,8 @@ class ForkLifer {
     this.VehielLengthWitchForkArmExtend = 160.0;
     this.UplimitPose = 35;
     this.DownlimitPose = 0;
+    this.StandbyPose = 20;
+    this.HomePoseUseStandyPose = true;
     this.UplimitPoseSettingMax = 35;
     this.IsPinMounted = true;
     this.IsForkIsExtendable = true;

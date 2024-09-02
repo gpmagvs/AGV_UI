@@ -55,6 +55,9 @@
           <b-dropdown-item v-if="IsGodUser" @click="HandleAGVLocating">
             <i class="bi bi-pin-map me-2"></i> 車輛定位
           </b-dropdown-item>
+          <b-dropdown-item v-if="IsGodUser" @click="HandleSickLidarLocBtnClick">
+            <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website
+          </b-dropdown-item>
 
           <b-dropdown-item v-if="IsGodUser" @click="() => { uploadVisible = true }">
             <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
@@ -268,6 +271,9 @@ export default {
           })
       }
     },
+    HandleSickLidarLocBtnClick() {
+      window.open('http://192.168.1.1');
+    }
 
   },
   mounted() {
