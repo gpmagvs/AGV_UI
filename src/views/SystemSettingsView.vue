@@ -622,10 +622,19 @@
           </b-tab>
           <b-tab title="音效">
             <div class="tabpage border p-2 souns-page">
-              <div class="border-button">
-                <b-button variant="danger">停止播放</b-button>
+              <div class="w-100 border-bottom text-start">
+                <b>音效模組資訊</b>
               </div>
-              <el-form label-width="100px" label-position="left">
+              <el-form class="my-2" label-width="100px" label-position="left">
+                <el-form-item label="模組">
+                  <el-tag effect="dark" size="large">{{BuzzerState.player}}</el-tag>
+                </el-form-item>
+              </el-form>
+              <div class="w-100 border-bottom text-start my-3">
+                <b>音效測試與設定</b>
+              </div>
+
+              <el-form class="my-2" label-width="100px" label-position="left">
                 <el-form-item label="Alarm">
                   <div class="d-flex flex-row">
                     <i class="bi bi-play-circle" @click="PlayAlarm"></i>
@@ -645,6 +654,9 @@
                   </div>
                 </el-form-item>
               </el-form>
+              <div class="border-button">
+                <b-button variant="danger">停止播放</b-button>
+              </div>
             </div>
           </b-tab>
           <b-tab v-if="!IsInspectionAGV" title="Cst Reader">
@@ -857,7 +869,19 @@ export default {
         y: (_data.y / 9.8).toFixed(2),
         z: (_data.z / 9.8).toFixed(2),
       }
-    }
+    },
+    BuzzerState() {
+      const state = AGVStatusStore.state.AGVStatus.BuzzerState;
+      if (state)
+        return state;
+      else {
+        return {
+          isPlaying: false,
+          player: 'ros-sound-play',
+          playingAudio: '',
+        }
+      }
+    },
   },
   mounted() {
     bus.on('show-settings', async (tabIndex) => {

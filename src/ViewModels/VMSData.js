@@ -80,6 +80,11 @@ class VMSData {
   HandshakeStatus = new clsEQHandshake()
   OrderInfo = new clsOrderInfo()
   IMUMaxMinValRecord = new clsMaxMinGvalDataSaveModel()
+  BuzzerState = {
+    isPlaying: false,
+    player: 'ros-sound-play',
+    playingAudio: 'alarm',
+  }
 }
 export class clsOrderInfo {
   DestineName = ""

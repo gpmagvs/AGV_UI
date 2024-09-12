@@ -2,12 +2,12 @@ var param = {
   /**後端Server URL */
   get backend_host() {
     if (process.env.NODE_ENV == 'development') {
+      return 'http://192.168.206.134:7025'
       return 'http://192.168.0.105:7025'
       return 'http://192.168.0.55:7025'
       return 'http://127.0.0.1:7025'
       return 'http://192.168.0.101:7025'
       return 'http://192.168.0.106:7025'
-      return 'http://192.168.206.129:7025'
       return 'http://192.168.1.100:7025'
       return 'http://10.22.141.218:7025'
       return 'http://192.168.0.200:7000'
