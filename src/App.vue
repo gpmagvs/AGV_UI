@@ -47,6 +47,7 @@ import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNot
 import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
+import { CargoStatusManualCheckDone } from '@/api/VMSAPI.js'
 
 export default {
   components: {
@@ -120,6 +121,52 @@ export default {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
     })
+    bus.on('ManualCheckCargoStatus', model => {
+      // this.$swal.fire(
+      //   {
+      //     title: 'ManualCheckCargoStatus',
+      //     text: JSON.stringify(model),
+      //     icon: 'warning',
+      //     showCancelButton: false,
+      //     confirmButtonText: '完成確認',
+      //     customClass: 'my-sweetalert'
+      //   }).then(res => {
+      //     CargoStatusManualCheckDone();
+      //   })
+      let timerInterval;
+      this.$swal.fire({
+        title: "貨物狀態確認(Cargo Status Confirm)",
+        icon: 'warning',
+        html: `<br/>倒數計時結束後將自動完成確認<br/>Confirmation will be automatically completed after the countdown ends.<br/> <b></b> `,
+        // html: `<p>${JSON.stringify(model)}</p>` + `<br/>倒數計時結束後將自動完成確認<br/>Confirmation will be automatically completed after the countdown ends.<br/> <b></b> `,
+        timer: model.Timeout * 1000,
+        timerProgressBar: true,
+        showCancelButton: true, // 顯示取消按鈕
+        cancelButtonText: '完成確認', // 取消按鈕文本
+        cancelButtonClass: 'bg-primary text-light',
+        allowOutsideClick: false, // 禁止點擊遮罩關閉對話框
+        didOpen: () => {
+          this.$swal.showLoading();
+          const timer = this.$swal.getPopup().querySelector("b");
+          timerInterval = setInterval(() => {
+            timer.textContent = `${(this.$swal.getTimerLeft() / 1000).toFixed(1)}`;
+          }, 1000);
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("確認按鈕被點擊");
+          // 在這裡可以執行確認後的操作
+        } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+          CargoStatusManualCheckDone();
+          clearInterval(timerInterval); // 中斷倒計時
+        }
+      });
+
+    });
+
     bus.on('AGV-Notify-Message-Recieved', obj => {
       const title = obj.title;
       const message = obj.message;

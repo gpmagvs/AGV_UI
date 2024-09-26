@@ -84,16 +84,6 @@ const throttledHandleBackendData = Throttle(function (event) {
     }
 }, 50);
 
-function FetchDataUsWebsocket() {
-    const backend_websocket_worker = new Worker('/websocket_worker.js')
-    backend_websocket_worker.onmessage = (event) => throttledHandleBackendData(event)
-    backend_websocket_worker.postMessage({ command: 'connect', ws_url: backend_ws_host + `/ws?user_id=${user_id}` });
-    window.addEventListener('beforeunload', function (event) {
-        backend_websocket_worker.postMessage({ command: 'disconnect' });
-    });
-}
-
-
 function StartHubConnection() {
     HubConnection = new signalR.HubConnectionBuilder()
         .withUrl(`${param.backend_host}/FrontendHub`)
@@ -109,6 +99,9 @@ function StartHubConnection() {
     })
     HubConnection.on('AGV-Notify-Message', (obj) => {
         bus.emit('AGV-Notify-Message-Recieved', obj)
+    })
+    HubConnection.on('ManualCheckCargoStatus', (obj) => {
+        bus.emit('ManualCheckCargoStatus', obj)
     })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');

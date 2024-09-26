@@ -73,6 +73,11 @@ export async function Where_r_u() {
   return ret.data
 }
 
+export async function CargoStatusManualCheckDone() {
+  var ret = await axios_entity.post('api/VMS/CargoStatusManualCheckDone?userName=website')
+  return ret.data
+}
+
 export async function Initialize() {
   var ret = await axios_entity.post('api/VMS/Initialize')
   return ret.data

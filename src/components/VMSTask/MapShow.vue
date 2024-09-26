@@ -2,16 +2,12 @@
   <div class="map-show border py-2 px-2 d-flex flex-row bg-light">
     <div class="w-100">
       <div class="my-1 d-flex flex-row justify-content-between">
-        <el-tooltip content="Go to Location Of AGV">
-          <el-button @click="OriginalZomm()">
-            <i class="bi bi-house-door-fill"></i>
-          </el-button>
-        </el-tooltip>
-        <el-tooltip content="Go to Location Of AGV">
-          <el-button @click="GoToAGVLoc()">
-            <i class="bi bi-geo-alt-fill"></i>
-          </el-button>
-        </el-tooltip>
+        <el-button @click="OriginalZomm()">
+          <i class="bi bi-house-door-fill"></i>
+        </el-button>
+        <el-button @click="GoToAGVLoc()">
+          <i class="bi bi-geo-alt-fill"></i>
+        </el-button>
         <el-button
           type="primary"
           :loading="reloadMapRequesting"
