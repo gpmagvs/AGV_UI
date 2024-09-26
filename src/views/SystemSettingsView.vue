@@ -708,6 +708,11 @@
               </div>
             </div>
           </b-tab>
+          <b-tab title="手動檢查貨況">
+            <div class="tabpage border p-2">
+              <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
+            </div>
+          </b-tab>
         </b-tabs>
       </div>
     </el-drawer>
@@ -726,6 +731,7 @@ import IOSetting from '@/components/IOSetting.vue'
 import param from '@/gpm_param'
 import axios from 'axios'
 import EQHandshakeConfiguration from '@/components/EQHandshakeConfiguration.vue'
+import ManualCheckCargoStatus from '@/components/SystemSettings/ManualCheckCargoStatus.vue'
 
 class ForkLifer {
   constructor() {
@@ -750,7 +756,7 @@ class ForkLifer {
 
 export default {
   components: {
-    uploader, IOSetting, EQHandshakeConfiguration
+    uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus
   },
   data() {
     return {
@@ -846,7 +852,18 @@ export default {
             TP5: 2
           }
         },
-        ForkAGV: new ForkLifer()
+        ForkAGV: new ForkLifer(),
+        ManualCheckCargoStatus: {
+          Enabled: false,
+          CheckPoints: [
+            // {
+            //   "Enabled": true,
+            //   "CheckPointTag": 29,
+            //   "Timeout": 30,
+            //   "TriggerMoment": 0
+            // }
+          ]
+        }
       },
       normal_stations: [],
       last_setting_val_set_success_time: '1970/1/1 00:00:00'
@@ -1075,6 +1092,20 @@ export default {
       margin-right: 5px;
       cursor: pointer;
     }
+  }
+
+  /* Custom scrollbar styles */
+  &::-webkit-scrollbar {
+    width: 16px; /* Increase scrollbar width */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(164, 164, 164); /* Change scrollbar color */
+    border-radius: 16px; /* Rounded corners */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #5c5c5c; /* Track color */
   }
 }
 

@@ -43,6 +43,14 @@ export var SystemAPI = {
   async ShutdownPC() {
     var ret = await axios_entity.post('api/System/ShutDownPC')
     return ret.data
+  },
+  async SaveManualCheckCargoStatus(settings) {
+    try {
+      await axios_entity.post('api/System/SaveManualCheckCargoConfiguration', settings)
+      return { confirm: true, message: '儲存成功' };
+    } catch (error) {
+      return { confirm: false, message: error.message };
+    }
   }
 }
 
