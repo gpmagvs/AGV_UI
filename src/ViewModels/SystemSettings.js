@@ -180,9 +180,9 @@ class SystemSettings {
                 SoundPlayType: 1
             },
 
-            get audioFileNames() { // {{ edit_1 }} Create a getter for audio file names
+            get audioFileNames() {
                 return Object.fromEntries(
-                    Object.entries(this.audioPathes).map(([key, value]) => [key, value.split('/').pop().split('.')[0]])
+                    Object.entries(this.audioPathes).map(([key, value]) => [key, value.split('/').pop()])
                 );
             }
         };

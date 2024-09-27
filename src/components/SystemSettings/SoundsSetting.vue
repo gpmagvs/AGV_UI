@@ -70,11 +70,11 @@
                 <el-button
                   v-if="playingStateStore[key]"
                   circle
-                  type="primary"
+                  type="danger"
                   @click="stopPlaySound(key)"
                   style="margin-left: 10px;"
                 >
-                  <i class="bi bi-pause-fill"></i>
+                  <i class="bi bi-stop-fill"></i>
                 </el-button>
                 <el-button
                   v-else
@@ -104,6 +104,7 @@ import { AGVStatusStore, SystemSettingsStore } from '@/store'
 import _ from 'lodash';
 import SystemSettings from '@/ViewModels/SystemSettings';
 import { BuzzerOff, SoundsAPI } from '@/api/VMSAPI';
+import param from '@/gpm_param';
 export default {
   data() {
     return {
@@ -139,6 +140,7 @@ export default {
       },
       showSelectSoundDrawer: false,
       selectSoundKey: '',
+      audioPlayer: new Audio(),
     }
   },
   computed: {
@@ -175,12 +177,47 @@ export default {
       Object.keys(this.playingStateStore).forEach(key => {
         this.playingStateStore[key] = false;
       });
-      const audioPath = this.sounds.audioPathes[key];
-      await SoundsAPI.PlayAudio(audioPath);
+      // const audioPath = this.sounds.audioPathes[key];
+      // await SoundsAPI.PlayAudio(audioPath);
+      // 創建一個新的 Audio 對象
+
+      // Stop current audio if playing
+      if (!this.audioPlayer.paused) {
+        this.audioPlayer.pause();
+        this.audioPlayer.currentTime = 0;
+      }
+
+      const audioUrl = `${param.backend_host}/audios/${this.sounds.audioFileNames[key]}`
+      // 播放音效
+      // Set new audio source
+      this.audioPlayer.src = audioUrl;
+
+      // Play audio
+      this.audioPlayer.play().catch(error => {
+        console.error('音效播放失敗:', error);
+        this.$notify({
+          title: '音效播放',
+          message: `[${this.translateMap[key]}] 音效播放失敗`,
+          type: 'error'
+        });
+      });
+
+      // Set up onended event
+      this.audioPlayer.onended = () => {
+        this.playingStateStore[key] = false;
+      };
+
+      // Notify user
+      this.$notify({
+        title: '音效播放',
+        message: `正在播放 [${this.translateMap[key]}] 音效`,
+        type: 'info'
+      });
       this.playingStateStore[key] = true;
     },
     async stopPlaySound(key) {
-      await BuzzerOff();
+      this.audioPlayer.pause();
+      this.audioPlayer.currentTime = 0;
       this.playingStateStore[key] = false;
     },
     selectSound(key) {
