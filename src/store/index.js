@@ -6,6 +6,8 @@ import clsSensorStatus from '@/ViewModels/clsSensorStatus';
 import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest, MapAPI, DIO } from '@/api/VMSAPI.js'
 import bus from '@/event-bus';
 import { ROS_STORE } from './ros_store';
+import SystemSettings from '@/ViewModels/SystemSettings'
+import _ from 'lodash'
 export default createStore({
   state: {
   },
@@ -380,9 +382,7 @@ export var AGVStatusStore = createStore({
 /**系統參數STORE */
 export var SystemSettingsStore = createStore({
   state: {
-    Settings: {
-
-    }
+    Settings: new SystemSettings()
   },
   getters: {
     Settings: state => {
@@ -391,7 +391,11 @@ export var SystemSettingsStore = createStore({
   },
   mutations: {
     setSettings(state, settings) {
-      state.Settings = settings
+      let _settingObj = new SystemSettings();
+      _.merge(_settingObj, settings)
+      console.log(_settingObj)
+      state.Settings = _settingObj
+      //state.Settings = settings
     }
   }
 })

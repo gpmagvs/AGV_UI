@@ -16,6 +16,12 @@ export var SoundsAPI = {
   },
   Move: async () => {
     await axios_entity.get('api/Sounds/Moving')
+  },
+  PlayAudio: async (audioPath) => {
+    await axios_entity.post(`api/Sounds/aplaytest?audioPath=${audioPath}`)
+  },
+  SaveAudioPath: async (pathes) => {
+    await axios_entity.post(`api/Sounds/SaveAudioPath`, pathes)
   }
 }
 /**系統相關api */

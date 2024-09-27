@@ -622,7 +622,8 @@
           </b-tab>
           <b-tab title="音效">
             <div class="tabpage border p-2 souns-page">
-              <div class="w-100 border-bottom text-start">
+              <SoundsSetting></SoundsSetting>
+              <!-- <div class="w-100 border-bottom text-start">
                 <b>音效模組資訊</b>
               </div>
               <el-form class="my-2" label-width="100px" label-position="left">
@@ -656,7 +657,7 @@
               </el-form>
               <div class="border-button">
                 <b-button variant="danger">停止播放</b-button>
-              </div>
+              </div>-->
             </div>
           </b-tab>
           <b-tab v-if="!IsInspectionAGV" title="Cst Reader">
@@ -732,7 +733,8 @@ import param from '@/gpm_param'
 import axios from 'axios'
 import EQHandshakeConfiguration from '@/components/EQHandshakeConfiguration.vue'
 import ManualCheckCargoStatus from '@/components/SystemSettings/ManualCheckCargoStatus.vue'
-
+import SoundsSetting from '@/components/SystemSettings/SoundsSetting.vue'
+import SystemSettings from '@/ViewModels/SystemSettings'
 class ForkLifer {
   constructor() {
     this.ForkLifer_Enable = true;
@@ -756,115 +758,13 @@ class ForkLifer {
 
 export default {
   components: {
-    uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus
+    uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus, SoundsSetting
   },
   data() {
     return {
       drawer_show: false,
       selected_tab: 0,
-      settings: {
-        LogFolder: "GPM_AGV_LOG",
-        AgvType: 1,
-        SID: "001:001:001",
-        VehicleName: "AGV_001",
-        SimulationMode: true,
-        WagoSimulation: true,
-        ActiveTrafficControl: false,
-        EQHandshakeBypass: false,
-        CST_READER_TRIGGER: true,
-        Cst_ID_Not_Match_Action: 0,//0:上報讀到的ID 1:向派車查詢虛擬ID
-        Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo: false,
-        Auto_Read_CST_ID_When_No_Data_But_Has_Cargo: false,
-        ForkLifer_Enable: false,
-        LDULD_Task_No_Entry: false,
-        BuzzerOn: true,
-        LastVisitedTag: 17,
-        ForbidToOnlineTags: [
-          49
-        ],
-        CutOffChargeRelayVoltageThreshodlval: 28800,
-        LDULD_Laser_Mode: 0,
-        Spin_Laser_Mode: 5,
-        LDULD_FrontBackLaser_Bypass: true,
-        FrontLighterFlashWhenNormalMove: true,
-        WebKeyboardMoveControl: false,
-        PlayHandshakingMusic: false,
-        Connections: {
-          RosBridge: {
-            IP: "192.168.235.130",
-            Port: 9090
-          },
-          Wago: {
-            IP: "127.0.0.1",
-            Port: 9999
-          },
-          AGVS: {
-            IP: "127.0.0.1",
-            Port: 5036
-          }
-        },
-        VMSParam: {
-          LocalIP: "127.0.0.1",
-          Protocol: 1,
-          MapUrl: "http://127.0.0.1:5216/api/Map"
-        },
-        MapParam: {
-          LocalMapFileName: "/temp/Map_UMTC_AOI.json"
-        },
-        EQHandshakeMethod: 2,
-        TagParkingTolerance: 5,
-        ActionTimeout: 5,
-        CstReadFailAction: 0,////0:狀態保持IDLE 1:狀態DOWN
-        LOAD_OBS_DETECTION: {
-          Enable_Load: false,
-          Enable_UnLoad: false,
-          Duration: 4
-        },
-        CST_EXIST_DETECTION: {
-          Before_In: false,
-          After_EQ_Busy_Off: false
-        },
-        SensorBypass: {
-          BeltSensorBypass: false,
-          LeftSideLaserBypass: false,
-          RightSideLaserBypass: false,
-          AGVBodyLimitSensorBypass: false,
-          ForkFrontendObsSensorBypass: false
-        },
-        EQHSTimeouts: {
-          TA1_Wait_L_U_REQ_ON: 5,
-          TA2_Wait_EQ_READY_ON: 15,
-          TA3_Wait_EQ_BUSY_ON: 15,
-          TA4_Wait_EQ_BUSY_OFF: 90,
-          TA5_Wait_L_U_REQ_OFF: 5
-        },
-        InspectionAGV: {
-          CheckBatteryLockStateWhenInit: false,
-          ExchangeBatLevelThresholdVal: 100,
-          MeasureSimulation: true,
-          BatteryExhcnageSimulation: true,
-          BatteryChangeNum: 1,
-          BatExchangeTimeout: {
-            TP1: 60,
-            TP2: 10,
-            TP3: 30,
-            TP4: 30,
-            TP5: 2
-          }
-        },
-        ForkAGV: new ForkLifer(),
-        ManualCheckCargoStatus: {
-          Enabled: false,
-          CheckPoints: [
-            // {
-            //   "Enabled": true,
-            //   "CheckPointTag": 29,
-            //   "Timeout": 30,
-            //   "TriggerMoment": 0
-            // }
-          ]
-        }
-      },
+      settings: new SystemSettings(),
       normal_stations: [],
       last_setting_val_set_success_time: '1970/1/1 00:00:00'
     }
@@ -1093,7 +993,14 @@ export default {
       cursor: pointer;
     }
   }
+}
 
+.tabpage {
+  // height: 85vh;
+  overflow-y: auto;
+  height: 76vh;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
   /* Custom scrollbar styles */
   &::-webkit-scrollbar {
     width: 16px; /* Increase scrollbar width */
@@ -1107,14 +1014,6 @@ export default {
   &::-webkit-scrollbar-track {
     background: #5c5c5c; /* Track color */
   }
-}
-
-.tabpage {
-  // height: 85vh;
-  overflow-y: auto;
-  height: 76vh;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
 }
 
 .io-setting {

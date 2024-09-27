@@ -3,6 +3,7 @@ var param = {
   get backend_host() {
     if (process.env.NODE_ENV == 'development') {
       return 'http://127.0.0.1:7025'
+      return 'http://172.20.10.2:7025'
       return 'http://192.168.0.105:7025'
       return 'http://192.168.0.55:7025'
       return 'http://192.168.206.134:7025'
