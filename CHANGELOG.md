@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.33.34](https://github.com/gpmagvs/AGV_UI/compare/v1.33.33...v1.33.34) (2024-09-27)
+
 ### [1.33.33](https://github.com/gpmagvs/AGV_UI/compare/v1.33.32...v1.33.33) (2024-09-27)
 
 ### [1.33.32](https://github.com/gpmagvs/AGV_UI/compare/v1.33.31...v1.33.32) (2024-09-27)
