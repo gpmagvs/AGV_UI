@@ -5,9 +5,13 @@
       :element-loading-spinner="false"
       :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
       ref="agvc_ctrl_pnl"
-      class="agvc-control-panel keys pt-4 p-3"
-      style="width:400px">
-      <div v-show="!enabled" class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
+      class="agvc-control-panel keys"
+      style="width:400px"
+    >
+      <div
+        v-show="!enabled"
+        class="disable-notify text-start my-2"
+      >{{ $t('agv_control_notify_text') }}</div>
       <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
@@ -21,7 +25,8 @@
             v-model="rotation_speed"
             :step="0.01"
             :max="0.3"
-            :min="0.01"></el-input-number>
+            :min="0.01"
+          ></el-input-number>
         </div>
       </div>
       <table class="w-100">
@@ -82,7 +87,8 @@
       <div
         @click="speed_modifyable = !speed_modifyable"
         style="height:20px;width:100px"
-        class="bg-light"></div>
+        class="bg-light"
+      ></div>
     </div>
   </div>
 </template>
@@ -202,7 +208,6 @@ export default {
 </script>
 <style scoped lang="scss">
 .agv-control-panel-container {
-
   .el-loading-spinner .el-loading-text {
     color: var(--el-color-primary);
     margin: 3px 0;
@@ -251,13 +256,10 @@ export default {
           }
 
           &:active {
-            background-color: red;
+            background-color: rgb(0, 123, 255);
             color: white;
           }
-
-
         }
-
       }
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="agv-control">
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row justify-content-center">
       <div class="information" style="width:260px">
         <el-form label-position="top">
           <div class="row div-container mx-1 my-2">
@@ -11,15 +11,15 @@
                 size="sm"
                 disabled
                 v-model="vms_data.BCR_State_MoveBase.tagID"
-                :state="vms_data.BCR_State_MoveBase.tagID > 0">
-              </b-form-input>
+                :state="vms_data.BCR_State_MoveBase.tagID > 0"
+              ></b-form-input>
               <b-form-input
                 v-else
                 size="sm"
                 disabled
                 v-model="vms_data.Last_Visited_Tag"
-                :state="vms_data.Last_Visited_Tag > 0">
-              </b-form-input>
+                :state="vms_data.Last_Visited_Tag > 0"
+              ></b-form-input>
             </el-form-item>
           </div>
           <div class="row div-container mx-1 my-2">
@@ -53,7 +53,9 @@
           <!-- <b-button variant="primary" @click="FindTagBtnHandler">Auto Find Tag</b-button> -->
         </el-form>
       </div>
-      <agvc_control_panel></agvc_control_panel>
+      <div class="mx-2">
+        <agvc_control_panel></agvc_control_panel>
+      </div>
     </div>
   </div>
 </template>
@@ -149,7 +151,6 @@ export default {
 
 <style scoped lang="scss">
 .agv-control {
-
   .information {
     .div-container {
       // background-color: #f1f1f1;

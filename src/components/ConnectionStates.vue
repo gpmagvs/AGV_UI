@@ -5,19 +5,22 @@
         <tr>
           <td>
             <div>
-              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i> {{ $t('ConnectionStates.AGVS') }}
+              <i v-bind:class="vms_state" class="bi bi-circle-fill"></i>
+              {{ $t('ConnectionStates.AGVS') }}
             </div>
           </td>
           <td>
             <div>
-              <i v-bind:class="rosbridge_state" class="bi bi-circle-fill"></i> {{ $t('ConnectionStates.AGVControlSys') }}
+              <i v-bind:class="rosbridge_state" class="bi bi-circle-fill"></i>
+              {{ $t('ConnectionStates.AGVControlSys') }}
             </div>
           </td>
         </tr>
         <tr>
           <td>
             <div>
-              <i v-bind:class="wago_state" class="bi bi-circle-fill"></i>{{ $t('ConnectionStates.IOModule') }}
+              <i v-bind:class="wago_state" class="bi bi-circle-fill"></i>
+              {{ $t('ConnectionStates.IOModule') }}
             </div>
           </td>
         </tr>
