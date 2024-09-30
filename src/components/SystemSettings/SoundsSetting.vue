@@ -60,21 +60,17 @@
                 >取消</el-button>
                 <el-button v-else @click="EditPath(key)" type="info" style="margin-left: 10px;">編輯</el-button>
                 <!-- 先隱藏  -->
-                <el-button
-                  v-if="false"
-                  type="info"
-                  @click="selectSound(key)"
-                  style="margin-left: 10px;"
-                >選取</el-button>
+                <el-button type="success" @click="selectSound(key)" style="margin-left: 10px;">選取</el-button>
 
+                <!-- 播放/暫停按鈕 -->
                 <el-button
                   v-if="playingStateStore[key]"
                   circle
-                  type="primary"
+                  type="danger"
                   @click="stopPlaySound(key)"
                   style="margin-left: 10px;"
                 >
-                  <i class="bi bi-pause-fill"></i>
+                  <i class="bi bi-stop-fill"></i>
                 </el-button>
                 <el-button
                   v-else
@@ -85,13 +81,17 @@
                 >
                   <i class="bi bi-play-fill"></i>
                 </el-button>
+                <!--  -->
               </div>
             </el-form-item>
             <el-drawer
               v-model="showSelectSoundDrawer"
               :title="`選取音效-${translateMap[selectSoundKey]}`"
               :before-close="handleClose"
-            ></el-drawer>
+              size="80%"
+            >
+              <AudioSelector @audioSelected="handleAudioSelectedFromDrawer" />
+            </el-drawer>
           </el-form>
         </div>
       </el-collapse-item>
@@ -104,7 +104,12 @@ import { AGVStatusStore, SystemSettingsStore } from '@/store'
 import _ from 'lodash';
 import SystemSettings from '@/ViewModels/SystemSettings';
 import { BuzzerOff, SoundsAPI } from '@/api/VMSAPI';
+import param from '@/gpm_param';
+import AudioSelector from './AudioSelector.vue';
 export default {
+  components: {
+    AudioSelector
+  },
   data() {
     return {
       sounds: new SystemSettings().SoundsParams,
@@ -139,6 +144,7 @@ export default {
       },
       showSelectSoundDrawer: false,
       selectSoundKey: '',
+      audioPlayer: new Audio(),
     }
   },
   computed: {
@@ -170,17 +176,46 @@ export default {
   },
   methods: {
     async playSound(key) {
-      await BuzzerOff();
       // let all playingStateStore to false
       Object.keys(this.playingStateStore).forEach(key => {
         this.playingStateStore[key] = false;
       });
-      const audioPath = this.sounds.audioPathes[key];
-      await SoundsAPI.PlayAudio(audioPath);
+      if (!this.audioPlayer.paused) {
+        this.audioPlayer.pause();
+        this.audioPlayer.currentTime = 0;
+      }
+
+      const audioUrl = `${param.backend_host}/audios/${this.sounds.audioFileNames[key]}`
+      // 播放音效
+      // Set new audio source
+      this.audioPlayer.src = audioUrl;
+
+      // Play audio
+      this.audioPlayer.play().catch(error => {
+        console.error('音效播放失敗:', error);
+        this.$notify({
+          title: '音效播放',
+          message: `[${this.translateMap[key]}] 音效播放失敗`,
+          type: 'error'
+        });
+      });
+
+      // Set up onended event
+      this.audioPlayer.onended = () => {
+        this.playingStateStore[key] = false;
+      };
+
+      // Notify user
+      this.$notify({
+        title: '音效播放',
+        message: `正在播放 [${this.translateMap[key]}] 音效`,
+        type: 'info'
+      });
       this.playingStateStore[key] = true;
     },
     async stopPlaySound(key) {
-      await BuzzerOff();
+      this.audioPlayer.pause();
+      this.audioPlayer.currentTime = 0;
       this.playingStateStore[key] = false;
     },
     selectSound(key) {
@@ -202,6 +237,11 @@ export default {
     EditPath(key) {
       this.editStateStore[key] = true;
 
+    },
+    handleAudioSelectedFromDrawer(audioName) {
+      this.sounds.audioPathes[this.selectSoundKey] = audioName;
+      this.showSelectSoundDrawer = false;
+      SoundsAPI.SaveAudioPath(this.sounds.audioPathes);
     }
   }
 

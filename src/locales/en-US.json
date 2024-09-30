@@ -62,6 +62,6 @@
   "VMSTask.TaskDelivery.TaskDispatchConfirm": "TASK DISPATCH CONFIRM",
   "VMSTask.MapShow.ReLoadMapFromAGVS": "Reload Map From AGVS",
   "ConnectionStates.AGVS": "AGVS",
-  "ConnectionStates.AGVControlSys": "CONTROL",
-  "ConnectionStates.IOModule": "IO-MODULE"
+  "ConnectionStates.AGVControlSys": "VCS",
+  "ConnectionStates.IOModule": "IO"
 }

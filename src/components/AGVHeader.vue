@@ -35,9 +35,9 @@
         <jw_switch
           @switch="LangChangeHandle"
           :default="IsUseChinese"
-          active_text="CH"
+          active_text="EN"
           active_color="rgb(0, 204, 0)"
-          inactive_text="EN"
+          inactive_text="中文"
           inactive_color="rgb(9, 76, 176)"
         ></jw_switch>
       </div>
