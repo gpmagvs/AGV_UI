@@ -278,9 +278,12 @@
           </div>
         </transition>
         <!--主要內容 TabControl-->
-        <transition name="el-zoom-in-bottom">
-          <MainContent :VMSData="VMSData"></MainContent>
-        </transition>
+        <div class="w-100 d-flex flex-column">
+          <MainContent class="flex-fill" :VMSData="VMSData"></MainContent>
+          <div class="border rounded bg-light py-1 px-2 fixed-bottom" style="height:35px;">
+            <QuickActions></QuickActions>
+          </div>
+        </div>
         <div
           v-if="showOrderInfo && IsShowOrderStatus && !IsHandshaking"
           style="z-index:9999"
@@ -340,12 +343,13 @@ import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
 import { watch } from 'vue'
-import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
+import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue';
+import QuickActions from '@/components/MainContent/QuicklyActions.vue'
 // @ is an alias to /src
 export default {
   name: 'HomeView',
   components: {
-    AGVHeader, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization, fork_height, SimpleKeyboard
+    AGVHeader, BatteryGroup, battery, mileage, emo, login, connection_state, MainContent, AGVLocalization, fork_height, SimpleKeyboard, QuickActions
   },
   data() {
     return {

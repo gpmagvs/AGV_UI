@@ -2,6 +2,8 @@ var param = {
   /**後端Server URL */
   get backend_host() {
     if (process.env.NODE_ENV == 'development') {
+      return 'http://10.22.141.218:7025'
+      return 'http://10.22.141.223:7025'
       return 'http://127.0.0.1:7025'
       return 'http://172.20.10.2:7025'
       return 'http://192.168.0.105:7025'
@@ -10,7 +12,6 @@ var param = {
       return 'http://192.168.0.101:7025'
       return 'http://192.168.0.106:7025'
       return 'http://192.168.1.100:7025'
-      return 'http://10.22.141.218:7025'
       return 'http://192.168.0.200:7000'
     } else {
       return `${window.location.protocol}//${window.location.host}`
@@ -23,11 +24,11 @@ var param = {
   /**ROS Bridge Server Weboscket URL */
   get ros_bridge_url() {
     if (process.env.NODE_ENV == 'development') {
+      return 'ws://10.22.141.218:9090'
       return 'ws://192.168.76.128:9090'
       return 'ws://127.0.0.1:9090'
       return 'ws://192.168.1.100:9090'
       return 'ws://192.168.1.100:9090'
-      return 'ws://10.22.141.219:9090'
     } else {
       return `ws://${window.location.hostname}:9090`
     }

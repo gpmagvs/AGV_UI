@@ -149,7 +149,10 @@ export default {
   },
   computed: {
     player() {
-      return AGVStatusStore.state.AGVStatus.BuzzerState.player;
+      if (AGVStatusStore.state.AGVStatus.BuzzerState)
+        return AGVStatusStore.state.AGVStatus.BuzzerState.player;
+      else
+        return {}
     },
     agvModel() {
       return SystemSettingsStore.state.Settings.AgvType;
