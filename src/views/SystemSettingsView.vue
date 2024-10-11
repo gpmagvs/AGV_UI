@@ -328,9 +328,9 @@
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
-                <el-form-item label="CST ID讀取功能">
+                <!-- <el-form-item label="CST ID讀取功能">
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="CST ID讀取失敗後車載狀態設為">
                   <el-select @change="HandleParamChanged" v-model="settings.CstReadFailAction">
                     <el-option label="Normal Status" :value="0"></el-option>
