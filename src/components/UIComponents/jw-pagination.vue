@@ -7,7 +7,8 @@
       @click="()=>{pagecurrent=i}"
       v-for="i in  totalPages"
       :key="i"
-      :variant="i==pagecurrent?'primary':'dark'"
+      :variant="i==pagecurrent?'primary':'light'"
+      style="font-weight:bold;text-decoration:underline"
     >{{ i }}</b-button>
     <b-button class="m-1" size="sm" @click="next">▼</b-button>
   </div>

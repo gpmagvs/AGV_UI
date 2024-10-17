@@ -1,5 +1,5 @@
 <template>
-  <div class="agv-operator">
+  <div class="agv-operator py-2">
     <b-tabs
       :lazy="false"
       :model-value="current_tab"

@@ -9,7 +9,8 @@
       @click="toggleSwitch"
       class="switch-text switch-text-on"
       v-bind:style="active_style"
-      v-show="isChecked">{{ active_text }}</span>
+      v-show="isChecked"
+    >{{ active_text }}</span>
   </div>
 </template>
   
@@ -86,7 +87,6 @@ export default {
   width: 60px;
   height: 37px;
   background-color: #ccc;
-  border-radius: 3px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -94,7 +94,7 @@ export default {
 
 .switch-inner {
   display: block;
-  width: 10px;
+  width: 12px;
   height: 32px;
   background-color: #fff;
   border-radius: 3px;
@@ -117,15 +117,15 @@ export default {
   transition: left 0.2s;
 }
 
-.switch:checked+.switch-label {
+.switch:checked + .switch-label {
   background-color: rgb(40, 167, 69);
 }
 
-.switch:checked+.switch-label .switch-inner {
+.switch:checked + .switch-label .switch-inner {
   transform: translateX(46px);
 }
 
-.switch:checked+.switch-label .switch-switch {
+.switch:checked + .switch-label .switch-switch {
   left: 30px;
 }
 
@@ -135,7 +135,7 @@ export default {
   position: absolute;
   top: 43%;
   transform: translateY(-50%);
-  left: 10px;
+  left: 15px;
   transition: opacity 0.2s;
   opacity: 1;
   cursor: pointer;
@@ -143,7 +143,7 @@ export default {
   width: 45px;
 }
 
-.switch:checked+.switch-label .switch-text {
+.switch:checked + .switch-label .switch-text {
   opacity: 0;
 }
 
@@ -152,7 +152,7 @@ export default {
   opacity: 1;
 }
 
-.switch:checked+.switch-label .switch-text-on {
+.switch:checked + .switch-label .switch-text-on {
   opacity: 1;
 }
 </style>

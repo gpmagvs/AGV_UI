@@ -564,7 +564,7 @@
               </el-form>
             </div>
           </b-tab>
-          <b-tab v-if="settings.Log" title="終端機Log顯示">
+          <!-- <b-tab v-if="settings.Log" title="終端機Log顯示">
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Trace Log">
@@ -587,7 +587,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
+          </b-tab>-->
           <b-tab title="派車系統">
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
@@ -688,6 +688,11 @@
               ></EQHandshakeConfiguration>
             </div>
           </b-tab>
+          <b-tab title="手動檢查貨況">
+            <div class="tabpage border p-2">
+              <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
+            </div>
+          </b-tab>
           <b-tab title="進階">
             <div class="tabpage border p-2">
               <div class="w-100">
@@ -707,11 +712,6 @@
                   @click="HandleOTAUpdateBtnClick"
                 >系統更新</b-button>
               </div>
-            </div>
-          </b-tab>
-          <b-tab title="手動檢查貨況">
-            <div class="tabpage border p-2">
-              <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
           </b-tab>
         </b-tabs>

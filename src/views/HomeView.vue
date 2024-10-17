@@ -944,6 +944,7 @@ export default {
 <style lang="scss">
 .main-content {
   padding-top: 38px;
+  height: 100%;
 }
 
 #waiting-go-alert {

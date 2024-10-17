@@ -1,69 +1,16 @@
 <template>
   <div class="task-delivery">
-    <div v-if="false" class="my-1 d-flex">
-      <div>
-        <div class="item">
-          <div class="title">動作</div>
-          <el-select v-model="selectedAction" placeholder="請選擇Action">
-            <el-option label="移動" value="None"></el-option>
-            <el-option label="停車" value="Park"></el-option>
-            <el-option label="搬運" value="Carry"></el-option>
-            <el-option label="Load" value="Load"></el-option>
-            <el-option label="Unload" value="Unload"></el-option>
-            <el-option label="充電" value="Charge"></el-option>
-          </el-select>
-          <div class="text-start mx-1">
-            <b-button @click="TaskDeliveryBtnClickHandle" variant="primary" block>派送任務</b-button>
-          </div>
-          <!-- Move To Position -->
-        </div>
-        <!-- For Movable -->
-        <div
-          v-if="selectedAction === 'None' | selectedAction === 'Unload' | selectedAction === 'Load' | selectedAction === 'Charge' | selectedAction === 'Park'">
-          <div class="item">
-            <div class="title">目的地</div>
-            <el-select
-              @click="GetNormalStationTagsFromMap()"
-              v-model="selectedToTag"
-              placeholder="請選擇目的地">
-              <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id"></el-option>
-            </el-select>
-          </div>
-        </div>
-        <div v-else>
-          <div class="d-flex">
-            <div class="item">
-              <div class="title">起點</div>
-              <el-select v-model="selectedTag" placeholder="請選擇起點">
-                <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id"></el-option>
-              </el-select>
-            </div>
-            <div class="item">
-              <div class="title mx-1">終點</div>
-              <el-select v-model="selectedToTag" placeholder="請選擇終點">
-                <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="item">
-            <div class="title">載物ID</div>
-            <el-input v-model="selectedCst" placeholder="請輸入載物ID"></el-input>
-          </div>
-        </div>
-      </div>
-      <div class="bg-light item d-flex justify-content-end">
-        <b-button v-if="IsGodUse" @click="() => { MoveTestPanel.Show() }" variant="danger">移動測試</b-button>
-      </div>
-    </div>
     <MapShowVue
       :task_allocatable="true"
       @OnFeatureClicked="MapFeatureClickedHandle"
-      class="flex-fill"
-      style="height:600px"
-      ref="map"></MapShowVue>
+      class="flex-fill h-100"
+      ref="map"
+    ></MapShowVue>
     <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt" :size="IsInspectAGV ? '50%' : ''">
       <template #header>
-        <h2 class="text-start"> {{ GetTitleText(SelectedFeature) }}<div v-if="SelectedFeatureIsVirtualPt" class="text-danger"> 虛擬點不可為終點站</div>
+        <h2 class="text-start">
+          {{ GetTitleText(SelectedFeature) }}
+          <div v-if="SelectedFeatureIsVirtualPt" class="text-danger">虛擬點不可為終點站</div>
         </h2>
         <h6>{{ SelectedFeatureCoordination }}</h6>
       </template>
@@ -72,41 +19,49 @@
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('None')"
-          :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt">
-          <i class="bi bi-arrows-move"></i>移動 </b-button>
+          :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt"
+        >
+          <i class="bi bi-arrows-move"></i>移動
+        </b-button>
         <b-button
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('Load')"
-          :disabled="!SelectedFeatureLDULDable">
-          <i class="bi bi-box-arrow-up-right"></i>放貨 </b-button>
+          :disabled="!SelectedFeatureLDULDable"
+        >
+          <i class="bi bi-box-arrow-up-right"></i>放貨
+        </b-button>
         <b-button
           class="my-1 action-button"
           variant="primary"
           @click="handleTaskAllocatModeMenuClick('Unload')"
-          :disabled="!SelectedFeatureLDULDable">
-          <i class="bi bi-box-arrow-in-down-left"></i>取貨 </b-button>
+          :disabled="!SelectedFeatureLDULDable"
+        >
+          <i class="bi bi-box-arrow-in-down-left"></i>取貨
+        </b-button>
         <b-button
           v-if="!SelectedFeatureBatExchangable"
           class="my-1 action-button"
           variant="warning"
           @click="handleTaskAllocatModeMenuClick('Charge')"
-          :disabled="!SelectedFeatureChargable">
-          <i class="bi bi-battery-charging"></i>充電 </b-button>
+          :disabled="!SelectedFeatureChargable"
+        >
+          <i class="bi bi-battery-charging"></i>充電
+        </b-button>
         <b-button
           v-if="SelectedFeatureBatExchangable"
           class="my-1 action-button"
           variant="warning"
           @click="handleTaskAllocatModeMenuClick('ExchangeBattery')"
-          :disabled="!SelectedFeatureBatExchangable">
-          <i class="bi bi-battery-charging"></i>交換電池 </b-button>
+          :disabled="!SelectedFeatureBatExchangable"
+        >
+          <i class="bi bi-battery-charging"></i>交換電池
+        </b-button>
       </div>
       <div v-if="IsInspectAGV" class="px-1 d-flex flex-row justify-content-around">
-        <b-button
-          class="my-1 action-button"
-          variant="info"
-          @click="HandleLocatingBtnClick">
-          <i class="bi bi-crosshair"></i>定位</b-button>
+        <b-button class="my-1 action-button" variant="info" @click="HandleLocatingBtnClick">
+          <i class="bi bi-crosshair"></i>定位
+        </b-button>
       </div>
     </el-drawer>
     <MoveTestDrawer ref="move_test"></MoveTestDrawer>
@@ -116,7 +71,8 @@
       :centered="true"
       title="Task Delivery"
       header-bg-variant="primary"
-      header-text-variant="light">
+      header-text-variant="light"
+    >
       <p>
         <span>Action:{{ selectedAction }}</span>
       </p>
@@ -128,7 +84,8 @@
       title="Warning"
       :ok-only="true"
       header-bg-variant="warning"
-      header-text-variant="light">
+      header-text-variant="light"
+    >
       <p>
         <span>{{ notify_text }}</span>
       </p>
@@ -468,9 +425,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .task-delivery {
-  padding: 10px;
-  height: auto;
-
+  height: 100vh;
   .item {
     display: flex;
     flex-direction: row;

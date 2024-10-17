@@ -1,10 +1,11 @@
 <template>
-  <div class="px-1 d-flex flex-row border justify-content-center">
+  <div class="px-1 d-flex flex-row justify-content-center">
     <div class="mt-2">
       <jw-pagination
         @page_changed="(ev) => { pagecurrent = ev - 1 }"
         :pageSize="16"
-        :totalCount="table_data.length"></jw-pagination>
+        :totalCount="table_data.length"
+      ></jw-pagination>
     </div>
     <div class="border mt-1 flex-fill">
       <el-table
@@ -13,13 +14,14 @@
         :row-class-name="tb_row_class"
         header
         border
-        height="570"
+        height="555"
         row-key="Address"
         :highlight-current-row="false"
         @row-dblclick="cellDoubleClickHandle"
         @cell-mouse-enter="cellMouseEnterHandler"
         @cell-mouse-leave="cellMouseLeaveHandler"
-        style="width:99%">
+        style="width:99%"
+      >
         <el-table-column label="Address" prop="Address" width="70"></el-table-column>
         <el-table-column label="Name" prop="Name"></el-table-column>
         <el-table-column label="Value" prop="State" width="60" :formatter="StateFormatter"></el-table-column>
@@ -43,9 +45,12 @@
       v-model="DIOChangeComfirmDialogShow"
       :centered="true"
       title="DIO Change Confirm"
-      @ok="WriteDIOHandle">
+      @ok="WriteDIOHandle"
+    >
       <p>
-        <b>[{{ toChangeAddress }}]</b> will changed from <b>{{ toChangeState ? 0 : 1 }}</b> to <b>{{ toChangeState ? 1 : 0 }}</b>.
+        <b>[{{ toChangeAddress }}]</b> will changed from
+        <b>{{ toChangeState ? 0 : 1 }}</b> to
+        <b>{{ toChangeState ? 1 : 0 }}</b>.
       </p>
       <p>Are you sure?</p>
     </b-modal>
@@ -198,15 +203,24 @@ export default {
 </script>
 
 <style  lang="scss">
-.el-table .on-row {
-  background-color: rgb(13, 110, 253);
-  color: white;
-  font-weight: bold;
-  /* --el-table-tr-bg-color: var(--el-color-success-light-9); */
-}
+.el-table {
+  .on-row {
+    background-color: rgb(13, 110, 253);
+    color: white;
+    /* --el-table-tr-bg-color: var(--el-color-success-light-9); */
+  }
+  .off-row {
+    background-color: rgb(245, 245, 245);
+    color: rgb(43, 43, 43);
+  }
 
-.el-table .off-row {
-  background-color: black;
-  color: white;
+  .on-row,
+  .off-row {
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+      sans-serif;
+  }
 }
 </style>

@@ -234,9 +234,12 @@ export default {
       }),
     }
   },
-  async mounted() {
+  mounted() {
     this.loading = true;
-    this.FetchMap();
+    console.info('MapShow mounted');
+    setTimeout(() => {
+      this.FetchMap();
+    }, 5000);
   },
   computed: {
     isViewing() {
@@ -290,7 +293,7 @@ export default {
       //TODO RELOAD MAP
     },
     FetchMap() {
-      var map = map_store.getters.GetMapData;
+      var map = map_store.state.MapData;
       this.loading = false;
       if (map == undefined || map.Points == undefined) {
         Notifier.Danger('圖資取得失敗(後端伺服器異常)', 'bottom', 3000);

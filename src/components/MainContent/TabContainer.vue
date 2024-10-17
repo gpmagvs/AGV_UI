@@ -1,68 +1,53 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs :lazy="false" :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills>
+    <b-tabs
+      :model-value="current_tab"
+      @activate-tab="HandleTabpageChanged"
+      pills
+      style="height: 100%;"
+    >
       <!-- 狀態 -->
-      <b-tab :title="$t('status')" active>
-        <div class="mt-3 border p-1">
-          <status_card></status_card>
-        </div>
+      <b-tab :title="$t('status')" active style="height: 100%;">
+        <status_card></status_card>
       </b-tab>
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
-        <div class="table-container-div mt-3 border p-1">
+        <div class="table-container-div p-1">
           <alarm_warn_table></alarm_warn_table>
         </div>
       </b-tab>
       <!-- 操作 -->
       <b-tab :title="$t('operation')">
-        <div class="mt-3 border p-1">
           <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
-        </div>
       </b-tab>
       <!-- Battery -->
       <b-tab v-if="false" title="電池">
-        <div class="mt-3 border p-1">
           <BatteryView></BatteryView>
-        </div>
       </b-tab>
       <b-tab :title="$t('eq-handshake-e84')">
-        <div class="mt-3 border p-1">
           <EQHandshakeView></EQHandshakeView>
-        </div>
       </b-tab>
       <!-- CST READER -->
       <b-tab v-if="!IsVisitor" title="CST Reader">
-        <div class="mt-3 border p-1">
           <CSTReader></CSTReader>
-        </div>
       </b-tab>IsGodUser
       <b-tab v-if="!IsVisitor" title="Overview">
-        <div class="mt-3 border p-1">
           <AgvOverview :AsMainPageMode="false"></AgvOverview>
-        </div>
       </b-tab>
       <b-tab v-if="IsGodMod" title="Log">
-        <div class="mt-3 border p-1">
           <LogQuery></LogQuery>
-        </div>
       </b-tab>
       <!-- 本地任務派送 -->
-      <b-tab v-if="IsGodMod || IsDevUser" title="Local派工">
-        <div class="mt-3 border p-1">
-          <TaskDeliveryVue></TaskDeliveryVue>
-        </div>
+      <b-tab title="地圖顯示">
+        <TaskDeliveryVue></TaskDeliveryVue>
       </b-tab>
       <!-- 3D Model Display -->
       <b-tab v-if="false" :title="$t('3d_model')">
-        <div class="mt-3 border p-1">
           <ForkAGV3D></ForkAGV3D>
-        </div>
       </b-tab>
       <b-tab v-if="false" title="AGVS MSG">
-        <div class="mt-3 border p-1">
           <AGVSMsgDisplay ref="agvs_msg_table"></AGVSMsgDisplay>
-        </div>
       </b-tab>
     </b-tabs>
   </div>
@@ -149,4 +134,17 @@ export default {
   }
 }
 </script>
-<style lang="scss"></style>
+<style lang="scss" scoped>
+::v-deep .tab-content {
+  height: 86%;
+  border: 1px solid #e6e6e6;
+}
+::v-deep .tab-pane {
+  height: 100%;
+}
+
+::v-deep .nav-item > .nav-link {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+</style>

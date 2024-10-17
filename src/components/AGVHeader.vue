@@ -334,38 +334,9 @@ export default {
   .system-control {
     height: 100%;
     margin-left: 2px;
-    ::v-deep .b-dropdown {
-      height: 100%;
-
-      .btn {
-        height: 100%;
-        border-radius: 0 !important; // 使用 !important 来确保覆盖
-        padding-left: 1rem;
-        padding-right: 1rem;
-        // 移除所有可能的圆角和过渡效果
-        &,
-        &:hover,
-        &:focus,
-        &:active {
-          border-radius: 0 !important;
-          transition: none;
-        }
-      }
-
-      .dropdown-menu {
-        margin-top: 0;
-        border-radius: 0; // 移除下拉菜单的所有圆角
-      }
-
-      .dropdown-item {
-        display: flex;
-        align-items: center;
-
-        i {
-          font-size: 1.1em;
-          margin-right: 0.5rem;
-        }
-      }
+    ::v-deep .btn-group > .btn {
+      border-radius: 0;
+      height: 37px;
     }
   }
 }

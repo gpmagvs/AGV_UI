@@ -58,7 +58,8 @@
             v-model="scope.row.CargoTransferMode"
             :options="[
               { value: 0, label: '設備動作' },
-              { value: 1, label: 'AGV動作' }
+              { value: 1, label: 'AGV動作' },
+              { value: 2, label: '僅第一層設備動作' },
             ]"
           ></el-select-v2>
         </template>

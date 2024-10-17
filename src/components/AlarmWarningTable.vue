@@ -3,8 +3,18 @@
     <div class="d-flex flex-row">
       <div class="flex-fill text-start">
         <i class="bi bi-sliders" @click="() => { drawer_show = !drawer_show }"></i>
-        <label class="text-danger"><b><i class="bi bi-three-dots-vertical"></i>{{ $t('alarm-type') }}</b></label>
-        <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
+        <label class="text-danger">
+          <b>
+            <i class="bi bi-three-dots-vertical"></i>
+            {{ $t('alarm-type') }}
+          </b>
+        </label>
+        <el-select
+          class="mx-2"
+          title="異常等級"
+          v-model="DisplaySelected"
+          @change="HandleAlarmTypeChanged"
+        >
           <el-option label="ALL" value="All"></el-option>
           <el-option label="Alarm" value="Alarm"></el-option>
           <el-option label="Warning" value="Warning"></el-option>
@@ -14,7 +24,8 @@
           v-if="clear_alarm_btn_visible"
           variant="danger"
           @click="ClearAlarmAlert()"
-          size="sm">{{ $t('clear_alarm_records') }}</b-button>
+          size="sm"
+        >{{ $t('clear_alarm_records') }}</b-button>
       </div>
       <div v-if="false">
         <span class="m-2">Search :</span>
@@ -29,7 +40,8 @@
         :page-size="page_size"
         v-model="page"
         :current-page="page"
-        @current-change="PageChangeHandler" />
+        @current-change="PageChangeHandler"
+      />
     </div>
     <div class="border mt-1">
       <el-table
@@ -38,8 +50,9 @@
         :row-class-name="tb_row_class"
         header
         border
-        height="550"
-        size="small">
+        height="528"
+        size="small"
+      >
         <el-table-column label="Time" prop="Time" width="160" :formatter="TimeFormmter"></el-table-column>
         <el-table-column label="Code" prop="Code" width="90" header-align="center">
           <template #default="{ row }">
@@ -56,13 +69,29 @@
         </el-table-column>
       </el-table>
     </div>
-    <b-modal v-model="clear_alarms_dialog_show" centered title="Alarm Records Clear" @ok="ClearAlarmRecords">
+    <b-modal
+      v-model="clear_alarms_dialog_show"
+      centered
+      title="Alarm Records Clear"
+      @ok="ClearAlarmRecords"
+    >
       <p>確定要清除異常紀錄?</p>
     </b-modal>
-    <el-drawer v-model="drawer_show" direction="rtl" size="50%" title="異常紀錄" modal-class="alarm-tb-option-modal">
+    <el-drawer
+      v-model="drawer_show"
+      direction="rtl"
+      size="50%"
+      title="異常紀錄"
+      modal-class="alarm-tb-option-modal"
+    >
       <el-form label-position="left" label-width="150">
         <el-form-item label="顯示警報類型">
-          <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
+          <el-select
+            class="mx-2"
+            title="異常等級"
+            v-model="DisplaySelected"
+            @change="HandleAlarmTypeChanged"
+          >
             <el-option label="ALL" value="All"></el-option>
             <el-option label="Alarm" value="Alarm"></el-option>
             <el-option label="Warning" value="Warning"></el-option>
@@ -70,17 +99,41 @@
         </el-form-item>
         <el-form-item label="時間區間設定">
           <div>
-            <el-radio-group class="d-flex flex-column" v-model="TimeRangeOpt" @change="(val) => { AlarmDownload() }">
+            <el-radio-group
+              class="d-flex flex-column"
+              v-model="TimeRangeOpt"
+              @change="(val) => { AlarmDownload() }"
+            >
               <el-radio style="margin-right:auto" label="no-limit" size="large">不限時間</el-radio>
               <el-radio style="margin-right:auto" label="limit" size="large">指定時間</el-radio>
-              <el-date-picker style="width:350px" v-model="TimeRange_Picker" type="datetimerange" :shortcuts="shortcuts" range-separator="To" start-placeholder="Start date" end-placeholder="End date" value-format="YYYY/MM/DD HH:mm:ss" :disabled="TimeRangeOpt != 'limit'"
-                @change="() => { AlarmDownload() }" />
+              <el-date-picker
+                style="width:350px"
+                v-model="TimeRange_Picker"
+                type="datetimerange"
+                :shortcuts="shortcuts"
+                range-separator="To"
+                start-placeholder="Start date"
+                end-placeholder="End date"
+                value-format="YYYY/MM/DD HH:mm:ss"
+                :disabled="TimeRangeOpt != 'limit'"
+                @change="() => { AlarmDownload() }"
+              />
             </el-radio-group>
           </div>
         </el-form-item>
         <el-form-item label="異常碼">
-          <el-select class="mx-2" title="異常等級" v-model="AlarmClassSelected" @change="HandleAlarmTypeChanged">
-            <el-option v-for="al in alarm_options" :key="al.Code" :label="`${al.CN}_${al.Description}(${al.Code})`" :value="al.Code"></el-option>
+          <el-select
+            class="mx-2"
+            title="異常等級"
+            v-model="AlarmClassSelected"
+            @change="HandleAlarmTypeChanged"
+          >
+            <el-option
+              v-for="al in alarm_options"
+              :key="al.Code"
+              :label="`${al.CN}_${al.Description}(${al.Code})`"
+              :value="al.Code"
+            ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -235,5 +288,6 @@ export default {
   background-color: rgb(245, 198, 206);
 }
 
-.alarm-tb-option-modal {}
+.alarm-tb-option-modal {
+}
 </style>
