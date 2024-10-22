@@ -4,7 +4,13 @@
       <b-button :disabled="triggering" class="mx-1" variant="primary" @click="TriggerHandle(200)">
         <span>Read Tray</span>
       </b-button>
-      <b-button v-if="hasCstReader" :disabled="triggering" class="mx-1" variant="primary" @click="TriggerHandle(201)">
+      <b-button
+        v-if="hasCstReader"
+        :disabled="triggering"
+        class="mx-1"
+        variant="primary"
+        @click="TriggerHandle(201)"
+      >
         <span>Read Rack</span>
       </b-button>
       <b-button :disabled="!triggering" variant="danger" @click="StopHandle">STOP</b-button>
@@ -13,10 +19,10 @@
       <img ref="image" src="/tray.jpg" height="400" alt="QR Code" />
       <!-- <div class="barcode_select"></div> -->
       <div
-        v-show="qrCodeValue != ''"
         v-loading="triggering"
         v-bind:class="qrCodeValue"
-        class="barcode-tooltip">{{ qrCodeValue }}</div>
+        class="barcode-tooltip"
+      >{{ triggering ? 'Triggering...' : cstData }}</div>
     </div>
     <div class="image-show">
       <img :src="imageSrc" />
@@ -25,7 +31,7 @@
 </template>
 <script>
 import { TriggerCSTReaderWithCargoType, StopCSTReader } from '@/api/VMSAPI'
-import { SystemSettingsStore } from '@/store'
+import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import bus from '@/event-bus.js'
 export default {
   data() {
@@ -50,6 +56,9 @@ export default {
     },
     hasCstReader() {
       return this.agvSettings.HasRackCstReader
+    },
+    cstData() {
+      return AGVStatusStore.state.AGVStatus.CST_Data;
     }
   },
   methods: {
