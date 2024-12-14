@@ -1,4 +1,4 @@
-import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore } from "./store";
+import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore } from "./store";
 import { ROS_STORE } from "./store/ros_store";
 import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
@@ -6,7 +6,6 @@ import bus from "./event-bus";
 import { ElNotification, ElLoading } from "element-plus";
 import { subscribeModuleInfoAndStore } from './api/WebRos'
 import * as signalR from "@microsoft/signalr";
-
 // ElLoading.service({
 //     lock: true,
 //     text: 'Loading',
@@ -102,6 +101,13 @@ function StartHubConnection() {
     })
     HubConnection.on('ManualCheckCargoStatus', (obj) => {
         bus.emit('ManualCheckCargoStatus', obj)
+    })
+    HubConnection.on('ParameterChanged', (param) => {
+        SystemSettingsStore.commit('setSettings', param)
+        bus.emit('ParameterChanged', param)
+    })
+    HubConnection.on('ReChargeCircuitChanged', (isOpened) => {
+        bus.emit('ReChargeCircuitChanged', isOpened)
     })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');

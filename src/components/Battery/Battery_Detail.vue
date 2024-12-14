@@ -12,7 +12,8 @@
               inactive-text="關閉"
               inactive-color="red"
               v-model="charge_circuit_state"
-              @change="HandleChargeCircuitSwitch"></el-switch>
+              @change="HandleChargeCircuitSwitch"
+            ></el-switch>
           </div>
           <div class="d-flex flex-row">
             <div v-for="(bat, id) in batteries" :key="id">
@@ -59,7 +60,8 @@
                 type="datetimerange"
                 range-separator="To"
                 start-placeholder="Start date"
-                end-placeholder="End date"></el-date-picker>
+                end-placeholder="End date"
+              ></el-date-picker>
             </el-form-item>
           </el-form>
           <div class="text-start">
@@ -71,7 +73,8 @@
               :height="chartHeight"
               ref="bat_chart"
               :options="chart_datas.chartOptions"
-              :series="chart_datas.series"></apexchart>
+              :series="chart_datas.series"
+            ></apexchart>
           </div>
         </div>
       </b-tab>
@@ -84,6 +87,7 @@ import { ROS_STORE } from '@/store/ros_store';
 import { BatteryAPI } from '@/api/VMSAPI.js'
 import { AGVStatusStore } from '@/store'
 import moment from 'moment'
+import bus from '@/event-bus';
 export default {
   data() {
     return {
@@ -240,6 +244,9 @@ export default {
     }
   },
   mounted() {
+    bus.on('ReChargeCircuitChanged', (isOpened) => {
+      this.charge_circuit_state = isOpened
+    })
     var timeNow = Date.now();
     var timeStart = moment(timeNow).add(-1, "day")
     this.query_options.time_range = [timeStart, timeNow];

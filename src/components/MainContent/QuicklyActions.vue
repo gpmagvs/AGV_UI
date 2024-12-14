@@ -21,6 +21,7 @@ import { watch } from 'vue';
 import { SystemAPI } from '@/api/VMSAPI';
 import SystemSettings from '@/ViewModels/SystemSettings';
 import { ElNotification } from 'element-plus';
+import bus from '@/event-bus';
 export default {
   data() {
     return {
@@ -104,7 +105,16 @@ export default {
         this.settingsStored = SystemSettingsStore.state.Settings
       }
     }, 100);
-
+    bus.on('ParameterChanged', (param) => {
+      if (this.cstIdRead != param.CST_READER_TRIGGER) {
+        this.cstIdRead = param.CST_READER_TRIGGER;
+        ElNotification.success({
+          title: '系統參數更新提示',
+          message: `Reader讀取設定已更新為${param.CST_READER_TRIGGER ? '開啟' : '關閉'}`,
+          type: 'success'
+        });
+      }
+    })
   },
 }
 </script>
