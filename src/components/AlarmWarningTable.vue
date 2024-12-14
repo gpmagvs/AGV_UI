@@ -221,7 +221,18 @@ export default {
       this.AlarmDownload();
     },
     async AlarmDownload() {
-      var timeRange = this.TimeRangeOpt == 'no-limit' ? ['1997/1/1 00:00:00', '2100/12/31 00:00:00'] : this.TimeRange_Picker;
+      const threeMonthRange = () => {
+        const end = new Date();
+        end.setDate(end.getDate() + 1);
+        end.setHours(0, 0, 0, 0);
+        const start = new Date(end);
+        start.setMonth(start.getMonth() - 3);
+        // Convert to local timezone ISO string by adding timezone offset
+        const startISO = new Date(start.getTime() - start.getTimezoneOffset() * 60000).toISOString();
+        const endISO = new Date(end.getTime() - end.getTimezoneOffset() * 60000).toISOString();
+        return [startISO, endISO];
+      };
+      var timeRange = this.TimeRangeOpt == 'no-limit' ? threeMonthRange() : this.TimeRange_Picker;
       this.totalAlarmNum = await AlarmTableAPI.TotalAlarmCount(timeRange[0], timeRange[1], this.DisplaySelected, this.AlarmClassSelected)
       this.alarms = await AlarmTableAPI.QueryByPage(timeRange[0], timeRange[1], this.page, this.page_size, this.DisplaySelected, this.AlarmClassSelected);
       //this.alarmClasifies = await AlarmTableAPI.GetAlarmClassifies()

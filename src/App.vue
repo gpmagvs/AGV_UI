@@ -80,7 +80,7 @@ export default {
       let agvsConnState = UIStore.state.ConnectionStateData.VMS;
       const isAGVSConnecting = agvsConnState == 2 || agvsConnState == 1;
 
-      if (!AGVStatusStore.state.AGVStatus.IsInitialized && (isROSConnecting || isDIOConnecting)) {
+      if ((isROSConnecting || isDIOConnecting || isAGVSConnecting)) {
         const rosBridgeServerIP = SystemSettingsStore.state.Settings.Connections.RosBridge.IP;
         const rosBridgeServerPort = SystemSettingsStore.state.Settings.Connections.RosBridge.Port;
         const wagoIP = SystemSettingsStore.state.Settings.Connections.Wago.IP;
@@ -96,15 +96,25 @@ export default {
           message += `[IO模組]   連接失敗..請確認連線 (${wagoIP}:${wagoPort})\n`;
         }
         if (isAGVSConnecting) {
-          message += `[AGVS]   連接失敗..請確認連線 (${agvsIP}:${agvsPort})`;
+          message += `[派車系統]   連接失敗..請確認連線 (${agvsIP}:${agvsPort})`;
         }
         this.$swal.fire({
           title: '通訊連線異常',
-          html: `<ul style="list-style-type: disc; text-align: left; margin: 0; padding-left: 120px;">${message.split('\n').map(line => `<li style="margin-bottom: 10px;">${line}</li>`).join('')}</ul>`,
+          html: `<ul class="border rounded-3 border-light py-3" style="font-size: 22px; color:white; list-style-type: disc; text-align: left; margin: 0; padding-left: 50px;">${message.split('\n').map(line => `<li style="margin-bottom: 10px;">${line}</li>`).join('')}</ul>`,
           icon: 'error',
-          showCancelButton: false,
+          showCancelButton: true,
+          cancelButtonText: 'Reload',
           confirmButtonText: 'OK',
-          customClass: 'my-sweetalert'
+          customClass: {
+            popup: 'bg-danger bg-opacity-6',
+            confirmButton: 'btn btn-danger',
+            cancelButton: 'btn btn-outline-danger',
+            title: 'text-light'
+          }
+        }).then(res => {
+          if (res.dismiss === 'cancel') {
+            window.location.reload();
+          }
         });
       }
     }
