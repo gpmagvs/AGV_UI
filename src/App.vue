@@ -238,6 +238,35 @@ export default {
           })
         return;
       }
+
+      if (alarmCode == 3383) {
+        let timerInterval;
+        this.$swal.fire({
+          title: title,
+          icon: 'warning',
+          html: `${message} <b></b> `,
+          timer: 10000,
+          timerProgressBar: true,
+          didOpen: () => {
+            this.$swal.showLoading();
+            const timer = this.$swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+              timer.textContent = `${(this.$swal.getTimerLeft() / 1000).toFixed(1)}`;
+            }, 1000);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+            location.reload();
+          }
+        }).then((result) => {
+          /* Read more about handling dismissals below */
+          if (result.dismiss === this.$swal.DismissReason.timer) {
+            console.log("I was closed by the timer");
+          }
+        });
+        return;
+      }
+
       //alert(message)
       this.$swal.fire(
         {
