@@ -175,7 +175,7 @@
             </div>
             <el-divider style="margin:auto"></el-divider>
             <div
-              v-if="Is_TSMC_MiniAGV || !isBrakeSwitchRelease"
+              v-if="!IOConnected || (Is_TSMC_MiniAGV || !isBrakeSwitchRelease)"
               class="connection-status border rounded m-1 p-3 py-1"
             >
               <div class="state-title">
@@ -187,7 +187,10 @@
             <el-divider style="margin:auto"></el-divider>
             <!-- 當前座標資訊 -->
             <div class="coordination border rounded m-1 p-3 py-1">
-              <div v-if="isBrakeSwitchRelease && !Is_TSMC_MiniAGV" class="w-100 d-flex">
+              <div
+                v-if="IOConnected && isBrakeSwitchRelease && !Is_TSMC_MiniAGV"
+                class="w-100 d-flex"
+              >
                 <div>
                   <div class="state-title" style="text-align: center;">Tag</div>
                   <el-tag
@@ -804,6 +807,9 @@ export default {
         return ''
       if (!_hascargo && _hascargo_id)
         return 'has-id-but-cargo-not-exist'
+    },
+    IOConnected() {
+      return UIStore.state.ConnectionStateData.WAGO == 0;
     },
     isBrakeSwitchRelease() {
       try {

@@ -21,6 +21,7 @@ let Notifier = {
       position: position,
       type: 'primary',
       duration: duration,
+      background: 'rgba(7, 193, 96,0.7)',
       onclick: () => {
         closeNotify()
       },

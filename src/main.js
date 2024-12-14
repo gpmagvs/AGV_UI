@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vcs_axios from './axios.js'
-import { ROS_STORE } from './store/ros_store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import BootstrapVue3 from 'bootstrap-vue-3'
@@ -16,6 +15,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 import './my_style.scss'
 import VueApexCharts from "vue3-apexcharts";
 import './idling_detector'
+import { SystemSettingsStore, UIStore } from '@/store'
 const i18n = createI18n({
   legacy: false,
   locale: 'zh-TW',
@@ -31,15 +31,19 @@ const Sweetalert_options = {
   cancelButtonColor: '#ff7674',
 }
 
-const app = createApp(App)
+appMount();
 
-app.use(store)
-app.use(router)
-app.use(BootstrapVue3)
-app.use(ElementPlus)
-app.use(i18n)
-app.use(VueSweetalert2, Sweetalert_options)
-app.use(VueApexCharts);
-app.config.globalProperties.$axios = vcs_axios;
-
-app.mount('#app')
+async function appMount() {
+  const app = createApp(App)
+  app.use(store)
+  app.use(router)
+  app.use(BootstrapVue3)
+  app.use(ElementPlus)
+  app.use(i18n)
+  app.use(VueSweetalert2, Sweetalert_options)
+  app.use(VueApexCharts);
+  app.config.globalProperties.$axios = vcs_axios;
+  await SystemSettingsStore.dispatch('downloadSettings');
+  await UIStore.dispatch('GetConnectionState');
+  app.mount('#app')
+}

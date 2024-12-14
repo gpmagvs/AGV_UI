@@ -2,12 +2,18 @@
   <div class="sys-setting">
     <el-drawer v-model="drawer_show" size="80%" direction="rtl">
       <template #header>
-        <div class="w-100 border-bottom">
-          <h2 class="text-start">Settings</h2>
+        <div class="w-100 border-bottom d-flex justify-content-between">
+          <h2 class="text-start">系統設定</h2>
+          <span class="edit_key" v-if="settings.EditKey">{{ settings.EditKey }}</span>
         </div>
       </template>
-      <div style="position: absolute; width:95%;top:80px">
-        <b-tabs v-model="selected_tab">
+      <div
+        v-loading="loading"
+        v-bind:style="loading? {opacity: 0.5,} : {}"
+        style="position: absolute; width:95%;height: 100%;top:80px"
+        element-loading-text="Loading..."
+      >
+        <b-tabs v-model="selected_tab" v-if="!loading">
           <b-tab title="一般">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
@@ -319,103 +325,6 @@
           <b-tab v-if="!IsInspectionAGV" title="設備取/放貨">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
-                <el-form-item label="退出設備須需要詢問派車">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="空取空放">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
-                </el-form-item>
-                <!-- <el-form-item label="CST ID讀取功能">
-                  <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
-                </el-form-item>-->
-                <el-form-item label="CST ID讀取失敗後車載狀態設為">
-                  <el-select @change="HandleParamChanged" v-model="settings.CstReadFailAction">
-                    <el-option label="Normal Status" :value="0"></el-option>
-                    <el-option label="Down Status" :value="1"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="CST ID讀取值與任務不符時">
-                  <el-select
-                    @change="HandleParamChanged"
-                    v-model="settings.Cst_ID_Not_Match_Action"
-                  >
-                    <el-option label="上報讀取之ID" :value="0"></el-option>
-                    <el-option label="向派車查詢虛擬ID" :value="1"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="CST 在席檢-進入設備前">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.CST_EXIST_DETECTION.Before_In"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="CST 在席檢-設備動作後">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="車頭設備內產品預檢知-放貨">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.LOAD_OBS_DETECTION.Enable_Load"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="車頭設備內產品預檢知-取貨">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="車頭設備內產品預檢知-偵測時間(sec)">
-                  <el-input-number
-                    @change="HandleParamChanged"
-                    size="small"
-                    v-model="settings.LOAD_OBS_DETECTION.Duration"
-                  ></el-input-number>
-                </el-form-item>
-                <el-form-item label="等待EQ READY播放音樂">
-                  <el-switch @change="HandleParamChanged" v-model="settings.PlayHandshakingMusic"></el-switch>
-                </el-form-item>
-                <el-form-item label="設備內停車允許誤差(mm)">
-                  <el-input-number
-                    @change="HandleParamChanged"
-                    size="small"
-                    v-model="settings.TagParkingTolerance"
-                  ></el-input-number>
-                </el-form-item>
-                <div class="text-start w-100 border-bottom">
-                  <b>雷射偵測設備Port內障礙物</b>
-                </div>
-                <el-form-item label="啟用">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.LDULDParams.LsrObstacleDetectionEnable"
-                  ></el-switch>
-                </el-form-item>
-                <el-form-item label="雷射組數">
-                  <el-input-number
-                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
-                    @change="HandleParamChanged"
-                    size="small"
-                    :min="0"
-                    :max="16"
-                    v-model="settings.LDULDParams.LsrObsLaserModeNumber"
-                  ></el-input-number>
-                </el-form-item>
-                <el-form-item label="偵測異常發報等級">
-                  <el-select
-                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
-                    v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel"
-                    @change="HandleParamChanged"
-                  >
-                    <el-option label="Warning" :value="0"></el-option>
-                    <el-option label="Alarm" :value="1"></el-option>
-                  </el-select>
-                </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
                 </div>
@@ -453,6 +362,117 @@
                     size="small"
                     v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"
                   ></el-input-number>
+                </el-form-item>
+                <!--  -->
+                <!--  -->
+                <div class="text-start w-100 border-bottom">
+                  <b>一般設定</b>
+                </div>
+                <el-form-item label="等待EQ READY播放音樂">
+                  <el-switch @change="HandleParamChanged" v-model="settings.PlayHandshakingMusic"></el-switch>
+                </el-form-item>
+                <el-form-item label="設備內停車允許誤差(mm)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.TagParkingTolerance"
+                  ></el-input-number>
+                </el-form-item>
+                <el-form-item label="退出設備須需要詢問派車">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
+                  ></el-switch>
+                </el-form-item>
+                <el-form-item label="空取空放">
+                  <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
+                </el-form-item>
+                <!-- <el-form-item label="CST ID讀取功能">
+                  <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
+                </el-form-item>-->
+
+                <div class="text-start w-100 border-bottom">
+                  <b>貨物ID讀取</b>
+                </div>
+                <el-form-item label="CST ID讀取失敗後車載狀態設為">
+                  <el-select @change="HandleParamChanged" v-model="settings.CstReadFailAction">
+                    <el-option label="Normal Status" :value="0"></el-option>
+                    <el-option label="Down Status" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="CST ID讀取值與任務不符時">
+                  <el-select
+                    @change="HandleParamChanged"
+                    v-model="settings.Cst_ID_Not_Match_Action"
+                  >
+                    <el-option label="上報讀取之ID" :value="0"></el-option>
+                    <el-option label="向派車查詢虛擬ID" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="CST 在席檢-進入設備前">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.CST_EXIST_DETECTION.Before_In"
+                  ></el-switch>
+                </el-form-item>
+                <el-form-item label="CST 在席檢-設備動作後">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"
+                  ></el-switch>
+                </el-form-item>
+                <!--  -->
+                <div class="text-start w-100 border-bottom">
+                  <b>車頭設備內產品預檢知</b>
+                </div>
+                <el-form-item label="車頭設備內產品預檢知-放貨">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LOAD_OBS_DETECTION.Enable_Load"
+                  ></el-switch>
+                </el-form-item>
+                <el-form-item label="車頭設備內產品預檢知-取貨">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"
+                  ></el-switch>
+                </el-form-item>
+                <el-form-item label="車頭設備內產品預檢知-偵測時間(sec)">
+                  <el-input-number
+                    @change="HandleParamChanged"
+                    size="small"
+                    v-model="settings.LOAD_OBS_DETECTION.Duration"
+                  ></el-input-number>
+                </el-form-item>
+
+                <div class="text-start w-100 border-bottom">
+                  <b>雷射偵測設備Port內障礙物</b>
+                </div>
+                <el-form-item label="啟用">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LsrObstacleDetectionEnable"
+                  ></el-switch>
+                </el-form-item>
+                <el-form-item label="雷射組數">
+                  <el-input-number
+                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    @change="HandleParamChanged"
+                    size="small"
+                    :min="0"
+                    :max="16"
+                    v-model="settings.LDULDParams.LsrObsLaserModeNumber"
+                  ></el-input-number>
+                </el-form-item>
+                <el-form-item label="偵測異常發報等級">
+                  <el-select
+                    :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel"
+                    @change="HandleParamChanged"
+                  >
+                    <el-option label="Warning" :value="0"></el-option>
+                    <el-option label="Alarm" :value="1"></el-option>
+                  </el-select>
                 </el-form-item>
               </el-form>
             </div>
@@ -735,6 +755,7 @@ import EQHandshakeConfiguration from '@/components/EQHandshakeConfiguration.vue'
 import ManualCheckCargoStatus from '@/components/SystemSettings/ManualCheckCargoStatus.vue'
 import SoundsSetting from '@/components/SystemSettings/SoundsSetting.vue'
 import SystemSettings from '@/ViewModels/SystemSettings'
+
 class ForkLifer {
   constructor() {
     this.ForkLifer_Enable = true;
@@ -762,11 +783,12 @@ export default {
   },
   data() {
     return {
+      loading: true,
       drawer_show: false,
       selected_tab: 0,
       settings: new SystemSettings(),
       normal_stations: [],
-      last_setting_val_set_success_time: '1970/1/1 00:00:00'
+      saveSettingsTimeout: null,
     }
   },
   computed: {
@@ -802,14 +824,53 @@ export default {
   },
   mounted() {
     bus.on('show-settings', async (tabIndex) => {
-      if (tabIndex)
-        this.selected_tab = tabIndex;
-      setTimeout(() => {
-        this.DownloadSettings();
-      }, 100);
+
+
+      this.loading = true;
       this.drawer_show = true
+
+      setTimeout(async () => {
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+          await SystemSettingsStore.dispatch('downloadSettings');
+          if (SystemSettingsStore.state.IsSettingsLoaded) {
+            this.settings = SystemSettingsStore.state.Settings;
+            if (tabIndex)
+              this.selected_tab = tabIndex;
+            this.loading = false;
+            this.$notify({
+              title: '系統設定',
+              message: '參數下載完成',
+              type: 'success',
+              position: 'bottom-right',
+              duration: 2000
+            });
+            return;
+          }
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 1000));//等待1秒
+        }
+        this.loading = false;
+        this.$swal.fire({
+          title: '載入設定失敗',
+          text: '無法下載系統設定，請稍後再試',
+          icon: 'error',
+          showCancelButton: true,
+          confirmButtonText: '重新嘗試',
+          cancelButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            bus.emit('show-settings', this.selected_tab);
+          } else {
+            this.drawer_show = false;
+          }
+        });
+      }, 200);
+
     })
-    this.DownloadSettings();
   },
   methods: {
     async HandleSystemCloseBtnClick() {
@@ -901,31 +962,18 @@ export default {
           }
         })
     },
-    async DownloadSettings() {
-      try {
-        var _settings = await SystemAPI.GetSettings()
-        console.log(_settings)
-        this.settings = _settings
-        SystemSettingsStore.commit('setSettings', _settings)
-        this.normal_stations = await MapAPI.GetNormalStations()
-      } catch {
-        this.$swal.fire(
-          {
-            title: 'SOMETHING WRONG',
-            text: 'Backend Server Error',
-            icon: 'error',
-            showCancelButton: false,
-            confirmButtonText: 'OK',
-            customClass: 'my-sweetalert'
-          })
-      }
-    },
     async HandleParamChanged() {
-      var success = await SystemAPI.SaveSettings(this.settings)
-      if (success) {
-        SystemSettingsStore.commit('setSettings', this.settings)
-        if (this.DiffSecOfLastSettingSuccess() > 0.6) {
+      // Debounce the API call to avoid rapid updates
+      if (this.saveSettingsTimeout) {
+        clearTimeout(this.saveSettingsTimeout);
+      }
 
+      this.saveSettingsTimeout = setTimeout(async () => {
+        const reuslt = await SystemAPI.SaveSettings(this.settings)
+        const success = reuslt.confirm;
+        const errMsg = reuslt.errorMsg;
+        if (success) {
+          // SystemSettingsStore.commit('setSettings', this.settings)
           ElNotification({
             title: '系統參數設定',
             message: '系統參數設定成功',
@@ -933,24 +981,26 @@ export default {
             duration: 1000,
             position: 'bottom-right'
           });
+        } else {
+          // 重新下載參數
+          setTimeout(async () => {
+            await SystemSettingsStore.dispatch('downloadSettings');
+            if (SystemSettingsStore.state.IsSettingsLoaded) {
+              this.settings = SystemSettingsStore.state.Settings;
+            }
+          }, 500);
+          this.$swal.fire({
+            title: '系統參數設定',
+            text: '系統參數設定失敗:' + errMsg,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          });
         }
-        this.last_setting_val_set_success_time = moment(Date.now()).format('YYYY/MM/DD HH:mm:ss');
-      } else {
-        ElNotification({
-          title: '系統參數設定',
-          message: '系統參數設定失敗',
-          type: 'error',
-          position: 'bottom-right',
-          duration: 1000,
-        });
-      }
-    },
-    DiffSecOfLastSettingSuccess() {
-      var lastTime = moment(this.last_setting_val_set_success_time);
-      var now = moment();
-      var diff = now.diff(lastTime, 'seconds');
-      console.log(this.last_setting_val_set_success_time, diff);
-      return diff;
+
+
+      }, 500); // Wait 500ms before making API call
     },
     TimeFormat(time) {
       return moment(time).format("YYYY/MM/DD HH:mm:ss")
@@ -992,6 +1042,13 @@ export default {
       margin-right: 5px;
       cursor: pointer;
     }
+  }
+  .edit_key {
+    font-size: 9px;
+    color: #0000008a;
+    background-color: #fff;
+    padding-top: 31px;
+    letter-spacing: 2px;
   }
 }
 

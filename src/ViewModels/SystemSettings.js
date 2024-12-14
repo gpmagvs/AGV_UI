@@ -10,13 +10,13 @@ class SystemSettings {
         this.Connections = {
             RosBridge: { IP: "127.0.0.1", Port: 9090, Protocol_Interval_ms: 5 },
             Wago: { IP: "192.168.1.20", Port: 502, Protocol_Interval_ms: 50 },
-            AGVS: { IP: "10.22.153.36", Port: 5500, Protocol_Interval_ms: 5 }
+            AGVS: { IP: "1.1.1.222", Port: 5500, Protocol_Interval_ms: 5 }
         };
         this.VMSParam = {
             Notes: "",
-            LocalIP: "10.22.141.215",
+            LocalIP: "127.0.0.1",
             Protocol: 0,
-            MapUrl: "http://10.22.153.36:5216/api/Map"
+            MapUrl: "http://1.1.1.1:5216/api/Map"
         };
         this.ActiveTrafficControl = false;
         this.EQHandshakeBypass = false;
@@ -167,25 +167,28 @@ class SystemSettings {
         };
         this.SoundsParams = {
             audioPathes: {
-                move: '/home/gpm/param/sounds/move.wav',
-                alarm: '/home/gpm/param/sounds/alarm.wav',
-                action: '/home/gpm/param/sounds/action.wav',
-                batteryExchange: '/home/gpm/param/sounds/batteryExchange.wav',
-                goToCharge: '/home/gpm/param/sounds/goToCharge.wav',
-                rotating: '/home/gpm/param/sounds/spining.wav',
-                slowDown: '/home/gpm/param/sounds/slowDown.wav',
+                move: "/home/gpm/param/sounds/move.wav",
+                alarm: "/home/gpm/param/sounds/alarm.wav",
+                action: "/home/gpm/param/sounds/action.wav",
+                batteryExchange: "/home/gpm/param/sounds/batteryExchange.wav",
+                goToCharge: "/home/gpm/param/sounds/goto_charge.wav",
+                measure: "/home/gpm/param/sounds/measure.wav",
+                rotating: "/home/gpm/param/sounds/spining.wav",
+                slowDown: "/home/gpm/param/sounds/slowDown.wav",
+                rotating_voice: "/home/gpm/param/sounds/vehicle_rotating.wav",
+                slowDown_voice: "/home/gpm/param/sounds/slow_down.wav",
+                waitingCargoStatusCheck: "/home/gpm/param/sounds/waiting_cargo_status_check.wav",
+                backward: "/home/gpm/param/sounds/waiting_cargo_status_check.wav"
             },
             slowDownAndRotatinSoundPlay: {
                 Enable: false,
                 SoundPlayType: 1
             },
 
-            get audioFileNames() {
-                return Object.fromEntries(
-                    Object.entries(this.audioPathes).map(([key, value]) => [key, value.split('/').pop()])
-                );
-            }
         };
+
+        this.IsUIDefault = true;
+        this.EditKey = 'default';
     }
 
 }

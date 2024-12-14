@@ -90,6 +90,7 @@ import uploader from '@/components/Upload'
 import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
+import { SystemSettingsStore } from '@/store'
 export default {
   components: {
     uploader, jw_switch
@@ -168,7 +169,7 @@ export default {
         });
       }
     },
-    HandleSettingIconClick() {
+    async HandleSettingIconClick() {
       bus.emit('show-settings')
     },
     LangChangeHandle(checked) {

@@ -31,6 +31,7 @@ export var SystemAPI = {
       var ret = await axios_entity.get('api/System/Settings')
       return ret.data
     } catch (error) {
+      return undefined;
     }
   },
   async SaveSettings(settings) {
@@ -57,6 +58,10 @@ export var SystemAPI = {
     } catch (error) {
       return { confirm: false, message: error.message };
     }
+  },
+  async GetConnectionState() {
+    var ret = await axios_entity.get('api/System/ConnectionStatus')
+    return ret.data
   }
 }
 

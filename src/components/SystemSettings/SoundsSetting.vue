@@ -158,20 +158,24 @@ export default {
       return SystemSettingsStore.state.Settings.AgvType;
     },
     filteredAudioFileNamesByAGVModel() {
+      let audioFileNames = this.getAudioFileNames();
+      if (!audioFileNames) {
+        return {};
+      }
+
       if (this.agvModel === 2) {
         return Object.fromEntries(
-          Object.entries(this.sounds.audioFileNames).filter(([key]) => {
+          Object.entries(audioFileNames).filter(([key]) => {
             return (key !== 'batteryExchange' && key !== 'goToCharge' && key !== 'action');
           })
         );
       } else {
         return Object.fromEntries(
-          Object.entries(this.sounds.audioFileNames).filter(([key]) => {
+          Object.entries(audioFileNames).filter(([key]) => {
             return (key !== 'batteryExchange');
           })
         );
       }
-
     }
   },
   mounted() {
@@ -188,7 +192,7 @@ export default {
         this.audioPlayer.currentTime = 0;
       }
 
-      const audioUrl = `${param.backend_host}/audios/${this.sounds.audioFileNames[key]}`
+      const audioUrl = `${param.backend_host}/audios/${this.getAudioFileNames()[key]}`
       // 播放音效
       // Set new audio source
       this.audioPlayer.src = audioUrl;
@@ -245,6 +249,11 @@ export default {
       this.sounds.audioPathes[this.selectSoundKey] = audioName;
       this.showSelectSoundDrawer = false;
       SoundsAPI.SaveAudioPath(this.sounds.audioPathes);
+    },
+    getAudioFileNames() {
+      return Object.fromEntries(
+        Object.entries(this.sounds.audioPathes).map(([key, value]) => [key, value.split('/').pop()])
+      );
     }
   }
 

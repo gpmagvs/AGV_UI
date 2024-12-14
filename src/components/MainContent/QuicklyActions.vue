@@ -9,7 +9,7 @@
         inactive-color="red"
         inactive-text="OFF"
         inline-prompt
-        @change="(val)=>{settingsStored.CST_READER_TRIGGER=val;SaveSettings();}"
+        @change="(val)=>{SaveReaderSettings(val);}"
       ></el-switch>
     </div>
   </div>
@@ -25,25 +25,92 @@ export default {
   data() {
     return {
       cstIdRead: true,
-      settingsStored: new SystemSettings(),
+      settingsStored: undefined,
+      saveSettingsTimeout: undefined,
     }
   },
   methods: {
-    async SaveSettings() {
-      SystemAPI.SaveSettings(this.settingsStored);
-      ElNotification.success('Settings has changed!');
+    async SaveReaderSettings(val) {
+      // Debounce the save operation
+      if (this.saveSettingsTimeout) {
+        clearTimeout(this.saveSettingsTimeout);
+      }
+
+      this.saveSettingsTimeout = setTimeout(async () => {
+        const showGetSettingsError = () => {
+          this.$swal.fire(
+            {
+              title: '系統參數異常',
+              text: '無法設定 Reader設定 (無法取得系統參數)',
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+        await SystemSettingsStore.dispatch('downloadSettings');
+        //嚴謹一點，應先重新取得系統參數，再進行設定
+        if (!SystemSettingsStore.state.IsSettingsLoaded) {
+          this.cstIdRead = !this.cstIdRead;
+          showGetSettingsError();
+          return;
+        }
+        this.settingsStored = SystemSettingsStore.state.Settings;
+        if (this.settingsStored) {
+
+          this.settingsStored = SystemSettingsStore.state.Settings;
+          this.settingsStored.CST_READER_TRIGGER = val;
+          const result = await SystemAPI.SaveSettings(this.settingsStored);
+          if (result.confirm) {
+            ElNotification.success(`讀取貨物ID功能已${val ? '開啟' : '關閉'}!`);
+          } else {
+            this.$swal.fire({
+              title: 'Reader 設定更新失敗:' + result.errorMsg,
+              text: result.message,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert',
+              allowOutsideClick: false,
+              allowEscapeKey: false
+            });
+            this.cstIdRead = !this.cstIdRead;
+          }
+        }
+        else {
+          showGetSettingsError();
+          this.cstIdRead = !this.cstIdRead;
+        }
+
+      }, 500); // Wait 500ms before executing
     }
   },
   mounted() {
     setTimeout(() => {
-      const _syssetting = SystemSettingsStore.state.Settings;
-      this.cstIdRead = _syssetting.CST_READER_TRIGGER
-      _.merge(this.settingsStored, _syssetting)
-    }, 1000);
+      if (!SystemSettingsStore.state.IsSettingsLoaded) {
+        this.$swal.fire(
+          {
+            title: '系統參數異常',
+            text: 'Reader 設定同步失敗 (無法取得系統參數)',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      }
+      if (SystemSettingsStore.state.Settings) {
+        this.cstIdRead = SystemSettingsStore.state.Settings.CST_READER_TRIGGER
+        this.settingsStored = SystemSettingsStore.state.Settings
+      }
+    }, 100);
 
   },
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.quickly-actions {
+  z-index: 1099999;
+}
 </style>

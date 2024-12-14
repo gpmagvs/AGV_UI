@@ -38,7 +38,7 @@
 <script>
 import bus from '@/event-bus.js'
 import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
-import { SystemMsgStore, AGVStatusStore, UserStore } from '@/store'
+import { SystemMsgStore, AGVStatusStore, UserStore, SystemSettingsStore, UIStore } from '@/store'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
@@ -69,6 +69,44 @@ export default {
     },
     async HandleAlarmSheetClick(code) {
       await AGVStatusStore.dispatch('clear_alarm_with_code', code)
+    },
+    checkConnectionStatus() {
+      let rosConnState = UIStore.state.ConnectionStateData.RosbridgeServer;
+      const isROSConnecting = rosConnState == 2 || rosConnState == 1;
+
+      let ioConnState = UIStore.state.ConnectionStateData.WAGO;
+      const isDIOConnecting = ioConnState == 2 || ioConnState == 1;
+
+      let agvsConnState = UIStore.state.ConnectionStateData.VMS;
+      const isAGVSConnecting = agvsConnState == 2 || agvsConnState == 1;
+
+      if (!AGVStatusStore.state.AGVStatus.IsInitialized && (isROSConnecting || isDIOConnecting)) {
+        const rosBridgeServerIP = SystemSettingsStore.state.Settings.Connections.RosBridge.IP;
+        const rosBridgeServerPort = SystemSettingsStore.state.Settings.Connections.RosBridge.Port;
+        const wagoIP = SystemSettingsStore.state.Settings.Connections.Wago.IP;
+        const wagoPort = SystemSettingsStore.state.Settings.Connections.Wago.Port;
+        const agvsIP = SystemSettingsStore.state.Settings.Connections.AGVS.IP;
+        const agvsPort = SystemSettingsStore.state.Settings.Connections.AGVS.Port;
+
+        let message = '';
+        if (isROSConnecting) {
+          message += `[ROS服務器]連接失敗..請確認連線 (${rosBridgeServerIP}:${rosBridgeServerPort})\n`;
+        }
+        if (isDIOConnecting) {
+          message += `[IO模組]   連接失敗..請確認連線 (${wagoIP}:${wagoPort})\n`;
+        }
+        if (isAGVSConnecting) {
+          message += `[AGVS]   連接失敗..請確認連線 (${agvsIP}:${agvsPort})`;
+        }
+        this.$swal.fire({
+          title: '通訊連線異常',
+          html: `<ul style="list-style-type: disc; text-align: left; margin: 0; padding-left: 120px;">${message.split('\n').map(line => `<li style="margin-bottom: 10px;">${line}</li>`).join('')}</ul>`,
+          icon: 'error',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        });
+      }
     }
   },
   computed: {
@@ -204,6 +242,24 @@ export default {
     setTimeout(() => {
       this.loading = false;
     }, 2000);
+
+    if (!SystemSettingsStore.getters.IsSettingsLoaded) {
+      this.$swal.fire(
+        {
+          title: 'Warning!',
+          text: '系統參數未從服務器下載完成',
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        })
+    } else {
+
+      setTimeout(() => {
+        this.checkConnectionStatus();
+      }, 3000);
+
+    }
   },
 };
 </script>

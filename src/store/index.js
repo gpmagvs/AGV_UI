@@ -7,6 +7,7 @@ import { ClearAlarm, GetWorkstationsData, WorkStationModbusIOTest, MapAPI, DIO }
 import bus from '@/event-bus';
 import { ROS_STORE } from './ros_store';
 import SystemSettings from '@/ViewModels/SystemSettings'
+import { SystemAPI } from '@/api/VMSAPI';
 import _ from 'lodash'
 export default createStore({
   state: {
@@ -26,7 +27,11 @@ export var UIStore = createStore({
     UI_Version: "01.25.0",
     PreviousControllRoute: 'move',
     CurrentTabSelected: 0,
-    ConnectionStateData: {},
+    ConnectionStateData: {
+      RosbridgeServer: 2,
+      WAGO: 2,
+      VMS: 2,
+    },
   },
   getters: {
     CurrentUIVersion: state => {
@@ -50,8 +55,10 @@ export var UIStore = createStore({
     }
   },
   actions: {
-
-
+    async GetConnectionState({ commit }) {
+      var ret = await SystemAPI.GetConnectionState();
+      commit('StoreConnectionState', ret);
+    }
   }
 })
 
@@ -382,20 +389,37 @@ export var AGVStatusStore = createStore({
 /**系統參數STORE */
 export var SystemSettingsStore = createStore({
   state: {
-    Settings: new SystemSettings()
+    Settings: new SystemSettings(),
+    IsSettingsLoaded: false
   },
   getters: {
     Settings: state => {
       return state.Settings
+    },
+    IsSettingsLoaded: state => {
+      return state.IsSettingsLoaded
     }
   },
   mutations: {
     setSettings(state, settings) {
-      let _settingObj = new SystemSettings();
-      _.merge(_settingObj, settings)
-      console.log(_settingObj)
-      state.Settings = _settingObj
-      //state.Settings = settings
+      // let _settingObj = new SystemSettings();
+      // _.merge(_settingObj, settings)
+      // state.Settings = _settingObj
+      state.Settings = settings;
+      state.IsSettingsLoaded = true;
+    },
+    setIsSettingsLoaded(state, value) {
+      state.IsSettingsLoaded = value;
+    }
+  },
+  actions: {
+    async downloadSettings({ commit }) {
+      commit('setIsSettingsLoaded', false);
+      const settings = await SystemAPI.GetSettings();
+      if (settings) {
+        commit('setSettings', settings);
+        commit('setIsSettingsLoaded', true);
+      }
     }
   }
 })
