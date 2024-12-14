@@ -5,11 +5,11 @@ class SystemSettings {
         /** 車款  FORK = 0, YUNTECH_FORK_AGV = 1, INSPECTION_AGV = 2, SUBMERGED_SHIELD = 3, SUBMERGED_SHIELD_Parts = 4, */
         this.AgvType = 3;
         this.Version = 1;
-        this.SID = "002:001:001";
-        this.VehicleName = "AGV_002";
+        this.SID = "001:001:001";
+        this.VehicleName = "AGV_001";
         this.Connections = {
-            RosBridge: { IP: "172.20.10.2", Port: 9090, Protocol_Interval_ms: 5 },
-            Wago: { IP: "172.20.10.2", Port: 502, Protocol_Interval_ms: 50 },
+            RosBridge: { IP: "127.0.0.1", Port: 9090, Protocol_Interval_ms: 5 },
+            Wago: { IP: "192.168.1.20", Port: 502, Protocol_Interval_ms: 50 },
             AGVS: { IP: "10.22.153.36", Port: 5500, Protocol_Interval_ms: 5 }
         };
         this.VMSParam = {
@@ -53,7 +53,7 @@ class SystemSettings {
         this.StationNeedQueryVirtualID = [];
         this.MapParam = { LocalMapFileName: "temp/Map_AOI2F.json" };
         this.EQHandshakeMethod = 0;
-        this.HandshakeIOFlickDelayTime = 300;
+        this.HandshakeIOFlickDelayTime = 800;
         this.LOAD_OBS_DETECTION = {
             Enable_Load: false,
             Enable_UnLoad: false,
@@ -73,11 +73,11 @@ class SystemSettings {
             ForkFrontendObsSensorBypass: false
         };
         this.EQHSTimeouts = {
-            TA1_Wait_L_U_REQ_ON: 5,
-            TA2_Wait_EQ_READY_ON: 5,
-            TA3_Wait_EQ_BUSY_ON: 5,
+            TA1_Wait_L_U_REQ_ON: 10,
+            TA2_Wait_EQ_READY_ON: 15,
+            TA3_Wait_EQ_BUSY_ON: 10,
             TA4_Wait_EQ_BUSY_OFF: 90,
-            TA5_Wait_L_U_REQ_OFF: 5,
+            TA5_Wait_L_U_REQ_OFF: 10,
             TP_3_Wait_AGV_BUSY_OFF: 90,
             TP_5_Wait_AGV_BUSY_OFF: 90
         };
@@ -134,10 +134,10 @@ class SystemSettings {
         this.BatteryModule = {
             BatteryLogFolder: "C:\\Users\\jinwei\\Documents\\GPM LOG",
             Recharge_Circuit_Auto_Control_In_ManualMode: true,
-            ChargeWhenLevelLowerThanThreshold: true,
-            ChargeLevelThreshold: 30,
+            ChargeWhenLevelLowerThanThreshold: false,
+            ChargeLevelThreshold: 100,
             CutOffChargeRelayVoltageThreshodlval: 28800,
-            WaitChargeStartDelayTimeWhenReachChargeTaskFinish: 10
+            WaitChargeStartDelayTimeWhenReachChargeTaskFinish: 20
         };
         this.LDULDParams = {
             LsrObstacleDetectionEnable: false,
@@ -158,7 +158,7 @@ class SystemSettings {
             ShutDownPCWhenLowBatteryLevel: false
         };
         this.ManualCheckCargoStatus = {
-            Enabled: true,
+            Enabled: false,
             CheckPoints: [
                 { Enabled: true, CheckPointTag: 29, Timeout: 30, TriggerMoment: 1 },
                 { Enabled: true, CheckPointTag: 77, Timeout: 10, TriggerMoment: 0 },
@@ -167,16 +167,16 @@ class SystemSettings {
         };
         this.SoundsParams = {
             audioPathes: {
-                move: '/public/sounds/move.wav',
-                alarm: '/public/sounds/alarm.wav',
-                action: '/public/sounds/action.wav',
-                batteryExchange: '/public/sounds/batteryExchange.wav',
-                goToCharge: '/public/sounds/goToCharge.wav',
-                rotating: '/public/sounds/spining.wav',
-                slowDown: '/public/sounds/slowDown.wav',
+                move: '/home/gpm/param/sounds/move.wav',
+                alarm: '/home/gpm/param/sounds/alarm.wav',
+                action: '/home/gpm/param/sounds/action.wav',
+                batteryExchange: '/home/gpm/param/sounds/batteryExchange.wav',
+                goToCharge: '/home/gpm/param/sounds/goToCharge.wav',
+                rotating: '/home/gpm/param/sounds/spining.wav',
+                slowDown: '/home/gpm/param/sounds/slowDown.wav',
             },
             slowDownAndRotatinSoundPlay: {
-                Enable: true,
+                Enable: false,
                 SoundPlayType: 1
             },
 
