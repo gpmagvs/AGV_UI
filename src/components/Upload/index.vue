@@ -12,7 +12,8 @@
       :on-success="handleUploadSuccess"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
-      :limit="1">
+      :limit="1"
+    >
       <el-button ref="select_file" type="primary">選擇更新檔</el-button>
     </el-upload>
     <el-button :disabled="!selectedFile" id="upload-button" @click="submitUpload">上傳</el-button>
@@ -114,7 +115,7 @@ export default {
         })
     },
     SubscribeConnectionStatus() {
-      bus.on("hub-reconnecting", () => this.ShowUpdatingSwal())
+      //bus.on("hub-reconnecting", () => this.ShowUpdatingSwal())
       bus.on("hub-connected", () => this.ShowUpdateSuccessSwal())
     }
   },

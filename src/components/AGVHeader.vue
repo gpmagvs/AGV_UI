@@ -52,15 +52,27 @@
             <i class="bi bi-fullscreen me-2"></i>
             全螢幕切換
           </b-dropdown-item>
-          <b-dropdown-item v-if="IsGodUser" @click="HandleAGVLocating">
-            <i class="bi bi-pin-map me-2"></i> 車輛定位
+          <b-dropdown-item v-if="IsGodUser">
+            <i class="bi bi-pin-map me-2"></i>
+            <el-button
+              @click="HandleAGVLocating"
+              :disabled="IsAGVRunning"
+              class="system-control-button"
+              text
+            >車輛定位</el-button>
           </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser" @click="HandleSickLidarLocBtnClick">
             <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website
           </b-dropdown-item>
 
-          <b-dropdown-item v-if="IsGodUser" @click="() => { uploadVisible = true }">
-            <i class="bi bi-file-arrow-up-fill me-2"></i> 車載更新
+          <b-dropdown-item v-if="IsGodUser">
+            <i class="bi bi-file-arrow-up-fill me-2"></i>
+            <el-button
+              @click="() => { uploadVisible = true }"
+              :disabled="IsAGVRunning"
+              class="system-control-button"
+              text
+            >車載更新</el-button>
           </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
             <i class="bi bi-power me-2"></i> 關機
@@ -139,6 +151,9 @@ export default {
     IsGodUser() {
       return UserStore.getters.IsGodUser
     },
+    IsAGVRunning() {
+      return AGVStatusStore.state.AGVStatus.SubState == 'RUN';
+    }
   },
   methods: {
     async where_r_u() {
@@ -338,6 +353,21 @@ export default {
     ::v-deep .btn-group > .btn {
       border-radius: 0;
       height: 37px;
+    }
+  }
+  .system-control-button {
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding-left: -124px;
+    color: inherit;
+    ::v-deep span {
+      left: -56px !important;
+      position: relative !important;
+    }
+    ::v-deep :active {
+      background-color: rgb(0, 123, 255) !important;
     }
   }
 }
