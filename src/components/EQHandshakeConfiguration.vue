@@ -76,6 +76,17 @@
           ></el-select-v2>
         </template>
       </el-table-column>
+
+      <el-table-column label="Modbus Port" prop="ModbusTcpPort">
+        <template #default="scope">
+          <el-input
+            :disabled="scope.row.HandShakeConnectionMode != 1"
+            type="number"
+            :step="1"
+            v-model="scope.row.ModbusTcpPort"
+          ></el-input>
+        </template>
+      </el-table-column>
       <el-table-column label="牙叉伸出" prop="ForkArmExtend" v-if="IsForkAGV">
         <template #default="scope">
           <el-select-v2
