@@ -290,6 +290,10 @@ export const DIO = {
       `api/VMS/UpdateOUTPUTSettings`, data
     )
     return ret.data
+  },
+  async DownloadInOutPutsOptions() {
+    var ret = await axios_entity.get(`api/VMS/DIO/DownloadInOutPutsOptions`)
+    return ret.data
   }
 }
 

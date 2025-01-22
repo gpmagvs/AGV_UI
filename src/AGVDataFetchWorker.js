@@ -96,6 +96,12 @@ function StartHubConnection() {
         }
         channel.postMessage(postData)
     })
+    HubConnection.on('VehicleError', message => {
+        bus.emit('VehicleError', message)
+    })
+    HubConnection.on('DiskUsageError', message => {
+        bus.emit('DiskUsageError', message)
+    })
     HubConnection.on('AGV-Notify-Message', (obj) => {
         bus.emit('AGV-Notify-Message-Recieved', obj)
     })
@@ -109,10 +115,14 @@ function StartHubConnection() {
     HubConnection.on('ReChargeCircuitChanged', (isOpened) => {
         bus.emit('ReChargeCircuitChanged', isOpened)
     })
+    HubConnection.on('CargoStatus', obj => {
+        bus.emit('CargoStatusChanged', obj)
+    })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
         bus.emit('hub-reconnecting');
     })
+
     HubConnection.onclose(() => {
         console.log('SignalR  Disconnect');
         bus.emit('ws_disconnect', undefined);

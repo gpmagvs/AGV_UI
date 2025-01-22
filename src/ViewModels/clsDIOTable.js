@@ -115,7 +115,7 @@ export const DO_ITEMS = [
   { label: "Infrared_PW_0", value: "Infrared_PW_0" },
   { label: "Infrared_Door_2", value: "Infrared_Door_2" },
   { label: "Fork_Extend", value: "Fork_Extend" },
-  { label: "Fork_Shortend", value: "Fork_Shortend" },
+  { label: "Fork_Shortend", value: "Fork_Shortend" }
 ];
 
 
@@ -216,7 +216,8 @@ export const DI_ITEMS = [
   { label: "Safty_PLC_Output", value: "Safty_PLC_Output" },
   { label: "Front_Right_Ultrasound_Sensor", value: "Front_Right_Ultrasound_Sensor" },
   { label: "Back_Left_Ultrasound_Sensor", value: "Back_Left_Ultrasound_Sensor" },
-  { label: "Limit_Switch_Sensor", value: "Limit_Switch_Sensor" },
+  { label: "Limit_Switch_Sensor", value: "Limit_Switch_Sensor" }, ,
+  { label: "Carrier_Exist_Interupt_Sensor", value: "Carrier_Exist_Interupt_Sensor" },
 ];
 
 export default clsDIOTable

@@ -33,6 +33,7 @@
     <EQHandshakingNotify></EQHandshakingNotify>
     <WaitAGVsNextMoveActionNotify></WaitAGVsNextMoveActionNotify>
     <AGVInitalizingNotify></AGVInitalizingNotify>
+    <SystemErrorNotify></SystemErrorNotify>
   </div>
 </template>
 <script>
@@ -45,13 +46,14 @@ import SystemSettingsView from '@/views/SystemSettingsView.vue'
 import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
 import WaitAGVsNextMoveActionNotify from "@/components/WaitAGVsNextMoveActionNotify.vue"
 import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
+import SystemErrorNotify from "@/components/SystemErrorNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone } from '@/api/VMSAPI.js'
 
 export default {
   components: {
-    SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify
+    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify
   },
   data() {
     return {
@@ -278,6 +280,11 @@ export default {
           customClass: 'my-sweetalert'
         })
     })
+
+    bus.on('CargoStatusChanged', obj => {
+      console.warn(obj);
+    })
+
     setTimeout(() => {
       this.loading = false;
     }, 2000);

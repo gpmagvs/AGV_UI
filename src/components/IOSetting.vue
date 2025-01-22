@@ -26,23 +26,26 @@
     </div>
 </template>
 <script>
-import { DO_ITEMS, DI_ITEMS } from '@/ViewModels/clsDIOTable.js'
 import { DIOStore } from '@/store'
-import { DIO } from '@/api/VMSAPI'
+import { DIO, SystemAPI } from '@/api/VMSAPI'
 export default {
 
     data() {
         return {
             regionName: "X",
-            tableData: []
+            tableData: [],
+            options: {
+                Inputs: [],
+                Outputs: []
+            }
         }
     },
     computed: {
         GetSelectOptions() {
             if (this.regionName == "X") {
-                return DI_ITEMS
+                return this.options.Inputs
             } else if (this.regionName == "Y") {
-                return DO_ITEMS
+                return this.options.Outputs
             }
         },
         GetCurrentIORegistState() {
@@ -100,20 +103,42 @@ export default {
                     } else {
                         result = await DIO.UpdateOutputMap(this.DataToStore);
                     }
+                    const isSuccess = result.confirm;
                     this.$swal.fire(
                         {
-                            title: result.confirm ? '修改成功' : '修改失敗',
+                            title: isSuccess ? '修改成功,需要重新啟動系統，是否立即重新啟動?' : '修改失敗',
                             text: result.message,
-                            icon: result.confirm ? 'success' : 'error',
-                            showCancelButton: false,
-                            confirmButtonText: 'OK',
+                            icon: isSuccess ? 'success' : 'error',
+                            showCancelButton: isSuccess,
+                            confirmButtonText: isSuccess ? '重新啟動' : 'OK',
+                            cancelButtonText: '稍後',
                             customClass: 'my-sweetalert'
+                        }).then(async (ret) => {
+                            if (!ret.isConfirmed)
+                                return;
+                            var _response = await SystemAPI.RestartSystem();
+                            if (_response.confirm) {
+                                this.$swal.fire({
+                                    title: '車載系統正在重新啟動中...',
+                                    icon: 'success',
+                                    customClass: 'my-sweetalert'
+                                })
+                            }
+
                         })
+
+
                 })
+        },
+        DownloadInOutPutsOptions() {
+            DIO.DownloadInOutPutsOptions().then(ret => {
+                this.options = ret;
+            })
         }
 
     },
     mounted() {
+        this.DownloadInOutPutsOptions();
         this.InitData();
     },
 }
