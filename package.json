@@ -1,6 +1,6 @@
 {
   "name": "agv_ui",
-  "version": "1.33.55",
+  "version": "1.33.56",
   "private": true,
   "scripts": {
     "version": "standard-version",
