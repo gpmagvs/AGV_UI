@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.34.0](https://github.com/gpmagvs/AGV_UI/compare/v1.33.59...v1.34.0) (2025-02-13)
+
+
+### Features
+
+* Add UI settings and debug message handling ([d9dcc69](https://github.com/gpmagvs/AGV_UI/commit/d9dcc69e45156c1f5c553c350e8de6114180b28c))
+
 ### [1.33.59](https://github.com/gpmagvs/AGV_UI/compare/v1.33.58...v1.33.59) (2025-02-06)
 
 ### [1.33.58](https://github.com/gpmagvs/AGV_UI/compare/v1.33.57...v1.33.58) (2025-01-23)
