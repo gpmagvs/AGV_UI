@@ -187,6 +187,10 @@ class SystemSettings {
 
         };
 
+        this.UI = {
+            IsQuicklyActionFooterDisplay: false,
+            CstReaderSwitchDisplayWhenNotLogin: false
+        };
         this.IsUIDefault = true;
         this.EditKey = 'default';
     }

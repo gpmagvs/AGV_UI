@@ -1,22 +1,22 @@
 <template>
-  <div class="quickly-actions d-flex">
+  <div v-if="isShow" class="quickly-actions d-flex">
     <div class="d-flex flex-row">
-      <span># 貨物ID讀取 Cargo ID Read:</span>
-      <el-switch
-        v-model="cstIdRead"
-        class="mx-2 pb-2"
-        active-text="ON"
-        inactive-color="red"
-        inactive-text="OFF"
-        inline-prompt
-        @change="(val)=>{SaveReaderSettings(val);}"
-      ></el-switch>
+      <div v-if="isShowCstReaderSwitch">
+        <span># 貨物ID讀取 Cargo ID Read:</span>
+        <el-switch
+          v-model="cstIdRead"
+          class="mx-2 pb-2"
+          active-text="ON"
+          inactive-color="red"
+          inactive-text="OFF"
+          inline-prompt
+          @change="(val) => { SaveReaderSettings(val); }"></el-switch>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
-import { SystemSettingsStore } from '@/store';
+import { SystemSettingsStore, UserStore } from '@/store';
 import { watch } from 'vue';
 import { SystemAPI } from '@/api/VMSAPI';
 import SystemSettings from '@/ViewModels/SystemSettings';
@@ -25,7 +25,7 @@ import bus from '@/event-bus';
 export default {
   data() {
     return {
-      cstIdRead: true,
+      cstIdRead: false,
       settingsStored: undefined,
       saveSettingsTimeout: undefined,
     }
@@ -86,6 +86,18 @@ export default {
       }, 500); // Wait 500ms before executing
     }
   },
+  computed: {
+    isShow() {
+      if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsQuicklyActionFooterDisplay == undefined)
+        return true;
+      return SystemSettingsStore.state.Settings.UI.IsQuicklyActionFooterDisplay
+    },
+    isShowCstReaderSwitch() {
+      if (UserStore.state.UserState.Role > 0)
+        return true;
+      return SystemSettingsStore.state.Settings.UI.CstReaderSwitchDisplayWhenNotLogin;
+    }
+  },
   mounted() {
     setTimeout(() => {
       if (!SystemSettingsStore.state.IsSettingsLoaded) {
@@ -118,7 +130,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .quickly-actions {
   z-index: 1099999;

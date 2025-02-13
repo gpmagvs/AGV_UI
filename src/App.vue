@@ -5,21 +5,18 @@
     style="width:100vw;height:100vh"
     v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)"
-  >
+    element-loading-background="rgba(0,0,0, 0.8)">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms"
-    >
+      id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
-        ></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -40,7 +37,7 @@
 import bus from '@/event-bus.js'
 import SideMenuDrawer from '@/views/SideMenuDrawer.vue'
 import { SystemMsgStore, AGVStatusStore, UserStore, SystemSettingsStore, UIStore } from '@/store'
-import { ElNotification } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import moment from 'moment'
 import SystemSettingsView from '@/views/SystemSettingsView.vue'
 import EQHandshakingNotify from '@/components/EQHandshakingNotify.vue'
@@ -152,7 +149,7 @@ export default {
   },
   watch: {
     VehicleName(newValue, oldValue) {
-      document.title = 'GPM-' + newValue;
+      document.title = (process.env.NODE_ENV === 'development' ? '[Dev] ' : '') + 'GPM-' + newValue;
     }
   },
   created() {
@@ -216,7 +213,9 @@ export default {
       });
 
     });
-
+    bus.on('DebugMessage', message => {
+      ElMessage.info(message)
+    })
     bus.on('AGV-Notify-Message-Recieved', obj => {
       const title = obj.title;
       const message = obj.message;

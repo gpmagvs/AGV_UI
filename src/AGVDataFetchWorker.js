@@ -105,6 +105,9 @@ function StartHubConnection() {
     HubConnection.on('AGV-Notify-Message', (obj) => {
         bus.emit('AGV-Notify-Message-Recieved', obj)
     })
+    HubConnection.on('DebugMessage', (message) => {
+        bus.emit('DebugMessage', message)
+    })
     HubConnection.on('ManualCheckCargoStatus', (obj) => {
         bus.emit('ManualCheckCargoStatus', obj)
     })
