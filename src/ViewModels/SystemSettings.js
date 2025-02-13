@@ -105,6 +105,7 @@ class SystemSettings {
             NoWaitForkArmFinishAndMoveOutInWorkStation: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation: true,
+            TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag: false,
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
             ManualModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
@@ -155,7 +156,9 @@ class SystemSettings {
             SensorPointType: 1
         };
         this.Advance = {
-            ShutDownPCWhenLowBatteryLevel: false
+            ShutDownPCWhenLowBatteryLevel: false,
+            AutoInitAndOnlineWhenMoveWithoutCargo: false,
+            AutoInitAndOnlineWhenMoveWithCargo: false,
         };
         this.ManualCheckCargoStatus = {
             Enabled: false,

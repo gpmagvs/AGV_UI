@@ -2,6 +2,7 @@ import axios_entity from '@/axios';
 import MoveTestVM from '@/ViewModels/MoveTestDto.js'
 import bus from '@/event-bus.js'
 import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization'
+import AlarmCodeModel from '@/ViewModels/AlarmCodeModel'
 
 console.warn(axios_entity);
 /**
@@ -330,6 +331,15 @@ export const AlarmTableAPI = {
   async ClearAlarms() {
     var ret = await axios_entity.get('api/AlarmTable/Clear')
   },
+  /**
+    * 取得警報表格資料
+    * @returns {Promise<AlarmCodeModel[]>} 警報模型陣列
+    * @throws {Error} 當 API 請求失敗時拋出錯誤
+    */
+  async GetAlarmTable() {
+    const response = await axios_entity.get('api/AlarmTable/GetAlarmCodesTable')
+    return response.data.map(item => new AlarmCodeModel(item));
+  }
 }
 
 export const NavigationAPI = {

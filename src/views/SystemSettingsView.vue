@@ -325,6 +325,9 @@
                 <el-form-item label="退出設備後Z軸同步回Home">
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary"></el-switch>
                 </el-form-item>
+                <el-form-item label="取貨動作牙叉下降時同步拍照">
+                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag"></el-switch>
+                </el-form-item>
                 <el-form-item v-if="false" label="退出充電站後Z軸同步回Home">
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
                 </el-form-item>
@@ -334,30 +337,6 @@
               </el-form>
             </div>
           </b-tab>
-          <!-- <b-tab v-if="settings.Log" title="終端機Log顯示">
-            <div class="tabpage border p-2">
-              <el-form label-position="left" label-width="210">
-                <el-form-item label="Trace Log">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleTraceShow"></el-switch>
-                </el-form-item>
-                <el-form-item label="Info Log">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleInfoShow"></el-switch>
-                </el-form-item>
-                <el-form-item label="Warning Log">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleWarningShow"></el-switch>
-                </el-form-item>
-                <el-form-item label="Error Log">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Log.ConsoleErrorShow"></el-switch>
-                </el-form-item>
-                <el-form-item label="Critical Log">
-                  <el-switch
-                    @change="HandleParamChanged"
-                    v-model="settings.Log.ConsoleCriticalShow"
-                  ></el-switch>
-                </el-form-item>
-              </el-form>
-            </div>
-          </b-tab>-->
           <b-tab title="派車系統">
             <div class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
@@ -454,10 +433,23 @@
           </b-tab>
           <b-tab title="進階">
             <div class="tabpage border p-2">
+              <el-form label-position="left" label-width="250">
+                <el-form-item label="無貨行駛異常時自動重置並上線">
+                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo" @change="HandleParamChanged" size="small"></el-switch>
+                </el-form-item>
+                <el-form-item label="有貨行駛異常時自動重置並上線">
+                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithCargo" @change="HandleParamChanged" size="small"></el-switch>
+                </el-form-item>
+                <el-form-item label="禁止自動重置的異常">
+                  <el-select v-model="forbidden_auto_reset_alarm_codes" @change="HandleForbiddenAutoResetAlarmCodesChanged" size="small" multiple>
+                    <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`" :value="alarm.Code"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
               <div class="w-100">
                 <b-button class="w-50 my-1 mx-3" variant="primary" @click="HandleSystemRestartBtnClick">系統重啟</b-button>
                 <b-button class="w-50 my-1 mx-3" variant="danger" @click="HandleSystemCloseBtnClick">系統關閉</b-button>
-                <b-button class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
+                <b-button v-if="false" class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
           </b-tab>
@@ -469,7 +461,7 @@
 <script>
 import { ElNotification } from 'element-plus'
 import bus from '@/event-bus.js'
-import { SystemAPI, IMUAPI, SoundsAPI } from '@/api/VMSAPI.js'
+import { SystemAPI, IMUAPI, SoundsAPI, AlarmTableAPI } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
@@ -482,7 +474,7 @@ import EQHandshakeConfiguration from '@/components/EQHandshakeConfiguration.vue'
 import ManualCheckCargoStatus from '@/components/SystemSettings/ManualCheckCargoStatus.vue'
 import SoundsSetting from '@/components/SystemSettings/SoundsSetting.vue'
 import SystemSettings from '@/ViewModels/SystemSettings'
-
+import AlarmCodeModel from '@/ViewModels/AlarmCodeModel'
 class ForkLifer {
   constructor() {
     this.ForkLifer_Enable = true;
@@ -516,6 +508,8 @@ export default {
       settings: new SystemSettings(),
       normal_stations: [],
       saveSettingsTimeout: null,
+      alarm_table: [new AlarmCodeModel()],
+      forbidden_auto_reset_alarm_codes: [],
     }
   },
   computed: {
@@ -574,6 +568,10 @@ export default {
               position: 'bottom-right',
               duration: 2000
             });
+            await this.GetAlarmTable();
+
+            this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
+            this.forbidden_auto_reset_alarm_codes.sort()
             return;
           }
           attempts++;
@@ -600,6 +598,14 @@ export default {
     })
   },
   methods: {
+    async GetAlarmTable() {
+      this.alarm_table = await AlarmTableAPI.GetAlarmTable();
+    },
+    async HandleForbiddenAutoResetAlarmCodesChanged() {
+      this.settings.Advance.ForbidAutoInitialzeAlarmCodes = this.forbidden_auto_reset_alarm_codes;
+      this.HandleParamChanged();
+
+    },
     async HandleSystemCloseBtnClick() {
       this.SystemOptConfirmAndDoAction('確定要關閉車載系統?', async () => {
         var _response = await SystemAPI.CloseSystem();
@@ -700,6 +706,7 @@ export default {
         const success = reuslt.confirm;
         const errMsg = reuslt.errorMsg;
         if (success) {
+          this.forbidden_auto_reset_alarm_codes.sort()
           // SystemSettingsStore.commit('setSettings', this.settings)
           ElNotification({
             title: '系統參數設定',
