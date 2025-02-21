@@ -13,8 +13,7 @@
           v-for="opt in StationOptions"
           :key="opt.value"
           :value="opt.value"
-          :label="opt.text"
-        ></el-option>
+          :label="opt.text"></el-option>
       </el-select>
     </div>
     <el-table
@@ -22,8 +21,7 @@
       :data="TeachDatasShown"
       size="small"
       v-loading="loading"
-      :row-class-name="GetRowClass"
-    >
+      :row-class-name="GetRowClass">
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
@@ -31,8 +29,7 @@
               @click="TagNumberInputClicked"
               @change="InputChanged"
               type="number"
-              v-model="scope.row.Tag"
-            ></el-input>
+              v-model="scope.row.Tag"></el-input>
           </div>
         </template>
       </el-table-column>
@@ -48,13 +45,12 @@
           <div>
             <el-checkbox
               @change="HandleNeedHandshakeCkbChanged(scope.row)"
-              v-model="scope.row.NeedHandshake"
-            ></el-checkbox>
+              v-model="scope.row.NeedHandshake"></el-checkbox>
           </div>
         </template>
       </el-table-column>
-      <el-table-column v-for="index in [0, 1, 2]" :key="index" :label="'layer-' + index">
-        <el-table-column label="Up Pose(cm)" :prop="`Up_Pose:${index}`">
+      <el-table-column v-for="index in [0, 1, 2]" :key="index" :label="'第' + (index + 1) + '層'">
+        <el-table-column label="下點位(cm)" :prop="`Down_Pose:${index}`">
           <template #default="scope">
             <el-input
               @click="InputClicked"
@@ -62,11 +58,10 @@
               type="number"
               step="0.01"
               v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Up_Pose"
-            ></el-input>
+              v-model="scope.row.Layers[index].Value.Down_Pose"></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="Down Pose(cm)" :prop="`Down_Pose:${index}`">
+        <el-table-column label="上點位(cm)" :prop="`Up_Pose:${index}`">
           <template #default="scope">
             <el-input
               @click="InputClicked"
@@ -74,8 +69,7 @@
               type="number"
               step="0.01"
               v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Down_Pose"
-            ></el-input>
+              v-model="scope.row.Layers[index].Value.Up_Pose"></el-input>
           </template>
         </el-table-column>
       </el-table-column>
@@ -91,7 +85,6 @@
     <!-- <SimpleKeyboardVue></SimpleKeyboardVue> -->
   </div>
 </template>
-
 <script>
 import { ForkAPI } from '@/api/VMSAPI'
 import { ForkTeachStore } from '@/store'
@@ -398,5 +391,4 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped></style>
