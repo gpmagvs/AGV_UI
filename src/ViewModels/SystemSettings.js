@@ -144,7 +144,7 @@ class SystemSettings {
             LsrObstacleDetectionEnable: false,
             LsrObsLaserModeNumber: 8,
             LsrObsDetectedAlarmLevel: 0,
-            LeaveWorkStationNeedSendRequestToAGVS: false,
+            LeaveWorkStationNeedSendRequestToAGVS: true,
             LeaveWorkStationRequestTimeout: 3,
             BypassFrontLaserWhenEntryEQ: true
         };
