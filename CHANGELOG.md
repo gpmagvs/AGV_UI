@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.36.0](https://github.com/gpmagvs/AGV_UI/compare/v1.35.1...v1.36.0) (2025-03-25)
+
+
+### Features
+
+* update backend host for development and add ExistSensorSimulation to SystemSettings ([f4c42c8](https://github.com/gpmagvs/AGV_UI/commit/f4c42c81a3028027f77a8e1a5a34eb5a23ecd67d))
+
 ### [1.35.1](https://github.com/gpmagvs/AGV_UI/compare/v1.35.0...v1.35.1) (2025-02-20)
 
 ## [1.35.0](https://github.com/gpmagvs/AGV_UI/compare/v1.34.1...v1.35.0) (2025-02-13)
