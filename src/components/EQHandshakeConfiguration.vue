@@ -145,13 +145,10 @@ export default {
         index += 1;
         _list.push(opt)
       });
-      console.log(_list)
       this.configList = _list;
       setTimeout(() => {
         this.loading = false;
       }, 400);
-      //   this.configList = [..._list, ..._list, ..._list];// 測試多筆資料用
-      //   console.log(response)
     },
     CreateNew() {
       var newSetting = {};
@@ -246,7 +243,6 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted')
     this.DownloadConfiguration();
   },
   created() {

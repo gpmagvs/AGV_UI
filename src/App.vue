@@ -5,18 +5,21 @@
     style="width:100vw;height:100vh"
     v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)">
+    element-loading-background="rgba(0,0,0, 0.8)"
+  >
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+      id="vcs-alarms"
+    >
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
+        ></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -155,8 +158,6 @@ export default {
   created() {
     const deviceDetector = Vue3DeviceDetector();
     this.isMobile = deviceDetector.isMobile
-    console.info(this.isMobile)
-    console.info(deviceDetector.device.model)
   },
   mounted() {
     Start();
@@ -204,8 +205,6 @@ export default {
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("確認按鈕被點擊");
-          // 在這裡可以執行確認後的操作
         } else if (result.dismiss === this.$swal.DismissReason.cancel) {
           CargoStatusManualCheckDone();
           clearInterval(timerInterval); // 中斷倒計時
@@ -260,10 +259,6 @@ export default {
             location.reload();
           }
         }).then((result) => {
-          /* Read more about handling dismissals below */
-          if (result.dismiss === this.$swal.DismissReason.timer) {
-            console.log("I was closed by the timer");
-          }
         });
         return;
       }
@@ -281,7 +276,6 @@ export default {
     })
 
     bus.on('CargoStatusChanged', obj => {
-      console.warn(obj);
     })
 
     setTimeout(() => {

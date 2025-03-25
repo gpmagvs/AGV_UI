@@ -350,9 +350,7 @@ export default {
     },
     CreateAGVFeature() {
       var _agv_state = AGVStatusStore.getters.MapUseState;
-      console.log(_agv_state.Coordination)
       var _geometry = new LineString(_agv_state.Coordination)
-      console.info('agv state updated' + `${JSON.stringify(_agv_state)}`);
       var agv_feature = new Feature({
         geometry: new Point(_agv_state.Coordination),
         name: _agv_state.AGV_Name,
@@ -415,7 +413,6 @@ export default {
     async ReloadMapFromAGVS() {
       this.reloadMapRequesting = true;
       var result = await map_store.dispatch('ReloadMapFromAGVS', "abc");
-      console.log(result)
       this.reloadMapRequesting = false;
       if (!result || !result.confirm) {
         this.$swal.fire(
@@ -735,7 +732,6 @@ export default {
       this.GetAgvProp(agv_name).heighlight = true;
     },
     handleEditModeMenuClick(action) {
-      console.log(action);
       this.showStationMenu = false;
       if (action === 'point_setting') {
         var pointData = this.GetPointDataByFeature(this.selected_feature);
@@ -744,7 +740,6 @@ export default {
       }
     },
     handleNoPointSelectedMenuClick(action) {
-      console.log(action);
       this.showNoPointSelectedMenu = false;
       if (action === 'add_point') {
         var pt_index = this.GetNewPointIndex();
@@ -775,13 +770,11 @@ export default {
     },
 
     handleAGVMenuItemClick(action) {
-      console.log(action);
       this.showAGVMenu = false;
       if (action === 'add_point') {
       }
     },
     handleTaskAllocatModeMenuClick(action) {
-      console.log(action);
       this.showTaskAllocationMenu = false;
     },
     /**從圖資資料中產生一個新的Point Index */

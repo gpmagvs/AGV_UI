@@ -13,7 +13,7 @@
         style="position: absolute; width:95%;height: 100%;top:80px"
         element-loading-text="Loading..."
       >
-        <b-tabs v-model="selected_tab" v-if="!loading">
+        <b-tabs v-model="selected_tab" v-show="!loading">
           <b-tab title="一般">
             <div class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
@@ -838,7 +838,7 @@ export default {
       setTimeout(async () => {
         let attempts = 0;
         const maxAttempts = 3;
-
+        var success = false;
         while (attempts < maxAttempts) {
           try {
             await SystemSettingsStore.dispatch('downloadSettings');
@@ -847,18 +847,8 @@ export default {
               if (tabIndex)
                 this.selected_tab = tabIndex;
               this.loading = false;
-              this.$notify({
-                title: '系統設定',
-                message: '參數下載完成',
-                type: 'success',
-                position: 'bottom-right',
-                duration: 2000
-              });
-              await this.GetAlarmTable();
-
-              this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
-              this.forbidden_auto_reset_alarm_codes.sort()
-              return;
+              success = true;
+              break;
             }
           } catch (error) {
             console.warn('Failed to download settings', error);
@@ -867,21 +857,41 @@ export default {
           await new Promise(resolve => setTimeout(resolve, 1000));//等待1秒
         }
         this.loading = false;
-        this.$swal.fire({
-          title: '載入設定失敗',
-          text: '無法下載系統設定，請稍後再試',
-          icon: 'error',
-          showCancelButton: true,
-          confirmButtonText: '重新嘗試',
-          cancelButtonText: 'OK',
-          customClass: 'my-sweetalert'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            bus.emit('show-settings', this.selected_tab);
-          } else {
-            this.drawer_show = false;
-          }
-        });
+        if (success) {
+
+          setTimeout(async () => {
+
+            await this.GetAlarmTable();
+            this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
+            this.forbidden_auto_reset_alarm_codes.sort()
+          }, 10)
+
+          this.$notify({
+            title: '系統設定',
+            message: '參數下載完成',
+            type: 'success',
+            position: 'bottom-right',
+            duration: 2000
+          });
+
+        } else {
+
+          this.$swal.fire({
+            title: '載入設定失敗',
+            text: '無法下載系統設定，請稍後再試',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonText: '重新嘗試',
+            cancelButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              bus.emit('show-settings', this.selected_tab);
+            } else {
+              this.drawer_show = false;
+            }
+          });
+        }
       }, 1000);
 
     })
