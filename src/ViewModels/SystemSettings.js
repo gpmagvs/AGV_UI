@@ -153,7 +153,8 @@ class SystemSettings {
             RackSensorMounted: false,
             RackSensorNumber: 2,
             TraySensorNumber: 4,
-            SensorPointType: 1
+            SensorPointType: 1,
+            ExistSensorSimulation: false
         };
         this.Advance = {
             ShutDownPCWhenLowBatteryLevel: false,

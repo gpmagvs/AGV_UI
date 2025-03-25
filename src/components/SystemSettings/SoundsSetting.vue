@@ -1,6 +1,6 @@
 <template>
   <div class="sounds-setting">
-    <el-collapse v-model="activeNames" @change="handleChange" :accordion="false">
+    <el-collapse v-model="activeNames" :accordion="false">
       <el-collapse-item title="Information" name="info">
         <div class="w-100">
           <el-form :model="sounds" label-position="left" label-width="130px">
@@ -87,7 +87,6 @@
             <el-drawer
               v-model="showSelectSoundDrawer"
               :title="`選取音效-${translateMap[selectSoundKey]}`"
-              :before-close="handleClose"
               size="80%"
             >
               <AudioSelector @audioSelected="handleAudioSelectedFromDrawer" />
