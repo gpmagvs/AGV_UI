@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.37.0](https://github.com/gpmagvs/AGV_UI/compare/v1.36.0...v1.37.0) (2025-03-25)
+
+
+### Features
+
+* add caniuse-lite dependency to package.json and package-lock.json ([74ab2c1](https://github.com/gpmagvs/AGV_UI/commit/74ab2c11a6fe52bf1206709e345259f9e15c7453))
+
 ## [1.36.0](https://github.com/gpmagvs/AGV_UI/compare/v1.35.1...v1.36.0) (2025-03-25)
 
 
