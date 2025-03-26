@@ -7,10 +7,9 @@
         <el-checkbox
           v-model="SyncFromAGVSBind"
           class="flex-fill"
-          @change="(val)=>{
-          $emit('onSyncAGVSCheckBoxChanged',val)
-        }"
-        ></el-checkbox>
+          @change="(val) => {
+            $emit('onSyncAGVSCheckBoxChanged', val)
+          }"></el-checkbox>
         <el-button type="primary">Sync From AGVS</el-button>
       </div>
     </el-form-item>
@@ -28,8 +27,7 @@
       v-loading="loading"
       :row-class-name="GetRowClassName"
       style="width: 100%;"
-      row-key="Index"
-    >
+      row-key="Index">
       <el-table-column v-if="false" label="Index" prop="Index" width="80"></el-table-column>
       <el-table-column label="Tag" prop="Tag" width="80">
         <template #default="scope">
@@ -48,8 +46,7 @@
             :options="[
               { value: 0, label: '不需交握' },
               { value: 1, label: '需交握' }
-            ]"
-          ></el-select-v2>
+            ]"></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column label="轉移模式" prop="CargoTransferMode">
@@ -60,8 +57,7 @@
               { value: 0, label: '設備動作' },
               { value: 1, label: 'AGV動作' },
               { value: 2, label: '僅第一層設備動作' },
-            ]"
-          ></el-select-v2>
+            ]"></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column label="交握通訊方式" prop="HandShakeConnectionMode">
@@ -72,19 +68,16 @@
               { value: 0, label: '光IO' },
               { value: 1, label: 'Modbus' },
               { value: 2, label: '模擬' }
-            ]"
-          ></el-select-v2>
+            ]"></el-select-v2>
         </template>
       </el-table-column>
-
       <el-table-column label="Modbus Port" prop="ModbusTcpPort">
         <template #default="scope">
           <el-input
             :disabled="scope.row.HandShakeConnectionMode != 1"
             type="number"
             :step="1"
-            v-model="scope.row.ModbusTcpPort"
-          ></el-input>
+            v-model="scope.row.ModbusTcpPort"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="牙叉伸出" prop="ForkArmExtend" v-if="IsForkAGV">
@@ -94,8 +87,7 @@
             :options="[
               { value: false, label: '不需' },
               { value: true, label: '需要' }
-            ]"
-          ></el-select-v2>
+            ]"></el-select-v2>
         </template>
       </el-table-column>
       <el-table-column>
@@ -107,7 +99,6 @@
     <!-- {{configList}} -->
   </div>
 </template>
-
 <script>
 import { DownloadEQHsSettings, SaveEQHsSettings } from '@/api/VMSAPI'
 import { AGVStatusStore } from '@/store';
@@ -250,6 +241,4 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
