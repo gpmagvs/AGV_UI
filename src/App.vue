@@ -5,21 +5,18 @@
     style="width:100vw;height:100vh"
     v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)"
-  >
+    element-loading-background="rgba(0,0,0, 0.8)">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms"
-    >
+      id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
-        ></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -263,6 +260,7 @@ export default {
         return;
       }
 
+
       //alert(message)
       this.$swal.fire(
         {
@@ -273,6 +271,14 @@ export default {
           confirmButtonText: 'OK',
           customClass: 'my-sweetalert'
         })
+
+
+      //系統重啟中
+      if (alarmCode == 3384) {
+        setTimeout(() => {
+          location.reload();
+        }, 8000);
+      }
     })
 
     bus.on('CargoStatusChanged', obj => {
@@ -296,7 +302,7 @@ export default {
 
       setTimeout(() => {
         this.checkConnectionStatus();
-      }, 3000);
+      }, 6000);
 
     }
   },
