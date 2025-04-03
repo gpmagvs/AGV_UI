@@ -5,11 +5,10 @@
       :model-value="current_tab"
       @activate-tab="HandleTabpageChanged"
       pills
-      style="height: 100%;"
-    >
+      style="height: 100%;">
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active style="height: 100%;">
-        <status_card></status_card>
+        <status_card :VMSData="VMSData"></status_card>
       </b-tab>
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
@@ -19,24 +18,23 @@
       </b-tab>
       <!-- 操作 -->
       <b-tab :title="$t('operation')">
-          <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
+        <agv_operator :agv_type="VMSData.Agv_Type"></agv_operator>
       </b-tab>
       <!-- Battery -->
       <b-tab v-if="false" title="電池">
-          <BatteryView></BatteryView>
+        <BatteryView></BatteryView>
       </b-tab>
       <b-tab :title="$t('eq-handshake-e84')">
-          <EQHandshakeView></EQHandshakeView>
+        <EQHandshakeView></EQHandshakeView>
       </b-tab>
       <!-- CST READER -->
       <b-tab v-if="!IsVisitor" title="CST Reader">
-          <CSTReader></CSTReader>
-      </b-tab>IsGodUser
-      <b-tab v-if="!IsVisitor" title="Overview">
-          <AgvOverview :AsMainPageMode="false"></AgvOverview>
+        <CSTReader></CSTReader>
+      </b-tab>IsGodUser <b-tab v-if="!IsVisitor" title="Overview">
+        <AgvOverview :AsMainPageMode="false"></AgvOverview>
       </b-tab>
       <b-tab v-if="IsGodMod" title="Log">
-          <LogQuery></LogQuery>
+        <LogQuery></LogQuery>
       </b-tab>
       <!-- 本地任務派送 -->
       <b-tab title="地圖顯示">
@@ -44,10 +42,10 @@
       </b-tab>
       <!-- 3D Model Display -->
       <b-tab v-if="false" :title="$t('3d_model')">
-          <ForkAGV3D></ForkAGV3D>
+        <ForkAGV3D></ForkAGV3D>
       </b-tab>
       <b-tab v-if="false" title="AGVS MSG">
-          <AGVSMsgDisplay ref="agvs_msg_table"></AGVSMsgDisplay>
+        <AGVSMsgDisplay ref="agvs_msg_table"></AGVSMsgDisplay>
       </b-tab>
     </b-tabs>
   </div>
@@ -76,9 +74,7 @@ export default {
   props: {
     VMSData: {
       type: Object,
-      default() {
-        return new VMSData();
-      }
+      required: true
     },
   },
   data() {
@@ -135,15 +131,16 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-::v-deep .tab-content {
+:deep(.tab-content) {
   height: 86%;
   border: 1px solid #e6e6e6;
 }
-::v-deep .tab-pane {
+
+:deep(.tab-pane) {
   height: 100%;
 }
 
-::v-deep .nav-item > .nav-link {
+:deep(.nav-item > .nav-link) {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }

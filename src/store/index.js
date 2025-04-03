@@ -9,7 +9,8 @@ import { ROS_STORE } from './ros_store';
 import SystemSettings from '@/ViewModels/SystemSettings'
 import { SystemAPI } from '@/api/VMSAPI';
 import _ from 'lodash'
-export default createStore({
+
+export const store = createStore({
   state: {
   },
   getters: {
@@ -22,7 +23,7 @@ export default createStore({
   }
 })
 
-export var UIStore = createStore({
+export const UIStore = createStore({
   state: {
     UI_Version: "01.25.0",
     PreviousControllRoute: 'move',
@@ -62,7 +63,7 @@ export var UIStore = createStore({
   }
 })
 
-export var RDTestDataStore = createStore({
+export const RDTestDataStore = createStore({
   state: {
     TestData: {
       move_test: {
@@ -87,7 +88,7 @@ export var RDTestDataStore = createStore({
 })
 
 /**系統訊息STORE */
-export var SystemMsgStore = createStore({
+export const SystemMsgStore = createStore({
   state: {
     SysMessages: {
       ReportIndex: -1,
@@ -125,7 +126,7 @@ export var SystemMsgStore = createStore({
 })
 
 /**AGV狀態STORE */
-export var AGVStatusStore = createStore({
+export const AGVStatusStore = createStore({
   state: {
     AGVStatus: new VMSData(),
     SensorStatus: {
@@ -387,7 +388,7 @@ export var AGVStatusStore = createStore({
 })
 
 /**系統參數STORE */
-export var SystemSettingsStore = createStore({
+export const SystemSettingsStore = createStore({
   state: {
     Settings: new SystemSettings(),
     IsSettingsLoaded: false
@@ -424,7 +425,7 @@ export var SystemSettingsStore = createStore({
   }
 })
 /**用戶狀態STORE */
-export var UserStore = createStore({
+export const UserStore = createStore({
   state: {
     UserState: {
       UserName: 'OPERATOR',
@@ -491,7 +492,7 @@ export var UserStore = createStore({
 
 
 /**DIO狀態STORE */
-export var DIOStore = createStore({
+export const DIOStore = createStore({
   state: {
     DIOStates: {
       Inputs: [],

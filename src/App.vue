@@ -156,9 +156,36 @@ export default {
     const deviceDetector = Vue3DeviceDetector();
     this.isMobile = deviceDetector.isMobile
   },
-  mounted() {
+  async mounted() {
+    try {
+      await SystemSettingsStore.dispatch('downloadSettings');
+    } catch (error) {
+      console.warn('系統參數加載失敗:', error);
+      this.$swal.fire({
+        title: '警告',
+        text: '系統參數加載失敗，將使用預設設定',
+        icon: 'warning',
+        confirmButtonText: '確定'
+      });
+    } finally {
+      setTimeout(() => {
+        this.loading = false;
+      }, 1000);
+    }
+
+    try {
+      await UIStore.dispatch('GetConnectionState');
+    } catch (error) {
+      console.warn('連接狀態檢查失敗:', error);
+    }
+
     Start();
     document.title = "GPM AGV";
+
+    setTimeout(() => {
+      this.checkConnectionStatus();
+    }, 6000);
+
     bus.on('/god_mode_changed', (is_god_mode_now) => {
       this.showMenuToggleIcon = is_god_mode_now
     });
@@ -283,28 +310,6 @@ export default {
 
     bus.on('CargoStatusChanged', obj => {
     })
-
-    setTimeout(() => {
-      this.loading = false;
-    }, 2000);
-
-    if (!SystemSettingsStore.getters.IsSettingsLoaded) {
-      this.$swal.fire(
-        {
-          title: 'Warning!',
-          text: '系統參數未從服務器下載完成',
-          icon: 'warning',
-          showCancelButton: false,
-          confirmButtonText: 'OK',
-          customClass: 'my-sweetalert'
-        })
-    } else {
-
-      setTimeout(() => {
-        this.checkConnectionStatus();
-      }, 6000);
-
-    }
   },
 };
 </script>

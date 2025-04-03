@@ -23,7 +23,7 @@
           @click="PageSwitch('/admin/controller','控制器')"
         >
           <div class="menu-icon">
-            <img src="images/controller.png" :height="icon_size" alt />
+            <img src="@/assets/images/controller.png" :height="icon_size" alt />
           </div>
         </div>
       </el-tooltip>
@@ -36,7 +36,7 @@
           @click="PageSwitch('/admin/map','圖資管理')"
         >
           <div class="menu-icon">
-            <img src="images/map.png" :height="icon_size" alt />
+            <img src="@/assets/images/map.png" :height="icon_size" alt />
           </div>
         </div>
       </el-tooltip>
@@ -48,7 +48,7 @@
           @click="PageSwitch('/admin/data','資料')"
         >
           <div class="menu-icon">
-            <img src="images/database.png" :height="icon_size" alt />
+            <img src="@/assets/images/database.png" :height="icon_size" alt />
           </div>
         </div>
       </el-tooltip>
@@ -61,7 +61,7 @@
           @click="PageSwitch('/admin/sys_settings','系統設定')"
         >
           <div class="menu-icon">
-            <img src="images/settings.png" :height="icon_size" alt />
+            <img src="@/assets/images/settings.png" :height="icon_size" alt />
           </div>
         </div>
       </el-tooltip>
@@ -73,7 +73,7 @@
 <script>
 import bus from '@/event-bus.js'
 import { watch } from 'vue'
-import { userStore } from '@/store'
+import { UserStore } from '@/store'
 import { useRoute } from 'vue-router'
 export default {
   data() {

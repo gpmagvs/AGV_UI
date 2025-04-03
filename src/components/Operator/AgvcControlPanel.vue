@@ -93,7 +93,7 @@
   </div>
 </template>
 <script>
-import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft } from '@/api/WebRos';
+import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft } from '@/api/WebRos.js';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
 import { AGVStatusStore } from '@/store'
 import { UserStore } from '@/store'

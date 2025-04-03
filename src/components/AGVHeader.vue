@@ -98,7 +98,7 @@
 <script>
 import { AGVStatusStore, UserStore, UIStore } from '@/store'
 import { Localization, Where_r_u, SystemAPI } from '@/api/VMSAPI'
-import uploader from '@/components/Upload'
+import uploader from '@/components/Upload/index.vue'
 import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
@@ -143,7 +143,7 @@ export default {
       return AGVStatusStore.getters.AGVStatus.APPVersion;
     },
     UIVersion() {
-      return process.env.PACKAGE_VERSION
+      return import.meta.env.VITE_PACKAGE_VERSION || UIStore.getters.CurrentUIVersion
     },
     UserName() {
       return UserStore.getters.CurrentUserName
@@ -350,7 +350,7 @@ export default {
   .system-control {
     height: 100%;
     margin-left: 2px;
-    ::v-deep .btn-group > .btn {
+    :deep(.btn-group > .btn) {
       border-radius: 0;
       height: 37px;
     }
@@ -362,11 +362,11 @@ export default {
     line-height: inherit;
     padding-left: -124px;
     color: inherit;
-    ::v-deep span {
+    :deep(span) {
       left: -56px !important;
       position: relative !important;
     }
-    ::v-deep :active {
+    :deep(:active) {
       background-color: rgb(0, 123, 255) !important;
     }
   }

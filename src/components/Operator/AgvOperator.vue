@@ -57,7 +57,7 @@
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
 import IOTable from './IOTable.vue';
-import { param } from '@/gpm_param';
+import param from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
 import ManualSettings from './ManualSettings.vue';
 import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';

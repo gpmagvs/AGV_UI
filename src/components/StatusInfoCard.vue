@@ -1,6 +1,6 @@
 <template>
   <transition name="el-zoom-in-center">
-    <div class="status-card" v-show="show">
+    <div class="status-card">
       <!-- <h4 class="text-start">{{ $t('Status_info') }}</h4> -->
       <div class="w-100 p-3">
         <el-row class="w-100 row">
@@ -8,8 +8,7 @@
           <el-col :span="7" class="val-column status">
             <b-button
               class="w-100 border"
-              v-bind:class="vms_data.SubState == '' ? 'down' : vms_data.SubState.toLowerCase()"
-            >
+              v-bind:class="vms_data.SubState == '' ? 'down' : vms_data.SubState.toLowerCase()">
               <b>{{ vms_data.SubState == '' ? 'ERROR' : vms_data.SubState }}</b>
             </b-button>
           </el-col>
@@ -20,8 +19,7 @@
               class="w-100"
               type="info"
               size="large"
-              v-model="vms_data.Current_LASER_MODE"
-            >{{ vms_data.Current_LASER_MODE }}</el-tag>
+              v-model="vms_data.Current_LASER_MODE">{{ vms_data.Current_LASER_MODE }}</el-tag>
             <!-- <b-form-input class="border" size="sm" disabled v-model="vms_data.Current_LASER_MODE"></b-form-input> -->
           </el-col>
         </el-row>
@@ -32,8 +30,7 @@
               type="info"
               v-if="vms_data.Last_Visit_MapPoint.Graph"
               class="w-100"
-              size="large"
-            >{{ vms_data.Last_Visit_MapPoint.Graph.Display }}</el-tag>
+              size="large">{{ vms_data.Last_Visit_MapPoint.Graph.Display }}</el-tag>
             <!-- <b-form-input v-if="vms_data.Last_Visit_MapPoint.Graph" size="sm" disabled v-model="vms_data.Last_Visit_MapPoint.Graph.Display"></b-form-input> -->
             <!-- <el-input disabled v-model="vms_data.Tag"></el-input> -->
           </el-col>
@@ -43,8 +40,7 @@
               type="info"
               v-if="vms_data.NavInfo.DestinationMapPoint.Graph"
               class="w-100"
-              size="large"
-            >{{ vms_data.NavInfo.DestinationMapPoint.Graph.Display }}</el-tag>
+              size="large">{{ vms_data.NavInfo.DestinationMapPoint.Graph.Display }}</el-tag>
             <!-- <b-form-input v-if="vms_data.NavInfo.DestinationMapPoint.Graph" size="sm" disabled v-model="vms_data.NavInfo.DestinationMapPoint.Graph.Display"></b-form-input> -->
             <!-- <el-input disabled v-model="currentPosition"></el-input> -->
           </el-col>
@@ -64,8 +60,7 @@
               v-if="!IsInspectionAGV"
               class="w-100"
               :type="vms_data.BCR_State_MoveBase.tagID > 0 ? 'success' : 'danger'"
-              size="large"
-            >{{ vms_data.BCR_State_MoveBase.tagID }}</el-tag>
+              size="large">{{ vms_data.BCR_State_MoveBase.tagID }}</el-tag>
           </el-col>
           <!-- 載物ID -->
           <el-col :span="5" v-if="vms_data.Agv_Type != 2">{{ $t('carrier_id') }}</el-col>
@@ -73,8 +68,7 @@
             <el-tag
               class="w-100"
               :type="vms_data.CST_Data != '' ? 'success' : 'danger'"
-              size="large"
-            >{{ vms_data.CST_Data }}</el-tag>
+              size="large">{{ vms_data.CST_Data }}</el-tag>
             <!-- <b-form-input
                 size="sm"
                 disabled
@@ -88,8 +82,7 @@
             <el-tag
               class="w-100"
               :type="LocStatusDisplay == 'OK' ? 'success' : 'danger'"
-              size="large"
-            >{{ LocStatusDisplay }}</el-tag>
+              size="large">{{ LocStatusDisplay }}</el-tag>
             <!-- <b-form-input
                 size="sm"
                 disabled
@@ -101,8 +94,7 @@
             <el-tag
               class="w-100"
               :type="vms_data.MapComparsionRate != 0 ? 'success' : 'danger'"
-              size="large"
-            >{{ vms_data.MapComparsionRate }}</el-tag>
+              size="large">{{ vms_data.MapComparsionRate }}</el-tag>
             <!-- <b-form-input
                 size="sm"
                 disabled
@@ -117,8 +109,7 @@
             <el-tag
               class="w-100"
               :type="!vms_data.IsForkHeightAboveSafty ? 'success' : 'danger'"
-              size="large"
-            >{{ for_position_safe_state }}</el-tag>
+              size="large">{{ for_position_safe_state }}</el-tag>
             <!-- <b-form-input
                 size="sm"
                 disabled
@@ -132,11 +123,9 @@
             <b-button
               class="border"
               variant="light"
-              @click="() => { show_module_info_drawer = true }"
-            >顯示Module Information</b-button>
+              @click="() => { show_module_info_drawer = true }">顯示Module Information</b-button>
           </el-col>
         </el-row>
-
         <el-row class="w-100 row" v-if="false">
           <el-col :span="6">AGV Direct</el-col>
           <el-col :span="6">
@@ -174,17 +163,22 @@ import { ROS_STORE } from '@/store/ros_store'
 import { UserStore } from '@/store'
 export default {
   props: {
-
+    VMSData: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
       currentPosition: '123',
-      vms_data: new VMSData(),
       show: false,
       show_module_info_drawer: false,
     }
   },
   computed: {
+    vms_data() {
+      return this.VMSData;
+    },
     IsGodUser() {
       return UserStore.getters.IsGodUser
     },
@@ -266,12 +260,8 @@ export default {
         return;
       bus.emit('on-manual-lsr-setting-show-invoke')
     }
-  }
-  ,
+  },
   mounted() {
-    bus.on('/vms_data', (data) => {
-      this.vms_data = data
-    });
     setTimeout(() => {
       this.show = true
     }, 500);

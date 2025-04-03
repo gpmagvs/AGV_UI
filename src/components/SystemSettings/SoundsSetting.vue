@@ -261,13 +261,13 @@ export default {
 
 <style scoped lang="scss">
 .sounds-setting {
-  ::v-deep .el-collapse-item__header {
+  :deep(.el-collapse-item__header) {
     font-weight: bold;
     font-size: 16px;
     color: rgb(0, 63, 156);
   }
 
-  ::v-deep .el-form-item {
+  :deep(.el-form-item) {
     border-bottom: 1px solid #e6e6e6;
     padding-bottom: 5px;
     padding-left: 10px;

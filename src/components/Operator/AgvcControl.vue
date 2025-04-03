@@ -63,7 +63,7 @@
 <script>
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData';
-import agvc_control_panel from './AgvcControlPanel'
+import agvc_control_panel from './AgvcControlPanel.vue'
 import { FindTagCenter } from '@/api/VMSAPI'
 import MapAPI from '@/api/MapAPI.js'
 

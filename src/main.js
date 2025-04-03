@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import { store, SystemSettingsStore, UIStore } from '@/store'
 import vcs_axios from './axios.js'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -13,16 +13,20 @@ import { createI18n } from 'vue-i18n'
 import VueSweetalert2 from 'vue-sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import './my_style.scss'
-import VueApexCharts from "vue3-apexcharts";
+import VueApexCharts from "vue3-apexcharts"
 import './idling_detector'
-import { SystemSettingsStore, UIStore } from '@/store'
+
+// Import locales
+import zhTW from './locales/zh-TW.json'
+import enUS from './locales/en-US.json'
+
 const i18n = createI18n({
   legacy: false,
   locale: 'zh-TW',
   fallbackLocale: 'en-US',
   messages: {
-    'zh-TW': require('./locales/zh-TW.json'),
-    'en-US': require('./locales/en-US.json'),
+    'zh-TW': zhTW,
+    'en-US': enUS,
   },
 })
 
@@ -30,8 +34,6 @@ const Sweetalert_options = {
   confirmButtonColor: 'rgb(13, 110, 253)',
   cancelButtonColor: '#ff7674',
 }
-
-appMount();
 
 async function appMount() {
   const app = createApp(App)
@@ -41,9 +43,9 @@ async function appMount() {
   app.use(ElementPlus)
   app.use(i18n)
   app.use(VueSweetalert2, Sweetalert_options)
-  app.use(VueApexCharts);
-  app.config.globalProperties.$axios = vcs_axios;
-  await SystemSettingsStore.dispatch('downloadSettings');
-  await UIStore.dispatch('GetConnectionState');
+  app.use(VueApexCharts)
+  app.config.globalProperties.$axios = vcs_axios
   app.mount('#app')
 }
+
+appMount();

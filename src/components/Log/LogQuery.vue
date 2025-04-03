@@ -136,10 +136,10 @@
 <script>
 import { LogAPI } from '@/api/VMSAPI.js'
 import moment from 'moment'
-import ChargeStatusQuery from './ChargeStatusQuery'
-import VibrationHistoryQuery from './VibrationHistoryQuery'
-import Utilization from './Utilization'
-import TranferLogView from './TranferLogView'
+import ChargeStatusQuery from './ChargeStatusQuery.vue'
+import VibrationHistoryQuery from './VibrationHistoryQuery.vue'
+import Utilization from './Utilization.vue'
+import TranferLogView from './TranferLogView.vue'
 import { CopyText } from '@/Tools.js'
 export default {
   components: {
