@@ -27,6 +27,14 @@ export default defineConfig({
     build: {
         outDir: '../GPMVehicleControlSystem/GPMVehicleControlSystem/wwwroot',
         assetsDir: 'assets',
-        emptyOutDir: true
+        emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                // 為檔案名稱加入內容雜湊
+                entryFileNames: 'assets/[name].[hash].js',
+                chunkFileNames: 'assets/[name].[hash].js',
+                assetFileNames: 'assets/[name].[hash].[ext]'
+            }
+        }
     }
 }) 
