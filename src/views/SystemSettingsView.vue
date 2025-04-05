@@ -1,20 +1,105 @@
 <template>
   <div class="sys-setting">
-    <el-drawer v-model="drawer_show" size="80%" direction="rtl">
+    <el-drawer v-model="drawer_show" size="95%" direction="rtl">
       <template #header>
         <div class="w-100 border-bottom d-flex justify-content-between">
           <h2 class="text-start">系統設定</h2>
           <span class="edit_key" v-if="settings.EditKey">{{ settings.EditKey }}</span>
         </div>
       </template>
-      <div v-loading="loading" v-bind:style="loading ? { opacity: 0.5, } : {}" style="position: absolute; width:95%;height: 100%;top:80px" element-loading-text="Loading...">
-        <b-tabs v-model="selected_tab" v-show="!loading">
-          <b-tab title="一般">
-            <div class="tabpage border p-2">
+      <div v-loading="loading" v-bind:style="loading ? { opacity: 0.5, } : {}" style="position: absolute; width:98%;height: 100%;top:66px" element-loading-text="Loading...">
+        <div class="settings-container" v-show="!loading">
+          <div class="settings-sidebar">
+            <el-menu :default-active="selected_tab" class="settings-menu" @select="handleSelect">
+              <el-menu-item index="0">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>一般</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>UI</span>
+              </el-menu-item>
+              <el-menu-item index="2">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>安全防護</span>
+              </el-menu-item>
+              <el-menu-item v-if="!IsInspectionAGV" index="3">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>電池</span>
+              </el-menu-item>
+              <el-menu-item v-if="IsInspectionAGV" index="3">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>巡檢AGV</span>
+              </el-menu-item>
+              <el-menu-item v-if="!IsInspectionAGV" index="4">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>設備取/放貨</span>
+              </el-menu-item>
+              <el-menu-item v-if="IsForkAGV && settings.ForkAGV" index="5">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>叉車AGV</span>
+              </el-menu-item>
+              <el-menu-item index="6">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>派車系統</span>
+              </el-menu-item>
+              <el-menu-item index="7">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>音效</span>
+              </el-menu-item>
+              <el-menu-item v-if="!IsInspectionAGV" index="8">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>Cst Reader</span>
+              </el-menu-item>
+              <el-menu-item index="9">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>I/O定義</span>
+              </el-menu-item>
+              <el-menu-item v-if="!IsInspectionAGV" index="10">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>設備交握設定</span>
+              </el-menu-item>
+              <el-menu-item index="11">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>手動檢查貨況</span>
+              </el-menu-item>
+              <el-menu-item index="12">
+                <el-icon>
+                  <Setting />
+                </el-icon>
+                <span>進階</span>
+              </el-menu-item>
+            </el-menu>
+          </div>
+          <div class="settings-content">
+            <div v-if="selected_tab === '0'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
-                <!-- <el-form-item label="網頁鍵盤移動控制">
-                  <el-switch @change="HandleParamChanged" v-model="settings.WebKeyboardMoveControl"></el-switch>
-                </el-form-item>-->
                 <el-form-item label="蜂鳴器">
                   <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
@@ -35,9 +120,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="UI">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '1'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item v-if="settings.UI != undefined && settings.UI.IsQuicklyActionFooterDisplay != undefined" label="快速動作功能列">
                   <el-switch v-model="settings.UI.IsQuicklyActionFooterDisplay" @change="HandleParamChanged" size="small"></el-switch>
@@ -47,9 +130,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="安全防護">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '2'" class="tabpage border p-2">
               <div class="text-start w-100">
                 <el-form :model="settings" label-width="210" label-position="left">
                   <div class="w-100 border-bottom">
@@ -138,9 +219,7 @@
                 </el-form>
               </div>
             </div>
-          </b-tab>
-          <b-tab v-if="!IsInspectionAGV" title="電池">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '3'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="等待充電開始時間(秒)">
                   <el-input-number @change="HandleParamChanged" size="small" v-model="settings.BatteryModule.WaitChargeStartDelayTimeWhenReachChargeTaskFinish"></el-input-number>
@@ -156,45 +235,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab v-if="IsInspectionAGV" title="巡檢AGV">
-            <div class="tabpage border p-2">
-              <el-form label-width="250" label-position="left">
-                <div class="text-start w-100 border-bottom">
-                  <b>初始化</b>
-                </div>
-                <el-form-item label="初始化檢查電池鎖定">
-                  <el-switch @change="HandleParamChanged" v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
-                </el-form-item>
-                <div class="text-start w-100 border-bottom">
-                  <b>電池交換</b>
-                </div>
-                <el-form-item label="需交換電池最小電量">
-                  <el-input @change="HandleParamChanged" type="number" :min="0" :max="100" v-model="settings.InspectionAGV.ExchangeBatLevelThresholdVal"></el-input>
-                </el-form-item>
-                <el-form-item label="交換電池數量">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="2" v-model="settings.InspectionAGV.BatteryChangeNum"></el-input>
-                </el-form-item>
-                <el-form-item label="交握-TP1">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP1"></el-input>
-                </el-form-item>
-                <el-form-item label="交握-TP2">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP2"></el-input>
-                </el-form-item>
-                <el-form-item label="交握-TP3">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP3"></el-input>
-                </el-form-item>
-                <el-form-item label="交握-TP4">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP4"></el-input>
-                </el-form-item>
-                <el-form-item label="交握-TP5">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP5"></el-input>
-                </el-form-item>
-              </el-form>
-            </div>
-          </b-tab>
-          <b-tab v-if="!IsInspectionAGV" title="設備取/放貨">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '4'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <div class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
@@ -214,8 +255,6 @@
                 <el-form-item label="TA5_Wait_L_U_REQ_OFF">
                   <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"></el-input-number>
                 </el-form-item>
-                <!--  -->
-                <!--  -->
                 <div class="text-start w-100 border-bottom">
                   <b>一般設定</b>
                 </div>
@@ -231,9 +270,6 @@
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
-                <!-- <el-form-item label="CST ID讀取功能">
-                  <el-switch @change="HandleParamChanged" v-model="settings.CST_READER_TRIGGER"></el-switch>
-                </el-form-item>-->
                 <div class="text-start w-100 border-bottom">
                   <b>貨物ID讀取</b>
                 </div>
@@ -258,7 +294,6 @@
                 <el-form-item label="CST 在席檢-設備動作後">
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"></el-switch>
                 </el-form-item>
-                <!--  -->
                 <div class="text-start w-100 border-bottom">
                   <b>車頭設備內產品預檢知</b>
                 </div>
@@ -288,9 +323,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="叉車AGV" v-if="IsForkAGV && settings.ForkAGV">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '5'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="行程上極限(cm)">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0" :max="settings.ForkAGV.UplimitPoseSettingMax" @change="HandleParamChanged" v-model="settings.ForkAGV.UplimitPose"></el-input-number>
@@ -336,9 +369,7 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="派車系統">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '6'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Host">
                   <el-row>
@@ -360,14 +391,10 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="音效">
-            <div class="tabpage border p-2 souns-page">
+            <div v-if="selected_tab === '7'" class="tabpage border p-2 souns-page">
               <SoundsSetting></SoundsSetting>
             </div>
-          </b-tab>
-          <b-tab v-if="!IsInspectionAGV" title="Cst Reader">
-            <div class="tabpage border p-2 cst-reader">
+            <div v-if="selected_tab === '8'" class="tabpage border p-2 cst-reader">
               <el-form label-width="100px" label-position="left">
                 <el-form-item label="Tray Reader">
                   <el-checkbox v-model="settings.HasTrayCstReader" @change="HandleParamChanged"></el-checkbox>
@@ -377,27 +404,19 @@
                 </el-form-item>
               </el-form>
             </div>
-          </b-tab>
-          <b-tab title="I/O定義">
-            <div class="tabpage border p-2 io-setting x-2">
+            <div v-if="selected_tab === '9'" class="tabpage border p-2 io-setting x-2">
               <IOSetting></IOSetting>
             </div>
-          </b-tab>
-          <b-tab v-if="!IsInspectionAGV" title="設備交握設定">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '10'" class="tabpage border p-2">
               <EQHandshakeConfiguration :SyncFromAGVS="settings.SyncEQInfoFromAGVS" @onSyncAGVSCheckBoxChanged="(val) => {
                 settings.SyncEQInfoFromAGVS = val;
                 HandleParamChanged();
               }"></EQHandshakeConfiguration>
             </div>
-          </b-tab>
-          <b-tab title="手動檢查貨況">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '11'" class="tabpage border p-2">
               <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
-          </b-tab>
-          <b-tab title="進階">
-            <div class="tabpage border p-2">
+            <div v-if="selected_tab === '12'" class="tabpage border p-2">
               <el-form label-position="left" label-width="250">
                 <el-form-item label="無貨行駛異常時自動重置並上線">
                   <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo" @change="HandleParamChanged" size="small"></el-switch>
@@ -417,14 +436,16 @@
                 <b-button v-if="false" class="w-50 my-1 mx-3" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
-          </b-tab>
-        </b-tabs>
+          </div>
+        </div>
       </div>
     </el-drawer>
   </div>
 </template>
 <script>
 import { ElNotification } from 'element-plus'
+import { ElIcon } from 'element-plus'
+import { Setting } from '@element-plus/icons-vue'
 import bus from '@/event-bus.js'
 import { SystemAPI, IMUAPI, SoundsAPI, AlarmTableAPI } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
@@ -463,13 +484,14 @@ class ForkLifer {
 
 export default {
   components: {
-    uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus, SoundsSetting
+    uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus, SoundsSetting,
+    Setting
   },
   data() {
     return {
       loading: true,
       drawer_show: false,
-      selected_tab: 0,
+      selected_tab: '0',
       settings: new SystemSettings(),
       normal_stations: [],
       saveSettingsTimeout: null,
@@ -576,6 +598,9 @@ export default {
     })
   },
   methods: {
+    handleSelect(index) {
+      this.selected_tab = index;
+    },
     async GetAlarmTable() {
       this.alarm_table = await AlarmTableAPI.GetAlarmTable();
     },
@@ -748,6 +773,30 @@ export default {
 .sys-setting {
   z-index: 1099999;
 
+  .settings-container {
+    display: flex;
+    height: 100%;
+  }
+
+  .settings-sidebar {
+    width: 175px;
+    height: 90vh;
+    border-right: 1px solid #dcdfe6;
+    background-color: #f5f7fa;
+    overflow-y: auto;
+  }
+
+  .settings-menu {
+    border-right: none;
+    height: 100%;
+  }
+
+  .settings-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
   .souns-page {
     i {
       font-size: 30px;
@@ -766,28 +815,23 @@ export default {
 }
 
 .tabpage {
-  // height: 85vh;
+  height: 88vh;
   overflow-y: auto;
-  height: 76vh;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 
   /* Custom scrollbar styles */
   &::-webkit-scrollbar {
     width: 16px;
-    /* Increase scrollbar width */
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: rgb(164, 164, 164);
-    /* Change scrollbar color */
     border-radius: 16px;
-    /* Rounded corners */
   }
 
   &::-webkit-scrollbar-track {
     background: #5c5c5c;
-    /* Track color */
   }
 }
 
