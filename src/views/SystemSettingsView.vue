@@ -10,92 +10,16 @@
       <div v-loading="loading" v-bind:style="loading ? { opacity: 0.5, } : {}" style="position: absolute; width:98%;height: 100%;top:66px" element-loading-text="Loading...">
         <div class="settings-container" v-show="!loading">
           <div class="settings-sidebar">
-            <el-menu :default-active="selected_tab" class="settings-menu" @select="handleSelect">
-              <el-menu-item index="0">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>一般</span>
-              </el-menu-item>
-              <el-menu-item index="1">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>UI</span>
-              </el-menu-item>
-              <el-menu-item index="2">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>安全防護</span>
-              </el-menu-item>
-              <el-menu-item v-if="!IsInspectionAGV" index="3">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>電池</span>
-              </el-menu-item>
-              <el-menu-item v-if="IsInspectionAGV" index="3">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>巡檢AGV</span>
-              </el-menu-item>
-              <el-menu-item v-if="!IsInspectionAGV" index="4">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>設備取/放貨</span>
-              </el-menu-item>
-              <el-menu-item v-if="IsForkAGV && settings.ForkAGV" index="5">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>叉車AGV</span>
-              </el-menu-item>
-              <el-menu-item index="6">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>派車系統</span>
-              </el-menu-item>
-              <el-menu-item index="7">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>音效</span>
-              </el-menu-item>
-              <el-menu-item v-if="!IsInspectionAGV" index="8">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>Cst Reader</span>
-              </el-menu-item>
-              <el-menu-item index="9">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>I/O定義</span>
-              </el-menu-item>
-              <el-menu-item v-if="!IsInspectionAGV" index="10">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>設備交握設定</span>
-              </el-menu-item>
-              <el-menu-item index="11">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>手動檢查貨況</span>
-              </el-menu-item>
-              <el-menu-item index="12">
-                <el-icon>
-                  <Setting />
-                </el-icon>
-                <span>進階</span>
-              </el-menu-item>
-            </el-menu>
+            <el-scrollbar>
+              <div class="menu-items">
+                <div v-for="(item, index) in menuItems" :key="index" class="menu-item" :class="{ active: selected_tab === item.index }" @click="handleSelect(item.index)">
+                  <el-icon>
+                    <Setting />
+                  </el-icon>
+                  <span>{{ item.title }}</span>
+                </div>
+              </div>
+            </el-scrollbar>
           </div>
           <div class="settings-content">
             <div v-if="selected_tab === '0'" class="tabpage border p-2">
@@ -497,6 +421,22 @@ export default {
       saveSettingsTimeout: null,
       alarm_table: [new AlarmCodeModel()],
       forbidden_auto_reset_alarm_codes: [],
+      menuItems: [
+        { index: '0', title: '一般' },
+        { index: '1', title: 'UI' },
+        { index: '2', title: '安全防護' },
+        { index: '3', title: '電池', show: () => !this.IsInspectionAGV },
+        { index: '3', title: '巡檢AGV', show: () => this.IsInspectionAGV },
+        { index: '4', title: '設備取/放貨', show: () => !this.IsInspectionAGV },
+        { index: '5', title: '叉車AGV', show: () => this.IsForkAGV && this.settings.ForkAGV },
+        { index: '6', title: '派車系統' },
+        { index: '7', title: '音效' },
+        { index: '8', title: 'Cst Reader', show: () => !this.IsInspectionAGV },
+        { index: '9', title: 'I/O定義' },
+        { index: '10', title: '設備交握設定', show: () => !this.IsInspectionAGV },
+        { index: '11', title: '手動檢查貨況' },
+        { index: '12', title: '進階' }
+      ]
     }
   },
   computed: {
@@ -529,6 +469,9 @@ export default {
         }
       }
     },
+    filteredMenuItems() {
+      return this.menuItems.filter(item => !item.show || item.show());
+    }
   },
   mounted() {
     bus.on('show-settings', async (tabIndex) => {
@@ -783,12 +726,42 @@ export default {
     height: 90vh;
     border-right: 1px solid #dcdfe6;
     background-color: #f5f7fa;
-    overflow-y: auto;
-  }
 
-  .settings-menu {
-    border-right: none;
-    height: 100%;
+    .menu-items {
+      padding: 10px 0;
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        height: 50px;
+        padding: 0 20px;
+        cursor: pointer;
+        color: #606266;
+
+        .el-icon {
+          margin-right: 8px;
+          color: #606266;
+        }
+
+        &:hover {
+          background-color: #ecf5ff;
+          color: #409eff;
+
+          .el-icon {
+            color: #409eff;
+          }
+        }
+
+        &.active {
+          background-color: #ecf5ff;
+          color: #409eff;
+
+          .el-icon {
+            color: #409eff;
+          }
+        }
+      }
+    }
   }
 
   .settings-content {
