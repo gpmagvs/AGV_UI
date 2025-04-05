@@ -17,7 +17,7 @@
           <div class="item-text"> 目前位置 <span>System Error</span>
           </div>
           <div
-            class="item-val">{{ AGVStatesData.Last_Visit_MapPoint.Graph.Display + '(' + AGVStatesData.Last_Visited_Tag + ')' }}</div>
+            class="item-val">{{ GetLastVisitMapPointDisplay() }}</div>
         </div>
       </div>
       <div class="status-card-info">
@@ -124,6 +124,12 @@ export default {
       else {
         return "Unknown"
       }
+    },
+    GetLastVisitMapPointDisplay() {
+      if (!this.AGVStatesData?.Last_Visit_MapPoint?.Graph?.Display) {
+        return 'N/A';
+      }
+      return `${this.AGVStatesData.Last_Visit_MapPoint.Graph.Display}(${this.AGVStatesData.Last_Visited_Tag})`;
     }
   }
 }

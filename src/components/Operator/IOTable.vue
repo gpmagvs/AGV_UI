@@ -4,8 +4,7 @@
       <jw-pagination
         @page_changed="(ev) => { pagecurrent = ev - 1 }"
         :pageSize="16"
-        :totalCount="table_data.length"
-      ></jw-pagination>
+        :totalCount="table_data.length"></jw-pagination>
     </div>
     <div class="border mt-1 flex-fill">
       <el-table
@@ -20,8 +19,7 @@
         @row-dblclick="cellDoubleClickHandle"
         @cell-mouse-enter="cellMouseEnterHandler"
         @cell-mouse-leave="cellMouseLeaveHandler"
-        style="width:99%"
-      >
+        style="width:99%">
         <el-table-column label="Address" prop="Address" width="70"></el-table-column>
         <el-table-column label="Name" prop="Name"></el-table-column>
         <el-table-column label="Value" prop="State" width="60" :formatter="StateFormatter"></el-table-column>
@@ -33,30 +31,21 @@
               @click="DO_State_ClickHandler(scope.$index, scope.row)"
             ></el-checkbox>
           </template>
-        </el-table-column>-->
-        <el-table-column v-if="isOutput" width="80">
+</el-table-column>--> <el-table-column v-if="isOutput" width="80">
           <template #default="scope">
             <el-button :disabled="!IsUserLogin" @click="ToggleDO(scope.row)" size="small">Toggle</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <b-modal
-      v-model="DIOChangeComfirmDialogShow"
-      :centered="true"
-      title="DIO Change Confirm"
-      @ok="WriteDIOHandle"
-    >
+    <b-modal v-model="DIOChangeComfirmDialogShow" :centered="true" title="DIO Change Confirm" @ok="WriteDIOHandle">
       <p>
-        <b>[{{ toChangeAddress }}]</b> will changed from
-        <b>{{ toChangeState ? 0 : 1 }}</b> to
-        <b>{{ toChangeState ? 1 : 0 }}</b>.
+        <b>[{{ toChangeAddress }}]</b> will changed from <b>{{ toChangeState ? 0 : 1 }}</b> to <b>{{ toChangeState ? 1 : 0 }}</b>.
       </p>
       <p>Are you sure?</p>
     </b-modal>
   </div>
 </template>
-
 <script>
 import { clsRegister } from '@/ViewModels/clsDIOTable';
 import { DIO } from '@/api/VMSAPI.js'
@@ -138,11 +127,6 @@ export default {
       if (row.rowIndex < 0) {
         return '';
       }
-      if (this.hover_row) {
-        if (this.hover_row.Address == row.row.Address) {
-          return 'bg-dark'
-        }
-      }
       var value = this.page_table_data[row.rowIndex].State;
       try {
         if (value)
@@ -201,14 +185,14 @@ export default {
   }
 }
 </script>
-
-<style  lang="scss">
+<style lang="scss">
 .el-table {
   .on-row {
     background-color: rgb(13, 110, 253);
     color: white;
     /* --el-table-tr-bg-color: var(--el-color-success-light-9); */
   }
+
   .off-row {
     background-color: rgb(245, 245, 245);
     color: rgb(43, 43, 43);
@@ -221,6 +205,11 @@ export default {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
       sans-serif;
+  }
+
+  // 移除 hover 效果
+  tr:hover>td {
+    background-color: inherit !important;
   }
 }
 </style>

@@ -3,11 +3,11 @@ import {
   createWebHistory
 } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
+import HomeViewV2 from '@/views/Version2/HomeView.vue'
 import Admin from '@/views/Admin.vue'
 import MainStatuShow from '@/components/Version2/MainStatuShow.vue'
 import { UIStore } from '@/store'
-import AgvOverview from '@/components/AGVStatusOverview.vue'
-
+import AgvOverview from '@/components/AGVStatusOverview.vue';
 const routes = [
   {
     path: '/',
@@ -46,6 +46,45 @@ const routes = [
           }
         ]
       }
+    ]
+  },
+  {
+    path: '/v2',
+    name: 'home-v2',
+    component: HomeViewV2,
+    children: [
+      {
+        path: '',
+        name: 'v2-overview',
+        component: AgvOverview,
+      },
+      {
+        path: 'IOTable',
+        component: () => import('../components/Version2/DIOViewer.vue'),
+      },
+      {
+        path: 'Alarm',
+        component: () => import('../components/AlarmWarningTable.vue'),
+      },
+      {
+        path: 'controller',
+        component: () => import('../components/Admin/Controller.vue'),
+        children: [
+          {
+            path: 'move',
+            component: () => import('../components/Controller/MoveController.vue')
+          },
+          {
+            path: 'fork',
+            component: () => import('../components/Controller/ForkController.vue')
+          }
+        ]
+      },
+      {
+        path: 'rd_test',
+        component: () =>
+          import(/* webpackChunkName: "about" */ '../views/RDTestView.vue'),
+      },
     ]
   },
   {

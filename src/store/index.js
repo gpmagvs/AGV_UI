@@ -598,136 +598,148 @@ export const DIOStore = createStore({
       }
     },
     IsLaserFrontAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0032').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0032');
+      return input?.State === false;
     },
 
     IsLaserFrontWarning: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      var region1 = !Inputs.find(reg => reg.Address == 'X0030').State
-      var region2 = !Inputs.find(reg => reg.Address == 'X0031').State
-      var region3 = !Inputs.find(reg => reg.Address == 'X0032').State
-      return (region1 | region2) & !region3
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const inputs = state.DIOStates.Inputs;
+      const region1 = inputs.find(reg => reg.Address === 'X0030')?.State === false;
+      const region2 = inputs.find(reg => reg.Address === 'X0031')?.State === false;
+      const region3 = inputs.find(reg => reg.Address === 'X0032')?.State === false;
+      return (region1 || region2) && !region3;
     },
 
     IsLaserBackAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0036').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0036');
+      return input?.State === false;
     },
 
     IsLaserBackWarning: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      var region1 = !Inputs.find(reg => reg.Address == 'X0034').State
-      var region2 = !Inputs.find(reg => reg.Address == 'X0035').State
-      var region3 = !Inputs.find(reg => reg.Address == 'X0036').State
-      return (region1 | region2) & !region3
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const inputs = state.DIOStates.Inputs;
+      const region1 = inputs.find(reg => reg.Address === 'X0034')?.State === false;
+      const region2 = inputs.find(reg => reg.Address === 'X0035')?.State === false;
+      const region3 = inputs.find(reg => reg.Address === 'X0036')?.State === false;
+      return (region1 || region2) && !region3;
     },
 
     IsLaserRightAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X000F').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X000F');
+      return input?.State === false;
     },
 
     IsLaserLeftAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X000E').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X000E');
+      return input?.State === false;
     },
 
     IsLaserFrontByass: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Outputs = state.DIOStates.Outputs;
-      return Outputs.find(reg => reg.Name == 'Front_LsrBypass').State
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === 'Front_LsrBypass');
+      return output?.State ?? false;
     },
     IsLaserBackByass: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Outputs = state.DIOStates.Outputs;
-      return Outputs.find(reg => reg.Name == 'Back_LsrBypass').State
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === 'Back_LsrBypass');
+      return output?.State ?? false;
     },
     IsLaserLeftByass: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Outputs = state.DIOStates.Outputs;
-      return Outputs.find(reg => reg.Name == 'Left_LsrBypass').State
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === 'Left_LsrBypass');
+      return output?.State ?? false;
     },
     IsLaserRightByass: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Outputs = state.DIOStates.Outputs;
-      return Outputs.find(reg => reg.Name == 'Right_LsrBypass').State
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === 'Right_LsrBypass');
+      return output?.State ?? false;
     },
     IsBumperTrigger: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X000A').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X000A');
+      return input?.State === false;
     },
     IsRightMotorAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0015').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0015');
+      return input?.State === false;
     },
 
     IsLeftMotorAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0017').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0017');
+      return input?.State === false;
     },
 
     IsVerticalMotorAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0019').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0019');
+      return input?.State === false;
     },
     IsVerticalBeltAlarm: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X002C').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X002C');
+      return input?.State === false;
     },
     IsForkFronendObstacle: state => {
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      return !Inputs.find(reg => reg.Address == 'X0011').State
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X0011');
+      return input?.State === false;
     },
     IsBrakeSwitchRelease: state => {
-      if (!state)
+      if (!state.DIOStates?.Inputs) {
         return false;
-      if (state.DIOStates.Inputs == undefined)
-        return false
-      var Inputs = state.DIOStates.Inputs;
-      var switch_off = !Inputs.find(reg => reg.Address == 'X000C').State
+      }
+      const inputs = state.DIOStates.Inputs;
+      const switch_off = inputs.find(reg => reg.Address === 'X000C')?.State === false;
+      if (!switch_off) return false;
 
-      if (!switch_off)
-        return false;
-
-      var emo_pushed = !Inputs.find(reg => reg.Address == 'X0008').State
+      const emo_pushed = inputs.find(reg => reg.Address === 'X0008')?.State === false;
       return emo_pushed && switch_off;
-
     },
     Vertical_Hardware_limit_bypass: state => {
-      var vhlb = state.DIOStates.Outputs.find(reg => reg.Name == "Vertical_Hardware_limit_bypass");
-      if (vhlb)
-        return vhlb.State;
-      else
+      if (!state.DIOStates?.Outputs) {
         return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === "Vertical_Hardware_limit_bypass");
+      return output?.State ?? false;
     }
 
   },
