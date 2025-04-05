@@ -12,7 +12,7 @@
           <div class="settings-sidebar">
             <el-scrollbar>
               <div class="menu-items">
-                <div v-for="(item, index) in menuItems" :key="index" class="menu-item" :class="{ active: selected_tab === item.index }" @click="handleSelect(item.index)">
+                <div v-for="(item, index) in menuItems" :key="index" class="menu-item" :class="{ active: selected_tab === item.index }" @click="handleSelect(item.index)" v-show="item.show != undefined ? item.show() : true">
                   <el-icon>
                     <Setting />
                   </el-icon>
@@ -160,6 +160,40 @@
               </el-form>
             </div>
             <div v-if="selected_tab === '4'" class="tabpage border p-2">
+              <el-form label-width="250" label-position="left">
+                <div class="text-start w-100 border-bottom">
+                  <b>初始化</b>
+                </div>
+                <el-form-item label="初始化檢查電池鎖定">
+                  <el-switch @change="HandleParamChanged" v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom">
+                  <b>電池交換</b>
+                </div>
+                <el-form-item label="需交換電池最小電量">
+                  <el-input @change="HandleParamChanged" type="number" :min="0" :max="100" v-model="settings.InspectionAGV.ExchangeBatLevelThresholdVal"></el-input>
+                </el-form-item>
+                <el-form-item label="交換電池數量">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="2" v-model="settings.InspectionAGV.BatteryChangeNum"></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP1">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP1"></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP2">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP2"></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP3">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP3"></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP4">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP4"></el-input>
+                </el-form-item>
+                <el-form-item label="交握-TP5">
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP5"></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
+            <div v-if="selected_tab === '5'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <div class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
@@ -247,7 +281,7 @@
                 </el-form-item>
               </el-form>
             </div>
-            <div v-if="selected_tab === '5'" class="tabpage border p-2">
+            <div v-if="selected_tab === '6'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="行程上極限(cm)">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0" :max="settings.ForkAGV.UplimitPoseSettingMax" @change="HandleParamChanged" v-model="settings.ForkAGV.UplimitPose"></el-input-number>
@@ -293,7 +327,7 @@
                 </el-form-item>
               </el-form>
             </div>
-            <div v-if="selected_tab === '6'" class="tabpage border p-2">
+            <div v-if="selected_tab === '7'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="Host">
                   <el-row>
@@ -315,10 +349,10 @@
                 </el-form-item>
               </el-form>
             </div>
-            <div v-if="selected_tab === '7'" class="tabpage border p-2 souns-page">
+            <div v-if="selected_tab === '8'" class="tabpage border p-2 souns-page">
               <SoundsSetting></SoundsSetting>
             </div>
-            <div v-if="selected_tab === '8'" class="tabpage border p-2 cst-reader">
+            <div v-if="selected_tab === '9'" class="tabpage border p-2 cst-reader">
               <el-form label-width="100px" label-position="left">
                 <el-form-item label="Tray Reader">
                   <el-checkbox v-model="settings.HasTrayCstReader" @change="HandleParamChanged"></el-checkbox>
@@ -328,19 +362,19 @@
                 </el-form-item>
               </el-form>
             </div>
-            <div v-if="selected_tab === '9'" class="tabpage border p-2 io-setting x-2">
+            <div v-if="selected_tab === '10'" class="tabpage border p-2 io-setting x-2">
               <IOSetting></IOSetting>
             </div>
-            <div v-if="selected_tab === '10'" class="tabpage border p-2">
+            <div v-if="selected_tab === '11'" class="tabpage border p-2">
               <EQHandshakeConfiguration :SyncFromAGVS="settings.SyncEQInfoFromAGVS" @onSyncAGVSCheckBoxChanged="(val) => {
                 settings.SyncEQInfoFromAGVS = val;
                 HandleParamChanged();
               }"></EQHandshakeConfiguration>
             </div>
-            <div v-if="selected_tab === '11'" class="tabpage border p-2">
+            <div v-if="selected_tab === '12'" class="tabpage border p-2">
               <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
-            <div v-if="selected_tab === '12'" class="tabpage border p-2">
+            <div v-if="selected_tab === '13'" class="tabpage border p-2">
               <el-form label-position="left" label-width="250">
                 <el-form-item label="無貨行駛異常時自動重置並上線">
                   <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo" @change="HandleParamChanged" size="small"></el-switch>
@@ -426,16 +460,16 @@ export default {
         { index: '1', title: 'UI' },
         { index: '2', title: '安全防護' },
         { index: '3', title: '電池', show: () => !this.IsInspectionAGV },
-        { index: '3', title: '巡檢AGV', show: () => this.IsInspectionAGV },
-        { index: '4', title: '設備取/放貨', show: () => !this.IsInspectionAGV },
-        { index: '5', title: '叉車AGV', show: () => this.IsForkAGV && this.settings.ForkAGV },
-        { index: '6', title: '派車系統' },
-        { index: '7', title: '音效' },
-        { index: '8', title: 'Cst Reader', show: () => !this.IsInspectionAGV },
-        { index: '9', title: 'I/O定義' },
-        { index: '10', title: '設備交握設定', show: () => !this.IsInspectionAGV },
-        { index: '11', title: '手動檢查貨況' },
-        { index: '12', title: '進階' }
+        { index: '4', title: '巡檢AGV', show: () => this.IsInspectionAGV },
+        { index: '5', title: '設備取/放貨', show: () => !this.IsInspectionAGV },
+        { index: '6', title: '叉車AGV', show: () => this.IsForkAGV && this.settings.ForkAGV },
+        { index: '7', title: '派車系統' },
+        { index: '8', title: '音效' },
+        { index: '9', title: 'Cst Reader', show: () => !this.IsInspectionAGV },
+        { index: '10', title: 'I/O定義' },
+        { index: '11', title: '設備交握設定', show: () => !this.IsInspectionAGV },
+        { index: '12', title: '手動檢查貨況' },
+        { index: '13', title: '進階' }
       ]
     }
   },
