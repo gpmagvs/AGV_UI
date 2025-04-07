@@ -3,8 +3,7 @@
     <div class="status d-flex flex-row bg-light">
       <div
         class="sys-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
-      >
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
         <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
           <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
         </div>
@@ -13,23 +12,18 @@
       <div
         v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
         class="agvc-name flex-fill"
-        @dblclick="where_r_u()"
-      >
-        <i class="bi bi-truck-front mx-1"></i>
-        {{ AGVName == "" ? "AGV" : AGVName }}
+        @dblclick="where_r_u()">
+        <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
       </div>
       <div
         class="account-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''"
-      >
-        <i class="bi bi-people mx-1"></i>
-        {{ UserName }}
+        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <i class="bi bi-people mx-1"></i> {{ UserName }}
       </div>
       <div
         @dblclick="VersionTextClickHandle()"
         class="version-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''"
-      >{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
+        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
         <jw_switch
@@ -38,58 +32,34 @@
           active_text="EN"
           active_color="rgb(0, 204, 0)"
           inactive_text="中文"
-          inactive_color="rgb(9, 76, 176)"
-        ></jw_switch>
+          inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
       <!--視窗與電腦控制-->
       <div class="system-control">
         <b-dropdown variant="danger" right>
           <template #button-content>
-            <i class="bi bi-three-dots-vertical me-1"></i>
-            SYSTEM
-          </template>
+            <i class="bi bi-three-dots-vertical me-1"></i> SYSTEM </template>
           <b-dropdown-item @click="toggleFullScreen">
-            <i class="bi bi-fullscreen me-2"></i>
-            全螢幕切換
-          </b-dropdown-item>
+            <i class="bi bi-fullscreen me-2"></i> 全螢幕切換 </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-pin-map me-2"></i>
-            <el-button
-              @click="HandleAGVLocating"
-              :disabled="IsAGVRunning"
-              class="system-control-button"
-              text
-            >車輛定位</el-button>
+            <el-button @click="HandleAGVLocating" :disabled="IsAGVRunning" class="system-control-button" text>車輛定位</el-button>
           </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser" @click="HandleSickLidarLocBtnClick">
-            <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website
-          </b-dropdown-item>
-
+            <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-file-arrow-up-fill me-2"></i>
-            <el-button
-              @click="() => { uploadVisible = true }"
-              :disabled="IsAGVRunning"
-              class="system-control-button"
-              text
-            >車載更新</el-button>
+            <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button" text>車載更新</el-button>
           </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
-            <i class="bi bi-power me-2"></i> 關機
-          </b-dropdown-item>
+            <i class="bi bi-power me-2"></i> 關機 </b-dropdown-item>
           <b-dropdown-item v-if="false" @click="restart">
-            <i class="bi bi-arrow-clockwise me-2"></i>重新啟動
-          </b-dropdown-item>
+            <i class="bi bi-arrow-clockwise me-2"></i>重新啟動 </b-dropdown-item>
         </b-dropdown>
       </div>
-      <el-dialog
-        draggable
-        title="更新檔上傳"
-        v-model="uploadVisible"
-        @closed="() => {
+      <el-dialog draggable title="更新檔上傳" v-model="uploadVisible" @closed="() => {
         $refs.uploader.handleRemove();
-      }"
-      >
+      }">
         <uploader ref="uploader"></uploader>
       </el-dialog>
     </div>
@@ -347,14 +317,17 @@ export default {
     background-color: rgb(255, 67, 67);
     color: white;
   }
+
   .system-control {
     height: 100%;
     margin-left: 2px;
+
     :deep(.btn-group > .btn) {
       border-radius: 0;
       height: 37px;
     }
   }
+
   .system-control-button {
     width: 100%;
     font-family: inherit;
@@ -362,10 +335,12 @@ export default {
     line-height: inherit;
     padding-left: -124px;
     color: inherit;
+
     :deep(span) {
       left: -56px !important;
       position: relative !important;
     }
+
     :deep(:active) {
       background-color: rgb(0, 123, 255) !important;
     }
