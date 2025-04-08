@@ -177,10 +177,6 @@ function BecomeLeader() {
             payload: JSON.stringify(dataPayload)
         })
     }, 100);
-    ElNotification.info({
-        message: 'Start ROS and Backend Data Fetch',
-        duration: 1000
-    })
 }
 
 let lastHeartbeat = Date.now();
