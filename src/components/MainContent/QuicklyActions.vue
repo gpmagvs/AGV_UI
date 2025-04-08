@@ -49,9 +49,24 @@ export default {
               customClass: 'my-sweetalert'
             })
         }
-        await SystemSettingsStore.dispatch('downloadSettings');
-        //嚴謹一點，應先重新取得系統參數，再進行設定
-        if (!SystemSettingsStore.state.IsSettingsLoaded) {
+
+        let retryCount = 0;
+        const maxRetries = 3;
+        let settingsLoaded = false;
+
+        while (retryCount < maxRetries && !settingsLoaded) {
+          await SystemSettingsStore.dispatch('downloadSettings');
+          settingsLoaded = SystemSettingsStore.state.IsSettingsLoaded;
+
+          if (!settingsLoaded) {
+            retryCount++;
+            if (retryCount < maxRetries) {
+              await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
+            }
+          }
+        }
+
+        if (!settingsLoaded) {
           this.cstIdRead = !this.cstIdRead;
           showGetSettingsError();
           return;
@@ -116,7 +131,7 @@ export default {
         this.cstIdRead = SystemSettingsStore.state.Settings.CST_READER_TRIGGER
         this.settingsStored = SystemSettingsStore.state.Settings
       }
-    }, 100);
+    }, 5000);
     bus.on('ParameterChanged', (param) => {
       if (this.cstIdRead != param.CST_READER_TRIGGER) {
         this.cstIdRead = param.CST_READER_TRIGGER;

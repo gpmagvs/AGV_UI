@@ -69,6 +69,32 @@ export default {
     async HandleAlarmSheetClick(code) {
       await AGVStatusStore.dispatch('clear_alarm_with_code', code)
     },
+    async loadSystemSettings(retryCount = 0) {
+      try {
+        this.loading = true;
+        await SystemSettingsStore.dispatch('downloadSettings');
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
+      } catch (error) {
+        console.warn('系統參數加載失敗:', error);
+        if (retryCount < 3) {
+          setTimeout(() => {
+            this.loadSystemSettings(retryCount + 1);
+          }, 1000);
+        } else {
+          this.$swal.fire({
+            title: '警告',
+            text: '系統參數加載失敗，將使用預設設定',
+            icon: 'warning',
+            confirmButtonText: '確定'
+          });
+          setTimeout(() => {
+            this.loading = false;
+          }, 1000);
+        }
+      }
+    },
     checkConnectionStatus() {
       let rosConnState = UIStore.state.ConnectionStateData.RosbridgeServer;
       const isROSConnecting = rosConnState == 2 || rosConnState == 1;
@@ -157,21 +183,7 @@ export default {
     this.isMobile = deviceDetector.isMobile
   },
   async mounted() {
-    try {
-      await SystemSettingsStore.dispatch('downloadSettings');
-    } catch (error) {
-      console.warn('系統參數加載失敗:', error);
-      this.$swal.fire({
-        title: '警告',
-        text: '系統參數加載失敗，將使用預設設定',
-        icon: 'warning',
-        confirmButtonText: '確定'
-      });
-    } finally {
-      setTimeout(() => {
-        this.loading = false;
-      }, 1000);
-    }
+    this.loadSystemSettings();
 
     try {
       await UIStore.dispatch('GetConnectionState');
