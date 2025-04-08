@@ -93,6 +93,13 @@ export const SystemMsgStore = createStore({
     SysMessages: {
       ReportIndex: -1,
       Messages: []
+    },
+    DiskStatus: {
+      Name: "",
+      DriverType: "",
+      TotalSizeOfDriver: 0,
+      TotalAvailableSpace: 0,
+      Used: 0
     }
   },
   getters: {
@@ -116,11 +123,17 @@ export const SystemMsgStore = createStore({
         localStorage.setItem('sys_msg_report_index', data.ReportIndex + '')
       }
       state.SysMessages = data
+    },
+    updateDiskStatus(state, data) {
+      state.DiskStatus = data
     }
   },
   actions: {
     Update({ commit }, data) {
       commit('updateStatus', data)
+    },
+    UpdateDiskStatus({ commit }, data) {
+      commit('updateDiskStatus', data)
     }
   }
 })

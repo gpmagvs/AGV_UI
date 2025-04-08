@@ -1,6 +1,6 @@
 <template>
   <div v-if="isShow" class="quickly-actions d-flex">
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row justify-content-between w-100">
       <div v-if="isShowCstReaderSwitch">
         <span># 貨物ID讀取 Cargo ID Read:</span>
         <el-switch
@@ -12,17 +12,23 @@
           inline-prompt
           @change="(val) => { SaveReaderSettings(val); }"></el-switch>
       </div>
+      <DiskStatus />
     </div>
   </div>
 </template>
 <script>
-import { SystemSettingsStore, UserStore } from '@/store';
+import { SystemSettingsStore, UserStore, SystemMsgStore } from '@/store';
 import { watch } from 'vue';
 import { SystemAPI } from '@/api/VMSAPI';
 import SystemSettings from '@/ViewModels/SystemSettings';
 import { ElNotification } from 'element-plus';
 import bus from '@/event-bus';
+import DiskStatus from './DiskStatus.vue';
+
 export default {
+  components: {
+    DiskStatus
+  },
   data() {
     return {
       cstIdRead: false,
@@ -102,6 +108,9 @@ export default {
     }
   },
   computed: {
+    diskStatus() {
+      return SystemMsgStore.state.DiskStatus
+    },
     isShow() {
       if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsQuicklyActionFooterDisplay == undefined)
         return true;

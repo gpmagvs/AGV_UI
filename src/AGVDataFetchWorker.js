@@ -1,4 +1,4 @@
-import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore } from "./store";
+import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore, SystemMsgStore } from "./store";
 import { ROS_STORE } from "./store/ros_store";
 import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
@@ -120,6 +120,9 @@ function StartHubConnection() {
     })
     HubConnection.on('CargoStatus', obj => {
         bus.emit('CargoStatusChanged', obj)
+    })
+    HubConnection.on('DiskStatus', obj => {
+        SystemMsgStore.dispatch('UpdateDiskStatus', obj)
     })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
