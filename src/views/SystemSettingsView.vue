@@ -841,6 +841,4 @@ export default {
     background: #5c5c5c;
   }
 }
-
-.io-setting {}
 </style>
