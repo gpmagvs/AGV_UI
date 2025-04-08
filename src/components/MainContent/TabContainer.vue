@@ -132,8 +132,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 :deep(.tab-content) {
-  height: 86%;
-  border: 1px solid #e6e6e6;
+  height: 100%;
+  border-top: 1px solid #e6e6e6;
 }
 
 :deep(.tab-pane) {
