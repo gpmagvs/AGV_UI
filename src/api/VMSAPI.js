@@ -98,6 +98,11 @@ export async function CargoStatusManualCheckDone() {
   return ret.data
 }
 
+export async function CargoStatusManualCheckDoneWhenUnloadFailure() {
+  var ret = await axios_entity.post('api/VMS/CargoStatusManualCheckDoneWhenUnloadFailure?userName=website')
+  return ret.data
+}
+
 export async function Initialize() {
   var ret = await axios_entity.post('api/VMS/Initialize')
   return ret.data

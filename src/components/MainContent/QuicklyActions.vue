@@ -12,7 +12,10 @@
           inline-prompt
           @change="(val) => { SaveReaderSettings(val); }"></el-switch>
       </div>
-      <DiskStatus />
+      <div class="d-flex flex-row">
+        <CheckParamSettingButton />
+        <DiskStatus />
+      </div>
     </div>
   </div>
 </template>
@@ -24,10 +27,11 @@ import SystemSettings from '@/ViewModels/SystemSettings';
 import { ElNotification } from 'element-plus';
 import bus from '@/event-bus';
 import DiskStatus from './DiskStatus.vue';
-
+import CheckParamSettingButton from './CheckParamSettingButton.vue';
 export default {
   components: {
-    DiskStatus
+    DiskStatus,
+    CheckParamSettingButton
   },
   data() {
     return {

@@ -124,6 +124,10 @@ function StartHubConnection() {
     HubConnection.on('DiskStatus', obj => {
         SystemMsgStore.dispatch('UpdateDiskStatus', obj)
     })
+    //CheckCargoStatus
+    HubConnection.on('CheckCargoStatus', tag => {
+        bus.emit('CheckCargoStatusWhenUnloadFail', tag);
+    })
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
         bus.emit('hub-reconnecting');

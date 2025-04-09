@@ -46,7 +46,7 @@ import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
 import SystemErrorNotify from "@/components/SystemErrorNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
-import { CargoStatusManualCheckDone } from '@/api/VMSAPI.js'
+import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure } from '@/api/VMSAPI.js'
 
 export default {
   components: {
@@ -205,6 +205,40 @@ export default {
       this.$router.push('/idle')
       // alert('idle 5 ^_^')
     })
+    //bus.emit('CheckCargoStatusWhenUnloadFail', tag);
+    bus.on('CheckCargoStatusWhenUnloadFail', tag => {
+      let timerInterval;
+      this.$swal.fire({
+        title: "貨物在席檢知異常! 請確認貨物放置狀態!",
+        icon: 'warning',
+        html: `<br/>倒數計時結束後仍未確認此取貨任務將會失敗<br/>Task will failure after the countdown ends without any confirm or check.<br/>若無法復原貨物狀態請按下按壓實體或軟體EMO按鈕，或是踢BUMPER。 <b></b> `,
+        timer: 5 * 60 * 1000,
+        timerProgressBar: true,
+        showCancelButton: true, // 顯示取消按鈕
+        cancelButtonText: '完成確認', // 取消按鈕文本
+        cancelButtonClass: 'bg-primary text-light',
+        allowOutsideClick: true, // 禁止點擊遮罩關閉對話框
+        didOpen: () => {
+          this.$swal.showLoading();
+          const timer = this.$swal.getPopup().querySelector("b");
+          timerInterval = setInterval(() => {
+            timer.textContent = `${(this.$swal.getTimerLeft() / 1000).toFixed(1)}`;
+          }, 1000);
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+        } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+          CargoStatusManualCheckDoneWhenUnloadFailure();
+          clearInterval(timerInterval); // 中斷倒計時
+        }
+      });
+
+
+    });
+
     bus.on('ManualCheckCargoStatus', model => {
       // this.$swal.fire(
       //   {

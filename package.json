@@ -6,7 +6,8 @@
   "scripts": {
     "version": "standard-version",
     "dev": "vite",
-    "build": "standard-version && vite build",
+    "build": "vite build",
+    "pub": "standard-version && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -253,7 +253,7 @@
         <!--主要內容 TabControl-->
         <div class="w-100 d-flex flex-column">
           <MainContent class="flex-fill" :VMSData="VMSData"></MainContent>
-          <div class="border rounded bg-light py-1 px-2 fixed-bottom" style="height:35px;">
+          <div class="border rounded bg-light py-1 px-2 fixed-bottom" style="height:38px;">
             <QuickActions></QuickActions>
           </div>
         </div>
