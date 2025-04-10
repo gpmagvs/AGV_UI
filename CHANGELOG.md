@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.38.0 (2025-04-10)
+
+
+### Features
+
+* add caniuse-lite dependency to package.json and package-lock.json ([74ab2c1](https://github.com/gpmagvs/AGV_UI/commit/74ab2c11a6fe52bf1206709e345259f9e15c7453))
+* Add UI settings and debug message handling ([d9dcc69](https://github.com/gpmagvs/AGV_UI/commit/d9dcc69e45156c1f5c553c350e8de6114180b28c))
+* Enhance system settings and alarm handling ([4ca601d](https://github.com/gpmagvs/AGV_UI/commit/4ca601da08f0a89565f818f9e3855d8774ba8ce9))
+* update backend host for development and add ExistSensorSimulation to SystemSettings ([f4c42c8](https://github.com/gpmagvs/AGV_UI/commit/f4c42c81a3028027f77a8e1a5a34eb5a23ecd67d))
+
 ### [1.37.21](https://github.com/gpmagvs/AGV_UI/compare/v1.37.20...v1.37.21) (2025-04-09)
 
 ### [1.37.20](https://github.com/gpmagvs/AGV_UI/compare/v1.37.19...v1.37.20) (2025-04-09)
