@@ -486,7 +486,7 @@ export default {
     },
     OriginalZomm() {
       this.GoToAGVLoc();
-      this.map.getView().setZoom(this.original_zoom);
+      this.map.getView().setZoom(24);
 
     },
     GetNormalStations() {
@@ -579,7 +579,10 @@ export default {
       // add text to each point
       this.CreateMeshLayer();
       this.StationStyleRender();
-
+      this.RestoreMapBasicSettingsFromLocalStorage();
+      //this.Line_Layer.getSource().addFeature(lineFeature);
+    },
+    RestoreMapBasicSettingsFromLocalStorage() {
       var map_view_cache = localStorage.getItem('map_view');
       if (map_view_cache) {
         var map_view_options = JSON.parse(map_view_cache)
@@ -587,9 +590,6 @@ export default {
         this.map.getView().setZoom(map_view_options.zoom)
         this.original_zoom = map_view_options.zoom;
       }
-
-
-      //this.Line_Layer.getSource().addFeature(lineFeature);
     },
     CreateMapEvent() {
       this.map.on('click', (evt) => {
