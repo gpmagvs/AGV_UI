@@ -145,7 +145,9 @@ class SystemSettings {
             LsrObsDetectedAlarmLevel: 0,
             LeaveWorkStationNeedSendRequestToAGVS: true,
             LeaveWorkStationRequestTimeout: 3,
-            BypassFrontLaserWhenEntryEQ: true
+            BypassFrontLaserWhenEntryEQ: true,
+            MoveActionTimeoutInSec: 60,
+            MaunalCheckAndResumableWhenUnloadButCargoBias: false,
         };
         this.CargoExistSensorParams = {
             TraySensorMounted: true,
