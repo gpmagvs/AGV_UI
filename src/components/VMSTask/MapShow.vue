@@ -486,8 +486,9 @@ export default {
     },
     OriginalZomm() {
       this.GoToAGVLoc();
-      this.map.getView().setZoom(24);
-
+      this.original_zoom = 24;
+      this.map.getView().setZoom(this.original_zoom);
+      this.SaveCurrentMapBasicSettingsToLocalStorage();
     },
     GetNormalStations() {
       if (!this.map_data)
@@ -582,6 +583,11 @@ export default {
       this.RestoreMapBasicSettingsFromLocalStorage();
       //this.Line_Layer.getSource().addFeature(lineFeature);
     },
+    SaveCurrentMapBasicSettingsToLocalStorage() {
+      var zoom = this.map.getView().getZoom();
+      var center = this.map.getView().getCenter();
+      localStorage.setItem('map_view', JSON.stringify({ zoom: zoom, center: center }));
+    },
     RestoreMapBasicSettingsFromLocalStorage() {
       var map_view_cache = localStorage.getItem('map_view');
       if (map_view_cache) {
@@ -596,9 +602,7 @@ export default {
         this.showTaskAllocationMenu = this.showStationMenu = this.showNoPointSelectedMenu = false;
       })
       this.map.on('moveend', (evt) => {
-        var zoom = this.map.getView().getZoom();
-        var center = this.map.getView().getCenter();
-        localStorage.setItem('map_view', JSON.stringify({ zoom: zoom, center: center }));
+        this.SaveCurrentMapBasicSettingsToLocalStorage();
       })
       // 监听 feature 的右键点击事件
       this.map.on('pointerdown', (event) => {
