@@ -26,7 +26,7 @@
                   <el-form-item label="狀態">{{ bat.state }}</el-form-item>
                   <el-form-item label="異常碼">{{ bat.errorCode }}</el-form-item>
                   <el-form-item label="電量">{{ bat.batteryLevel }} %</el-form-item>
-                  <el-form-item label="電壓">{{ bat.Voltage / 1000.0 }}V</el-form-item>
+                  <el-form-item label="電壓">{{ bat.voltage / 1000.0 }}V</el-form-item>
                   <el-form-item label="放電電流">{{ bat.dischargeCurrent / 1000.0 }}A</el-form-item>
                   <el-form-item label="充電電流">{{ bat.chargeCurrent / 1000.0 }}A</el-form-item>
                   <el-form-item label="最高溫度">{{ bat.maxCellTemperature }}</el-form-item>
