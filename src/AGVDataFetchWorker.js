@@ -96,6 +96,9 @@ function StartHubConnection() {
         }
         channel.postMessage(postData)
     })
+    HubConnection.on('ModuleInformation', moduleInformation => {
+        ROS_STORE.commit('update_module_info', moduleInformation)
+    })
     HubConnection.on('VehicleError', message => {
         bus.emit('VehicleError', message)
     })
@@ -169,7 +172,7 @@ function BecomeLeader() {
         type: 'heartbeat'
     })
     _isLeader = true;
-    subscribeModuleInfoAndStore();
+    // subscribeModuleInfoAndStore();
     StartHubConnection();
     console.log('As data brocaster');
     setInterval(() => {

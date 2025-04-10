@@ -4,7 +4,8 @@
       <jw-pagination
         @page_changed="(ev) => { pagecurrent = ev - 1 }"
         :pageSize="16"
-        :totalCount="table_data.length"></jw-pagination>
+        :totalCount="table_data.length"
+      ></jw-pagination>
     </div>
     <div class="border mt-1 flex-fill">
       <el-table
@@ -13,34 +14,34 @@
         :row-class-name="tb_row_class"
         header
         border
-        height="555"
+        height="565"
         row-key="Address"
         :highlight-current-row="false"
         @row-dblclick="cellDoubleClickHandle"
         @cell-mouse-enter="cellMouseEnterHandler"
         @cell-mouse-leave="cellMouseLeaveHandler"
-        style="width:99%">
+        style="width:99%"
+      >
         <el-table-column label="Address" prop="Address" width="70"></el-table-column>
-        <el-table-column label="Name" prop="Name"></el-table-column>
-        <el-table-column label="Value" prop="State" width="60" :formatter="StateFormatter"></el-table-column>
-        <!-- <el-table-column width="40" v-if="!readonly && enabled" label>
-          <template #default="scope">
-            <el-checkbox
-              :ref="scope.name"
-              v-model="scope.State"
-              @click="DO_State_ClickHandler(scope.$index, scope.row)"
-            ></el-checkbox>
-          </template>
-</el-table-column>--> <el-table-column v-if="isOutput" width="80">
+        <el-table-column v-if="isOutput" width="80">
           <template #default="scope">
             <el-button :disabled="!IsUserLogin" @click="ToggleDO(scope.row)" size="small">Toggle</el-button>
           </template>
         </el-table-column>
+        <el-table-column label="Name" prop="Name"></el-table-column>
+        <el-table-column label="Value" prop="State" width="60" :formatter="StateFormatter"></el-table-column>
       </el-table>
     </div>
-    <b-modal v-model="DIOChangeComfirmDialogShow" :centered="true" title="DIO Change Confirm" @ok="WriteDIOHandle">
+    <b-modal
+      v-model="DIOChangeComfirmDialogShow"
+      :centered="true"
+      title="DIO Change Confirm"
+      @ok="WriteDIOHandle"
+    >
       <p>
-        <b>[{{ toChangeAddress }}]</b> will changed from <b>{{ toChangeState ? 0 : 1 }}</b> to <b>{{ toChangeState ? 1 : 0 }}</b>.
+        <b>[{{ toChangeAddress }}]</b> will changed from
+        <b>{{ toChangeState ? 0 : 1 }}</b> to
+        <b>{{ toChangeState ? 1 : 0 }}</b>.
       </p>
       <p>Are you sure?</p>
     </b-modal>
@@ -208,7 +209,7 @@ export default {
   }
 
   // 移除 hover 效果
-  tr:hover>td {
+  tr:hover > td {
     background-color: inherit !important;
   }
 }
