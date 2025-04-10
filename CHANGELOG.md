@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.39.0](https://github.com/gpmagvs/AGV_UI/compare/v1.38.2...v1.39.0) (2025-04-10)
+
+
+### Features
+
+* add timeout and manual check options in SystemSettings and update UI bindings ([23e1206](https://github.com/gpmagvs/AGV_UI/commit/23e12065a936bd87a73a19144bdf8b3fe467858f))
+
 ### [1.38.2](https://github.com/gpmagvs/AGV_UI/compare/v1.38.1...v1.38.2) (2025-04-10)
 
 
