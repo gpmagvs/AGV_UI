@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.38.2](https://github.com/gpmagvs/AGV_UI/compare/v1.38.1...v1.38.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* update voltage property reference in Battery_Detail component ([d2e9100](https://github.com/gpmagvs/AGV_UI/commit/d2e910010eff56552b718d62acbe40ff78d38cdc))
+
 ### [1.38.1](https://github.com/gpmagvs/AGV_UI/compare/v1.38.0...v1.38.1) (2025-04-10)
 
 ## 1.38.0 (2025-04-10)
