@@ -14,7 +14,7 @@
         element-loading-text="Loading..."
       >
         <div class="settings-container" v-show="!loading">
-          <div class="settings-sidebar">
+          <div class="settings-sidebar bg-light">
             <el-scrollbar>
               <div class="menu-items">
                 <div
@@ -415,6 +415,12 @@
                     v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"
                   ></el-switch>
                 </el-form-item>
+                <el-form-item label="走行過程持續檢查貨物狀態">
+                  <el-switch
+                    @change="HandleParamChanged"
+                    v-model="settings.CargoBiasDetectionWhenNormalMoving"
+                  ></el-switch>
+                </el-form-item>
                 <el-form-item label="取貨時發生貨物傾斜時可暫停進行排除">
                   <el-switch
                     @change="HandleParamChanged"
@@ -681,6 +687,12 @@
               <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
             <div v-if="selected_tab === '13'" class="tabpage border p-2">
+              <div class="action-buttons">
+                <b-button variant="warning" @click="HandleSystemRestartBtnClick">車載系統重啟</b-button>
+                <b-button variant="warning" @click="HandleAGVCRestartBtnClick">車控系統重啟</b-button>
+                <b-button variant="danger" @click="HandleSystemCloseBtnClick">車載系統關閉</b-button>
+                <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
+              </div>
               <el-form label-position="left" label-width="250">
                 <el-form-item label="無貨行駛異常時自動重置並上線">
                   <el-switch
@@ -713,24 +725,6 @@
                   </el-select>
                 </el-form-item>
               </el-form>
-              <div class="w-100">
-                <b-button
-                  class="w-50 my-1 mx-3"
-                  variant="primary"
-                  @click="HandleSystemRestartBtnClick"
-                >系統重啟</b-button>
-                <b-button
-                  class="w-50 my-1 mx-3"
-                  variant="danger"
-                  @click="HandleSystemCloseBtnClick"
-                >系統關閉</b-button>
-                <b-button
-                  v-if="false"
-                  class="w-50 my-1 mx-3"
-                  variant="info"
-                  @click="HandleOTAUpdateBtnClick"
-                >系統更新</b-button>
-              </div>
             </div>
           </div>
         </div>
@@ -982,6 +976,35 @@ export default {
       });
 
     },
+    async HandleAGVCRestartBtnClick() {
+
+      this.SystemOptConfirmAndDoAction('確定要重新啟動車控系統?', async () => {
+        var _response = await SystemAPI.RestartAGVC();
+        if (_response.confirm) {
+          this.drawer_show = false;
+          this.$swal.fire(
+            {
+              text: '',
+              title: '車控系統即將重新啟動...',
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        } else {
+          this.$swal.fire(
+            {
+              text: '',
+              title: _response.message,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+      });
+
+    },
     async HandleOTAUpdateBtnClick() {
       this.SystemOptConfirmAndDoAction('確定進行系統更新?', async () => {
         this.$swal.fire(
@@ -1097,8 +1120,6 @@ export default {
     width: 175px;
     height: 90vh;
     border-right: 1px solid #dcdfe6;
-    background-color: #f5f7fa;
-
     .menu-items {
       padding: 10px 0;
 
@@ -1177,6 +1198,17 @@ export default {
 
   &::-webkit-scrollbar-track {
     background: #5c5c5c;
+  }
+
+  .action-buttons {
+    bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    button {
+      margin-block: 3px;
+      font-weight: bold;
+      letter-spacing: 3px;
+    }
   }
 }
 </style>

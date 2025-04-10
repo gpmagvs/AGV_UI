@@ -43,6 +43,10 @@ export var SystemAPI = {
     var ret = await axios_entity.post('api/System/RestartSystem')
     return ret.data
   },
+  async RestartAGVC() {
+    var ret = await axios_entity.post('api/System/RestartAGVC')
+    return ret.data
+  },
   async CloseSystem() {
     var ret = await axios_entity.post('api/System/CloseSystem')
     return ret.data
