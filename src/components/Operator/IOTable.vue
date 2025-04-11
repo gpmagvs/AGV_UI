@@ -25,7 +25,11 @@
         <el-table-column label="Address" prop="Address" width="70"></el-table-column>
         <el-table-column v-if="isOutput" width="80">
           <template #default="scope">
-            <el-button :disabled="!IsUserLogin" @click="ToggleDO(scope.row)" size="small">Toggle</el-button>
+            <el-button
+              :disabled="IsGodUse? false: !IsUserLogin|| !scope.row.manualToggleEnable"
+              @click="ToggleDO(scope.row)"
+              size="small"
+            >Toggle</el-button>
           </template>
         </el-table-column>
         <el-table-column label="Name" prop="Name"></el-table-column>
@@ -151,36 +155,50 @@ export default {
       this.hover_row = undefined
     },
     async cellDoubleClickHandle(row, column, event) {
+      this.ToggleDO(row);
+    },
+    async ToggleDO(row) {
       if (!this.IsUserLogin)
         return;
 
       if (!this.isOutput) {
         await DIO.DI_State_Change(row.Address, !row.State)
       } else {
+        if (!row.manualToggleEnable && !this.IsGodUse) {
+          this.$message.error('This output is not allowed to be changed manually!')
+          return;
+        }
 
         this.toChangeAddress = row.Address;
         this.toChangeState = !row.State;
-        if (this.IsGodUse) {
+        // if (this.IsGodUse) {
+        //   this.WriteDIOHandle();
+        //   return;
+        // }
+        if (row.manualToggleNeedConfirmed) {
+          this.$swal.fire(
+            {
+              title: 'Warning',
+              text: '確定要將 ' + row.Address + '的狀態改為' + (row.State ? 0 : 1) + '嗎?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.WriteDIOHandle()
+              } else if (result.isDenied) {
+                this.$swal.fire('Changes are not saved', '', 'info')
+              }
+            })
+        } else {
           this.WriteDIOHandle();
-          return;
         }
-        this.DIOChangeComfirmDialogShow = true;
-
       }
-    },
-    async ToggleDO(row) {
-      if (this.IsGodUse) {
-        await DIO.DO_State_Change(row.Address, !row.State)
-        return;
-      }
-
-      this.toChangeAddress = row.Address;
-      this.toChangeState = !row.State;
-      this.DIOChangeComfirmDialogShow = true;
 
     },
     async WriteDIOHandle() {
-      await DIO.DO_State_Change(this.toChangeAddress, this.toChangeState)
+      await DIO.DO_State_Change(this.toChangeAddress, this.toChangeState, this.IsGodUse);
     }
 
   }

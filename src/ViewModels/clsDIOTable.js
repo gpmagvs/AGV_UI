@@ -25,6 +25,8 @@ export class clsRegister {
   Name = ''
   State = false
   DigitalType = 0
+  manualToggleEnable = false
+  manualToggleNeedConfirmed = false
 
 }
 

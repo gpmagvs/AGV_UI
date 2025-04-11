@@ -270,9 +270,9 @@ export async function LaserMode(mode = 0) {
 }
 
 export const DIO = {
-  async DO_State_Change(address, state) {
+  async DO_State_Change(address, state, force = false) {
     var ret = await axios_entity.get(
-      `api/VMS/DIO/DO_State?address=${address}&state=${state}`,
+      `api/VMS/DIO/DO_State?address=${address}&state=${state}&force=${force}`,
     )
     return ret.data
   },
