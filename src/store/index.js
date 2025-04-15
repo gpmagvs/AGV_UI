@@ -33,6 +33,10 @@ export const UIStore = createStore({
       WAGO: 2,
       VMS: 2,
     },
+    SwalShowing: {
+      id: undefined,
+      instance: undefined
+    }
   },
   getters: {
     CurrentUIVersion: state => {
@@ -53,6 +57,12 @@ export const UIStore = createStore({
     },
     StoreConnectionState(state, payload) {
       state.ConnectionStateData = payload;
+    },
+    SetSwalShowing(state, swal = {}) {
+      state.SwalShowing = swal;
+    },
+    ClearSwalShowing(state) {
+      state.SwalShowing = undefined;
     }
   },
   actions: {

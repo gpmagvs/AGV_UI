@@ -68,6 +68,10 @@ function StartHubConnection() {
     HubConnection.on('AGV-Notify-Message', (obj) => {
         bus.emit('AGV-Notify-Message-Recieved', obj)
     })
+    HubConnection.on('close-notify-dialog', (code) => {
+        bus.emit('close-notify-dialog', code)
+
+    })
     HubConnection.on('DebugMessage', (message) => {
         bus.emit('DebugMessage', message)
     })

@@ -5,18 +5,21 @@
     style="width:100vw;height:100vh"
     v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)">
+    element-loading-background="rgba(0,0,0, 0.8)"
+  >
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+      id="vcs-alarms"
+    >
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
+        ></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -290,7 +293,7 @@ export default {
       const message = obj.message;
       const alarmCode = obj.alarmCode;
       if (alarmCode == 10052) {
-        this.$swal.fire(
+        const swal = this.$swal.fire(
           {
             title: title,
             text: `[${alarmCode}]${message}`,
@@ -306,12 +309,15 @@ export default {
               bus.emit('open-fork-teach-table');
             }
           })
+
+        UIStore.commit('SetSwalShowing', { code: alarmCode, instance: swal });
+
         return;
       }
 
       if (alarmCode == 3383) {
         let timerInterval;
-        this.$swal.fire({
+        const swal = this.$swal.fire({
           title: title,
           icon: 'warning',
           html: `${message} <b></b> `,
@@ -330,27 +336,43 @@ export default {
           }
         }).then((result) => {
         });
+        UIStore.commit('SetSwalShowing', { code: alarmCode, instance: swal });
+
         return;
       }
 
 
       //alert(message)
-      this.$swal.fire(
+      const swal = this.$swal.fire(
         {
           title: title,
           text: `[${alarmCode}]${message}`,
           icon: 'warning',
           showCancelButton: false,
           confirmButtonText: 'OK',
-          customClass: 'my-sweetalert'
+          customClass: 'my-sweetalert',
+          allowOutsideClick: false // 禁止點擊遮罩關閉對話框
         })
-
+      UIStore.commit('SetSwalShowing', { code: alarmCode, instance: swal });
 
       //系統重啟中
       if (alarmCode == 3384) {
         setTimeout(() => {
           location.reload();
         }, 8000);
+      }
+    })
+
+    bus.on('close-notify-dialog', code => {
+      console.log('close-notify-dialog', code);
+      let swalStore = UIStore.state.SwalShowing;
+      const closable = swalStore.code == code;
+      if (closable && swalStore.instance != undefined) {
+        this.$swal.close()
+        UIStore.commit('SetSwalShowing', {
+          code: undefined,
+          instance: undefined
+        })
       }
     })
 
