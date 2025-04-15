@@ -16,7 +16,6 @@
           label-position="left"
           label-width="90%"
           :rules="rules"
-          :ref="formSettings"
         >
           <el-divider class="mb-3">
             <span class="text-primary">
