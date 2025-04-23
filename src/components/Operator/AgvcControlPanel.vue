@@ -6,12 +6,10 @@
       :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
       ref="agvc_ctrl_pnl"
       class="agvc-control-panel keys"
-      style="width:400px"
-    >
+      style="width:400px">
       <div
         v-show="!enabled"
-        class="disable-notify text-start my-2"
-      >{{ $t('agv_control_notify_text') }}</div>
+        class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
       <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
@@ -25,8 +23,7 @@
             v-model="rotation_speed"
             :step="0.01"
             :max="0.3"
-            :min="0.01"
-          ></el-input-number>
+            :min="0.01"></el-input-number>
         </div>
       </div>
       <table class="w-100">
@@ -87,13 +84,12 @@
       <div
         @click="speed_modifyable = !speed_modifyable"
         style="height:20px;width:100px"
-        class="bg-light"
-      ></div>
+        class="bg-light"></div>
     </div>
   </div>
 </template>
 <script>
-import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft } from '@/api/WebRos.js';
+import { AGVMoveUp, AGVMoveDown, AGVMoveRight, AGVMoveLeft, AGVStop, AGVMove_FordwardRight, AGVMove_FordwardLeft, AGVMove_BackwardRight, AGVMove_BackwardLeft, AGVMove_ShiftRight, AGVMove_ShiftLeft, ResetSpeed } from '@/api/WebRos.js';
 import KeyboardInput from '@/components/UIComponents/keyboard-number-input.vue'
 import { AGVStatusStore } from '@/store'
 import { UserStore } from '@/store'
@@ -115,68 +111,67 @@ export default {
   },
   methods: {
     async MOVE_UP() {
-
       this.linear_action = 'up'
-      this.linear_speed += 0.05;
-      if (this.linear_speed >= 1)
-        this.linear_speed = 1
-      AGVMoveUp(this.linear_speed);
-      // await MOVEControl.AGVMove_UP(this.linear_speed);
+      AGVMoveUp();
     },
     async MOVE_DOWN() {
-
       this.linear_action = 'down'
       AGVMoveDown(this.backward_speed);
     },
     async MOVE_LEFT() {
-      if (this.IsMiniAGV) {
-        AGVMove_ShiftLeft(this.linear_speed);
-      } else {
 
-        this.rotation_action = 'left'
-        this.rotation_speed += 0.05;
-        if (this.rotation_speed >= 0.3)
-          this.rotation_speed = 0.3
-        AGVMoveLeft(this.rotation_speed);
+      if (this.IsMiniAGV) {
+        AGVMove_ShiftLeft();
+      } else {
+        AGVMoveLeft();
       }
     },
     async MOVE_RIGHT() {
       if (this.IsMiniAGV)
-        AGVMove_ShiftRight(this.linear_speed);
+        AGVMove_ShiftRight();
       else {
-
         this.rotation_action = 'right'
-        this.rotation_speed += 0.05;
-        if (this.rotation_speed >= 0.3)
-          this.rotation_speed = 0.3
-        AGVMoveRight(this.rotation_speed);
+        AGVMoveRight();
       }
     },
     async MOVE_STOP() {
       AGVStop();
-      this.linear_speed = this.rotation_speed = 0.05;
+      this.rotation_action = this.linear_action = 'stop';
     },
     async MOVE_FR() {
+
+      this.linear_action = this.rotation_action = 'fr'
       if (this.IsMiniAGV)
         AGVMoveRight(this.rotation_speed);
       else
         AGVMove_FordwardRight(0.2, 0.15);
     },
     async MOVE_FL() {
+
+      this.linear_action = this.rotation_action = 'fl'
       if (this.IsMiniAGV)
         AGVMoveLeft(this.rotation_speed);
       else
         AGVMove_FordwardLeft(0.2, 0.15);
     },
     async MOVE_BR() {
+
+      this.linear_action = this.rotation_action = 'br'
       if (this.IsMiniAGV)
         return;
       AGVMove_BackwardRight(0.2, 0.15);
     },
     async MOVE_BL() {
+
+      this.linear_action = this.rotation_action = 'bl'
       if (this.IsMiniAGV)
         return;
       AGVMove_BackwardLeft(0.2, 0.15);
+    },
+    IsMovingNow(nextAction) {
+      if (nextAction == this.linear_action || nextAction == this.rotation_action)
+        return false;
+      return this.rotation_action != 'stop' || this.linear_action != 'stop';
     }
   },
   computed: {

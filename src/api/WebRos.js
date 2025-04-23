@@ -22,13 +22,15 @@ var _max_angular_speed = 0.5;
 
 var _keyboardControlEnable = false;
 
+var current_action = 'stop';
+
 export function KeyboardControlEnable(enable) {
     if (SystemSettingsStore.getters.Settings?.WebKeyboardMoveControl) {
         _keyboardControlEnable = enable;
     }
 }
 export function Stop() {
-
+    current_action = 'stop';
     linear_speed = 0.0
     angular_speed = 0.0
 }
@@ -56,6 +58,18 @@ var keyboard_move_topic = new ROSLIB.Topic({
     name: '/cmd_vel',
     messageType: 'geometry_msgs/Twist'
 })
+
+/**當前是否在執行曲線轉向動作 */
+function isCurrentActionIsCurving() {
+    const curingActions = ['forward_right', 'forward_left', 'backward_right', 'backward_left'];
+    return curingActions.includes(current_action);
+}
+
+export function ResetSpeed() {
+    linear_speed = 0.0;
+    angular_speed = 0.0;
+}
+
 export function subscribeModuleInfoAndStore() {
 
     var module_info_listener = new ROSLIB.Topic({
@@ -70,12 +84,16 @@ export function subscribeModuleInfoAndStore() {
         ROS_STORE.commit('update_module_info', module_info)
     })
 }
-export function AGVMoveUp(speed) {
+export function AGVMoveUp() {
 
+    if (isCurrentActionIsCurving()) {
+        linear_speed = 0;
+    }
     angular_speed = 0;
     if (!checkInputInterval())
         return;
 
+    current_action = 'up';
     if (Math.abs(linear_speed) >= _max_linear_speed)
         return;
     linear_speed = linear_speed + 0.05;
@@ -92,10 +110,15 @@ export function AGVMoveUp(speed) {
         }
     }))
 }
-export function AGVMoveDown(speed) {
+export function AGVMoveDown() {
+
+    if (isCurrentActionIsCurving()) {
+        linear_speed = 0;
+    }
     angular_speed = 0;
     if (!checkInputInterval())
         return;
+    current_action = 'down';
     if (Math.abs(linear_speed) >= _max_linear_speed)
         return;
     linear_speed = linear_speed - 0.05;
@@ -113,10 +136,15 @@ export function AGVMoveDown(speed) {
     }))
 }
 
-export function AGVMoveRight(speed) {
+export function AGVMoveRight() {
+
+    if (isCurrentActionIsCurving()) {
+        angular_speed = 0;
+    }
     linear_speed = 0;
     if (!checkInputInterval())
         return;
+    current_action = 'right';
     if (Math.abs(angular_speed) >= _max_angular_speed)
         return;
     angular_speed = angular_speed - 0.05;
@@ -135,10 +163,14 @@ export function AGVMoveRight(speed) {
 }
 
 
-export function AGVMoveLeft(speed) {
+export function AGVMoveLeft() {
+    if (isCurrentActionIsCurving()) {
+        angular_speed = 0;
+    }
     linear_speed = 0;
     if (!checkInputInterval())
         return;
+    current_action = 'left';
     if (Math.abs(angular_speed) >= _max_angular_speed)
         return;
     angular_speed = angular_speed + 0.05;
@@ -156,6 +188,8 @@ export function AGVMoveLeft(speed) {
     }))
 }
 export function AGVMove_FordwardRight(linear, rotation) {
+
+    current_action = 'forward_right';
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: linear,
@@ -171,6 +205,7 @@ export function AGVMove_FordwardRight(linear, rotation) {
 }
 
 export function AGVMove_FordwardLeft(linear, rotation) {
+    current_action = 'forward_left';
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: linear,
@@ -187,6 +222,7 @@ export function AGVMove_FordwardLeft(linear, rotation) {
 
 
 export function AGVMove_BackwardLeft(linear, rotation) {
+    current_action = 'backward_left';
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: -linear,
@@ -203,6 +239,7 @@ export function AGVMove_BackwardLeft(linear, rotation) {
 
 
 export function AGVMove_BackwardRight(linear, rotation) {
+    current_action = 'backward_right';
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
             x: -linear,
@@ -217,11 +254,12 @@ export function AGVMove_BackwardRight(linear, rotation) {
     }))
 }
 
-export function AGVMove_ShiftLeft(linear) {
+export function AGVMove_ShiftLeft() {
 
     angular_speed = 0;
     if (!checkInputInterval())
         return;
+    current_action = 'shift_left';
     if (Math.abs(linear_speed) >= _max_linear_speed)
         return;
     linear_speed = linear_speed + 0.05;
@@ -239,11 +277,12 @@ export function AGVMove_ShiftLeft(linear) {
         }
     }))
 }
-export function AGVMove_ShiftRight(linear) {
+export function AGVMove_ShiftRight() {
 
     angular_speed = 0;
     if (!checkInputInterval())
         return;
+    current_action = 'shift_right';
     if (Math.abs(linear_speed) >= _max_linear_speed)
         return;
     linear_speed = linear_speed - 0.05;
@@ -263,6 +302,7 @@ export function AGVMove_ShiftRight(linear) {
 }
 
 export function AGVStop() {
+    current_action = 'stop';
     linear_speed = angular_speed = 0;
     keyboard_move_topic.publish(new ROSLIB.Message({
         linear: {
