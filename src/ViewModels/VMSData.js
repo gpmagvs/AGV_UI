@@ -28,6 +28,7 @@ class VMSData {
   IsLDULD_No_Entry = false
   IsForkHeightAboveSafty = false
   IsForkExtenable = false
+  IsForkExtenrDriverBase = false
   Laser_Mode = 0
   Last_Visited_Tag = 1
   Last_Visit_MapPoint = { Name: 'UNKNOWN' }

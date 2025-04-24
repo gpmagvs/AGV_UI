@@ -1,126 +1,102 @@
 <template>
-  <div class="z-axis-control border p-1">
+  <div class="z-axis-control  p-1">
     <div
       v-show="!enabled"
-      class="disable-notify text-start my-2"
-    >{{ $t('zaxis_control_notify_text') }}</div>
+      class="disable-notify text-start my-2">{{ $t('zaxis_control_notify_text') }}</div>
     <!-- <div class="d-flex" v-loading="!enabled" :element-loading-spinner="false"> -->
     <div
       class="d-flex"
       v-loading="!enabled"
       :element-loading-spinner="false"
-      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
-    >
-      <div class="d-flex flex-column w-50">
-        <div class="d-flex flex-row">
-          <div class="label-item">極限SENSOR狀態</div>
-          <el-tag
-            v-if="Vertical_Hardware_limit_bypass"
-            type="danger"
-            size="large"
-            effect="dark"
-            @click="ControlHardwareLimitSensor(true)"
-          >Bypass</el-tag>
-          <el-tag
-            v-else
-            type="success"
-            effect="dark"
-            size="large"
-            @click="ControlHardwareLimitSensor(false)"
-          >已開啟</el-tag>
-        </div>
-        <div class="d-flex flex-row my-2">
-          <div class="label-item">Current Position</div>
-          <el-input
-            size="small"
-            style="width:72px"
-            class="py-1"
-            center
-            v-model="ForkHeight"
-            disabled
-          ></el-input>
-        </div>
-        <div v-if="enabled" class="p-2 my-2 border rounded">
-          <b-button @click="ShowTeachView">牙叉位置校點</b-button>
-        </div>
-      </div>
+      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'">
       <!-- <el-divider direction="vertical"></el-divider> -->
-      <div class="control-buttons mx-2">
+      <div class="control-buttons mx-2" v-for="ctlData in controlableMap" :key="ctlData.name">
+        <el-tag effect="dark" class="my-2 w-100 text-start"> {{ ctlData.label }}</el-tag>
+        <div class="d-flex flex-row my-2 justify-content-between align-items-center border rounded p-2">
+          <div class="d-flex align-items-center flex-fill mx-2">
+            <div class="mx-2">Position</div>
+            <el-input
+              class="px-1"
+              center
+              v-model="ForkHeight"
+              disabled></el-input>
+            <span>cm</span>
+          </div>
+          <el-button type="primary" @click="ShowTeachView">牙叉位置校點</el-button>
+        </div>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
           @click="ForkAction('up_limit')"
-          block
-        >
-          <i class="bi bi-chevron-bar-up"></i>
-          {{ $t('up_limit_pose') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-bar-up"></i>{{ ctlData.uplimit }} </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('up')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-up"></i>
-          {{ $t('up') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-up"></i>{{ ctlData.up }} </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('home')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>
-          {{ $t('original') }}
-        </b-button>
+          block>
+          <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>{{ ctlData.home }} </b-button>
         <b-button
           @click="ForkAction('stop')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>
-          {{ $t('stop') }}
-        </b-button>
+          block>
+          <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>{{ ctlData.stop }} </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           @click="ForkAction('down')"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
-          block
-        >
-          <i class="bi bi-chevron-down"></i>
-          {{ $t('down') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-down"></i>{{ ctlData.down }} </b-button>
         <b-button
           :disabled="(!enabled || isZAxisMoving)"
           size="lg"
           class="w-100 border mb-3"
           variant="light"
           @click="ForkAction('down_limit')"
-          block
-        >
-          <i class="bi bi-chevron-bar-down"></i>
-          {{ $t('down_limit_pose') }}
-        </b-button>
+          block>
+          <i class="bi bi-chevron-bar-down"></i>{{ ctlData.downlimit }} </b-button>
       </div>
       <el-drawer
         v-model="show_teach_page"
         direction="btt"
         size="90%"
         @close="TeachDrawerClosingHandle"
-        title="FORK TEACH"
-      >
+        title="FORK TEACH">
         <forkTeachEditor ref="fork_teach"></forkTeachEditor>
       </el-drawer>
+    </div>
+    <div class="d-flex flex-column w-50">
+      <div class="d-flex flex-row">
+        <div class="label-item">極限SENSOR狀態</div>
+        <el-tag
+          v-if="Vertical_Hardware_limit_bypass"
+          type="danger"
+          size="large"
+          effect="dark"
+          @click="ControlHardwareLimitSensor(true)">Bypass</el-tag>
+        <el-tag
+          v-else
+          type="success"
+          effect="dark"
+          size="large"
+          @click="ControlHardwareLimitSensor(false)">已開啟</el-tag>
+      </div>
     </div>
   </div>
 </template>
@@ -176,6 +152,36 @@ export default {
     },
     Vertical_Hardware_limit_bypass() {
       return DIOStore.getters.Vertical_Hardware_limit_bypass;
+    },
+    IsHorizonDriverBase() {
+      return AGVStatusStore.state.AGVStatus.IsForkExtenrDriverBase;
+    },
+    controlableMap() {
+      const verticalControlButtonsSet = {
+        name: 'Vertical',
+        label: '升降',
+        uplimit: '上點位',
+        up: '上升',
+        home: '原點',
+        stop: '停止',
+        down: '下降',
+        downlimit: '下點位'
+      }
+      const horizonControlButtonsSet = {
+        name: 'Horizon',
+        label: '伸縮',
+        uplimit: '伸出',
+        up: '伸出吋動',
+        home: '原點',
+        stop: '停止',
+        down: '縮回吋動',
+        downlimit: '縮回'
+      }
+      if (this.IsHorizonDriverBase) {
+        return [verticalControlButtonsSet, horizonControlButtonsSet]
+      } else {
+        return [verticalControlButtonsSet];
+      }
     }
   },
   methods: {
@@ -265,6 +271,17 @@ export default {
     width: 145px;
     text-align: left;
     padding: 4px;
+  }
+
+  .control-buttons {
+    button {
+      text-align: left;
+
+      i {
+        padding: 5px;
+        margin: 2px;
+      }
+    }
   }
 }
 

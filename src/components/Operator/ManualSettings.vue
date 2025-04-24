@@ -1,5 +1,5 @@
 <template>
-  <div class="manual_settings border px-3 mx-3">
+  <div class="manual_settings  px-1 mx-1">
     <div class="d-flex flex-row py-3">
       <div class="item-label">Laser Mode</div>
       <LaserModeSwitcher></LaserModeSwitcher>

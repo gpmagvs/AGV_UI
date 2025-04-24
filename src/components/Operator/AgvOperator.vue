@@ -5,8 +5,7 @@
       :model-value="current_tab"
       pills
       small
-      @activate-tab="HandleTabpageChanged"
-    >
+      @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')" active>
         <div class="mt-1 p-1">
           <AgvControl></AgvControl>
@@ -30,22 +29,19 @@
             :enabled="operation_enabled_return"
             :super_user="isGodMode"
             :table_data="DIOTableData.Outputs"
-            :isOutput="true"
-          ></IOTable>
+            :isOutput="true"></IOTable>
         </div>
       </b-tab>
       <b-tab
         v-show="operation_enabled_return"
-        :title="operation_enabled_return ? $t('manual-operation') : ''"
-      >
+        :title="operation_enabled_return ? $t('manual-operation') : ''">
         <div class="mt-1 p-1">
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
       </b-tab>
       <b-tab
         v-if="operation_enabled_return && isAMCAGV"
-        :title="operation_enabled_return ? 'Sensor/儀器控制' : ''"
-      >
+        :title="operation_enabled_return ? 'Sensor/儀器控制' : ''">
         <div class="mt-1 p-1">
           <SensorAndEquipmentControl></SensorAndEquipmentControl>
         </div>
@@ -170,6 +166,10 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+:deep(.nav-pills) {
+  background-color: rgb(240, 240, 240);
+}
+
 .admin-dialog-modal {
   p {
     //
