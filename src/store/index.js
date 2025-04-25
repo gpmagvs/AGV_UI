@@ -22,7 +22,22 @@ export const store = createStore({
   modules: {
   }
 })
-
+export const CamStore = createStore({
+  state: {
+    h264Data: undefined
+  },
+  getters: {
+  },
+  mutations: {
+    setH264(state, data) {
+      state.h264Data = data;
+    }
+  },
+  actions: {
+  },
+  modules: {
+  }
+})
 export const UIStore = createStore({
   state: {
     UI_Version: "01.25.0",

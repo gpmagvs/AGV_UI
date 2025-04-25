@@ -5,21 +5,18 @@
     style="width:100vw;height:100vh"
     v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)"
-  >
+    element-loading-background="rgba(0,0,0, 0.8)">
     <div
       class="fixed-bottom text-right"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms"
-    >
+      id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert
           @click="HandleAlarmSheetClick(code)"
           show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
-          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"
-        ></el-alert>
+          :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
       </div>
     </div>
     <i @click="ToggleMenu" v-show="false" class="bi text-primary bi-list menu-toggle-icon"></i>
@@ -50,7 +47,6 @@ import SystemErrorNotify from "@/components/SystemErrorNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure } from '@/api/VMSAPI.js'
-
 export default {
   components: {
     SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify

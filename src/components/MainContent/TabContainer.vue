@@ -47,6 +47,9 @@
       <b-tab v-if="false" title="AGVS MSG">
         <AGVSMsgDisplay ref="agvs_msg_table"></AGVSMsgDisplay>
       </b-tab>
+      <b-tab v-if="false" title="行車紀錄器">
+        <CamDisplay ref="camDisplay"></CamDisplay>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -69,8 +72,9 @@ import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
 import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
+import CamDisplay from "@/Camera/CamDisplay.vue"
 export default {
-  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery, BatteryView },
+  components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery, BatteryView, CamDisplay },
   props: {
     VMSData: {
       type: Object,
