@@ -778,6 +778,27 @@ export const DIOStore = createStore({
       }
       const output = state.DIOStates.Outputs.find(reg => reg.Name === "Vertical_Hardware_limit_bypass");
       return output?.State ?? false;
+    },
+    ZAxisUplimitSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Up_Hardware_limit");
+      return !output?.State;
+    },
+    ZAxisDownlimitSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Down_Hardware_limit");
+      return !output?.State;
+    },
+    ZAxisHomePoseSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Home_Pos");
+      return output?.State;
     }
 
   },
