@@ -13,79 +13,95 @@
       <div class="control-buttons mx-2" v-for="ctlData in controlableMap" :key="ctlData.name">
         <el-tag effect="dark" class="my-2 w-100 text-start"> {{ ctlData.label }}</el-tag>
         <div class="d-flex flex-row my-2 justify-content-between align-items-center border rounded p-2">
-          <div class="d-flex align-items-center flex-fill mx-2">
+          <!-- Position -->
+          <div class="d-flex align-items-center mx-2">
             <div class="mx-2">Position</div>
             <el-input
+              v-if="ctlData.name == 'Vertical'"
               class="px-1"
               center
               v-model="ForkHeight"
               disabled></el-input>
-            <span>cm</span>
-          </div>
-          <div class="d-flex flex-row mx-1">
-            <div class="label-item">極限SENSOR狀態</div>
-            <el-tag
-              v-if="Vertical_Hardware_limit_bypass"
-              type="danger"
-              size="large"
-              effect="dark"
-              @click="ControlHardwareLimitSensor(true)">Bypass</el-tag>
-            <el-tag
+            <el-input
               v-else
-              type="success"
-              effect="dark"
-              size="large"
-              @click="ControlHardwareLimitSensor(false)">已開啟</el-tag>
+              class="px-1"
+              center
+              v-model="HorizonForkPosition"
+              disabled></el-input>
+            <div class="d-flex  gap-2 align-items-center bg-light p-1">
+              <span>State:</span> <el-tag effect="dark"> {{ GetDriverState(ctlData.name).state }} </el-tag>
+              <span>ErrorCode:</span> <el-tag effect="dark"> {{ GetDriverState(ctlData.name).errorCode }}</el-tag>
+            </div>
           </div>
-          <el-button type="primary" @click="ShowTeachView">牙叉位置校點</el-button>
+          <!-- 極限Sensor Bypass/教點按鈕 -->
+          <div class="d-flex flex-fill justify-content-end">
+            <!-- 極限Sensor Bypass -->
+            <div v-if="ctlData.name == 'Vertical'" class="d-flex flex-row align-items-center mx-1">
+              <div class="mx-2">極限 Bypass</div>
+              <el-tag
+                v-if="Vertical_Hardware_limit_bypass"
+                type="danger"
+                size="large"
+                @click="ControlHardwareLimitSensor(true)">Bypass</el-tag>
+              <el-tag
+                v-else
+                type="success"
+                size="large"
+                @click="ControlHardwareLimitSensor(false)">No-Bypass</el-tag>
+            </div>
+            <!-- 教點按鈕 -->
+            <el-button type="primary" @click="ShowTeachView">牙叉位置校點</el-button>
+          </div>
         </div>
         <div class="d-flex w-100">
-          <div class="action-buttions-container flex-fill" v-bind:class="ctlData.name == 'Horizon' ? 'd-flex flex-row justify-content-between' : ''">
+          <!-- 控制按鈕 -->
+          <div class="action-buttions-container flex-fill" v-bind:class="ctlData.name == 'Horizon' ? 'd-flex flex-row flex-row-reverse' : ''">
             <b-button
-              :disabled="(!enabled || isZAxisMoving)"
-              class="w-100 border mb-3"
+              :disabled="(!enabled || IsActing(ctlData.name))"
+              class="w-100 border mb-1"
               variant="light"
-              @click="ForkAction('up_limit')"
+              @click="ForkAction(ctlData.name, 'up_limit')"
               block>
               <i class="bi bi-chevron-bar-up"></i>{{ ctlData.uplimit }} </b-button>
             <b-button
-              :disabled="(!enabled || isZAxisMoving)"
-              @click="ForkAction('up')"
-              class="w-100 border mb-3"
+              :disabled="ctlData.name == 'Horizon' || (!enabled || isZAxisMoving)"
+              @click="ForkAction(ctlData.name, 'up')"
+              class="w-100 border mb-1"
               variant="light"
               block>
               <i class="bi bi-chevron-up"></i>{{ ctlData.up }} </b-button>
             <b-button
-              :disabled="(!enabled || isZAxisMoving)"
-              @click="ForkAction('home')"
-              class="w-100 border mb-3"
+              :disabled="(!enabled || IsActing(ctlData.name))"
+              @click="ForkAction(ctlData.name, 'home')"
+              class="w-100 border mb-1"
               variant="light"
               block>
               <i style="color:rgb(0, 123, 255)" class="bi bi-house-fill"></i>{{ ctlData.home }} </b-button>
             <b-button
-              @click="ForkAction('stop')"
-              class="w-100 border mb-3"
+              @click="ForkAction(ctlData.name, 'stop')"
+              class="w-100 border mb-1"
               variant="light"
               block>
               <i style="color:rgb(255, 61, 80)" class="bi bi-stop-circle-fill"></i>{{ ctlData.stop }} </b-button>
             <b-button
-              :disabled="(!enabled || isZAxisMoving)"
-              @click="ForkAction('down')"
-              class="w-100 border mb-3"
+              :disabled="ctlData.name == 'Horizon' || (!enabled || IsActing(ctlData.name))"
+              @click="ForkAction(ctlData.name, 'down')"
+              class="w-100 border mb-1"
               variant="light"
               block>
               <i class="bi bi-chevron-down"></i>{{ ctlData.down }} </b-button>
             <b-button
-              :disabled="(!enabled || isZAxisMoving)"
-              class="w-100 border mb-3"
+              :disabled="(!enabled || IsActing(ctlData.name))"
+              class="w-100 border mb-1"
               variant="light"
-              @click="ForkAction('down_limit')"
+              @click="ForkAction(ctlData.name, 'down_limit')"
               block>
               <i class="bi bi-chevron-bar-down"></i>{{ ctlData.downlimit }} </b-button>
           </div>
+          <!-- Sensor狀態 -->
           <div class="sensors-states-container d-flex flex-column justify-content-end mx-2">
             <div class="d-flex flex-row my-1">
-              <div class="sensor-label-item">上極限</div>
+              <div class="sensor-label-item">{{ ctlData.name == 'Vertical' ? '上極限' : '伸出極限' }}</div>
               <el-tag
                 :type="ctlData.sensors_states.upLimit ? 'success' : ''"
                 size="large"
@@ -99,7 +115,7 @@
                 effect="dark">{{ ctlData.sensors_states.home ? 'ON' : 'OFF' }}</el-tag>
             </div>
             <div class="d-flex flex-row my-1">
-              <div class="sensor-label-item">下極限</div>
+              <div class="sensor-label-item">{{ ctlData.name == 'Vertical' ? '下極限' : '縮回極限' }}</div>
               <el-tag
                 :type="ctlData.sensors_states.downLimit ? 'success' : ''"
                 size="large"
@@ -135,6 +151,7 @@ export default {
   data() {
     return {
       isZAxisMoving: false,
+      isHorizonMoving: false,
       show_teach_page: false,
       hardware_limit_enable: true
     }
@@ -151,6 +168,15 @@ export default {
   computed: {
     ForkHeight() {
       return AGVStatusStore.getters.ForkHeight
+    },
+    HorizonForkPosition() {
+      return AGVStatusStore.state.AGVStatus.ForkHorizonDriverState.position;
+    },
+    VerticalDriverState() {
+      return AGVStatusStore.state.AGVStatus.ZAxisDriverState;
+    },
+    HorizonDriverState() {
+      return AGVStatusStore.state.AGVStatus.ForkHorizonDriverState;
     },
     IsUserLogin() {
       return UserStore.getters.CurrentUserRole != 0;
@@ -180,6 +206,15 @@ export default {
     },
     Vertical_Home_Pose_Sensor_On() {
       return DIOStore.getters.ZAxisHomePoseSensorState;
+    },
+    Horizon_Up_Limit_Sensor_On() {
+      return DIOStore.getters.ForkHorizonExtendSensorState;
+    },
+    Horizon_Down_Limit_Sensor_On() {
+      return DIOStore.getters.ForkHorizonShortedSensorState;
+    },
+    Horizon_Home_Pose_Sensor_On() {
+      return DIOStore.getters.ForkHorizonHomePoseSensorState;
     },
     IsHorizonDriverBase() {
       return AGVStatusStore.state.AGVStatus.IsForkExtenrDriverBase;
@@ -213,6 +248,11 @@ export default {
           upLimit: false,
           home: false,
           downLimit: false
+        },
+        sensors_states: {
+          upLimit: this.Horizon_Up_Limit_Sensor_On,
+          home: this.Horizon_Home_Pose_Sensor_On,
+          downLimit: this.Horizon_Down_Limit_Sensor_On
         }
       }
       if (this.IsHorizonDriverBase) {
@@ -223,10 +263,11 @@ export default {
     }
   },
   methods: {
-    async ForkAction(action, pose = 0, speed = 0) {
+    async ForkAction(dir, action, pose = 0, speed = 0) {
 
+      const isVertical = dir == 'Vertical';
       var canceled = false;
-      if (action != 'home' && action != 'stop' && this.Vertical_Hardware_limit_bypass) {
+      if (isVertical && (action != 'home' && action != 'stop' && this.Vertical_Hardware_limit_bypass)) {
         await this.$swal.fire(
           {
             title: `極限Sensor目前為Bypass狀態，確定要進行[${action}]動作?`,
@@ -240,15 +281,14 @@ export default {
       }
       if (canceled)
         return;
-
-      this.isZAxisMoving = true;
-      var ret = await ForkAPI.Action(action, pose, speed);
-      this.isZAxisMoving = false;
+      this.SetActing(dir, true)
+      var ret = await ForkAPI.Action(dir, action, pose, speed);
+      this.SetActing(dir, false)
       if (!ret.confirm) {
         this.$swal.fire({
           text: ret.message,
           icon: 'error',
-          title: '牙叉禁止操作'
+          title: '禁止操作'
         })
       }
     },
@@ -292,6 +332,24 @@ export default {
           }
         })
       }
+    },
+    IsActing(name) {
+      if (name == 'Vertical')
+        return this.isZAxisMoving;
+      else
+        return this.isHorizonMoving;
+    },
+    SetActing(name, isActing) {
+      if (name == 'Vertical')
+        return this.isZAxisMoving = isActing;
+      else
+        return this.isHorizonMoving = isActing;
+    },
+    GetDriverState(name) {
+      if (name == 'Vertical')
+        return this.VerticalDriverState;
+      else
+        return this.HorizonDriverState;
     }
   },
   created() {
@@ -312,7 +370,7 @@ export default {
   }
 
   .sensor-label-item {
-    width: 65px;
+    width: 75px;
     text-align: left;
     padding: 4px;
   }

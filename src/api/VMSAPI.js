@@ -534,8 +534,13 @@ export const ForkAPI = {
     var ret = await axios_entity.get(`api/VMS/Fork/Arm/Stop`)
     return ret.data;
   },
-  async Action(action = "", pose = 0, speed = 0) {
-    var ret = await axios_entity.get(`api/VMS/Fork?action=${action}&pose=${pose}&speed=${speed}`)
+  async Action(dir, action = "", pose = 0, speed = 0) {
+    var api = "";
+    if (dir == 'Vertical')
+      api = `api/VMS/Fork?action=${action}&pose=${pose}&speed=${speed}`
+    else if (dir == 'Horizon')
+      api = `api/VMS/Fork/Horizon?action=${action}&pose=${pose}&speed=${speed}`
+    var ret = await axios_entity.get(api)
     return ret.data;
   },
 

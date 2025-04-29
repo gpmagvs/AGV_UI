@@ -67,6 +67,7 @@ class VMSData {
   SubState = 'DOWN'
   Tag = -1
   ZAxisDriverState = new clsDriverState()
+  ForkHorizonDriverState = new clsDriverState()
   ZAxisActionName = ''
   ForkHasLoading = false
   CargoExist = false

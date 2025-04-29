@@ -783,22 +783,43 @@ export const DIOStore = createStore({
       if (!state.DIOStates?.Inputs) {
         return false;
       }
-      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Up_Hardware_limit");
-      return !output?.State;
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Up_Hardware_limit");
+      return !input?.State;
     },
     ZAxisDownlimitSensorState: state => {
       if (!state.DIOStates?.Inputs) {
         return false;
       }
-      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Down_Hardware_limit");
-      return !output?.State;
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Down_Hardware_limit");
+      return !input?.State;
     },
     ZAxisHomePoseSensorState: state => {
       if (!state.DIOStates?.Inputs) {
         return false;
       }
-      const output = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Home_Pos");
-      return output?.State;
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Vertical_Home_Pos");
+      return input?.State;
+    },
+    ForkHorizonExtendSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Extend_Exist_Sensor");
+      return !input?.State;
+    },
+    ForkHorizonShortedSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Short_Exist_Sensor");
+      return !input?.State;
+    },
+    ForkHorizonHomePoseSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Home_Pose");
+      return input?.State;
     }
 
   },

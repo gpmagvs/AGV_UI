@@ -101,6 +101,8 @@ class SystemSettings {
             HomePoseUseStandyPose: true,
             IsPinMounted: true,
             IsForkIsExtendable: true,
+            IsPinDisabledTemptary: true,
+            IsHorizonExtendDisabledTemptary: true,
             NoWaitForkArmFinishAndMoveOutInWorkStation: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation: true,
@@ -109,7 +111,11 @@ class SystemSettings {
             SaftyPositionHeight: 20,
             ManualModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             AutoModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
-            ObsSensorPointType: 0
+            ObsSensorPointType: 0,
+            HorizonArmConfigs: {
+                ShortenPose: 1,
+                ExtendPose: 4999
+            }
         };
         this.Emulator = {
             Move_Time_Mode: 1,

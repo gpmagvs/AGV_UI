@@ -16,8 +16,7 @@
           <el-button
             v-if="!isTagInput"
             @click="HandleForkMoveBtnClick"
-            type="primary"
-          >{{ $t('Move Fork There') }}</el-button>
+            type="primary">{{ $t('Move Fork There') }}</el-button>
         </div>
         <div class>
           <SimpleKeyboardVue KeyboardVue keyboard_type="number" @onKeyPress="KeyboardInputChanged"></SimpleKeyboardVue>
@@ -25,9 +24,7 @@
             <div class="d-flex">
               <h6>牙叉位置調整</h6>
               <span class="mx-3">
-                <span>當前高度:</span>
-                {{ current_position }}
-                <span>cm</span>
+                <span>當前高度:</span> {{ current_position }} <span>cm</span>
               </span>
             </div>
             <div class="d-flex">
@@ -56,7 +53,6 @@
     </el-dialog>
   </div>
 </template>
-
 <script>
 import SimpleKeyboardVue from '@/components/Tools/SimpleKeyboard.vue';
 import { ForkAPI } from '@/api/VMSAPI.js'
@@ -132,7 +128,7 @@ export default {
         }).then(res => {
           if (res.isConfirmed) {
             setTimeout(async () => {
-              var response = await ForkAPI.Action('pose', this.number, 1)
+              var response = await ForkAPI.Action('Vertical', 'pose', this.number, 1)
               if (!response.confirm) {
                 this.$swal.fire(
                   {
@@ -151,7 +147,7 @@ export default {
     },
     async ForkPositionAdjust(position_delta) {
       //confirm = result.success, message = result.message 
-      var response = await ForkAPI.Action('increase', position_delta, 1)
+      var response = await ForkAPI.Action('Vertical', 'increase', position_delta, 1)
       if (!response.confirm) {
         this.$swal.fire(
           {
@@ -177,10 +173,10 @@ export default {
           }).then(async (ret) => {
             if (!ret.isConfirmed)
               return;
-            await ForkAPI.Action(action)
+            await ForkAPI.Action('Vertical', action)
           })
       } else {
-        await ForkAPI.Action(action)
+        await ForkAPI.Action('Vertical', action)
       }
     },
     HandleInputChanged() {
@@ -209,7 +205,6 @@ export default {
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .teach-tool {
   .height-text {

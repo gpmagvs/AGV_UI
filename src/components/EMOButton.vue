@@ -1,9 +1,8 @@
 <template>
   <div class="emo-button" @click="EMO()">
-    <img src="@/assets/emo.png" width="80" />
+    <img src="@/assets/emo.png" width="120" />
   </div>
 </template>
-
 <script>
 import { EMO } from '@/api/VMSAPI'
 export default {
@@ -25,7 +24,6 @@ export default {
 }
 
 </script>
-
 <style lang="scss">
 .emo-button {
   &:active {
