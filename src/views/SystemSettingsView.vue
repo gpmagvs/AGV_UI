@@ -361,13 +361,19 @@
                     <el-option label="Alarm(緊急停止)" :value="false"></el-option>
                   </el-select>
                 </el-form-item>
-                <div class="text-start w-100 border-bottom mb-2">
+                <el-form-item label="Sensor 接點模式">
+                  <el-select v-model="settings.ForkAGV.ObsSensorPointType" @change="HandleParamChanged">
+                    <el-option label="A 接點" :value="0"></el-option>
+                    <el-option label="B 接點" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <div v-if="settings.ForkAGV.HorizonArmConfigs" class="text-start w-100 border-bottom mb-2">
                   <b>伸縮牙叉(Driver base)</b>
                 </div>
-                <el-form-item label="縮回位置">
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="縮回位置">
                   <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ShortenPose"></el-input-number>
                 </el-form-item>
-                <el-form-item label="伸出位置">
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="伸出位置">
                   <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ExtendPose"></el-input-number>
                 </el-form-item>
               </el-form>
@@ -437,6 +443,10 @@
                   <el-select v-model="forbidden_auto_reset_alarm_codes" @change="HandleForbiddenAutoResetAlarmCodesChanged" size="small" multiple filterable>
                     <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`" :value="alarm.Code"></el-option>
                   </el-select>
+                </el-form-item>
+                <!-- Advance.IsAprilTagLocateSupport -->
+                <el-form-item label="April Tag Support">
+                  <el-switch v-model="settings.Advance.IsAprilTagLocateSupport" @change="HandleAprilTagSupportParamChanged" size="small"></el-switch>
                 </el-form-item>
               </el-form>
             </div>
@@ -750,6 +760,27 @@ export default {
           }
         })
     },
+    HandleAprilTagSupportParamChanged() {
+      this.HandleParamChanged();
+      this.$swal.fire(
+        {
+          title: '系統重啟',
+          text: '修改 April Tag Support 參數須重啟車載系統',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '立即重啟',
+          cancelButtonText: '稍後重啟',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (res.isConfirmed) {
+            SystemAPI.RestartSystem();
+            this.showRestartingSwalAlert();
+            setTimeout(() => {
+              location.reload();
+            }, 3000)
+          }
+        })
+    },
     async HandleParamChanged() {
       // Debounce the API call to avoid rapid updates
       if (this.saveSettingsTimeout) {
@@ -790,6 +821,17 @@ export default {
 
 
       }, 500); // Wait 500ms before making API call
+    },
+    showRestartingSwalAlert() {
+      this.$swal.fire(
+        {
+          title: '',
+          text: '車載系統重啟中...',
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        })
     },
     TimeFormat(time) {
       return moment(time).format("YYYY/MM/DD HH:mm:ss")
