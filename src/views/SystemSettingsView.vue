@@ -244,13 +244,25 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.MaunalCheckAndResumableWhenUnloadButCargoBias"></el-switch>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
-                  <b>車頭設備內產品預檢知</b>
+                  <b>車頭設備內產品預檢知(斜上打)</b>
                 </div>
                 <el-form-item label="車頭設備內產品預檢知-放貨">
                   <el-switch @change="HandleParamChanged" v-model="settings.LOAD_OBS_DETECTION.Enable_Load"></el-switch>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-取貨">
                   <el-switch @change="HandleParamChanged" v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"></el-switch>
+                </el-form-item>
+                <el-form-item label="偵測時機/方式">
+                  <el-select v-model="settings.LOAD_OBS_DETECTION.Detection_Method" @change="HandleParamChanged">
+                    <el-option label="開始移動前偵測" :value="0"></el-option>
+                    <el-option label="移動期間持續偵測" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="偵測異常發報等級">
+                  <el-select v-model="settings.LOAD_OBS_DETECTION.AlarmLevelWhenTrigger" @change="HandleParamChanged">
+                    <el-option label="Warning" :value="0"></el-option>
+                    <el-option label="Alarm" :value="1"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-偵測時間(sec)">
                   <el-input-number @change="HandleParamChanged" size="small" v-model="settings.LOAD_OBS_DETECTION.Duration"></el-input-number>
@@ -339,6 +351,15 @@
                 </el-form-item>
                 <el-form-item label="手動操作移動速度(%)">
                   <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.ManualModeOperationSpeed.MoveToPoseSpeed"></el-input-number>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>前端障礙物檢知</b>
+                </div>
+                <el-form-item label="偵測到障礙物時異常等級">
+                  <el-select v-model="settings.SensorBypass.ForkFrontendObsSensorBypass" @change="HandleParamChanged">
+                    <el-option label="Warning(僅記錄警告)" :value="true"></el-option>
+                    <el-option label="Alarm(緊急停止)" :value="false"></el-option>
+                  </el-select>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>伸縮牙叉(Driver base)</b>

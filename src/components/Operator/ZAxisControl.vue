@@ -34,9 +34,9 @@
             </div>
           </div>
           <!-- 極限Sensor Bypass/教點按鈕 -->
-          <div class="d-flex flex-fill justify-content-end">
+          <div v-if="ctlData.name == 'Vertical'" class="d-flex flex-fill justify-content-end">
             <!-- 極限Sensor Bypass -->
-            <div v-if="ctlData.name == 'Vertical'" class="d-flex flex-row align-items-center mx-1">
+            <div class="d-flex flex-row align-items-center mx-1">
               <div class="mx-2">極限 Bypass</div>
               <el-tag
                 v-if="Vertical_Hardware_limit_bypass"
