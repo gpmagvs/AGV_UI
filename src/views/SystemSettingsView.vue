@@ -210,6 +210,10 @@
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
+                <el-form-item label="使用貨物ID模擬在席">
+                  <el-switch @change="HandleParamChanged" v-model="settings.CargoExistSensorParams.ExistSensorSimulation"></el-switch>
+                  <span class="mx-3">(有貨物ID時視作有貨物)</span>
+                </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>貨物ID讀取</b>
                 </div>
