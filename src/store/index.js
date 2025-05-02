@@ -766,11 +766,8 @@ export const DIOStore = createStore({
         return false;
       }
       const inputs = state.DIOStates.Inputs;
-      const switch_off = inputs.find(reg => reg.Address === 'X000C')?.State === false;
-      if (!switch_off) return false;
-
-      const emo_pushed = inputs.find(reg => reg.Address === 'X0008')?.State === false;
-      return emo_pushed && switch_off;
+      const switch_off = inputs.find(reg => reg.Name === 'Horizon_Motor_Switch')?.State === false;
+      return switch_off;
     },
     Vertical_Hardware_limit_bypass: state => {
       if (!state.DIOStates?.Outputs) {
