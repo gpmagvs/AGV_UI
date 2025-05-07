@@ -182,6 +182,15 @@ export const AGVStatusStore = createStore({
       // VerticalBelt: new clsSensorStatus('垂直軸馬達皮帶', 30, -85, 'right-top'),
       // ForkArmPosition: new clsSensorStatus('牙叉伸縮位置', 40, 120, 'right-bottom'),
       // SickLidar: new clsSensorStatus('Sick'),
+    },
+    maintainStatus: {
+      IsMaintainMode: false,
+      TagSet: -1,
+      Coordination: {
+        X: 0,
+        Y: 0,
+        Theta: 0
+      }
     }
   },
   getters: {
@@ -416,6 +425,9 @@ export const AGVStatusStore = createStore({
   mutations: {
     updateStatus(state, data) {
       state.AGVStatus = data
+    },
+    setMaintainModeStatus(state, data) {
+      state.maintainStatus = data;
     }
   },
   actions: {

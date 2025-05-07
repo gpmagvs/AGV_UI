@@ -100,6 +100,10 @@ function StartHubConnection() {
         bus.emit('hub-reconnecting');
     })
 
+    HubConnection.on('maintain-mode-status', data => {
+        AGVStatusStore.commit('setMaintainModeStatus', data)
+    })
+
     HubConnection.onclose(() => {
         console.log('SignalR  Disconnect');
         bus.emit('ws_disconnect', undefined);

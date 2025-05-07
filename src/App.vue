@@ -46,7 +46,7 @@ import AGVInitalizingNotify from "@/components/AGVInitalizingNotify.vue"
 import SystemErrorNotify from "@/components/SystemErrorNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
-import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure } from '@/api/VMSAPI.js'
+import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 export default {
   components: {
     SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify
@@ -183,6 +183,14 @@ export default {
   },
   async mounted() {
     this.loadSystemSettings();
+
+    try {
+      GetMaintainModeStatus().then(data => {
+        AGVStatusStore.commit('setMaintainModeStatus', data)
+      })
+    } catch (error) {
+      console.warn('取得維護狀態數據失敗:', error);
+    }
 
     try {
       await UIStore.dispatch('GetConnectionState');

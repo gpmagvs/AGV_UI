@@ -1,29 +1,47 @@
 <template>
   <div class="fixed-top">
+    <div class="setting-icon  px-2" style="width:50px;position:absolute;cursor: pointer;">
+      <i v-if="IsGodUser" @click="HandleSettingIconClick" class=" bi bi-sliders"></i>
+    </div>
     <div class="status d-flex flex-row bg-light">
-      <div
-        class="sys-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
-        <div class="px-2" style="width:50px;position:absolute;cursor: pointer;">
-          <i v-if="IsGodUser" @click="HandleSettingIconClick" class="bi bi-sliders"></i>
+      <div v-if="maintainStatus.IsMaintainMode" class="d-flex flex-fill">
+        <div
+          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
+          class="agvc-name px-5"
+          @dblclick="where_r_u()">
+          <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
         </div>
-        <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
+        <div class="agvc-name flex-fill d-flex justify-content-between align-items-center maintain-display px-2">
+          <span>維護模式</span>
+          <el-button @click="HandleCloseMaintainModeBtnClick">關閉</el-button>
+        </div>
+        <div
+          @dblclick="VersionTextClickHandle()"
+          class="version-name px-3"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
       </div>
-      <div
-        v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-        class="agvc-name flex-fill"
-        @dblclick="where_r_u()">
-        <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
+      <div v-else class="d-flex flex-fill">
+        <div
+          class="sys-name flex-fill"
+          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+          <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
+        </div>
+        <div
+          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
+          class="agvc-name flex-fill"
+          @dblclick="where_r_u()">
+          <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
+        </div>
+        <div
+          class="account-name flex-fill"
+          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+          <i class="bi bi-people mx-1"></i> {{ UserName }}
+        </div>
+        <div
+          @dblclick="VersionTextClickHandle()"
+          class="version-name flex-fill"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
       </div>
-      <div
-        class="account-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
-        <i class="bi bi-people mx-1"></i> {{ UserName }}
-      </div>
-      <div
-        @dblclick="VersionTextClickHandle()"
-        class="version-name flex-fill"
-        v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
         <jw_switch
@@ -67,7 +85,7 @@
 </template>
 <script>
 import { AGVStatusStore, UserStore, UIStore } from '@/store'
-import { Localization, Where_r_u, SystemAPI } from '@/api/VMSAPI'
+import { Localization, Where_r_u, SystemAPI, SwitchMaintainMode } from '@/api/VMSAPI'
 import uploader from '@/components/Upload/index.vue'
 import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
@@ -83,10 +101,13 @@ export default {
       IsUseChinese: true,
       APPVersionDisplay: '',
       VersionShowUI: false,
-      isFullScreenNow: false
+      isFullScreenNow: false,
     }
   },
   computed: {
+    maintainStatus() {
+      return AGVStatusStore.state.maintainStatus;
+    },
     SubStatus() {
       return AGVStatusStore.getters.AGVStatus.SubState;
     },
@@ -259,6 +280,9 @@ export default {
     },
     HandleSickLidarLocBtnClick() {
       window.open('http://192.168.1.1');
+    },
+    async HandleCloseMaintainModeBtnClick() {
+      await SwitchMaintainMode(false);
     }
 
   },
@@ -278,6 +302,11 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.setting-icon {
+  color: white;
+  font-size: 23px;
+}
+
 .status {
   height: 37px;
 
@@ -345,5 +374,25 @@ export default {
       background-color: rgb(0, 123, 255) !important;
     }
   }
+
+  .maintain-display {
+    background-color: red;
+    animation: maintain-mode-blink 1s infinite;
+  }
+
+  @keyframes maintain-mode-blink {
+
+    0%,
+    100% {
+      background-color: red;
+      color: white;
+    }
+
+    50% {
+      background-color: rgb(253, 143, 143);
+      color: rgb(255, 174, 0);
+    }
+  }
+
 }
 </style>

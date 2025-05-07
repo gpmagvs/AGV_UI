@@ -430,13 +430,27 @@
               <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
             <div v-if="selected_tab === '13'" class="tabpage border p-2">
-              <div class="action-buttons">
-                <b-button variant="warning" @click="HandleSystemRestartBtnClick">車載系統重啟</b-button>
-                <b-button variant="warning" @click="HandleAGVCRestartBtnClick">車控系統重啟</b-button>
-                <b-button variant="danger" @click="HandleSystemCloseBtnClick">車載系統關閉</b-button>
-                <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
-              </div>
               <el-form label-position="left" label-width="250">
+                <div class="text-start w-100 border-bottom mb-2 text-danger">
+                  <b>維護模式</b>
+                </div>
+                <el-form-item label="啟用">
+                  <el-switch v-model="maintainModeData.IsMaintainMode" @change="HandleMaintainModeSwitchCHanged" inactive-text="不啟用" active-text="啟用" size="small"></el-switch>
+                </el-form-item>
+                <el-form-item label="Tag設置">
+                  <el-input-number v-model="maintainModeData.TagSet" :disabled="!maintainModeData.IsMaintainMode"></el-input-number>
+                  <el-button type="primary" @click="HandleSetMaintainTagBtnClicked">設置</el-button>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>April Tag</b>
+                </div>
+                <!-- Advance.IsAprilTagLocateSupport -->
+                <el-form-item label="April Tag Support">
+                  <el-switch v-model="settings.Advance.IsAprilTagLocateSupport" @change="HandleAprilTagSupportParamChanged" size="small"></el-switch>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>自動初始化設置</b>
+                </div>
                 <el-form-item label="無貨行駛異常時自動重置並上線">
                   <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo" @change="HandleParamChanged" size="small"></el-switch>
                 </el-form-item>
@@ -448,11 +462,13 @@
                     <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`" :value="alarm.Code"></el-option>
                   </el-select>
                 </el-form-item>
-                <!-- Advance.IsAprilTagLocateSupport -->
-                <el-form-item label="April Tag Support">
-                  <el-switch v-model="settings.Advance.IsAprilTagLocateSupport" @change="HandleAprilTagSupportParamChanged" size="small"></el-switch>
-                </el-form-item>
               </el-form>
+              <div class="action-buttons">
+                <b-button variant="warning" @click="HandleSystemRestartBtnClick">車載系統重啟</b-button>
+                <b-button variant="warning" @click="HandleAGVCRestartBtnClick">車控系統重啟</b-button>
+                <b-button variant="danger" @click="HandleSystemCloseBtnClick">車載系統關閉</b-button>
+                <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
+              </div>
             </div>
           </div>
         </div>
@@ -465,7 +481,7 @@ import { ElNotification } from 'element-plus'
 import { ElIcon } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
 import bus from '@/event-bus.js'
-import { SystemAPI, IMUAPI, SoundsAPI, AlarmTableAPI } from '@/api/VMSAPI.js'
+import { SystemAPI, IMUAPI, SoundsAPI, AlarmTableAPI, GetMaintainModeStatus, SwitchMaintainMode, SetMaintainingTag } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
 import { SystemSettingsStore, AGVStatusStore } from '@/store'
 import moment from 'moment'
@@ -530,7 +546,16 @@ export default {
         { index: '11', title: '設備交握設定', show: () => !this.IsInspectionAGV },
         { index: '12', title: '手動檢查貨況' },
         { index: '13', title: '進階' }
-      ]
+      ],
+      maintainModeData: {
+        IsMaintainMode: false,
+        TagSet: -1,
+        Coordination: {
+          X: 0,
+          Y: 0,
+          Theta: 0
+        }
+      }
     }
   },
   computed: {
@@ -594,6 +619,7 @@ export default {
           attempts++;
           await new Promise(resolve => setTimeout(resolve, 1000));//等待1秒
         }
+        this.maintainModeData = await GetMaintainModeStatus();
         this.loading = false;
         if (success) {
 
@@ -863,6 +889,12 @@ export default {
     },
     PlayMove() {
       SoundsAPI.Move();
+    },
+    async HandleMaintainModeSwitchCHanged() {
+      await SwitchMaintainMode(this.maintainModeData.IsMaintainMode);
+    },
+    async HandleSetMaintainTagBtnClicked() {
+      await SetMaintainingTag(this.maintainModeData.TagSet)
     }
   },
 }

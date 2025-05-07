@@ -87,6 +87,22 @@ export async function Localization() {
   }
 }
 
+export async function GetMaintainModeStatus() {
+  var response = await axios_entity.get('api/VMS/MaintainModeStatus');
+  return response.data;
+}
+
+export async function SwitchMaintainMode(enabled) {
+  var response = await axios_entity.post(`api/VMS/SwitchMaintainMode?maintainMode=${enabled}`);
+  return response.data;
+}
+
+
+export async function SetMaintainingTag(tag) {
+  var response = await axios_entity.post(`api/VMS/SetMaintainingTag?tag=${tag}`);
+  return response.data;
+}
+
 export async function EMO() {
   var ret = await axios_entity.post('api/VMS/EMO')
   return ret
