@@ -191,7 +191,8 @@ export const AGVStatusStore = createStore({
         Y: 0,
         Theta: 0
       }
-    }
+    },
+    CurrentRobotSpeedCommand: 'Stop'
   },
   getters: {
     AGVStatus: state => {
@@ -428,6 +429,9 @@ export const AGVStatusStore = createStore({
     },
     setMaintainModeStatus(state, data) {
       state.maintainStatus = data;
+    },
+    setCurrentRobotSpeedCommand(state, data) {
+      state.CurrentRobotSpeedCommand = data;
     }
   },
   actions: {

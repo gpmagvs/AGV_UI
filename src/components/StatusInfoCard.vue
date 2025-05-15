@@ -132,7 +132,7 @@
             <b-form-input size="sm" disabled v-model="vms_data.AGV_Direct"></b-form-input>
           </el-col>
         </el-row>
-        <el-row style="position: absolute; bottom: 0;" class="row">
+        <el-row v-if="false" style="position: absolute; bottom: 0;" class="row">
           <el-col :span="12" class>
             <div class="d-flex w-100" style="font-size: 28px;color: #e1e1e1;">
               <div style="width:80px" class>RAM</div>

@@ -891,7 +891,7 @@ export default {
         if (this.VMSData.Tag > 0) {
           //this.MapDataPublishOut();
           if (this.VMSData.Tag != this.previous_tagID) {
-            Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'bottom', 1500);
+            Notifier.Primary(`Tag Detected:${this.VMSData.Tag}`, 'top', 800);
           }
         }
         this.previous_tagID = this.VMSData.Tag;

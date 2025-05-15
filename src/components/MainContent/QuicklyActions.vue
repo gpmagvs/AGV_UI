@@ -12,15 +12,22 @@
           inline-prompt
           @change="(val) => { SaveReaderSettings(val); }"></el-switch>
       </div>
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row  align-items-center text-dark">
         <CheckParamSettingButton />
+        <div class="d-flex flex-row  align-items-center gap-1">
+          <span>Laser</span>
+          <el-tag effect="dark" type="primary"> {{ LaserMode }}</el-tag>
+        </div>
+        <el-tag effect="light" type="info"> {{ currentSpeedCommand }}</el-tag>
+        <span class="border-end px-2">CPU:{{ CPU }}%</span>
+        <span>RAM:{{ Memory }} Mb</span>
         <DiskStatus />
       </div>
     </div>
   </div>
 </template>
 <script>
-import { SystemSettingsStore, UserStore, SystemMsgStore } from '@/store';
+import { SystemSettingsStore, UserStore, SystemMsgStore, AGVStatusStore } from '@/store';
 import { watch } from 'vue';
 import { SystemAPI } from '@/api/VMSAPI';
 import SystemSettings from '@/ViewModels/SystemSettings';
@@ -124,7 +131,20 @@ export default {
       if (UserStore.state.UserState.Role > 0)
         return true;
       return SystemSettingsStore.state.Settings.UI.CstReaderSwitchDisplayWhenNotLogin;
+    },
+    currentSpeedCommand() {
+      return AGVStatusStore.state.CurrentRobotSpeedCommand;
+    },
+    Memory() {
+      return AGVStatusStore.state.AGVStatus.SysLoading.Memory;
+    },
+    CPU() {
+      return AGVStatusStore.state.AGVStatus.SysLoading.CPU;
+    },
+    LaserMode() {
+      return AGVStatusStore.state.AGVStatus.Current_LASER_MODE;
     }
+
   },
   mounted() {
     setTimeout(() => {

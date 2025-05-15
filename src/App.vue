@@ -8,6 +8,7 @@
     element-loading-background="rgba(0,0,0, 0.8)">
     <div
       class="fixed-bottom text-right"
+      style="bottom:40px !important;"
       v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
       id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">

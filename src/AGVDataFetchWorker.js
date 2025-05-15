@@ -95,6 +95,11 @@ function StartHubConnection() {
     HubConnection.on('CheckCargoStatus', tag => {
         bus.emit('CheckCargoStatusWhenUnloadFail', tag);
     })
+
+    HubConnection.on('CurrentRobotSpeedCommand', cmdStr => {
+        AGVStatusStore.commit('setCurrentRobotSpeedCommand', cmdStr)
+    })
+
     HubConnection.onreconnecting(() => {
         console.warn('reconnecting');
         bus.emit('hub-reconnecting');
