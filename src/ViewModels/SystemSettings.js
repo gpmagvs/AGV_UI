@@ -114,7 +114,8 @@ class SystemSettings {
             ObsSensorPointType: 0,
             HorizonArmConfigs: {
                 ShortenPose: 1,
-                ExtendPose: 4999
+                ExtendPose: 4999,
+                ExtendWhenStartMoveToPort: false
             }
         };
         this.Emulator = {

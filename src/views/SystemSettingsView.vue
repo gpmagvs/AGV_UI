@@ -341,7 +341,10 @@
                 <el-form-item label="牙叉已在Home位置不必初始化">
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
                 </el-form-item>
-                <el-form-item label="退出設備時不等待牙叉縮回完成">
+                <el-form-item label="進入設備時伸縮牙叉同步伸出">
+                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ExtendWhenStartMoveToPort"></el-switch>
+                </el-form-item>
+                <el-form-item label="退出設備時伸縮牙叉同步縮回">
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitForkArmFinishAndMoveOutInWorkStation"></el-switch>
                 </el-form-item>
                 <el-form-item label="退出設備後Z軸同步回Home">
