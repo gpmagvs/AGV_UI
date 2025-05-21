@@ -98,7 +98,7 @@ export default {
     z-index: 4000;
 
     .sub-title {
-        font-size: smaller;
+        font-size: 2.2rem;
         color: #ffffff;
         letter-spacing: normal;
         background: #000000;

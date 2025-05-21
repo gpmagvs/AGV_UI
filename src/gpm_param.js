@@ -2,7 +2,7 @@ var param = {
   /**後端Server URL */
   get backend_host() {
     if (import.meta.env.DEV) {
-      return 'http://192.168.0.126:7025'
+      return 'http://192.168.0.125:7025'
       return 'http://192.168.0.105:7025'
       return 'http://127.0.0.1:7025'
       return 'http://192.168.0.112:7025'
