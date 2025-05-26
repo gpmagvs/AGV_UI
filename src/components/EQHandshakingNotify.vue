@@ -4,7 +4,9 @@
             <div class="w-100">
                 <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
                 <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
-                <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">{{ EQHSStatus.HandshakingInfoText }}</div>
+                <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">
+                    <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
+                </div>
             </div>
             <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
         </div>
@@ -98,7 +100,6 @@ export default {
     z-index: 4000;
 
     .sub-title {
-        font-size: 2.2rem;
         color: #ffffff;
         letter-spacing: normal;
         background: #000000;

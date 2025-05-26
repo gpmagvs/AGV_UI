@@ -109,6 +109,7 @@ class SystemSettings {
             TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag: false,
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
+            DownSearchSpeedWhenInitialize: 0.8,
             ManualModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             AutoModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             ObsSensorPointType: 0,
