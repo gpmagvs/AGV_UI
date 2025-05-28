@@ -307,7 +307,7 @@ import { Initialize, CancelInitProcess, ResetAlarm, BuzzerOff, RemoveCassette, M
 import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
-import { ElNotification } from 'element-plus'
+import { ElNotification, ElMessage } from 'element-plus'
 import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore, DIOStore } from '@/store'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
@@ -640,6 +640,7 @@ export default {
         this.wait_online_request_dialog_show = true;
         var ret = await MODESwitcher.OnlineModeSwitch(this.IsOnlineMode ? 0 : 1)
         if (!ret.Success) {
+
           this.$swal.fire(
             {
               text: '',
@@ -654,17 +655,12 @@ export default {
         setTimeout(() => {
           this.wait_online_request_dialog_show = false;
           if (ret.Success) {
-            this.$swal.fire(
-              {
-                text: '',
-                title: this.IsOnlineMode ? 'AGV已上線' : 'AGV已下線',
-                icon: 'success',
-                showCancelButton: false,
-                showConfirmButton: false,
-                confirmButtonText: 'OK',
-                customClass: 'my-sweetalert',
-                timer: 1500
-              })
+            ElMessage.success({
+              message: this.IsOnlineMode ? 'AGV已上線' : 'AGV已下線',
+              duration: 1500,
+              grouping: true,
+              plain: true,
+            });
           }
         }, 700);
       }
