@@ -110,6 +110,7 @@ class SystemSettings {
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
             DownSearchSpeedWhenInitialize: 0.8,
+            START_DONW_STEP_FIND_HOME_POSE: 0.2,
             ManualModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             AutoModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             ObsSensorPointType: 0,

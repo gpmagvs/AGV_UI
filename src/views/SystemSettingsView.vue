@@ -362,6 +362,9 @@
                 <el-form-item label="初始化牙叉尋原點速度(%)">
                   <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.DownSearchSpeedWhenInitialize"></el-input-number>
                 </el-form-item>
+                <el-form-item label="初始化吋動搜尋原點位置(cm)">
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.START_DONW_STEP_FIND_HOME_POSE"></el-input-number>
+                </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>前端障礙物檢知</b>
                 </div>
