@@ -1,10 +1,13 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking" class="handshaking-notify bg-primary text-light " v-bind:style="minimize ? miniSizeStyle : {}">
+        <div v-show="EQHSStatus.IsHandshaking" :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'" v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
                 <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
-                <span v-if="!IsHandshakeFail" class="mx-1">{{ dot_animation_str }}</span>
-                <div class="sub-title mx-1" v-bind:class="IsHandshakeFail ? 'bg-danger' : ''">
+                <span v-if="!IsAGVDown" class="mx-1">{{ dot_animation_str }}</span>
+                <div class="sub-title mx-1" v-if="IsAGVDown">
+                    <span class="text-danger" v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ showingAlarmMsg }}</span>
+                </div>
+                <div class="sub-title mx-1" v-if="!IsAGVDown">
                     <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
                 </div>
             </div>
@@ -31,12 +34,14 @@ export default {
                 right: '3px',
                 bottom: '3px',
 
-            }
+            },
+            alarmsShowInterval: null,
+            showingAlarmMsg: ''
         }
     },
     computed: {
         MessageTitle() {
-            if (this.IsHandshakeFail) {
+            if (this.IsHandshakeFail || this.IsAGVDown) {
                 return this.IsExchangeBatteryTask ? '電池交換作業失敗' : '取放貨作業失敗';
             } else {
                 return this.IsExchangeBatteryTask ? '電池交換作業中' : '取放貨作業中';
@@ -51,6 +56,12 @@ export default {
         },
         IsExchangeBatteryTask() {
             return AGVStatusStore.getters.AGVStatus.OrderInfo.ActionName == 14;
+        },
+        IsAGVDown() {
+            return AGVStatusStore.state.AGVStatus.SubState == 'DOWN';
+        },
+        CurrentAlarms() {
+            return AGVStatusStore.state.AGVStatus.AlarmCodes;
         }
 
     },
@@ -65,10 +76,32 @@ export default {
                     this.dot_animation_str = '.'
                 }
             }, 1000)
+        },
+        alarmShowAnimation() {
+            let _index = 0;
+            this.alarmShowInterval = setInterval(() => {
+                const alarmObj = this.CurrentAlarms[_index];
+                this.showingAlarmMsg = `${alarmObj.CN}(${alarmObj.Description})`;
+                _index += 1;
+                if (_index >= this.CurrentAlarms.length) {
+                    _index = 0;
+                }
+            }, 1000);
         }
     },
     mounted() {
         this.animation();
+    },
+    watch: {
+        IsAGVDown(newVal) {
+            if (newVal) {
+                clearInterval(this.alarmsShowInterval);
+            } else {
+                this.alarmsShowInterval = setInterval(() => {
+                    this.alarmShowAnimation();
+                }, 1000);
+            }
+        }
     }
 }
 </script>
@@ -80,7 +113,8 @@ export default {
     right: 3px;
 }
 
-.handshaking-notify {
+.handshaking-notify,
+.agv-down {
     width: 98%;
     height: 160px;
     border-radius: 8px;
@@ -109,6 +143,33 @@ export default {
         position: absolute;
         top: 6px;
         right: 6px;
+    }
+}
+
+.agv-down {
+    border-radius: 0;
+    border: 2px solid #ff0000e1;
+    opacity: 0.9;
+    animation: agv-down-animation 2s infinite !important;
+
+    .sub-title {
+        background-color: white;
+    }
+}
+
+
+@keyframes agv-down-animation {
+
+    0%,
+    100% {
+        background-color: #ff0000e1;
+        color: #ffffff;
+
+    }
+
+    50% {
+        background-color: #ffffff;
+        color: #ff0000e1;
     }
 }
 </style>
