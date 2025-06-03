@@ -26,15 +26,12 @@ function StoreData(data) {
     try {
         var ConnectionData = data.ConnectionStatesVM;
         var VMSData = data.VMSStatesVM;
-        var DIOTableData = data.DIOTableVM;
         var testData = data.RDTestData;
 
         if (VMSData)
             AGVStatusStore.commit('updateStatus', VMSData)
         if (ConnectionData)
             UIStore.commit("StoreConnectionState", ConnectionData);
-        if (DIOTableData)
-            DIOStore.commit('updateStatus', DIOTableData);
         if (testData)
             RDTestDataStore.commit('SetData', testData)
     } catch (error) {
@@ -42,7 +39,13 @@ function StoreData(data) {
     }
 
 }
-
+function StoreDIOData(DIOTableData) {
+    try {
+        DIOStore.commit('updateStatus', DIOTableData);
+    } catch (error) {
+        console.error(error);
+    }
+}
 function StartHubConnection() {
     HubConnection = new signalR.HubConnectionBuilder()
         .withUrl(`${param.backend_host}/FrontendHub`)
@@ -55,6 +58,10 @@ function StartHubConnection() {
             payload: data
         }
         channel.postMessage(postData)
+    })
+
+    HubConnection.on('DIOStatus', (DIOTableData) => {
+        StoreDIOData(DIOTableData);
     })
     HubConnection.on('ModuleInformation', moduleInformation => {
         ROS_STORE.commit('update_module_info', moduleInformation)

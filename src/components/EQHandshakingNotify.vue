@@ -79,7 +79,7 @@ export default {
         },
         alarmShowAnimation() {
             let _index = 0;
-            this.alarmShowInterval = setInterval(() => {
+            this.alarmsShowInterval = setInterval(() => {
                 const alarmObj = this.CurrentAlarms[_index];
                 this.showingAlarmMsg = `${alarmObj.CN}(${alarmObj.Description})`;
                 _index += 1;
@@ -93,14 +93,25 @@ export default {
         this.animation();
     },
     watch: {
-        IsAGVDown(newVal) {
-            if (newVal) {
-                clearInterval(this.alarmsShowInterval);
-            } else {
-                this.alarmsShowInterval = setInterval(() => {
+        IsAGVDown: {
+            handler(newVal) {
+                if (newVal) {
                     this.alarmShowAnimation();
-                }, 1000);
-            }
+                } else {
+                    clearInterval(this.alarmsShowInterval);
+                }
+            },
+            immediate: true,
+            deep: true
+        },
+        EQHSStatus: {
+            handler(newVal) {
+                if (!newVal.IsHandshaking) {
+                    clearInterval(this.alarmsShowInterval);
+                }
+            },
+            deep: true,
+            immediate: true
         }
     }
 }
