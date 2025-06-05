@@ -42,7 +42,8 @@ export default {
     computed: {
         MessageTitle() {
             if (this.IsHandshakeFail || this.IsAGVDown) {
-                return this.IsExchangeBatteryTask ? '電池交換作業失敗' : '取放貨作業失敗';
+                const alarmCnt = this.CurrentAlarms.length;
+                return this.IsExchangeBatteryTask ? `電池交換作業失敗(${alarmCnt})` : `取放貨作業失敗(${alarmCnt})`;
             } else {
                 return this.IsExchangeBatteryTask ? '電池交換作業中' : '取放貨作業中';
             }
@@ -79,14 +80,22 @@ export default {
         },
         alarmShowAnimation() {
             let _index = 0;
+
+            var getAlarmMsg = (index) => {
+                const alarmObj = this.CurrentAlarms[index];
+                return alarmObj ? `${alarmObj.CN}(${alarmObj.Description})` : '';
+            }
+
+            this.showingAlarmMsg = getAlarmMsg(0);
+
             this.alarmsShowInterval = setInterval(() => {
-                const alarmObj = this.CurrentAlarms[_index];
-                this.showingAlarmMsg = `${alarmObj.CN}(${alarmObj.Description})`;
+                this.showingAlarmMsg = getAlarmMsg(_index);
                 _index += 1;
                 if (_index >= this.CurrentAlarms.length) {
                     _index = 0;
                 }
-            }, 1000);
+            }, 2000);
+
         }
     },
     mounted() {
@@ -95,14 +104,17 @@ export default {
     watch: {
         IsAGVDown: {
             handler(newVal) {
-                if (newVal) {
-                    this.alarmShowAnimation();
-                } else {
+                console.log('IsAGVDown', newVal);
+                if (this.alarmsShowInterval) {
                     clearInterval(this.alarmsShowInterval);
+                }
+                if (newVal) {
+                    setTimeout(() => {
+                        this.alarmShowAnimation();
+                    }, 100);
                 }
             },
             immediate: true,
-            deep: true
         },
         EQHSStatus: {
             handler(newVal) {
@@ -110,7 +122,6 @@ export default {
                     clearInterval(this.alarmsShowInterval);
                 }
             },
-            deep: true,
             immediate: true
         }
     }
