@@ -157,6 +157,7 @@ class SystemSettings {
             BypassFrontLaserWhenEntryEQ: true,
             MoveActionTimeoutInSec: 60,
             MaunalCheckAndResumableWhenUnloadButCargoBias: false,
+            CheckCargoTypeMatchWhenUnload: false,
         };
         this.CargoExistSensorParams = {
             TraySensorMounted: true,

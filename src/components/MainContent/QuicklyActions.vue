@@ -5,14 +5,14 @@
         <span># 貨物ID讀取 Cargo ID Read:</span>
         <el-switch
           v-model="cstIdRead"
-          class="mx-2 pb-2"
+          class="mx-2"
           active-text="ON"
           inactive-color="red"
           inactive-text="OFF"
           inline-prompt
           @change="(val) => { SaveReaderSettings(val); }"></el-switch>
       </div>
-      <div class="d-flex flex-row  align-items-center text-dark">
+      <div class="d-flex flex-row  align-items-center ">
         <CheckParamSettingButton />
         <div class="d-flex flex-row  align-items-center gap-1">
           <span>Laser</span>
@@ -181,5 +181,12 @@ export default {
 <style lang="scss" scoped>
 .quickly-actions {
   z-index: 1099999;
+  font-size: 14px;
+  color: rgb(92, 94, 98) !important;
+  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans', 'Arial', 'sans-serif' !important;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
