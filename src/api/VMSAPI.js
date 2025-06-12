@@ -67,6 +67,14 @@ export var SystemAPI = {
   async GetConnectionState() {
     var ret = await axios_entity.get('api/System/ConnectionStatus')
     return ret.data
+  },
+  async GetVersionList() {
+    var ret = await axios_entity.get('api/System/GetBackupedVersion')
+    return ret.data
+  },
+  async ChangeVersion(version) {
+    var ret = await axios_entity.post(`api/System/RollbackSystem?version=${version}`)
+    return ret.data
   }
 }
 

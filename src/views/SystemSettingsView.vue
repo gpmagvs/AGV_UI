@@ -470,7 +470,7 @@
                   <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithCargo" @change="HandleParamChanged" size="small"></el-switch>
                 </el-form-item>
                 <el-form-item label="禁止自動重置的異常">
-                  <el-select v-model="forbidden_auto_reset_alarm_codes" @change="HandleForbiddenAutoResetAlarmCodesChanged" size="small" multiple filterable>
+                  <el-select v-model="forbidden_auto_reset_alarm_codes" @change="HandleForbiddenAutoResetAlarmCodesChanged" multiple filterable popper-append-to-body>
                     <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`" :value="alarm.Code"></el-option>
                   </el-select>
                 </el-form-item>
@@ -479,12 +479,16 @@
                 <b-button variant="warning" @click="HandleSystemRestartBtnClick">車載系統重啟</b-button>
                 <b-button variant="warning" @click="HandleAGVCRestartBtnClick">車控系統重啟</b-button>
                 <b-button variant="danger" @click="HandleSystemCloseBtnClick">車載系統關閉</b-button>
+                <b-button variant="info" @click="HandleVersionChangeBtnClick">變更版本</b-button>
                 <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <el-drawer v-model="version_list_drawer_show" title="版本列表" size="70%">
+        <VersionList></VersionList>
+      </el-drawer>
     </el-drawer>
   </div>
 </template>
@@ -507,6 +511,8 @@ import ManualCheckCargoStatus from '@/components/SystemSettings/ManualCheckCargo
 import SoundsSetting from '@/components/SystemSettings/SoundsSetting.vue'
 import SystemSettings from '@/ViewModels/SystemSettings'
 import AlarmCodeModel from '@/ViewModels/AlarmCodeModel'
+import Swal from 'sweetalert2'
+import VersionList from '@/components/SystemSettings/VersionList.vue'
 class ForkLifer {
   constructor() {
     this.ForkLifer_Enable = true;
@@ -531,12 +537,13 @@ class ForkLifer {
 export default {
   components: {
     uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus, SoundsSetting,
-    Setting
+    Setting, VersionList
   },
   data() {
     return {
       loading: true,
       drawer_show: false,
+      version_list_drawer_show: false,
       selected_tab: '0',
       settings: new SystemSettings(),
       normal_stations: [],
@@ -608,6 +615,7 @@ export default {
     bus.on('show-settings', async (tabIndex) => {
 
 
+
       this.loading = true;
       this.drawer_show = true
       setTimeout(async () => {
@@ -635,12 +643,6 @@ export default {
         this.loading = false;
         if (success) {
 
-          setTimeout(async () => {
-
-            await this.GetAlarmTable();
-            this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
-            this.forbidden_auto_reset_alarm_codes.sort()
-          }, 10)
 
           this.$notify({
             title: '系統設定',
@@ -650,6 +652,9 @@ export default {
             duration: 2000
           });
 
+          await this.GetAlarmTable();
+          this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
+          this.forbidden_auto_reset_alarm_codes.sort()
         } else {
 
           this.$swal.fire({
@@ -713,6 +718,12 @@ export default {
 
 
     },
+
+    async HandleVersionChangeBtnClick() {
+      this.version_list_drawer_show = true;
+
+    },
+
     async HandleSystemRestartBtnClick() {
 
       this.SystemOptConfirmAndDoAction('確定要重新啟動車載系統?', async () => {
