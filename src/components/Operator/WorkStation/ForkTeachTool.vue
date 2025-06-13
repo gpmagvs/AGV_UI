@@ -128,7 +128,7 @@ export default {
         }).then(res => {
           if (res.isConfirmed) {
             setTimeout(async () => {
-              var response = await ForkAPI.Action('Vertical', 'pose', this.number, 1)
+              var response = await ForkAPI.Action('Vertical', 'pose', this.number, 1, false)
               if (!response.confirm) {
                 this.$swal.fire(
                   {
@@ -147,7 +147,7 @@ export default {
     },
     async ForkPositionAdjust(position_delta) {
       //confirm = result.success, message = result.message 
-      var response = await ForkAPI.Action('Vertical', 'increase', position_delta, 1)
+      var response = await ForkAPI.Action('Vertical', 'increase', position_delta, 1, false)
       if (!response.confirm) {
         this.$swal.fire(
           {

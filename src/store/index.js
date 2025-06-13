@@ -792,6 +792,13 @@ export const DIOStore = createStore({
       const output = state.DIOStates.Outputs.find(reg => reg.Name === "Vertical_Hardware_limit_bypass");
       return output?.State ?? false;
     },
+    Vertical_Under_Pressing_Sensor_Bypass: state => {
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === "Fork_Under_Pressing_SensorBypass");
+      return output?.State ?? false;
+    },
     ZAxisUplimitSensorState: state => {
       if (!state.DIOStates?.Inputs) {
         return false;
@@ -847,6 +854,11 @@ export const DIOStore = createStore({
       var address = vhlb.Address;
       DIO.DO_State_Change(address, active);
     },
+    async ControlUnderPressingSensorBypass({ commit, state }, active) {
+      var vhlb = state.DIOStates.Outputs.find(reg => reg.Name == "Fork_Under_Pressing_SensorBypass");
+      var address = vhlb.Address;
+      DIO.DO_State_Change(address, active);
+    }
   }
 })
 

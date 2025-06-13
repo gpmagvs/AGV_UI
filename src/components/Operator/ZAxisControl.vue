@@ -16,38 +16,41 @@
           <!-- Position -->
           <div class="d-flex align-items-center mx-2">
             <div class="mx-2">Position</div>
-            <el-input
+            <el-input-number
               v-if="ctlData.name == 'Vertical'"
-              class="px-1"
+              class="px-1 position-input"
               center
+              :precision="2"
               v-model="ForkHeight"
-              disabled></el-input>
-            <el-input
+              :controls="false"
+              size="small"
+              :step="0.01"
+              disabled></el-input-number>
+            <el-input-number
               v-else
-              class="px-1"
+              class="px-1 position-input"
               center
+              :precision="2"
               v-model="HorizonForkPosition"
-              disabled></el-input>
+              :controls="false"
+              size="small"
+              :step="0.01"
+              disabled></el-input-number>
             <div class="d-flex  gap-2 align-items-center bg-light p-1">
               <span>State:</span> <el-tag effect="dark"> {{ GetDriverState(ctlData.name).state }} </el-tag>
-              <span>ErrorCode:</span> <el-tag effect="dark"> {{ GetDriverState(ctlData.name).errorCode }}</el-tag>
+              <span>ECode:</span> <el-tag effect="dark"> {{ GetDriverState(ctlData.name).errorCode }}</el-tag>
             </div>
           </div>
           <!-- 極限Sensor Bypass/教點按鈕 -->
           <div v-if="ctlData.name == 'Vertical'" class="d-flex flex-fill justify-content-end">
-            <!-- 極限Sensor Bypass -->
             <div class="d-flex flex-row align-items-center mx-1">
-              <div class="mx-2">極限 Bypass</div>
-              <el-tag
-                v-if="Vertical_Hardware_limit_bypass"
-                type="danger"
-                size="large"
-                @click="ControlHardwareLimitSensor(true)">Bypass</el-tag>
-              <el-tag
-                v-else
-                type="success"
-                size="large"
-                @click="ControlHardwareLimitSensor(false)">No-Bypass</el-tag>
+              <div class="mx-2">安全防護</div>
+              <el-switch
+                :inline-prompt="true"
+                v-model="verticalActionSafetyProtection"
+                active-text="開"
+                inactive-text="關"
+                inactive-color="#ff4949" />
             </div>
             <!-- 教點按鈕 -->
             <el-button type="primary" @click="ShowTeachView">牙叉位置校點</el-button>
@@ -55,7 +58,7 @@
         </div>
         <div class="d-flex w-100">
           <!-- 控制按鈕 -->
-          <div class="action-buttions-container flex-fill" v-bind:class="ctlData.name == 'Horizon' ? 'd-flex flex-row flex-row-reverse' : ''">
+          <div class="action-buttions-container w-100" v-bind:class="ctlData.name == 'Horizon' ? 'd-flex flex-row flex-row-reverse' : ''">
             <b-button
               :disabled="(!enabled || IsActing(ctlData.name))"
               class="w-100 border mb-1"
@@ -97,6 +100,55 @@
               @click="ForkAction(ctlData.name, 'down_limit')"
               block>
               <i class="bi bi-chevron-bar-down"></i>{{ ctlData.downlimit }} </b-button>
+          </div>
+          <!-- 控制按鈕 Group2 -->
+          <div v-if="ctlData.name == 'Vertical'" class="w-100 mx-2">
+            <b-button
+              :disabled="(!enabled || IsActing(ctlData.name))"
+              class="w-100 border mb-1"
+              variant="light"
+              @click="ForkAction(ctlData.name, 'up_search')"
+              block>
+              <i class="bi bi-chevron-bar-up"></i>上升搜尋 </b-button>
+            <b-button
+              :disabled="(!enabled || IsActing(ctlData.name))"
+              class="w-100 border mb-1"
+              variant="light"
+              @click="ForkAction(ctlData.name, 'down_search')"
+              block>
+              <i class="bi bi-chevron-bar-down"></i>下降搜尋 </b-button>
+            <el-divider></el-divider>
+            <!-- 極限Sensor Bypass -->
+            <div class="d-flex flex-row justify-content-end align-items-center mx-1">
+              <div class="mx-2 text-danger">極限 Bypass</div>
+              <el-tag
+                v-if="Vertical_Hardware_limit_bypass"
+                effect="dark"
+                type="danger"
+                size="large"
+                @click="ControlHardwareLimitSensor(true)">Bypass</el-tag>
+              <el-tag
+                v-else
+                effect="dark"
+                type="success"
+                size="large"
+                @click="ControlHardwareLimitSensor(false)">No-Bypass</el-tag>
+            </div>
+            <div class="my-2 d-flex flex-row justify-content-end align-items-center mx-1">
+              <div class="mx-2 text-danger">下壓 SensorBypass</div>
+              <el-tag
+                v-if="Vertical_Under_Pressing_Sensor_Bypass"
+                effect="dark"
+                type="danger"
+                size="large"
+                @click="ControlUnderPressingSensorBypass(true)">Bypass</el-tag>
+              <el-tag
+                v-else
+                effect="dark"
+                type="success"
+                size="large"
+                @click="ControlUnderPressingSensorBypass(false)">No-Bypass</el-tag>
+            </div>
           </div>
           <!-- Sensor狀態 -->
           <div class="sensors-states-container d-flex flex-column justify-content-end mx-2">
@@ -153,7 +205,9 @@ export default {
       isZAxisMoving: false,
       isHorizonMoving: false,
       show_teach_page: false,
-      hardware_limit_enable: true
+      hardware_limit_enable: true,
+      verticalActionSafetyProtection: true,
+      horizonActionSafetyProtection: true
     }
   },
   watch: {
@@ -197,6 +251,9 @@ export default {
     },
     Vertical_Hardware_limit_bypass() {
       return DIOStore.getters.Vertical_Hardware_limit_bypass;
+    },
+    Vertical_Under_Pressing_Sensor_Bypass() {
+      return DIOStore.getters.Vertical_Under_Pressing_Sensor_Bypass;
     },
     Vertical_Up_Limit_Sensor_On() {
       return DIOStore.getters.ZAxisUplimitSensorState;
@@ -282,7 +339,7 @@ export default {
       if (canceled)
         return;
       this.SetActing(dir, true)
-      var ret = await ForkAPI.Action(dir, action, pose, speed);
+      var ret = await ForkAPI.Action(dir, action, pose, speed, dir == 'Vertical' ? this.verticalActionSafetyProtection : this.horizonActionSafetyProtection);
       this.SetActing(dir, false)
       if (!ret.confirm) {
         this.$swal.fire({
@@ -311,6 +368,26 @@ export default {
           })
       } else
         DIOStore.dispatch('ControlHardwareLimiSensor', !active)
+    },
+    ControlUnderPressingSensorBypass(active) {
+      if (!active) {
+        this.$swal.fire(
+          {
+            title: '確定要將下壓Sensor Bypass?',
+            text: '',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            cancelButtonText: '取消',
+            customClass: 'my-sweetalert'
+          }).then(res => {
+            if (!res.isConfirmed)
+              return;
+            DIOStore.dispatch('ControlUnderPressingSensorBypass', true)
+
+          })
+      } else
+        DIOStore.dispatch('ControlUnderPressingSensorBypass', !active)
     },
     ShowTeachView() {
       if (this.$refs['fork_teach'])
@@ -390,5 +467,9 @@ export default {
 .disable-notify {
   color: red;
   font-weight: bold;
+}
+
+.position-input {
+  width: 80px !important;
 }
 </style>

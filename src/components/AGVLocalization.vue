@@ -11,19 +11,19 @@
                 <div class="block">
                     <div class="title">X座標</div>
                     <div class="control">
-                        <el-input-number step="0.01" precision="2" v-model="localization.x"></el-input-number>
+                        <el-input-number :step="0.01" :precision="2" v-model="localization.x"></el-input-number>
                     </div>
                 </div>
                 <div class="block">
                     <div class="title">Y座標</div>
                     <div class="control">
-                        <el-input-number step="0.01" precision="2" v-model="localization.y"></el-input-number>
+                        <el-input-number :step="0.01" :precision="2" v-model="localization.y"></el-input-number>
                     </div>
                 </div>
                 <div class="block">
                     <div class="title">角度</div>
                     <div class="control">
-                        <el-input-number step="0.1" precision="1" v-model="localization.theata"></el-input-number>
+                        <el-input-number :step="0.1" :precision="1" v-model="localization.theata"></el-input-number>
                     </div>
                 </div>
                 <div class="block py-3">
