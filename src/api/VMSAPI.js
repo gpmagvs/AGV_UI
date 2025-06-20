@@ -582,6 +582,11 @@ export const ForkAPI = {
     return ret.data;
   },
 
+  async ForkVerticalInitActionResume(resume = false) {
+    var ret = await axios_entity.post(`api/FORKAGV/ForkVerticalInitActionResume?resume=${resume}`)
+    return ret.data;
+  },
+
 }
 
 /**LOG Controller API */

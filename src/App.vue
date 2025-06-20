@@ -48,6 +48,7 @@ import SystemErrorNotify from "@/components/SystemErrorNotify.vue"
 import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
+import { ForkAPI } from '@/api/VMSAPI.js'
 export default {
   components: {
     SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify
@@ -346,6 +347,20 @@ export default {
         return;
       }
 
+      if (message.includes("Fork Vertical Driver Unkonwn, Initialize Action Confirm")) {
+        const swal = this.$swal.fire(
+          {
+            title: '垂直牙叉驅動器狀態異常',
+            text: `垂直牙叉驅動器狀態異常,是否要略過初始化流程?`,
+            icon: 'warning',
+            showCancelButton: true,
+            customClass: 'my-sweetalert'
+          }).then(res => {
+            ForkAPI.ForkVerticalInitActionResume(res.isConfirmed)
+          })
+        UIStore.commit('SetSwalShowing', { code: alarmCode, instance: swal });
+        return;
+      }
 
       //alert(message)
       const swal = this.$swal.fire(
