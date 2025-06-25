@@ -157,11 +157,11 @@ export async function BuzzerOff() {
 
 /**移除卡匣CST Reader資料 */
 export async function RemoveCassette() {
-  var ret = await axios_entity.post('api/VMS/RemoveCassette')
-  var success = ret.data;
-  if (success)
+  const ret = await axios_entity.post('api/VMS/RemoveCassette')
+  const _returnCode = ret.data;
+  if (_returnCode==0)
     bus.emit('remove_cst')
-  return success;
+  return _returnCode;
 }
 
 /**關閉空取空放功能 */

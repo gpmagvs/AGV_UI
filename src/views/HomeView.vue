@@ -500,17 +500,31 @@ export default {
     },
     async AGVRemoveCassette() {
 
-      var success = await RemoveCassette();
+      var returnCode = await RemoveCassette();
       var swal_title = "";
       var swal_text = "";
       var swal_icon = "";
 
-      if (success) {
+      if (returnCode == 0) {
         swal_title = swal_text = "移除卡匣成功";
         swal_icon = "success";
       } else {
-        swal_title = swal_text = "移除卡匣失敗";
-        swal_icon = "error";
+        const returnCodeMap = {
+          419: {
+            messageZh: "AGV車上仍有貨物,請先移除貨物再移除卡匣",
+            messageEng: "AGV has cargo, please remove cargo first",
+          }
+        }
+        const returnCodeData = returnCodeMap[returnCode];
+        if (returnCodeData) {
+          swal_title = "移除卡匣失敗:" + `${returnCodeData.messageZh}`;
+          swal_text = "Remove Cassette Failed:" + `${returnCodeData.messageEng}`;
+          swal_icon = "error";
+        } else {
+          swal_title = "移除卡匣失敗";
+          swal_text = "Remove Cassette Failed";
+          swal_icon = "error";
+        }
       }
 
       this.$swal.fire({
