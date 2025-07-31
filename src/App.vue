@@ -1,20 +1,11 @@
 <template>
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
-  <div
-    class="appcontainer"
-    style="width:100vw;height:100vh"
-    v-loading.fullscreen.lock="loading"
-    element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)">
-    <div
-      class="fixed-bottom text-right"
-      style="bottom:40px !important;"
-      v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+  <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading"
+    element-loading-text="GPM AGV" element-loading-background="rgba(0,0,0, 0.8)">
+    <div class="fixed-bottom text-right" style="bottom:40px !important;"
+      v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0" id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
-        <el-alert
-          @click="HandleAlarmSheetClick(code)"
-          show-icon
+        <el-alert @click="HandleAlarmSheetClick(code)" show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
           :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
@@ -32,6 +23,7 @@
     <WaitAGVsNextMoveActionNotify></WaitAGVsNextMoveActionNotify>
     <AGVInitalizingNotify></AGVInitalizingNotify>
     <SystemErrorNotify></SystemErrorNotify>
+    <BackendExceptionMessageDisplay></BackendExceptionMessageDisplay>
   </div>
 </template>
 <script>
@@ -49,9 +41,11 @@ import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 import { ForkAPI } from '@/api/VMSAPI.js'
+import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessageDisplay.vue'
+
 export default {
   components: {
-    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify
+    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify, BackendExceptionMessageDisplay
   },
   data() {
     return {

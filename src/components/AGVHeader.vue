@@ -5,9 +5,7 @@
     </div>
     <div class="status d-flex flex-row bg-light">
       <div v-if="maintainStatus.IsMaintainMode" class="d-flex flex-fill">
-        <div
-          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-          class="agvc-name px-5"
+        <div v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()" class="agvc-name px-5"
           @dblclick="where_r_u()">
           <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
         </div>
@@ -15,42 +13,29 @@
           <span>維護模式</span>
           <el-button @click="HandleCloseMaintainModeBtnClick">關閉</el-button>
         </div>
-        <div
-          @dblclick="VersionTextClickHandle()"
-          class="version-name px-3"
-          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
+        <div @dblclick="VersionTextClickHandle()" class="version-name px-3"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
+        </div>
       </div>
       <div v-else class="d-flex flex-fill">
-        <div
-          class="sys-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <div class="sys-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
           <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
         </div>
-        <div
-          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-          class="agvc-name flex-fill"
+        <div v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()" class="agvc-name flex-fill"
           @dblclick="where_r_u()">
           <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
         </div>
-        <div
-          class="account-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <div class="account-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
           <i class="bi bi-people mx-1"></i> {{ UserName }}
         </div>
-        <div
-          @dblclick="VersionTextClickHandle()"
-          class="version-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
+        <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
+        </div>
       </div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
-        <jw_switch
-          @switch="LangChangeHandle"
-          :default="IsUseChinese"
-          active_text="EN"
-          active_color="rgb(0, 204, 0)"
-          inactive_text="中文"
-          inactive_color="rgb(9, 76, 176)"></jw_switch>
+        <jw_switch @switch="LangChangeHandle" :default="IsUseChinese" active_text="EN" active_color="rgb(0, 204, 0)"
+          inactive_text="中文" inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
       <!--視窗與電腦控制-->
       <div class="system-control">
@@ -61,13 +46,15 @@
             <i class="bi bi-fullscreen me-2"></i> 全螢幕切換 </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-pin-map me-2"></i>
-            <el-button @click="HandleAGVLocating" :disabled="IsAGVRunning" class="system-control-button" text>車輛定位</el-button>
+            <el-button @click="HandleAGVLocating" :disabled="IsAGVRunning" class="system-control-button"
+              text>車輛定位</el-button>
           </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser" @click="HandleSickLidarLocBtnClick">
             <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-file-arrow-up-fill me-2"></i>
-            <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button" text>車載更新</el-button>
+            <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button"
+              text>車載更新</el-button>
           </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
             <i class="bi bi-power me-2"></i> 關機 </b-dropdown-item>

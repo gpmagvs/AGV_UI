@@ -7,12 +7,15 @@
           <span class="edit_key" v-if="settings.EditKey">{{ settings.EditKey }}</span>
         </div>
       </template>
-      <div v-loading="loading" v-bind:style="loading ? { opacity: 0.5, } : {}" style="position: absolute; width:98%;height: 100%;top:66px" element-loading-text="Loading...">
+      <div v-loading="loading" v-bind:style="loading ? { opacity: 0.5, } : {}"
+        style="position: absolute; width:98%;height: 100%;top:66px" element-loading-text="Loading...">
         <div class="settings-container" v-show="!loading">
           <div class="settings-sidebar bg-light">
             <el-scrollbar>
               <div class="menu-items">
-                <div v-for="(item, index) in menuItems" :key="index" class="menu-item" :class="{ active: selected_tab === item.index }" @click="handleSelect(item.index)" v-show="item.show != undefined ? item.show() : true">
+                <div v-for="(item, index) in menuItems" :key="index" class="menu-item"
+                  :class="{ active: selected_tab === item.index }" @click="handleSelect(item.index)"
+                  v-show="item.show != undefined ? item.show() : true">
                   <el-icon>
                     <Setting />
                   </el-icon>
@@ -28,29 +31,39 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
                 <el-form-item label="一般走行開啟車頭燈">
-                  <el-switch @change="HandleParamChanged" v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
                 </el-form-item>
                 <el-form-item label="離線地圖圖資檔案路徑">
-                  <el-input @change="HandleParamChanged" size="small" v-model="settings.MapParam.LocalMapFileName"></el-input>
+                  <el-input @change="HandleParamChanged" size="small"
+                    v-model="settings.MapParam.LocalMapFileName"></el-input>
                 </el-form-item>
                 <el-form-item v-if="!IsInspectionAGV" label="初始化時有帳無料自動清帳">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo"></el-switch>
                 </el-form-item>
                 <el-form-item v-if="!IsInspectionAGV" label="初始化時有料無帳自動建帳">
-                  <el-switch @change="HandleParamChanged" v-model="settings.Auto_Read_CST_ID_When_No_Data_But_Has_Cargo"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.Auto_Read_CST_ID_When_No_Data_But_Has_Cargo"></el-switch>
                 </el-form-item>
                 <el-form-item label="Action任務Timeout(Sec)">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.ActionTimeout"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.ActionTimeout"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
             <div v-if="selected_tab === '1'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
-                <el-form-item v-if="settings.UI != undefined && settings.UI.IsQuicklyActionFooterDisplay != undefined" label="快速動作功能列">
-                  <el-switch v-model="settings.UI.IsQuicklyActionFooterDisplay" @change="HandleParamChanged" size="small"></el-switch>
+                <el-form-item v-if="settings.UI != undefined && settings.UI.IsQuicklyActionFooterDisplay != undefined"
+                  label="快速動作功能列">
+                  <el-switch v-model="settings.UI.IsQuicklyActionFooterDisplay" @change="HandleParamChanged"
+                    size="small"></el-switch>
                 </el-form-item>
-                <el-form-item v-if="settings.UI != undefined && settings.UI.CstReaderSwitchDisplayWhenNotLogin != undefined" label="主頁顯示ID Reader開關(OP)">
-                  <el-switch v-model="settings.UI.CstReaderSwitchDisplayWhenNotLogin" @change="HandleParamChanged" size="small"></el-switch>
+                <el-form-item
+                  v-if="settings.UI != undefined && settings.UI.CstReaderSwitchDisplayWhenNotLogin != undefined"
+                  label="主頁顯示ID Reader開關(OP)">
+                  <el-switch v-model="settings.UI.CstReaderSwitchDisplayWhenNotLogin" @change="HandleParamChanged"
+                    size="small"></el-switch>
                 </el-form-item>
               </el-form>
             </div>
@@ -61,16 +74,20 @@
                     <b>安全Sensor防護</b>
                   </div>
                   <el-form-item label="左方雷射 Bypass">
-                    <el-switch v-model="settings.SensorBypass.LeftSideLaserBypass" @change="HandleParamChanged"></el-switch>
+                    <el-switch v-model="settings.SensorBypass.LeftSideLaserBypass"
+                      @change="HandleParamChanged"></el-switch>
                   </el-form-item>
                   <el-form-item label="右方雷射 Bypass">
-                    <el-switch v-model="settings.SensorBypass.RightSideLaserBypass" @change="HandleParamChanged"></el-switch>
+                    <el-switch v-model="settings.SensorBypass.RightSideLaserBypass"
+                      @change="HandleParamChanged"></el-switch>
                   </el-form-item>
                   <el-form-item label="車體限動Sensor Bypass">
-                    <el-switch v-model="settings.SensorBypass.AGVBodyLimitSensorBypass" @change="HandleParamChanged"></el-switch>
+                    <el-switch v-model="settings.SensorBypass.AGVBodyLimitSensorBypass"
+                      @change="HandleParamChanged"></el-switch>
                   </el-form-item>
                   <el-form-item v-if="IsForkAGV" label="牙叉前方障礙物Sensor Bypass">
-                    <el-switch v-model="settings.SensorBypass.ForkFrontendObsSensorBypass" @change="HandleParamChanged"></el-switch>
+                    <el-switch v-model="settings.SensorBypass.ForkFrontendObsSensorBypass"
+                      @change="HandleParamChanged"></el-switch>
                   </el-form-item>
                   <div class="w-100 border-bottom">
                     <b>IMU 數據</b>
@@ -87,7 +104,10 @@
                       </div>
                       <div>
                         <el-tag effect="dark" style="width:70px" for>數值</el-tag>
-                        <code>{{ { x: IMUMaxMinRecord.AccVal.x.toFixed(2), y: IMUMaxMinRecord.AccVal.y.toFixed(2), z: IMUMaxMinRecord.AccVal.z.toFixed(2) } }}</code>
+                        <code>{{ {
+                          x: IMUMaxMinRecord.AccVal.x.toFixed(2), y: IMUMaxMinRecord.AccVal.y.toFixed(2), z:
+                            IMUMaxMinRecord.AccVal.z.toFixed(2)
+                        } }}</code>
                       </div>
                       <div>
                         <el-tag effect="dark" style="width:70px" for>發生時間</el-tag>
@@ -109,36 +129,44 @@
                     <el-switch @change="HandleParamChanged" v-model="settings.ImpactDetection.Enabled"></el-switch>
                   </el-form-item>
                   <el-form-item label="異常檢出警報等級">
-                    <el-select :disabled="!settings.ImpactDetection.Enabled" v-model="settings.ImpactDetection.ImpactingAlarmLevel" @change="HandleParamChanged">
+                    <el-select :disabled="!settings.ImpactDetection.Enabled"
+                      v-model="settings.ImpactDetection.ImpactingAlarmLevel" @change="HandleParamChanged">
                       <el-option label="Warning" :value="0"></el-option>
                       <el-option label="Alarm" :value="1"></el-option>
                     </el-select>
                   </el-form-item>
                   <el-form-item label="閥值">
-                    <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="4" @change="HandleParamChanged" v-model="settings.ImpactDetection.ThresHold"></el-input-number>
+                    <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="4"
+                      @change="HandleParamChanged" v-model="settings.ImpactDetection.ThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
                   <div class="w-100 border-bottom">
                     <b>姿態異常偵測(傾倒偵測)</b>
                   </div>
                   <el-form-item label="啟用">
-                    <el-switch @change="HandleParamChanged" v-model="settings.ImpactDetection.PitchErrorDetection"></el-switch>
+                    <el-switch @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.PitchErrorDetection"></el-switch>
                   </el-form-item>
                   <el-form-item label="異常檢出警報等級">
-                    <el-select :disabled="!settings.ImpactDetection.PitchErrorDetection" v-model="settings.ImpactDetection.PitchErrorAlarmLevel" @change="HandleParamChanged">
+                    <el-select :disabled="!settings.ImpactDetection.PitchErrorDetection"
+                      v-model="settings.ImpactDetection.PitchErrorAlarmLevel" @change="HandleParamChanged">
                       <el-option label="Warning" :value="0"></el-option>
                       <el-option label="Alarm" :value="1"></el-option>
                     </el-select>
                   </el-form-item>
                   <el-form-item label="閥值">
-                    <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="9.8" @change="HandleParamChanged" v-model="settings.ImpactDetection.PitchErrorThresHold"></el-input-number>
+                    <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="9.8"
+                      @change="HandleParamChanged"
+                      v-model="settings.ImpactDetection.PitchErrorThresHold"></el-input-number>
                     <span class="mx-2">G</span>
                   </el-form-item>
                   <div v-if="settings.ForbidToOnlineTags" class="w-100 border-bottom">
                     <b>禁止上線點位</b>
                   </div>
-                  <el-select class="my-2" v-model="settings.ForbidToOnlineTags" multiple placeholder="Select" @change="HandleParamChanged" style="width: 300px">
-                    <el-option v-for="station in normal_stations" :key="station.tag" :label="station.name" :value="station.tag" />
+                  <el-select class="my-2" v-model="settings.ForbidToOnlineTags" multiple placeholder="Select"
+                    @change="HandleParamChanged" style="width: 300px">
+                    <el-option v-for="station in normal_stations" :key="station.tag" :label="station.name"
+                      :value="station.tag" />
                   </el-select>
                 </el-form>
               </div>
@@ -146,16 +174,21 @@
             <div v-if="selected_tab === '3'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
                 <el-form-item label="等待充電開始時間(秒)">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.BatteryModule.WaitChargeStartDelayTimeWhenReachChargeTaskFinish"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.BatteryModule.WaitChargeStartDelayTimeWhenReachChargeTaskFinish"></el-input-number>
                 </el-form-item>
                 <el-form-item label="斷開充電回路電壓閥值(mV)">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.BatteryModule.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.BatteryModule.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
                 </el-form-item>
                 <el-form-item label="僅電量低於閥值才開啟充電迴路">
-                  <el-switch @change="HandleParamChanged" v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
                 </el-form-item>
                 <el-form-item label="充電迴路開啟閥值">
-                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="100" :disabled="!settings.BatteryModule.ChargeWhenLevelLowerThanThreshold" @change="HandleParamChanged" v-model="settings.BatteryModule.ChargeLevelThreshold"></el-input-number>
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="100"
+                    :disabled="!settings.BatteryModule.ChargeWhenLevelLowerThanThreshold" @change="HandleParamChanged"
+                    v-model="settings.BatteryModule.ChargeLevelThreshold"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
@@ -165,31 +198,39 @@
                   <b>初始化</b>
                 </div>
                 <el-form-item label="初始化檢查電池鎖定">
-                  <el-switch @change="HandleParamChanged" v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.InspectionAGV.CheckBatteryLockStateWhenInit"></el-switch>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>電池交換</b>
                 </div>
                 <el-form-item label="需交換電池最小電量">
-                  <el-input @change="HandleParamChanged" type="number" :min="0" :max="100" v-model="settings.InspectionAGV.ExchangeBatLevelThresholdVal"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="0" :max="100"
+                    v-model="settings.InspectionAGV.ExchangeBatLevelThresholdVal"></el-input>
                 </el-form-item>
                 <el-form-item label="交換電池數量">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="2" v-model="settings.InspectionAGV.BatteryChangeNum"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="2"
+                    v-model="settings.InspectionAGV.BatteryChangeNum"></el-input>
                 </el-form-item>
                 <el-form-item label="交握-TP1">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP1"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP1"></el-input>
                 </el-form-item>
                 <el-form-item label="交握-TP2">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP2"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP2"></el-input>
                 </el-form-item>
                 <el-form-item label="交握-TP3">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP3"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP3"></el-input>
                 </el-form-item>
                 <el-form-item label="交握-TP4">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP4"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP4"></el-input>
                 </el-form-item>
                 <el-form-item label="交握-TP5">
-                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999" v-model="settings.InspectionAGV.BatExchangeTimeout.TP5"></el-input>
+                  <el-input @change="HandleParamChanged" type="number" :min="1" :max="999"
+                    v-model="settings.InspectionAGV.BatExchangeTimeout.TP5"></el-input>
                 </el-form-item>
               </el-form>
             </div>
@@ -202,16 +243,19 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.PlayHandshakingMusic"></el-switch>
                 </el-form-item>
                 <el-form-item label="設備內停車允許誤差(mm)">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.TagParkingTolerance"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.TagParkingTolerance"></el-input-number>
                 </el-form-item>
                 <el-form-item v-if="false" label="退出設備須需要詢問派車">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"></el-switch>
                 </el-form-item>
                 <el-form-item label="空取空放">
                   <el-switch @change="HandleParamChanged" v-model="settings.LDULD_Task_No_Entry"></el-switch>
                 </el-form-item>
                 <el-form-item label="使用貨物ID模擬在席">
-                  <el-switch @change="HandleParamChanged" v-model="settings.CargoExistSensorParams.ExistSensorSimulation"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.CargoExistSensorParams.ExistSensorSimulation"></el-switch>
                   <span class="mx-3">(有貨物ID時視作有貨物)</span>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
@@ -239,16 +283,20 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.CST_EXIST_DETECTION.Before_In"></el-switch>
                 </el-form-item>
                 <el-form-item label="設備/AGV動作取放動作完成後檢查">
-                  <el-switch @change="HandleParamChanged" v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.CST_EXIST_DETECTION.After_EQ_Busy_Off"></el-switch>
                 </el-form-item>
                 <el-form-item label="走行過程持續檢查貨物狀態">
-                  <el-switch @change="HandleParamChanged" v-model="settings.CargoBiasDetectionWhenNormalMoving"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.CargoBiasDetectionWhenNormalMoving"></el-switch>
                 </el-form-item>
                 <el-form-item label="取貨時發生貨物傾斜時可暫停進行排除">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.MaunalCheckAndResumableWhenUnloadButCargoBias"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.MaunalCheckAndResumableWhenUnloadButCargoBias"></el-switch>
                 </el-form-item>
                 <el-form-item label="取貨時檢查貨物種類是否 Match(與派車)">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.CheckCargoTypeMatchWhenUnload"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.CheckCargoTypeMatchWhenUnload"></el-switch>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>車頭設備內產品預檢知(斜上打)</b>
@@ -257,7 +305,8 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.LOAD_OBS_DETECTION.Enable_Load"></el-switch>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-取貨">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LOAD_OBS_DETECTION.Enable_UnLoad"></el-switch>
                 </el-form-item>
                 <el-form-item label="偵測時機/方式">
                   <el-select v-model="settings.LOAD_OBS_DETECTION.Detection_Method" @change="HandleParamChanged">
@@ -272,19 +321,24 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="車頭設備內產品預檢知-偵測時間(sec)">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.LOAD_OBS_DETECTION.Duration"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.LOAD_OBS_DETECTION.Duration"></el-input-number>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>雷射偵測設備Port內障礙物</b>
                 </div>
                 <el-form-item label="啟用">
-                  <el-switch @change="HandleParamChanged" v-model="settings.LDULDParams.LsrObstacleDetectionEnable"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.LsrObstacleDetectionEnable"></el-switch>
                 </el-form-item>
                 <el-form-item label="雷射組數">
-                  <el-input-number :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable" @change="HandleParamChanged" size="small" :min="0" :max="16" v-model="settings.LDULDParams.LsrObsLaserModeNumber"></el-input-number>
+                  <el-input-number :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    @change="HandleParamChanged" size="small" :min="0" :max="16"
+                    v-model="settings.LDULDParams.LsrObsLaserModeNumber"></el-input-number>
                 </el-form-item>
                 <el-form-item label="偵測異常發報等級">
-                  <el-select :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable" v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel" @change="HandleParamChanged">
+                  <el-select :disabled="!settings.LDULDParams.LsrObstacleDetectionEnable"
+                    v-model="settings.LDULDParams.LsrObsDetectedAlarmLevel" @change="HandleParamChanged">
                     <el-option label="Warning" :value="0"></el-option>
                     <el-option label="Alarm" :value="1"></el-option>
                   </el-select>
@@ -293,41 +347,53 @@
                   <b>交握TIMEOUT</b>
                 </div>
                 <el-form-item label="TA1_Wait_L_U_REQ_ON">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA1_Wait_L_U_REQ_ON"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.EQHSTimeouts.TA1_Wait_L_U_REQ_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA2_Wait_EQ_READY_ON">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA2_Wait_EQ_READY_ON"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.EQHSTimeouts.TA2_Wait_EQ_READY_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA3_Wait_EQ_BUSY_ON">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA3_Wait_EQ_BUSY_ON"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.EQHSTimeouts.TA3_Wait_EQ_BUSY_ON"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA4_Wait_EQ_BUSY_OFF">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA4_Wait_EQ_BUSY_OFF"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.EQHSTimeouts.TA4_Wait_EQ_BUSY_OFF"></el-input-number>
                 </el-form-item>
                 <el-form-item label="TA5_Wait_L_U_REQ_OFF">
-                  <el-input-number @change="HandleParamChanged" size="small" v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"></el-input-number>
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.EQHSTimeouts.TA5_Wait_L_U_REQ_OFF"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
             <div v-if="selected_tab === '6'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
                 <el-form-item label="浮動牙叉禁用">
-                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red" @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinDisabledTemptary"></el-switch>
+                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinDisabledTemptary"></el-switch>
                 </el-form-item>
                 <el-form-item label="伸縮牙叉禁用">
-                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red" @change="HandleParamChanged" v-model="settings.ForkAGV.IsHorizonExtendDisabledTemptary"></el-switch>
+                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsHorizonExtendDisabledTemptary"></el-switch>
                 </el-form-item>
                 <el-form-item label="行程上極限(cm)">
-                  <el-input-number size="small" :step="0.1" :precision="1" :min="0" :max="settings.ForkAGV.UplimitPoseSettingMax" @change="HandleParamChanged" v-model="settings.ForkAGV.UplimitPose"></el-input-number>
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="0"
+                    :max="settings.ForkAGV.UplimitPoseSettingMax" @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.UplimitPose"></el-input-number>
                 </el-form-item>
                 <el-form-item label="行程下極限(cm)">
-                  <el-input-number size="small" :step="0.1" :precision="1" :min="-50" :max="100" @change="HandleParamChanged" v-model="settings.ForkAGV.DownlimitPose"></el-input-number>
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="-50" :max="100"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.DownlimitPose"></el-input-number>
                 </el-form-item>
                 <el-form-item label="安全高度(cm)">
-                  <el-input-number size="small" :step="0.1" :precision="1" :min="1" :max="100" @change="HandleParamChanged" v-model="settings.ForkAGV.SaftyPositionHeight"></el-input-number>
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="1" :max="100"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.SaftyPositionHeight"></el-input-number>
                 </el-form-item>
                 <el-form-item label="待命點高度(cm)">
-                  <el-input-number size="small" :step="0.1" :precision="1" :min="-100" :max="100" @change="HandleParamChanged" v-model="settings.ForkAGV.StandbyPose"></el-input-number>
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="-100" :max="100"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.StandbyPose"></el-input-number>
                 </el-form-item>
                 <el-form-item label="允許走行之牙叉位置限制">
                   <el-select @change="HandleParamChanged" v-model="settings.ForkAGV.ForkSaftyStratrgy">
@@ -345,28 +411,39 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.ForkNoInitializeWhenPoseIsHome"></el-switch>
                 </el-form-item>
                 <el-form-item label="進入設備時伸縮牙叉同步伸出">
-                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ExtendWhenStartMoveToPort"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.ExtendWhenStartMoveToPort"></el-switch>
                 </el-form-item>
                 <el-form-item label="退出設備時伸縮牙叉同步縮回">
-                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitForkArmFinishAndMoveOutInWorkStation"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitForkArmFinishAndMoveOutInWorkStation"></el-switch>
                 </el-form-item>
                 <el-form-item label="退出設備後Z軸同步回Home">
-                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary"></el-switch>
                 </el-form-item>
                 <el-form-item label="取貨動作牙叉下降時同步拍照">
-                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag"></el-switch>
                 </el-form-item>
                 <el-form-item v-if="false" label="退出充電站後Z軸同步回Home">
-                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation"></el-switch>
                 </el-form-item>
                 <el-form-item label="手動操作移動速度(%)">
-                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.ManualModeOperationSpeed.MoveToPoseSpeed"></el-input-number>
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.ManualModeOperationSpeed.MoveToPoseSpeed"></el-input-number>
                 </el-form-item>
                 <el-form-item label="初始化牙叉尋原點速度(%)">
-                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.DownSearchSpeedWhenInitialize"></el-input-number>
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.DownSearchSpeedWhenInitialize"></el-input-number>
                 </el-form-item>
                 <el-form-item label="初始化吋動搜尋原點位置(cm)">
-                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1" @change="HandleParamChanged" v-model="settings.ForkAGV.START_DONW_STEP_FIND_HOME_POSE"></el-input-number>
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="1"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.START_DONW_STEP_FIND_HOME_POSE"></el-input-number>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>前端障礙物檢知</b>
@@ -387,10 +464,12 @@
                   <b>伸縮牙叉(Driver base)</b>
                 </div>
                 <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="縮回位置">
-                  <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ShortenPose"></el-input-number>
+                  <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.ShortenPose"></el-input-number>
                 </el-form-item>
                 <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="伸出位置">
-                  <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ExtendPose"></el-input-number>
+                  <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.ExtendPose"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
@@ -400,11 +479,13 @@
                   <el-row>
                     <el-col :span="3">IP</el-col>
                     <el-col :span="10">
-                      <el-input @change="HandleParamChanged" size="small" v-model="settings.Connections.AGVS.IP"></el-input>
+                      <el-input @change="HandleParamChanged" size="small"
+                        v-model="settings.Connections.AGVS.IP"></el-input>
                     </el-col>
                     <el-col :span="3">Port</el-col>
                     <el-col :span="5">
-                      <el-input-number @change="HandleParamChanged" size="small" v-model="settings.Connections.AGVS.Port"></el-input-number>
+                      <el-input-number @change="HandleParamChanged" size="small"
+                        v-model="settings.Connections.AGVS.Port"></el-input-number>
                     </el-col>
                   </el-row>
                 </el-form-item>
@@ -447,10 +528,12 @@
                   <b>維護模式</b>
                 </div>
                 <el-form-item label="啟用">
-                  <el-switch v-model="maintainModeData.IsMaintainMode" @change="HandleMaintainModeSwitchCHanged" inactive-text="不啟用" active-text="啟用" size="small"></el-switch>
+                  <el-switch v-model="maintainModeData.IsMaintainMode" @change="HandleMaintainModeSwitchCHanged"
+                    inactive-text="不啟用" active-text="啟用" size="small"></el-switch>
                 </el-form-item>
                 <el-form-item label="Tag設置">
-                  <el-input-number v-model="maintainModeData.TagSet" :disabled="!maintainModeData.IsMaintainMode"></el-input-number>
+                  <el-input-number v-model="maintainModeData.TagSet"
+                    :disabled="!maintainModeData.IsMaintainMode"></el-input-number>
                   <el-button type="primary" @click="HandleSetMaintainTagBtnClicked">設置</el-button>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
@@ -458,20 +541,25 @@
                 </div>
                 <!-- Advance.IsAprilTagLocateSupport -->
                 <el-form-item label="April Tag Support">
-                  <el-switch v-model="settings.Advance.IsAprilTagLocateSupport" @change="HandleAprilTagSupportParamChanged" size="small"></el-switch>
+                  <el-switch v-model="settings.Advance.IsAprilTagLocateSupport"
+                    @change="HandleAprilTagSupportParamChanged" size="small"></el-switch>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>自動初始化設置</b>
                 </div>
                 <el-form-item label="無貨行駛異常時自動重置並上線">
-                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo" @change="HandleParamChanged" size="small"></el-switch>
+                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithoutCargo"
+                    @change="HandleParamChanged" size="small"></el-switch>
                 </el-form-item>
                 <el-form-item label="有貨行駛異常時自動重置並上線">
-                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithCargo" @change="HandleParamChanged" size="small"></el-switch>
+                  <el-switch v-model="settings.Advance.AutoInitAndOnlineWhenMoveWithCargo" @change="HandleParamChanged"
+                    size="small"></el-switch>
                 </el-form-item>
                 <el-form-item label="禁止自動重置的異常">
-                  <el-select v-model="forbidden_auto_reset_alarm_codes" @change="HandleForbiddenAutoResetAlarmCodesChanged" multiple filterable popper-append-to-body>
-                    <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`" :value="alarm.Code"></el-option>
+                  <el-select v-model="forbidden_auto_reset_alarm_codes"
+                    @change="HandleForbiddenAutoResetAlarmCodesChanged" multiple filterable popper-append-to-body>
+                    <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`"
+                      :value="alarm.Code"></el-option>
                   </el-select>
                 </el-form-item>
               </el-form>
@@ -486,7 +574,7 @@
           </div>
         </div>
       </div>
-      <el-drawer v-model="version_list_drawer_show" title="版本列表" size="70%">
+      <el-drawer v-model="version_list_drawer_show" title="版本列表" size="90%">
         <VersionList></VersionList>
       </el-drawer>
     </el-drawer>
