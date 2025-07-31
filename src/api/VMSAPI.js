@@ -75,6 +75,10 @@ export var SystemAPI = {
   async ChangeVersion(version) {
     var ret = await axios_entity.post(`api/System/RollbackSystem?version=${version}`)
     return ret.data
+  },
+  async DeleteVersionBackupFile(version) {
+    var ret = await axios_entity.delete(`api/System/Version?version=${version}`)
+    return ret.data
   }
 }
 
@@ -159,7 +163,7 @@ export async function BuzzerOff() {
 export async function RemoveCassette() {
   const ret = await axios_entity.post('api/VMS/RemoveCassette')
   const _returnCode = ret.data;
-  if (_returnCode==0)
+  if (_returnCode == 0)
     bus.emit('remove_cst')
   return _returnCode;
 }

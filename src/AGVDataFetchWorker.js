@@ -79,6 +79,9 @@ function StartHubConnection() {
         bus.emit('close-notify-dialog', code)
 
     })
+    HubConnection.on('BackendExceptionMessage', (obj = { message: '', stacktrace: '' }) => {
+        bus.emit('BackendExceptionMessage', obj)
+    })
     HubConnection.on('DebugMessage', (message) => {
         bus.emit('DebugMessage', message)
     })
