@@ -522,6 +522,7 @@
             <div v-if="selected_tab === '12'" class="tabpage border p-2">
               <ManualCheckCargoStatus :checkPointData="settings.ManualCheckCargoStatus"></ManualCheckCargoStatus>
             </div>
+            <!-- 進階設定 -->
             <div v-if="selected_tab === '13'" class="tabpage border p-2">
               <el-form label-position="left" label-width="250">
                 <div class="text-start w-100 border-bottom mb-2 text-danger">
@@ -561,6 +562,10 @@
                     <el-option v-for="alarm in alarm_table" :key="alarm.Code" :label="`${alarm.Code} - ${alarm.CN}`"
                       :value="alarm.Code"></el-option>
                   </el-select>
+                </el-form-item>
+                <el-form-item label="Navigation Info Update Timeout(sec)">
+                  <el-input-number v-model="settings.Advance.NavigationInfoUpdateTimeoutSec" :min="5" :max="20"
+                    :step="0.1" @change="HandleParamChanged"></el-input-number>
                 </el-form-item>
               </el-form>
               <div class="action-buttons">

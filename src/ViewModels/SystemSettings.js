@@ -171,6 +171,8 @@ class SystemSettings {
             ShutDownPCWhenLowBatteryLevel: false,
             AutoInitAndOnlineWhenMoveWithoutCargo: false,
             AutoInitAndOnlineWhenMoveWithCargo: false,
+            IsAprilTagLocateSupport: false,
+            NavigationInfoUpdateTimeoutSec: 8
         };
         this.ManualCheckCargoStatus = {
             Enabled: false,
