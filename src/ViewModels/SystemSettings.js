@@ -118,7 +118,8 @@ class SystemSettings {
                 ShortenPose: 1,
                 ExtendPose: 4999,
                 ExtendWhenStartMoveToPort: false
-            }
+            },
+            NonRotatableWhenLiftingTags: []
         };
         this.Emulator = {
             Move_Time_Mode: 1,

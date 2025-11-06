@@ -471,6 +471,15 @@
                   <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.ExtendPose"></el-input-number>
                 </el-form-item>
+
+                <!-- 禁止一邊旋轉一邊上升牙叉的 tag集合，已逗號分隔 -->
+                <el-form-item label="禁止旋轉+上升牙叉的Tag">
+                  <el-select @change="HandleParamChanged" clearable filterable multiple placeholder="Select"
+                    v-model="settings.ForkAGV.NonRotatableWhenLiftingTags" style="width: 100%;">
+                    <el-option v-for="num in 900" :key="num" :label="num" :value="num"></el-option>
+                  </el-select>
+                </el-form-item>
+
               </el-form>
             </div>
             <div v-if="selected_tab === '7'" class="tabpage border p-2">
@@ -667,7 +676,8 @@ export default {
           Y: 0,
           Theta: 0
         }
-      }
+      },
+      NonRotatableWhenLiftingTagsWithComma: ''
     }
   },
   computed: {
@@ -748,6 +758,7 @@ export default {
           await this.GetAlarmTable();
           this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
           this.forbidden_auto_reset_alarm_codes.sort()
+          this.NonRotatableWhenLiftingTagsWithComma = this.settings.ForkAGV.NonRotatableWhenLiftingTags.join(','); //將 tag集合以逗號分隔
         } else {
 
           this.$swal.fire({
@@ -1011,6 +1022,23 @@ export default {
     },
     async HandleSetMaintainTagBtnClicked() {
       await SetMaintainingTag(this.maintainModeData.TagSet)
+    },
+    HandleNonRotatableWhenLiftingTagsInputChanged() {
+      try {
+        //先將 this.NonRotatableWhenLiftingTagsWithComma 空格去除，並且將尾段逗號去除
+        var _value = this.NonRotatableWhenLiftingTagsWithComma.trim().replace(/,$/, '');
+        this.settings.ForkAGV.NonRotatableWhenLiftingTags = _value.split(',').map(item => parseInt(item));
+        this.HandleParamChanged();
+      } catch (error) {
+        Swal.fire({
+          title: '輸入格式錯誤',
+          text: '請輸入以逗號分隔的數字',
+          icon: 'error',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        });
+      }
     }
   },
 }
