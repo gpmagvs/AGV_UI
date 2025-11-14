@@ -85,7 +85,7 @@
                     <el-switch v-model="settings.SensorBypass.AGVBodyLimitSensorBypass"
                       @change="HandleParamChanged"></el-switch>
                   </el-form-item>
-                  <el-form-item v-if="IsForkAGV" label="牙叉前方障礙物Sensor Bypass">
+                  <el-form-item label="牙叉前方障礙物Sensor Bypass">
                     <el-switch v-model="settings.SensorBypass.ForkFrontendObsSensorBypass"
                       @change="HandleParamChanged"></el-switch>
                   </el-form-item>
