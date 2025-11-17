@@ -591,6 +591,16 @@ export const ForkAPI = {
     return ret.data;
   },
 
+  /**
+   /**
+    * 執行尋原點動作
+    * @param {*} name 
+    * @returns {Object} { success: Boolean, alarm: String }
+    */
+  async FindHome(name) {
+    var ret = await axios_entity.get(`api/FORKAGV/FindHome?name=${name}`)
+    return ret.data;
+  },
 }
 
 /**LOG Controller API */
