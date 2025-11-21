@@ -484,18 +484,19 @@
             </div>
             <div v-if="selected_tab === '7'" class="tabpage border p-2">
               <el-form label-position="left" label-width="210">
-                <el-form-item label="Host">
-                  <el-row>
-                    <el-col :span="3">IP</el-col>
-                    <el-col :span="10">
-                      <el-input @change="HandleParamChanged" size="small"
-                        v-model="settings.Connections.AGVS.IP"></el-input>
-                    </el-col>
-                    <el-col :span="3">Port</el-col>
-                    <el-col :span="5">
-                      <el-input-number @change="HandleParamChanged" size="small"
-                        v-model="settings.Connections.AGVS.Port"></el-input-number>
-                    </el-col>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>連線設定</b>
+                </div>
+                <el-form-item label="Host IP">
+                  <el-row class="d-flex align-items-center">
+                    <el-input @change="HandleParamChanged" size="large"
+                      v-model="settings.Connections.AGVS.IP"></el-input>
+                  </el-row>
+                </el-form-item>
+                <el-form-item label="Host Port">
+                  <el-row class="d-flex align-items-center">
+                    <el-input-number @change="HandleParamChanged" size="large"
+                      v-model="settings.Connections.AGVS.Port"></el-input-number>
                   </el-row>
                 </el-form-item>
                 <el-form-item label="連線類型">
@@ -503,6 +504,17 @@
                     <el-option label="TCP/IP" :value="0"></el-option>
                     <el-option label="Web API" :value="1"></el-option>
                   </el-select>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>交管請求</b>
+                </div>
+                <el-form-item label="從工作站退出需要請求">
+                  <el-switch v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"
+                    @change="HandleParamChanged"></el-switch>
+                </el-form-item>
+                <el-form-item label="請求超時時間(Sec)">
+                  <el-input-number v-model="settings.LDULDParams.LeaveWorkStationRequestTimeout"
+                    @change="HandleParamChanged"></el-input-number>
                 </el-form-item>
               </el-form>
             </div>
@@ -659,7 +671,7 @@ export default {
         { index: '3', title: '電池', show: () => !this.IsInspectionAGV },
         { index: '4', title: '巡檢AGV', show: () => this.IsInspectionAGV },
         { index: '5', title: '設備取/放貨', show: () => !this.IsInspectionAGV },
-        { index: '6', title: '叉車AGV', show: () => this.IsForkAGV && this.settings.ForkAGV },
+        { index: '6', title: '叉車AGV' },
         { index: '7', title: '派車系統' },
         { index: '8', title: '音效' },
         { index: '9', title: 'Cst Reader', show: () => !this.IsInspectionAGV },
