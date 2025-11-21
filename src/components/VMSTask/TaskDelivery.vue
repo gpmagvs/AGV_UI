@@ -1,91 +1,106 @@
 <template>
   <div class="task-delivery">
-    <MapShowVue
-      :task_allocatable="true"
-      @OnFeatureClicked="MapFeatureClickedHandle"
-      class="flex-fill h-100"
-      ref="map"
-    ></MapShowVue>
-    <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt" :size="IsInspectAGV ? '50%' : ''">
+    <MapShowVue :task_allocatable="true" @OnFeatureClicked="MapFeatureClickedHandle" class="flex-fill h-100" ref="map">
+    </MapShowVue>
+    <el-drawer v-model="ShowTaskAllocateDrawer" direction="btt" :size="IsInspectAGV ? '45%' : '38%'"
+      class="task-allocate-drawer">
       <template #header>
-        <h2 class="text-start">
-          {{ GetTitleText(SelectedFeature) }}
-          <div v-if="SelectedFeatureIsVirtualPt" class="text-danger">虛擬點不可為終點站</div>
-        </h2>
-        <h6>{{ SelectedFeatureCoordination }}</h6>
+        <div class="drawer-header">
+          <div class="station-info">
+            <h2 class="station-title">{{ GetTitleText(SelectedFeature) }}</h2>
+            <div v-if="SelectedFeatureIsVirtualPt" class="virtual-warning">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>虛擬點不可為終點站</span>
+            </div>
+            <div class="coordination-info">
+              <i class="bi bi-geo-alt"></i>
+              <span>{{ SelectedFeatureCoordination }}</span>
+            </div>
+          </div>
+        </div>
       </template>
-      <div class="px-1 d-flex flex-row justify-content-around">
-        <b-button
-          class="my-1 action-button"
-          variant="primary"
-          @click="handleTaskAllocatModeMenuClick('None')"
-          :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt"
-        >
-          <i class="bi bi-arrows-move"></i>移動
-        </b-button>
-        <b-button
-          class="my-1 action-button"
-          variant="primary"
-          @click="handleTaskAllocatModeMenuClick('Load')"
-          :disabled="!SelectedFeatureLDULDable"
-        >
-          <i class="bi bi-box-arrow-up-right"></i>放貨
-        </b-button>
-        <b-button
-          class="my-1 action-button"
-          variant="primary"
-          @click="handleTaskAllocatModeMenuClick('Unload')"
-          :disabled="!SelectedFeatureLDULDable"
-        >
-          <i class="bi bi-box-arrow-in-down-left"></i>取貨
-        </b-button>
-        <b-button
-          v-if="!SelectedFeatureBatExchangable"
-          class="my-1 action-button"
-          variant="warning"
-          @click="handleTaskAllocatModeMenuClick('Charge')"
-          :disabled="!SelectedFeatureChargable"
-        >
-          <i class="bi bi-battery-charging"></i>充電
-        </b-button>
-        <b-button
-          v-if="SelectedFeatureBatExchangable"
-          class="my-1 action-button"
-          variant="warning"
-          @click="handleTaskAllocatModeMenuClick('ExchangeBattery')"
-          :disabled="!SelectedFeatureBatExchangable"
-        >
-          <i class="bi bi-battery-charging"></i>交換電池
-        </b-button>
-      </div>
-      <div v-if="IsInspectAGV" class="px-1 d-flex flex-row justify-content-around">
-        <b-button class="my-1 action-button" variant="info" @click="HandleLocatingBtnClick">
-          <i class="bi bi-crosshair"></i>定位
-        </b-button>
+
+      <div class="drawer-content">
+        <!-- 層數選擇 (僅當 SelectedFeatureLDULDable 為真時顯示) -->
+        <div v-if="SelectedFeatureLDULDable" class="floor-selector-section">
+          <div class="floor-selector-compact">
+            <span class="floor-label">層數:</span>
+            <div class="floor-buttons-compact">
+              <el-button v-for="floor in [0, 1, 2]" :key="floor" class="floor-btn-compact"
+                :type="selectedFloor === floor ? 'primary' : 'default'"
+                :class="{ 'floor-selected': selectedFloor === floor }" size="medium" @click="selectedFloor = floor">
+                {{ getFloorText(floor) }}
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按鈕區域 -->
+        <div class="action-buttons-section">
+          <div class="action-buttons-grid">
+            <el-button class="action-btn" type="primary"
+              :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt"
+              @click="handleTaskAllocatModeMenuClick('None')" size="large">
+              <div class="btn-content">
+                <i class="bi bi-arrows-move btn-icon"></i>
+                <span class="btn-text">移動</span>
+              </div>
+            </el-button>
+
+            <el-button class="action-btn" type="success" :disabled="!SelectedFeatureLDULDable"
+              @click="handleTaskAllocatModeMenuClick('Load')" size="large">
+              <div class="btn-content">
+                <i class="bi bi-box-arrow-up-right btn-icon"></i>
+                <span class="btn-text">放貨</span>
+              </div>
+            </el-button>
+
+            <el-button class="action-btn" type="warning" :disabled="!SelectedFeatureLDULDable"
+              @click="handleTaskAllocatModeMenuClick('Unload')" size="large">
+              <div class="btn-content">
+                <i class="bi bi-box-arrow-in-down-left btn-icon"></i>
+                <span class="btn-text">取貨</span>
+              </div>
+            </el-button>
+
+            <el-button v-if="!SelectedFeatureBatExchangable" class="action-btn" type="info"
+              :disabled="!SelectedFeatureChargable" @click="handleTaskAllocatModeMenuClick('Charge')" size="large">
+              <div class="btn-content">
+                <i class="bi bi-battery-charging btn-icon"></i>
+                <span class="btn-text">充電</span>
+              </div>
+            </el-button>
+
+            <el-button v-if="SelectedFeatureBatExchangable" class="action-btn" type="info"
+              :disabled="!SelectedFeatureBatExchangable" @click="handleTaskAllocatModeMenuClick('ExchangeBattery')"
+              size="large">
+              <div class="btn-content">
+                <i class="bi bi-battery-charging btn-icon"></i>
+                <span class="btn-text">交換電池</span>
+              </div>
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 定位按鈕 (僅檢查型AGV) -->
+        <div v-if="IsInspectAGV" class="locating-section">
+          <el-button class="locating-btn" type="primary" size="medium" @click="HandleLocatingBtnClick">
+            <i class="bi bi-crosshair"></i>
+            <span>定位</span>
+          </el-button>
+        </div>
       </div>
     </el-drawer>
     <MoveTestDrawer ref="move_test"></MoveTestDrawer>
-    <b-modal
-      @ok="TaskDeliveryHandle"
-      v-model="confirm_dialog_show"
-      :centered="true"
-      title="Task Delivery"
-      header-bg-variant="primary"
-      header-text-variant="light"
-    >
+    <b-modal @ok="TaskDeliveryHandle" v-model="confirm_dialog_show" :centered="true" title="Task Delivery"
+      header-bg-variant="primary" header-text-variant="light">
       <p>
         <span>Action:{{ selectedAction }}</span>
       </p>
       <p>{{ $t('VMSTask.TaskDelivery.DDD') }}?</p>
     </b-modal>
-    <b-modal
-      v-model="notify_dialog_show"
-      :centered="true"
-      title="Warning"
-      :ok-only="true"
-      header-bg-variant="warning"
-      header-text-variant="light"
-    >
+    <b-modal v-model="notify_dialog_show" :centered="true" title="Warning" :ok-only="true" header-bg-variant="warning"
+      header-text-variant="light">
       <p>
         <span>{{ notify_text }}</span>
       </p>
@@ -101,6 +116,7 @@ import MoveTestDrawer from './MoveTestDrawer.vue'
 import bus from '@/event-bus.js'
 import { Feature } from 'ol';
 import clsLocalization from '@/ViewModels/InspectionAGV/clsLocalization';
+import axios_entity from '@/axios';
 export default {
   components: {
     MapShowVue, MoveTestDrawer
@@ -117,6 +133,7 @@ export default {
       selectedTag: '', // 選擇的tag_id
       selectedCst: '', // 選擇的cst_id
       selectedToTag: '', // 選擇的to_tag
+      selectedFloor: 0, // 選擇的層數 (0: 第一層, 1: 第二層, 2: 第三層)
       moveable_tags: [ // tag_id選項
         { id: 1, name: '標籤1' },
         { id: 2, name: '標籤2' },
@@ -262,14 +279,29 @@ export default {
       this.confirm_dialog_show = true;
     },
     async TaskDeliveryHandle() {
+      // 構建API參數，如果有層數需求則添加層數參數
+      let apiParams = {
+        action: this.selectedAction,
+        from: this.selectedTag,
+        to: this.selectedToTag,
+        cst_id: this.selectedCst,
+      };
 
-      var response = await NavigationAPI.Action(this.selectedAction, this.selectedTag, this.selectedToTag, this.selectedCst)
+      // 如果是LDULD操作，添加層數參數
+      if (this.SelectedFeatureLDULDable && (this.selectedAction === 'Load' || this.selectedAction === 'Unload')) {
+        apiParams.floor = this.selectedFloor;
+      }
+
+      // 調用API（需要修改NavigationAPI以支持額外參數，或使用擴展的URL）
+      var response = await this.callNavigationAction(apiParams);
       console.info(response);
       if (response.accpet) {
         Notifier.Success("任務已派送");
         var tags = response.path.map(v => v.Point_ID);
         console.info(tags);
         this.$refs.map.UpdateNavPathRender(response.agv_name, tags);
+        // 重置層數選擇
+        this.selectedFloor = 0;
       }
       else {
         this.$swal.fire({
@@ -376,16 +408,56 @@ export default {
       })
 
     },
+    getFloorText(floor) {
+      const floorMap = {
+        0: '第一層',
+        1: '第二層',
+        2: '第三層'
+      };
+      return floorMap[floor] || `第${floor}層`;
+    },
+    async callNavigationAction(params) {
+      // 構建查詢字符串
+      let queryString = `action=${params.action}&from=${params.from}&to=${params.to || ''}&cst_id=${params.cst_id || ''}`;
+
+      // 如果有層數參數，添加到查詢字符串
+      if (params.floor !== undefined) {
+        queryString += `&floor=${params.floor}`;
+      }
+
+      // 直接調用API
+      try {
+        const ret = await axios_entity.get(`api/LocalNav/Action?${queryString}`);
+        return ret.data;
+      } catch (error) {
+        console.error('Navigation API call failed:', error);
+        // 如果直接調用失敗，回退到原來的NavigationAPI方法
+        return await NavigationAPI.Action(
+          params.action,
+          params.from,
+          params.to,
+          params.cst_id
+        );
+      }
+    },
     handleTaskAllocatModeMenuClick(action) {
       this.selectedAction = action;
       this.selectedToTag = this.SelectedFeature.getId();
       this.ShowTaskAllocateDrawer = false;
+
+      // 構建確認訊息
+      let confirmText = `確定要執行${this.ActionText} 任務? (Tag ${this.selectedToTag})`;
+      if (this.SelectedFeatureLDULDable && (action === 'Load' || action === 'Unload')) {
+        confirmText += `\n層數: ${this.getFloorText(this.selectedFloor)}`;
+      }
+
       this.$swal.fire({
         title: `${this.$t('VMSTask.TaskDelivery.TaskDispatchConfirm')}`,
-        text: `確定要執行${this.ActionText} 任務?(Tag ${this.selectedToTag})`,
+        text: confirmText,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '確認',
+        cancelButtonText: '取消',
         customClass: 'my-sweetalert'
       }).then(result => {
         if (result.isConfirmed) {
@@ -398,8 +470,11 @@ export default {
       if (feature.get('station_type')) {
         // this.SelectedFeature.get('data').IsVirtual
         this.SelectedFeature = feature
-        if (this.SelectedFeature)
+        if (this.SelectedFeature) {
+          // 重置層數選擇
+          this.selectedFloor = 0;
           this.ShowTaskAllocateDrawer = true;
+        }
       }
     }
   },
@@ -426,21 +501,296 @@ export default {
 <style scoped lang="scss">
 .task-delivery {
   height: 100vh;
-  .item {
-    display: flex;
-    flex-direction: row;
-    margin: 10px auto;
+  position: relative;
 
-    .title {
-      width: 70px;
-      text-align: left;
+  // Drawer 樣式
+  :deep(.task-allocate-drawer) {
+    .el-drawer__body {
+      padding: 0;
+      overflow-y: hidden;
+      overflow-x: hidden;
     }
   }
 
-  .action-button {
-    font-size: 40px;
-    width: 240px;
-    height: 80px;
+  .drawer-header {
+    padding: 12px 16px;
+    text-align: left;
+    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    // color: white;
+
+    .station-info {
+      .station-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        // color: white;
+      }
+
+      .virtual-warning {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 500;
+
+        i {
+          font-size: 14px;
+        }
+      }
+
+      .coordination-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        opacity: 0.9;
+
+        i {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .drawer-content {
+    padding: 12px 16px;
+    background: #f5f7fa;
+    overflow-y: hidden;
+  }
+
+  // 區塊標題 (已移除，使用更緊湊的設計)
+  .section-title {
+    display: none;
+  }
+
+  // 層數選擇區域 - 扁平設計
+  .floor-selector-section {
+    background: white;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+    .floor-selector-compact {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .floor-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #606266;
+        white-space: nowrap;
+      }
+
+      .floor-buttons-compact {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+
+        .floor-btn-compact {
+          flex: 1;
+          height: 44px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 600;
+          transition: all 0.2s ease;
+          border: 2px solid #dcdfe6;
+          min-width: 0;
+
+          &.floor-selected {
+            border-color: #409eff;
+            background: #409eff;
+            color: white;
+            box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+          }
+
+          &:active {
+            transform: scale(0.98);
+          }
+        }
+      }
+    }
+  }
+
+  // 操作按鈕區域
+  .action-buttons-section {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+    .action-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+
+      .action-btn {
+        height: 70px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border: none;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+        .btn-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          height: 100%;
+
+          .btn-icon {
+            font-size: 24px;
+          }
+
+          .btn-text {
+            font-size: 13px;
+            font-weight: 600;
+          }
+        }
+
+        &:hover:not(:disabled) {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        // 不同類型的按鈕顏色
+        &.el-button--primary {
+          background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
+          color: white;
+        }
+
+        &.el-button--success {
+          background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+          color: white;
+        }
+
+        &.el-button--warning {
+          background: linear-gradient(135deg, #e6a23c 0%, #ebb563 100%);
+          color: white;
+        }
+
+        &.el-button--info {
+          background: linear-gradient(135deg, #909399 0%, #a6a9ad 100%);
+          color: white;
+        }
+      }
+    }
+  }
+
+  // 定位按鈕區域
+  .locating-section {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+    .locating-btn {
+      width: 100%;
+      height: 50px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
+      border: none;
+      box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 18px;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  // 響應式設計 - 觸控優化
+  @media (max-width: 768px) {
+    .drawer-content {
+      padding: 10px 12px;
+    }
+
+    .drawer-header {
+      padding: 10px 12px;
+    }
+
+    .floor-selector-section,
+    .action-buttons-section,
+    .locating-section {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .action-buttons-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+
+      .action-btn {
+        height: 65px;
+
+        .btn-content {
+          .btn-icon {
+            font-size: 22px;
+          }
+
+          .btn-text {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .floor-selector-compact {
+      .floor-buttons-compact {
+        .floor-btn-compact {
+          height: 40px;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+
+  // 觸控設備優化 - 確保按鈕足夠大
+  @media (hover: none) and (pointer: coarse) {
+    .action-btn {
+      min-height: 50px;
+      min-width: 80px;
+      touch-action: manipulation;
+    }
+
+    .floor-btn-compact {
+      min-height: 44px;
+      min-width: 60px;
+      touch-action: manipulation;
+    }
+
+    .locating-btn {
+      min-height: 50px;
+      touch-action: manipulation;
+    }
   }
 }
 </style>
