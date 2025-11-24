@@ -9,23 +9,17 @@
             {{ $t('alarm-type') }}
           </b>
         </label>
-        <el-select
-          class="mx-2"
-          title="異常等級"
-          v-model="DisplaySelected"
-          @change="HandleAlarmTypeChanged"
-        >
+        <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
           <el-option label="ALL" value="All"></el-option>
           <el-option label="Alarm" value="Alarm"></el-option>
           <el-option label="Warning" value="Warning"></el-option>
         </el-select>
         <b-button size="sm" @click="AlarmDownload">{{ $t('refresh') }}</b-button>
-        <b-button
-          v-if="clear_alarm_btn_visible"
-          variant="danger"
-          @click="ClearAlarmAlert()"
-          size="sm"
-        >{{ $t('clear_alarm_records') }}</b-button>
+        <b-button v-if="clear_alarm_btn_visible" variant="danger" @click="ClearAlarmAlert()" size="sm">{{
+          $t('clear_alarm_records') }}</b-button>
+        <b-button v-if="clear_alarm_btn_visible" class="float-end" variant="light" size="sm" @click="EditAlarmTable"> <i
+            class="bi bi-pencil"></i> 編輯
+          Alarm Table</b-button>
       </div>
       <div v-if="false">
         <span class="m-2">Search :</span>
@@ -33,65 +27,34 @@
       </div>
     </div>
     <div class="mt-2">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="totalAlarmNum"
-        :page-size="page_size"
-        v-model="page"
-        :current-page="page"
-        @current-change="PageChangeHandler"
-      />
+      <el-pagination background layout="prev, pager, next" :total="totalAlarmNum" :page-size="page_size" v-model="page"
+        :current-page="page" @current-change="PageChangeHandler" />
     </div>
     <div class="border mt-1">
-      <el-table
-        :data="alarms"
-        row-key="Time"
-        :row-class-name="tb_row_class"
-        header
-        border
-        height="528"
-        size="small"
-      >
+      <el-table :data="alarms" row-key="Time" :row-class-name="tb_row_class" header border height="528" size="small">
         <el-table-column label="Time" prop="Time" width="160" :formatter="TimeFormmter"></el-table-column>
         <el-table-column label="Code" prop="Code" width="90" header-align="center">
           <template #default="{ row }">
-            <div class="text-center">{{ row.Code }}</div>
+            <div class="text-center"> <b>{{ row.Code }}</b></div>
           </template>
         </el-table-column>
         <el-table-column label="Description" :prop="lang == 'zh-TW' ? 'CN' : 'Description'"></el-table-column>
-        <el-table-column label="Level" prop="Level" width="100" header-align="center">
+        <el-table-column label="Level" prop="Level" width="100" align="right">
           <template #default="{ row }">
-            <div class="text-center">
+            <div class="text-end">
               <b>{{ row.Level }}</b>
             </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <b-modal
-      v-model="clear_alarms_dialog_show"
-      centered
-      title="Alarm Records Clear"
-      @ok="ClearAlarmRecords"
-    >
+    <b-modal v-model="clear_alarms_dialog_show" centered title="Alarm Records Clear" @ok="ClearAlarmRecords">
       <p>確定要清除異常紀錄?</p>
     </b-modal>
-    <el-drawer
-      v-model="drawer_show"
-      direction="rtl"
-      size="50%"
-      title="異常紀錄"
-      modal-class="alarm-tb-option-modal"
-    >
+    <el-drawer v-model="drawer_show" direction="rtl" size="50%" title="異常紀錄" modal-class="alarm-tb-option-modal">
       <el-form label-position="left" label-width="150">
         <el-form-item label="顯示警報類型">
-          <el-select
-            class="mx-2"
-            title="異常等級"
-            v-model="DisplaySelected"
-            @change="HandleAlarmTypeChanged"
-          >
+          <el-select class="mx-2" title="異常等級" v-model="DisplaySelected" @change="HandleAlarmTypeChanged">
             <el-option label="ALL" value="All"></el-option>
             <el-option label="Alarm" value="Alarm"></el-option>
             <el-option label="Warning" value="Warning"></el-option>
@@ -99,41 +62,20 @@
         </el-form-item>
         <el-form-item label="時間區間設定">
           <div>
-            <el-radio-group
-              class="d-flex flex-column"
-              v-model="TimeRangeOpt"
-              @change="(val) => { AlarmDownload() }"
-            >
+            <el-radio-group class="d-flex flex-column" v-model="TimeRangeOpt" @change="(val) => { AlarmDownload() }">
               <el-radio style="margin-right:auto" label="no-limit" size="large">不限時間</el-radio>
               <el-radio style="margin-right:auto" label="limit" size="large">指定時間</el-radio>
-              <el-date-picker
-                style="width:350px"
-                v-model="TimeRange_Picker"
-                type="datetimerange"
-                :shortcuts="shortcuts"
-                range-separator="To"
-                start-placeholder="Start date"
-                end-placeholder="End date"
-                value-format="YYYY/MM/DD HH:mm:ss"
-                :disabled="TimeRangeOpt != 'limit'"
-                @change="() => { AlarmDownload() }"
-              />
+              <el-date-picker style="width:350px" v-model="TimeRange_Picker" type="datetimerange" :shortcuts="shortcuts"
+                range-separator="To" start-placeholder="Start date" end-placeholder="End date"
+                value-format="YYYY/MM/DD HH:mm:ss" :disabled="TimeRangeOpt != 'limit'"
+                @change="() => { AlarmDownload() }" />
             </el-radio-group>
           </div>
         </el-form-item>
         <el-form-item label="異常碼">
-          <el-select
-            class="mx-2"
-            title="異常等級"
-            v-model="AlarmClassSelected"
-            @change="HandleAlarmTypeChanged"
-          >
-            <el-option
-              v-for="al in alarm_options"
-              :key="al.Code"
-              :label="`${al.CN}_${al.Description}(${al.Code})`"
-              :value="al.Code"
-            ></el-option>
+          <el-select class="mx-2" title="異常等級" v-model="AlarmClassSelected" @change="HandleAlarmTypeChanged">
+            <el-option v-for="al in alarm_options" :key="al.Code" :label="`${al.CN}_${al.Description}(${al.Code})`"
+              :value="al.Code"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -194,6 +136,9 @@ export default {
     }
   },
   methods: {
+    EditAlarmTable() {
+      this.$router.push({ name: 'alarmTableEdit' })
+    },
     tb_row_class(row, rowIndex) {
       if (row.rowIndex < 0) {
         return '';
@@ -299,6 +244,5 @@ export default {
   background-color: rgb(245, 198, 206);
 }
 
-.alarm-tb-option-modal {
-}
+.alarm-tb-option-modal {}
 </style>

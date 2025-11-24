@@ -113,6 +113,11 @@ const routes = [
     path: '/playground',
     name: 'playground',
     component: () => import('@/views/Playground.vue')
+  },
+  {
+    path: '/alarmTableEdit',
+    name: 'alarmTableEdit',
+    component: () => import('@/views/AlarmTableEditView.vue')
   }
 ]
 

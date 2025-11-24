@@ -376,6 +376,18 @@ export const AlarmTableAPI = {
   async GetAlarmTable() {
     const response = await axios_entity.get('api/AlarmTable/GetAlarmCodesTable')
     return response.data.map(item => new AlarmCodeModel(item));
+  },
+  async SaveAlarmList(alarmList) {
+    for (var i = 0; i < alarmList.length; i++) {
+      var alarm = alarmList[i]
+      alarm.Time = new Date()
+    }
+    const response = await axios_entity.post('api/AlarmTable/SaveAlarmCodesTable', alarmList)
+    return response.data
+  },
+  async GetDefaultAlarmList() {
+    const response = await axios_entity.get('api/AlarmTable/GetDefaultAlarmCodeTable')
+    return response.data
   }
 }
 
