@@ -159,6 +159,7 @@ class SystemSettings {
             MoveActionTimeoutInSec: 60,
             MaunalCheckAndResumableWhenUnloadButCargoBias: false,
             CheckCargoTypeMatchWhenUnload: false,
+            IsActionFinishReportBeforeCOMPTSignalON: false,
         };
         this.CargoExistSensorParams = {
             TraySensorMounted: true,

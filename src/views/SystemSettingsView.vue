@@ -516,6 +516,14 @@
                   <el-input-number v-model="settings.LDULDParams.LeaveWorkStationRequestTimeout"
                     @change="HandleParamChanged"></el-input-number>
                 </el-form-item>
+
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>Experimental Features</b>
+                </div>
+                <el-form-item label="AGV_COMPT ON前回報動作完成">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.IsActionFinishReportBeforeCOMPTSignalON"></el-switch>
+                </el-form-item>
               </el-form>
             </div>
             <div v-if="selected_tab === '8'" class="tabpage border p-2 souns-page">
