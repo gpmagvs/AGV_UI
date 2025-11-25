@@ -286,7 +286,11 @@ export default {
 
     });
     bus.on('DebugMessage', message => {
-      ElMessage.info(message)
+      ElMessage.info({
+        message: message,
+        showClose: true,
+        duration: 1000,
+      })
     })
     bus.on('AGV-Notify-Message-Recieved', obj => {
       const title = obj.title;
