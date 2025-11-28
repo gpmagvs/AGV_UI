@@ -426,6 +426,12 @@ export const AGVStatusStore = createStore({
   mutations: {
     updateStatus(state, data) {
       state.AGVStatus = data
+      //將一些數據存在 localstorage, 未來可以從 localstorage 中恢復
+      localStorage.setItem('agv_basic_info', JSON.stringify({
+        appVersion: data.APPVersion,
+        agvType: data.Agv_Type,
+        agvName: data.CarName
+      }));
     },
     setMaintainModeStatus(state, data) {
       state.maintainStatus = data;
@@ -437,6 +443,15 @@ export const AGVStatusStore = createStore({
   actions: {
     async clear_alarm_with_code({ commit, getters, state }, code) {
       await ClearAlarm(code);
+    },
+    restoreAgvBasicInfo({ state }) {
+      var info = localStorage.getItem('agv_basic_info');
+      if (info) {
+        const data = JSON.parse(info)
+        state.AGVStatus.APPVersion = data.appVersion
+        state.AGVStatus.Agv_Type = data.agvType
+        state.AGVStatus.CarName = data.agvName
+      }
     }
   }
 })

@@ -176,8 +176,11 @@ export default {
   created() {
     const deviceDetector = Vue3DeviceDetector();
     this.isMobile = deviceDetector.isMobile
+
+
   },
   async mounted() {
+    AGVStatusStore.dispatch('restoreAgvBasicInfo');
     this.loadSystemSettings();
 
     try {
