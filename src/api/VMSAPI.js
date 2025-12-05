@@ -135,8 +135,8 @@ export async function CargoStatusManualCheckDoneWhenUnloadFailure() {
   return ret.data
 }
 
-export async function Initialize() {
-  var ret = await axios_entity.post('api/VMS/Initialize')
+export async function Initialize(isForkInitBypass = false) {
+  var ret = await axios_entity.post(`api/VMS/Initialize?isForkInitBypass=${isForkInitBypass}`)
   return ret.data
 }
 export async function CancelInitProcess() {

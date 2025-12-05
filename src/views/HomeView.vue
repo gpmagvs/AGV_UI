@@ -1,48 +1,22 @@
 <template>
   <div class="home h-100">
     <div v-if="buildCstDataDialog.show">
-      <el-dialog
-        v-loading="buildCstDataDialog.loading"
-        v-model="buildCstDataDialog.show"
-        :modal="false"
-        draggable
+      <el-dialog v-loading="buildCstDataDialog.loading" v-model="buildCstDataDialog.show" :modal="false" draggable
         title="貨物帳籍建立">
         <div class="d-flex my-2">
-          <el-input
-            :disabled="buildCstDataDialog.loading"
-            ref="cargo_id_input"
-            placeholder="在此輸入貨物ID"
-            v-model="buildCstDataDialog.cargo_id"
-            clearable
-            size="large"
-            @input="HandleCargoIDInputChanged"></el-input>
-          <el-button
-            :disabled="buildCstDataDialog.loading"
-            class="mx-1"
-            size="large"
-            type="primary"
+          <el-input :disabled="buildCstDataDialog.loading" ref="cargo_id_input" placeholder="在此輸入貨物ID"
+            v-model="buildCstDataDialog.cargo_id" clearable size="large" @input="HandleCargoIDInputChanged"></el-input>
+          <el-button :disabled="buildCstDataDialog.loading" class="mx-1" size="large" type="primary"
             @click="HandleCstIDBuildConfirm">確認</el-button>
-          <el-button
-            :disabled="buildCstDataDialog.loading"
-            size="large"
-            type="danger"
-            @click="() => {
-              buildCstDataDialog.show = false;
-              buildCstDataDialog.cargo_id = ''
-              HandleCargoIDInputChanged('')
-            }">取消</el-button>
+          <el-button :disabled="buildCstDataDialog.loading" size="large" type="danger" @click="() => {
+            buildCstDataDialog.show = false;
+            buildCstDataDialog.cargo_id = ''
+            HandleCargoIDInputChanged('')
+          }">取消</el-button>
         </div>
         <div class="d-flex">
-          <el-button
-            class="mx-1"
-            size="large"
-            type
-            @click="HandleUseReaderButClick(200)">使用 Tray READER</el-button>
-          <el-button
-            class="mx-1"
-            size="large"
-            type
-            @click="HandleUseReaderButClick(201)">使用 Rack READER</el-button>
+          <el-button class="mx-1" size="large" type @click="HandleUseReaderButClick(200)">使用 Tray READER</el-button>
+          <el-button class="mx-1" size="large" type @click="HandleUseReaderButClick(201)">使用 Rack READER</el-button>
         </div>
         <SimpleKeyboard ref="cargoIdEditKeyboard" @onChange="HandleCargoIDKeyboardInput"></SimpleKeyboard>
       </el-dialog>
@@ -56,66 +30,40 @@
         <i class="bi bi-exclamation-diamond"></i> {{ $t('backend_server_error') }}
       </div>
       <!-- 電量至頂顯示 -->
-      <BatteryGroup
-        :IsBackendDisconnected="back_end_server_err"
-        :battery_states="VMSData.BatteryStatus"></BatteryGroup>
+      <BatteryGroup :IsBackendDisconnected="back_end_server_err" :battery_states="VMSData.BatteryStatus"></BatteryGroup>
       <div class="d-flex flex-row h-100">
         <!--Side 左側邊-->
         <transition name="el-zoom-in-top">
           <div class="side h-100">
             <div class="opt-buttons px-1 py-1 d-flex flex-column">
-              <b-button
-                :disabled="back_end_server_err || VMSData.IsSystemIniting"
-                @click="AGVInitialize()"
+              <b-button :disabled="back_end_server_err || VMSData.IsSystemIniting" @click="AGVInitialize()"
                 class="mb-1 p-2"
                 v-bind:class="VMSData.SubState == '' || (!VMSData.IsInitialized && VMSData.SubState != 'Initializing') ? 'down' : VMSData.SubState.toLowerCase()"
                 block>
                 <b v-if="VMSData.SubState != 'Initializing'">{{ $t('initialize') }}</b>
                 <b v-else>{{ $t('initializing') }}</b>
               </b-button>
-              <b-button
-                :disabled="back_end_server_err"
-                @click="AGVResetAlarm()"
-                class="mb-1 p-2 border"
-                block
+              <b-button :disabled="back_end_server_err" @click="AGVResetAlarm()" class="mb-1 p-2 border" block
                 :variant="alarmResetBtnVariant">
                 <b>{{ $t('reset_alarm') }}</b>
               </b-button>
-              <b-button
-                :disabled="back_end_server_err"
-                @click="AGVBuzzerOff()"
-                variant="light"
-                class="mb-1 p-2 border"
+              <b-button :disabled="back_end_server_err" @click="AGVBuzzerOff()" variant="light" class="mb-1 p-2 border"
                 block>
                 <b>
                   <i v-if="IsBuzzerMute" class="bi bi-volume-mute-fill"></i> {{ $t('buzzer_off') }} <i
-                    v-if="!IsBuzzerMute && BuzzerState.isPlaying"
-                    class="bi bi-volume-up-fill"></i>
+                    v-if="!IsBuzzerMute && BuzzerState.isPlaying" class="bi bi-volume-up-fill"></i>
                 </b>
               </b-button>
-              <b-button
-                v-if="VMSData.Agv_Type != 2"
-                :disabled="back_end_server_err"
-                @click="ShowRemoveCstDialog()"
-                variant="light"
-                class="w-100 mb-1 p-2 border"
-                v-bind:class="rm_cst_btn_class_bind"
-                block>
+              <b-button v-if="VMSData.Agv_Type != 2" :disabled="back_end_server_err" @click="ShowRemoveCstDialog()"
+                variant="light" class="w-100 mb-1 p-2 border" v-bind:class="rm_cst_btn_class_bind" block>
                 <b>{{ $t('cst-remove') }}</b>
               </b-button>
-              <el-badge
-                v-if="VMSData.Agv_Type != 2"
-                @click="ShowRemoveCstDialog()"
-                style="cursor:pointer;position: relative;bottom: 25px;left: 182px;"
-                :value="cargo_status_text">
+              <el-badge v-if="VMSData.Agv_Type != 2" @click="ShowRemoveCstDialog()"
+                style="cursor:pointer;position: relative;bottom: 25px;left: 182px;" :value="cargo_status_text">
                 <div @click="ShowRemoveCstDialog()" v-if="VMSData.Agv_Type != 2"></div>
               </el-badge>
-              <b-button
-                :disabled="back_end_server_err"
-                :variant="IsLogin ? 'danger' : 'light'"
-                class="mb-1 p-2 border"
-                block
-                @click="ShowLogin()">
+              <b-button :disabled="back_end_server_err" :variant="IsLogin ? 'danger' : 'light'" class="mb-1 p-2 border"
+                block @click="ShowLogin()">
                 <i v-if="!IsLogin" class="bi bi-box-arrow-in-right mx-1"></i>
                 <i v-else class="bi bi-box-arrow-left mx-1"></i>
                 <b>{{ LoginBtnText }}</b>
@@ -127,36 +75,21 @@
             <div class="modes border rounded m-1 p-3 py-1 px-3 text-start">
               <div class="d-flex flex-row">
                 <div class="mode-item-label py-2">Online Mode</div>
-                <el-switch
-                  v-model="IsOnlineMode"
-                  @click.prevent="OnlineModeSwitchHandle()"
-                  :disabled="back_end_server_err || VMSData.IsSystemIniting"
-                  width="75"
-                  size="large"
-                  inline-prompt
-                  inactive-text="Offline"
-                  active-text="Online"
-                  active-color="rgb(13, 110, 253)"
+                <el-switch v-model="IsOnlineMode" @click.prevent="OnlineModeSwitchHandle()"
+                  :disabled="back_end_server_err || VMSData.IsSystemIniting" width="75" size="large" inline-prompt
+                  inactive-text="Offline" active-text="Online" active-color="rgb(13, 110, 253)"
                   inactive-color="rgb(220, 53, 69)"></el-switch>
               </div>
               <div class="d-flex flex-row">
                 <div class="mode-item-label py-2">Auto Mode</div>
-                <el-switch
-                  v-model="IsAutoMode"
-                  @click.stop.prevent="AutoModeSwitchHandle()"
-                  :disabled="back_end_server_err || VMSData.IsSystemIniting"
-                  width="75"
-                  size="large"
-                  inline-prompt
-                  inactive-text="Manual"
-                  active-text="Auto"
-                  active-color="rgb(13, 110, 253)"
+                <el-switch v-model="IsAutoMode" @click.stop.prevent="AutoModeSwitchHandle()"
+                  :disabled="back_end_server_err || VMSData.IsSystemIniting" width="75" size="large" inline-prompt
+                  inactive-text="Manual" active-text="Auto" active-color="rgb(13, 110, 253)"
                   inactive-color="rgb(220, 53, 69)"></el-switch>
               </div>
             </div>
             <el-divider style="margin:auto"></el-divider>
-            <div
-              v-if="!IOConnected || (Is_TSMC_MiniAGV || !isBrakeSwitchRelease)"
+            <div v-if="!IOConnected || (Is_TSMC_MiniAGV || !isBrakeSwitchRelease)"
               class="connection-status border rounded m-1 p-3 py-1">
               <div class="state-title">
                 <i class="bi bi-ethernet mx-1"></i> {{ $t('connection-states') }}
@@ -166,64 +99,40 @@
             <el-divider style="margin:auto"></el-divider>
             <!-- 當前座標資訊 -->
             <div class="coordination border rounded m-1 p-3 py-1">
-              <div
-                v-if="IOConnected && isBrakeSwitchRelease && !Is_TSMC_MiniAGV"
-                class="w-100 d-flex">
+              <div v-if="IOConnected && isBrakeSwitchRelease && !Is_TSMC_MiniAGV" class="w-100 d-flex">
                 <div>
                   <div class="state-title" style="text-align: center;">Tag</div>
-                  <el-tag
-                    style="width:100px;height: 85px;font-size: 58px;"
-                    class
-                    :type="VMSData.BCR_State_MoveBase.tagID == 0 ? 'danger' : 'success'">{{ VMSData.BCR_State_MoveBase.tagID }}</el-tag>
+                  <el-tag style="width:100px;height: 85px;font-size: 58px;" class
+                    :type="VMSData.BCR_State_MoveBase.tagID == 0 ? 'danger' : 'success'">{{
+                      VMSData.BCR_State_MoveBase.tagID }}</el-tag>
                 </div>
                 <div class="mx-2 w-100">
                   <div class="state-title" style="text-align: center;">偏移量</div>
                   <el-form-item class label="X">
-                    <b-form-input
-                      size="sm"
-                      disabled
-                      v-model.number="VMSData.BCR_State_MoveBase.xValue"></b-form-input>
+                    <b-form-input size="sm" disabled v-model.number="VMSData.BCR_State_MoveBase.xValue"></b-form-input>
                   </el-form-item>
                   <el-form-item class label="Y">
-                    <b-form-input
-                      size="sm"
-                      disabled
-                      v-model.number="VMSData.BCR_State_MoveBase.yValue"></b-form-input>
+                    <b-form-input size="sm" disabled v-model.number="VMSData.BCR_State_MoveBase.yValue"></b-form-input>
                   </el-form-item>
                 </div>
               </div>
               <div v-else class="py-1 d-flex justify-content-center">
                 <div class="m-1" v-if="!Is_TSMC_MiniAGV">
                   <div class="state-title">Tag</div>
-                  <b-form-input
-                    size="sm"
-                    style="width:70px"
-                    disabled
-                    v-model="VMSData.BCR_State_MoveBase.tagID"
+                  <b-form-input size="sm" style="width:70px" disabled v-model="VMSData.BCR_State_MoveBase.tagID"
                     :state="VMSData.BCR_State_MoveBase.tagID > 0"></b-form-input>
                 </div>
                 <div class="m-1" v-else>
                   <div class="state-title">Location</div>
-                  <b-form-input
-                    size="sm"
-                    style="width:70px"
-                    disabled
-                    v-model="VMSData.Last_Visited_Tag"></b-form-input>
+                  <b-form-input size="sm" style="width:70px" disabled v-model="VMSData.Last_Visited_Tag"></b-form-input>
                 </div>
                 <div class="m-1">
                   <div class="state-title">{{ $t('coordination') }}</div>
-                  <b-form-input
-                    size="sm"
-                    style="width:120px"
-                    disabled
-                    :state="VMSData.LocStatus == 10"
+                  <b-form-input size="sm" style="width:120px" disabled :state="VMSData.LocStatus == 10"
                     v-model="Coordination"></b-form-input>
                 </div>
               </div>
-              <el-button
-                v-if="Is_TSMC_MiniAGV"
-                effect="dark"
-                size="small"
+              <el-button v-if="Is_TSMC_MiniAGV" effect="dark" size="small"
                 @click="HandleLocalizationClick">定位</el-button>
             </div>
             <el-divider style="margin:auto"></el-divider>
@@ -257,33 +166,19 @@
             <QuickActions></QuickActions>
           </div>
         </div>
-        <div
-          v-if="showOrderInfo && IsShowOrderStatus && !IsHandshaking"
-          style="z-index:9999"
+        <div v-if="showOrderInfo && IsShowOrderStatus && !IsHandshaking" style="z-index:9999"
           v-bind:style="orderInfoContinerStyle">
-          <el-alert
-            id="order-go-alert"
-            :class="order_info_title_class"
-            show-icon
-            :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'"
-            :title="`派車系統任務-[${GetActionName}]`"
-            :description="GetOrderDescription"
-            :closable="false"></el-alert>
+          <el-alert id="order-go-alert" :class="order_info_title_class" show-icon
+            :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'" :title="`派車系統任務-[${GetActionName}]`"
+            :description="GetOrderDescription" :closable="false"></el-alert>
         </div>
       </div>
       <!--對話框們-->
       <div class="modals">
         <!--等待上線動作完成對話框 -->
-        <b-modal
-          v-model="wait_online_request_dialog_show"
-          title="AGV Online Requesting"
-          :centered="true"
-          :hideFooter="true"
-          :noCloseOnBackdrop="true"
-          :noCloseOnEsc="true"
-          :hideHeaderClose="true"
-          header-bg-variant="primary"
-          header-text-variant="light">
+        <b-modal v-model="wait_online_request_dialog_show" title="AGV Online Requesting" :centered="true"
+          :hideFooter="true" :noCloseOnBackdrop="true" :noCloseOnEsc="true" :hideHeaderClose="true"
+          header-bg-variant="primary" header-text-variant="light">
           <p class="py-3">{{ $t('wait_online_text') }}</p>
         </b-modal>
       </div>
@@ -437,17 +332,20 @@ export default {
         this.cancelInitComfirmDialogShow = true;
       }
       else {
+        const isGodUseForkAGV = this.Is_Fork_AGV && this.UserName == 'GOD';
         this.$swal.fire({
           title: 'AGV Initialize',
           text: `${this.$t(this.Is_Fork_AGV ? this.VMSData.ForkHasLoading ? 'start_init_action_notify_fork_has_loading' : 'start_init_action_notify' : 'start_init_action_notify_submarin_agv')}`,
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: 'OK',
-          customClass: 'my-sweetalert'
+          showDenyButton: isGodUseForkAGV,
+          denyButtonText: 'GOD 牙叉不初始化',
+          customClass: 'my-sweetalert' + (isGodUseForkAGV ? ' fork-agv-initialize-dialog' : ''),
         }).then(async (result) => {
-          if (result.isConfirmed) {
+          if (result.isConfirmed || (isGodUseForkAGV && result.isDenied)) {
             this.isInitializing = true;
-            var result = await Initialize();
+            var result = await Initialize(result.isDenied);
             if (!result.confirm) {
               var has_cargo_but_no_data = result.has_cargo_but_no_data;
 

@@ -1,17 +1,22 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking" :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'" v-bind:style="minimize ? miniSizeStyle : {}">
+        <div v-show="EQHSStatus.IsHandshaking && CurrentAlarms.length != 0"
+            :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'"
+            v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
                 <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
                 <span v-if="!IsAGVDown" class="mx-1">{{ dot_animation_str }}</span>
                 <div class="sub-title mx-1" v-if="IsAGVDown">
-                    <span class="text-danger" v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ showingAlarmMsg }}</span>
+                    <span class="text-danger" v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{
+                        showingAlarmMsg }}</span>
                 </div>
                 <div class="sub-title mx-1" v-if="!IsAGVDown">
-                    <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
+                    <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText
+                        == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
                 </div>
             </div>
-            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
+            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{
+                minimize ? '▲' : '-' }}</b-button>
         </div>
     </transition>
 </template>
