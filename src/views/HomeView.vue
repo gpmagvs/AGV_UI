@@ -332,7 +332,7 @@ export default {
         this.cancelInitComfirmDialogShow = true;
       }
       else {
-        const isGodUseForkAGV = this.Is_Fork_AGV && this.UserName == 'GOD';
+        const isGodUseForkAGV = this.Is_Fork_AGV && this.UserName == 'GOD' && DIOStore.getters.IsResetButtonPressing; //密技! 如果判斷 reset button 按壓中
         this.$swal.fire({
           title: 'AGV Initialize',
           text: `${this.$t(this.Is_Fork_AGV ? this.VMSData.ForkHasLoading ? 'start_init_action_notify_fork_has_loading' : 'start_init_action_notify' : 'start_init_action_notify_submarin_agv')}`,

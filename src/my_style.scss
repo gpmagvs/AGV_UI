@@ -7,15 +7,23 @@
 }
 .fork-agv-initialize-dialog {
   width: 90%;
-  height: 500px;
-  .swal2-deny {
-    width: 420px !important;
-    position: absolute;
-    bottom: -70px;
+  height: 450px;
+  .swal2-title {
+    position: relative;
+    top: -30px;
+  }
+  .swal2-html-container {
+    position: relative;
+    top: -40px;
   }
   .swal2-actions {
     position: relative;
-    bottom: 60px;
+    top: -60px;
+    .swal2-deny {
+      width: 420px !important;
+      position: absolute;
+      top: 85px;
+    }
   }
 }
 .swal2-popup {

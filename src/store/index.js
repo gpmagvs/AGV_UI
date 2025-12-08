@@ -572,6 +572,13 @@ export const DIOStore = createStore({
     DIOStates: state => {
       return state.DIOStates;
     },
+    IsResetButtonPressing: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X000B'); //Panel_Reset_PB
+      return input?.State ?? false;
+    },
     IsE84UseEmu: state => {
       if (state.DIOStates.IsE84HsUseEmulator == undefined)
         return false;
