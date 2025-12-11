@@ -15,7 +15,11 @@ class SystemSettings {
             Notes: "",
             LocalIP: "127.0.0.1",
             Protocol: 0,
-            MapUrl: "http://1.1.1.1:5216/api/Map"
+            MapUrl: "http://1.1.1.1:5216/api/Map",
+            MsgHsDuration: 200,
+            UseAPIToFetchOrderInfo: false,
+            OrderInfoAPIPort: 5333,
+            OrderInfoAPIRoute: "/api/Task/OrderInfo",
         };
         this.ActiveTrafficControl = false;
         this.EQHandshakeBypass = false;

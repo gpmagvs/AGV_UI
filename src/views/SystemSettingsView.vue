@@ -506,6 +506,16 @@
                   </el-select>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
+                  <b>圖資</b>
+                </div>
+                <el-form-item label="圖資URL">
+                  <div class="d-flex w-100">
+                    <el-input style="width: 80%;" v-model="settings.VMSParam.MapUrl"
+                      @change="HandleParamChanged"></el-input>
+                    <el-button type="primary" @click="HandleReloadMapBtnClick">重新獲取圖資</el-button>
+                  </div>
+                </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
                   <b>交管請求</b>
                 </div>
                 <el-form-item label="從工作站退出需要請求">
@@ -516,11 +526,24 @@
                   <el-input-number v-model="settings.LDULDParams.LeaveWorkStationRequestTimeout"
                     @change="HandleParamChanged"></el-input-number>
                 </el-form-item>
-
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>訂單查詢</b>
+                </div>
+                <el-form-item label="使用API查詢訂單">
+                  <el-switch v-model="settings.VMSParam.UseAPIToFetchOrderInfo"
+                    @change="HandleParamChanged"></el-switch>
+                </el-form-item>
+                <el-form-item label="訂單查詢API Port">
+                  <el-input-number v-model="settings.VMSParam.OrderInfoAPIPort"
+                    @change="HandleParamChanged"></el-input-number>
+                </el-form-item>
+                <el-form-item label="訂單查詢API Route">
+                  <el-input v-model="settings.VMSParam.OrderInfoAPIRoute" @change="HandleParamChanged"></el-input>
+                </el-form-item>
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>Experimental Features</b>
                 </div>
-                <el-form-item label="AGV_COMPT ON前回報動作完成">
+                <el-form-item label="交握提前回報ActionFinish">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.LDULDParams.IsActionFinishReportBeforeCOMPTSignalON"></el-switch>
                 </el-form-item>
@@ -601,7 +624,7 @@
                 <b-button variant="warning" @click="HandleSystemRestartBtnClick">車載系統重啟</b-button>
                 <b-button variant="warning" @click="HandleAGVCRestartBtnClick">車控系統重啟</b-button>
                 <b-button variant="danger" @click="HandleSystemCloseBtnClick">車載系統關閉</b-button>
-                <b-button variant="info" @click="HandleVersionChangeBtnClick">變更版本</b-button>
+                <b-button variant="info" @click="HandleVersionChangeBtnClick">版本控制</b-button>
                 <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
@@ -621,7 +644,7 @@ import { Setting } from '@element-plus/icons-vue'
 import bus from '@/event-bus.js'
 import { SystemAPI, IMUAPI, SoundsAPI, AlarmTableAPI, GetMaintainModeStatus, SwitchMaintainMode, SetMaintainingTag } from '@/api/VMSAPI.js'
 import MapAPI from '@/api/MapAPI.js'
-import { SystemSettingsStore, AGVStatusStore } from '@/store'
+import { SystemSettingsStore, AGVStatusStore, map_store } from '@/store'
 import moment from 'moment'
 import { ROS_STORE } from "@/store/ros_store";
 import uploader from '@/components/Upload/music_upload.vue'
@@ -802,6 +825,32 @@ export default {
     })
   },
   methods: {
+    async HandleReloadMapBtnClick() {
+      var result = await map_store.dispatch('ReloadMapFromAGVS', "abc");
+      if (!result || !result.confirm) {
+        this.$swal.fire(
+          {
+            title: '地圖下載失敗',
+            text: '',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        return;
+      }
+      else {
+        this.$swal.fire(
+          {
+            title: '地圖下載成功',
+            text: '',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+    },
     handleSelect(index) {
       this.selected_tab = index;
     },

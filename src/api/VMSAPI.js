@@ -72,6 +72,10 @@ export var SystemAPI = {
     var ret = await axios_entity.get('api/System/GetBackupedVersion')
     return ret.data
   },
+  async BackupCurrentVersionFile() {
+    var ret = await axios_entity.post(`api/System/BackupSystem`)
+    return ret.data
+  },
   async ChangeVersion(version) {
     var ret = await axios_entity.post(`api/System/RollbackSystem?version=${version}`)
     return ret.data

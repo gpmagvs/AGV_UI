@@ -6,7 +6,9 @@
         <el-table :data="versionList" style="width: 100%" border stripe v-loading="isLoading">
             <el-table-column prop="Version" label="版本">
                 <template #default="scope">
-                    <el-tag effect="dark" type="success">{{ scope.row.Version }}</el-tag>
+                    <el-tag effect="dark" type="success" style="font-size: 14px;width: 100px;padding-block: 14px;">{{
+                        scope.row.Version
+                    }}</el-tag>
                     <el-tag v-if="scope.row.Version == currentVersion" type="success" round
                         class="mx-1">Current</el-tag>
                 </template>
@@ -15,10 +17,13 @@
             <el-table-column prop="CreateTime" label="建立時間" />
             <el-table-column label="操作">
                 <template #default="scope">
-                    <el-button plain :disabled="scope.row.Version == currentVersion" type="primary"
+                    <el-button v-if="scope.row.Version == currentVersion" type="primary"
+                        @click="HandleUpdeteCurrentVersionFile">更新檔案</el-button>
+                    <el-button plain v-else="scope.row.Version == currentVersion" type="primary"
                         @click="HandleChangeVersion(scope.row.Version)">變更版本</el-button>
                     <el-button plain :disabled="scope.row.Version == currentVersion" type="danger"
                         @click="HandleDeleteVersion(scope.row.Version)">刪除</el-button>
+                    <el-button plain @click="HandleDownloadVersion(scope.row.Version)">下載</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -36,6 +41,7 @@
     </div>
 </template>
 <script setup>
+import param from '@/gpm_param';
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { SystemAPI } from '@/api/VMSAPI';
 import moment from 'moment';
@@ -112,6 +118,14 @@ const HandleChangeVersion = async (version) => {
     if (!_confirmInput) {
         return;
     }
+    Swal.fire({
+        title: '變更版本中...',
+        text: `正在恢復版本至 ${version}，請稍候...`,
+        icon: 'warning',
+        showCancelButton: false,
+        showConfirmButton: false,
+        customClass: 'my-sweetalert'
+    })
     var _response = await SystemAPI.ChangeVersion(version);
     if (_response.confirm) {
         Swal.fire({
@@ -190,6 +204,62 @@ const HandleDeleteVersion = async (version) => {
             text: _response.message,
             icon: 'error'
         });
+    }
+}
+const HandleUpdeteCurrentVersionFile = async () => {
+    var _confirm = await Swal.fire({
+        title: `確定要更新目前版本的檔案嗎？`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'rgb(64, 158, 255)',
+    });
+    if (!_confirm.isConfirmed) {
+        return;
+    }
+    try {
+        Swal.fire({
+            title: '更新檔案中...',
+            icon: 'warning',
+            showCancelButton: false,
+            showConfirmButton: false,
+            customClass: 'my-sweetalert'
+        });
+
+        var _response = await SystemAPI.BackupCurrentVersionFile();
+        if (_response.confirm) {
+            Swal.fire({
+                title: '更新檔案成功',
+                icon: 'success'
+            });
+        } else {
+            Swal.fire({
+                title: '更新檔案失敗',
+                text: _response.message,
+                icon: 'error'
+            });
+        }
+    } catch (err) {
+        Swal.fire({
+            title: '更新檔案失敗',
+            text: err.message,
+            icon: 'error'
+        });
+    }
+}
+
+const HandleDownloadVersion = async (version) => {
+    try {
+        const fileName = `backup_${version}.zip`;
+        const url = `${param.backend_host}/versions/${encodeURIComponent(fileName)}`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+    } catch (err) {
+        console.error(err.message);
     }
 }
 </script>
