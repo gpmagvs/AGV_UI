@@ -1,6 +1,6 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking && CurrentAlarms.length != 0"
+        <div v-show="IsExchangeBatteryTask || EQHSStatus.IsHandshaking || CurrentAlarms.length != 0"
             :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'"
             v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
@@ -21,7 +21,7 @@
     </transition>
 </template>
 <script>
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, DIOStore } from '@/store'
 
 export default {
     data() {
@@ -61,7 +61,7 @@ export default {
             return this.EQHSStatus.HandshakingInfoText && this.EQHSStatus.HandshakingInfoText.includes('Handshake_Fail');
         },
         IsExchangeBatteryTask() {
-            return AGVStatusStore.getters.AGVStatus.OrderInfo.ActionName == 14;
+            return DIOStore.getters.IsBatExchangeHandshaking;
         },
         IsAGVDown() {
             return AGVStatusStore.state.AGVStatus.SubState == 'DOWN';

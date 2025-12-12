@@ -254,7 +254,30 @@ export default {
       var coordinate = this.SelectedFeatureCoordination;
       var x = coordinate[0];
       var y = coordinate[1];
-      await InspectionAGVAPI.Localization(new clsLocalization(tag, x, y, -1))
+      var result = await InspectionAGVAPI.Localization(new clsLocalization(tag, x, y, -1))//{ Success = result.confirm, Message = result.message }
+
+      if (result.Success) {
+        this.$swal.fire(
+          {
+            title: '車輛定位',
+            text: '定位完成!',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      } else {
+        this.$swal.fire(
+          {
+            title: '車輛定位',
+            text: `定位失敗:${result.Message}`,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+
     },
     GetTitleText(feature) {
       if (!feature)

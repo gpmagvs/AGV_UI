@@ -862,6 +862,14 @@ export const DIOStore = createStore({
       }
       const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Home_Pose");
       return input?.State;
+    },
+    IsBatExchangeHandshaking: state => {
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const AGV_CS_0 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_0");
+      const AGV_CS_1 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_1");
+      return AGV_CS_0?.State || AGV_CS_1?.State;
     }
 
   },
