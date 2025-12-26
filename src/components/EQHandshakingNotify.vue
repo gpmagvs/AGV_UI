@@ -1,7 +1,6 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="IsExchangeBatteryTask || EQHSStatus.IsHandshaking || CurrentAlarms.length != 0"
-            :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'"
+        <div v-show="showDialog" :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'"
             v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
                 <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
@@ -45,6 +44,12 @@ export default {
         }
     },
     computed: {
+        showDialog() {
+            if (AGVStatusStore.state.AGVStatus.IsSystemIniting)
+                return false;
+
+            return this.IsExchangeBatteryTask || this.EQHSStatus.IsHandshaking || this.CurrentAlarms.length != 0;
+        },
         MessageTitle() {
             if (this.IsHandshakeFail || this.IsAGVDown) {
                 const alarmCnt = this.CurrentAlarms.length;
@@ -67,7 +72,7 @@ export default {
             return AGVStatusStore.state.AGVStatus.SubState == 'DOWN';
         },
         CurrentAlarms() {
-            return AGVStatusStore.state.AGVStatus.AlarmCodes;
+            return AGVStatusStore.state.AGVStatus.AlarmCodes.filter(a => a.Code != 0);
         }
 
     },

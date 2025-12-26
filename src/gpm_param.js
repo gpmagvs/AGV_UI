@@ -3,6 +3,7 @@ var param = {
   get backend_host() {
     if (import.meta.env.DEV) {
       //在開發模式下，需依照要連接的機台，修改這裡的IP:PORT
+      return 'http://192.168.0.59:7025'
       return 'http://127.0.0.1:7025'
       return 'http://192.168.0.105:7025'
       return 'http://192.168.0.125:7025'

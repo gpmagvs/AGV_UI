@@ -227,6 +227,7 @@ const HandleUpdeteCurrentVersionFile = async () => {
 
         var _response = await SystemAPI.BackupCurrentVersionFile();
         if (_response.confirm) {
+            GetVersionListFromServer();
             Swal.fire({
                 title: '更新檔案成功',
                 icon: 'success'

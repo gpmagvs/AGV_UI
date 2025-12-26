@@ -56,6 +56,9 @@
             <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button"
               text>車載更新</el-button>
           </b-dropdown-item>
+
+          <b-dropdown-item v-if="IsGodUser" @click="HandleRestartVCSBtnClick">
+            <i class="bi bi-pin-map me-2"></i> 車載系統重啟 </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
             <i class="bi bi-power me-2"></i> 關機 </b-dropdown-item>
           <b-dropdown-item v-if="false" @click="restart">
@@ -267,6 +270,44 @@ export default {
     },
     HandleSickLidarLocBtnClick() {
       window.open('http://192.168.1.1');
+    },
+    async HandleRestartVCSBtnClick() {
+      this.$swal.fire(
+        {
+          title: '車載系統重啟',
+          text: '確定要重啟車載系統?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(async res => {
+          if (!res.isConfirmed)
+            return;
+          var _response = await SystemAPI.RestartSystem();
+          if (_response.confirm) {
+            this.drawer_show = false;
+            this.$swal.fire(
+              {
+                text: '',
+                title: '系統將於一秒後重新啟動...',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+              })
+          } else {
+            this.$swal.fire(
+              {
+                text: '',
+                title: _response.message,
+                icon: 'error',
+                showCancelButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+              })
+          }
+        })
+
     },
     async HandleCloseMaintainModeBtnClick() {
       await SwitchMaintainMode(false);
