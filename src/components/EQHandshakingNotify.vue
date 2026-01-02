@@ -48,7 +48,7 @@ export default {
             if (AGVStatusStore.state.AGVStatus.IsSystemIniting)
                 return false;
 
-            return this.IsExchangeBatteryTask || this.EQHSStatus.IsHandshaking || this.CurrentAlarms.length != 0;
+            return this.IsExchangeBatteryTask || (this.EQHSStatus.IsHandshaking && this.CurrentAlarms.length != 0);
         },
         MessageTitle() {
             if (this.IsHandshakeFail || this.IsAGVDown) {

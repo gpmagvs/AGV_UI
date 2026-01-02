@@ -38,7 +38,7 @@
         <!-- 操作按鈕區域 -->
         <div class="action-buttons-section">
           <div class="action-buttons-grid">
-            <el-button class="action-btn" type="primary"
+            <el-button class="action-btn" style="background-color: rgb(23, 162, 184); color:white"
               :disabled="!SelectedFeatureMovable || SelectedFeatureIsVirtualPt"
               @click="handleTaskAllocatModeMenuClick('None')" size="large">
               <div class="btn-content">
@@ -47,24 +47,25 @@
               </div>
             </el-button>
 
-            <el-button class="action-btn" type="success" :disabled="!SelectedFeatureLDULDable"
-              @click="handleTaskAllocatModeMenuClick('Load')" size="large">
+            <el-button class="action-btn" style="background-color: orange; color:white"
+              :disabled="!SelectedFeatureLDULDable" @click="handleTaskAllocatModeMenuClick('Load')" size="large">
               <div class="btn-content">
                 <i class="bi bi-box-arrow-up-right btn-icon"></i>
                 <span class="btn-text">放貨</span>
               </div>
             </el-button>
 
-            <el-button class="action-btn" type="warning" :disabled="!SelectedFeatureLDULDable"
-              @click="handleTaskAllocatModeMenuClick('Unload')" size="large">
+            <el-button class="action-btn" style="background-color: rgb(32, 32, 181); color:white"
+              :disabled="!SelectedFeatureLDULDable" @click="handleTaskAllocatModeMenuClick('Unload')" size="large">
               <div class="btn-content">
                 <i class="bi bi-box-arrow-in-down-left btn-icon"></i>
                 <span class="btn-text">取貨</span>
               </div>
             </el-button>
 
-            <el-button v-if="!SelectedFeatureBatExchangable" class="action-btn" type="info"
-              :disabled="!SelectedFeatureChargable" @click="handleTaskAllocatModeMenuClick('Charge')" size="large">
+            <el-button v-if="!SelectedFeatureBatExchangable" class="action-btn"
+              style="background-color: rgb(0, 204, 0); color:white" :disabled="!SelectedFeatureChargable"
+              @click="handleTaskAllocatModeMenuClick('Charge')" size="large">
               <div class="btn-content">
                 <i class="bi bi-battery-charging btn-icon"></i>
                 <span class="btn-text">充電</span>
@@ -664,18 +665,18 @@ export default {
 
         .btn-content {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           align-items: center;
           justify-content: center;
-          gap: 4px;
+          gap: 12px;
           height: 100%;
 
           .btn-icon {
-            font-size: 24px;
+            font-size: 32px;
           }
 
           .btn-text {
-            font-size: 13px;
+            font-size: 32px;
             font-weight: 600;
           }
         }

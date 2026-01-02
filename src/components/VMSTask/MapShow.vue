@@ -8,11 +8,8 @@
         <el-button @click="GoToAGVLoc()">
           <i class="bi bi-geo-alt-fill"></i>
         </el-button>
-        <el-button
-          type="primary"
-          :loading="reloadMapRequesting"
-          @click="ReloadMapFromAGVS()"
-        >{{ $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
+        <el-button type="primary" :loading="reloadMapRequesting" @click="ReloadMapFromAGVS()">{{
+          $t('VMSTask.MapShow.ReLoadMapFromAGVS') }}</el-button>
         <div class="w-100 d-flex flex-row justify-content-end">
           <span class="p-1">MAP</span>
           <div>
@@ -21,98 +18,52 @@
           <!-- <b-button  varint="primary" size="sm" @click="DownloadMapData">重新下載圖資</b-button> -->
         </div>
       </div>
-      <div
-        v-loading="loading || reloadMapRequesting"
-        ref="map"
-        :key="reload_key"
-        class="map border"
-        @contextmenu.prevent="showContextMenu"
-        @click="HideAllMenus"
-      >
+      <div v-loading="loading || reloadMapRequesting" ref="map" :key="reload_key" class="map border"
+        @contextmenu.prevent="showContextMenu" @click="HideAllMenus">
         <!--編輯模式選單(有站點被選擇)-->
-        <div
-          class="edit-mode-menu bg-light border rounded"
-          v-if="showStationMenu"
-          ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+        <div class="edit-mode-menu bg-light border rounded" v-if="showStationMenu" ref="contextMenu"
+          :style="map_contextmenu_style">
           <div class="p-2 text-start">
             Tag:
             <b>{{ current_select_featureID }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
-            <b-button
-              class="w-100 my-1"
-              size="sm"
-              variant="danger"
-              @click="handleEditModeMenuClick('remove')"
-            >移除</b-button>
-            <b-button
-              variant="primary"
-              class="w-100 my-1"
-              size="sm"
-              @click="handleEditModeMenuClick('point_setting')"
-            >點位設定</b-button>
+            <b-button class="w-100 my-1" size="sm" variant="danger"
+              @click="handleEditModeMenuClick('remove')">移除</b-button>
+            <b-button variant="primary" class="w-100 my-1" size="sm"
+              @click="handleEditModeMenuClick('point_setting')">點位設定</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
         <!--編輯模式選單(無站點被選擇)-->
-        <div
-          class="edit-mode-menu bg-light border rounded"
-          v-if="showNoPointSelectedMenu"
-          ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+        <div class="edit-mode-menu bg-light border rounded" v-if="showNoPointSelectedMenu" ref="contextMenu"
+          :style="map_contextmenu_style">
           <div class="px-1" style="position:absolute;left:6px">
-            <b-button
-              class="w-100 my-1"
-              size="sm"
-              variant="danger"
-              @click="handleNoPointSelectedMenuClick('add_point')"
-            >新增站點</b-button>
+            <b-button class="w-100 my-1" size="sm" variant="danger"
+              @click="handleNoPointSelectedMenuClick('add_point')">新增站點</b-button>
             <!-- <b-button class="w-100 my-1" size="sm" @click="handleEditModeMenuClick('cut')">剪切</b-button> -->
           </div>
         </div>
         <!--任務選單-->
-        <div
-          class="edit-mode-menu bg-light border rounded"
-          v-if="showTaskAllocationMenu"
-          ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+        <div class="edit-mode-menu bg-light border rounded" v-if="showTaskAllocationMenu" ref="contextMenu"
+          :style="map_contextmenu_style">
           <div class="p-2 text-start">
             <span v-show="!is_agv_feature_selected">Tag:</span>
             <span v-show="is_agv_feature_selected">AGV:</span>
             <b>{{ is_agv_feature_selected ? current_select_agv_name : current_select_featureID }}</b>
           </div>
           <div class="px-1" style="position:absolute;left:6px">
-            <b-button
-              class="w-100 my-1"
-              size="sm"
-              variant="primary"
-              @click="handleTaskAllocatModeMenuClick('move')"
-            >移動</b-button>
-            <b-button
-              class="w-100 my-1"
-              size="sm"
-              variant="primary"
-              @click="handleTaskAllocatModeMenuClick('load')"
-            >放貨</b-button>
-            <b-button
-              class="w-100 my-1"
-              size="sm"
-              variant="primary"
-              @click="handleTaskAllocatModeMenuClick('unload')"
-            >取貨</b-button>
+            <b-button class="w-100 my-1" size="sm" variant="primary"
+              @click="handleTaskAllocatModeMenuClick('move')">移動</b-button>
+            <b-button class="w-100 my-1" size="sm" variant="primary"
+              @click="handleTaskAllocatModeMenuClick('load')">放貨</b-button>
+            <b-button class="w-100 my-1" size="sm" variant="primary"
+              @click="handleTaskAllocatModeMenuClick('unload')">取貨</b-button>
           </div>
         </div>
         <!--AGV選單-->
-        <div
-          class="edit-mode-menu bg-light border rounded"
-          v-if="showAGVMenu"
-          ref="contextMenu"
-          :style="map_contextmenu_style"
-        >
+        <div class="edit-mode-menu bg-light border rounded" v-if="showAGVMenu" ref="contextMenu"
+          :style="map_contextmenu_style">
           <div class="p-2 text-start border-bottom">
             <span>AGV :</span>
             <b>{{ current_select_agv_name }}</b>
@@ -239,11 +190,11 @@ export default {
     console.info('MapShow mounted');
     setTimeout(() => {
       this.FetchMap();
-    }, 5000);
+    }, 2000);
   },
   computed: {
     isViewing() {
-      return UIStore.getters.CurrentTabSelected == 7;
+      return UIStore.getters.CurrentTabSelected == 4;
     },
     current_select_featureID() {
       if (this.selected_feature) {
@@ -442,6 +393,7 @@ export default {
 
     },
     UpdateAGVState() {
+      console.log('updateagvstate');
       var _agv_state = AGVStatusStore.getters.MapUseState;
       var _agv_layer_source = this.AGV_Layer.getSource();
       var _agv_feature = _agv_layer_source.getFeatures().find(feature => feature.getId() == _agv_state.AGV_Name);
@@ -1003,8 +955,7 @@ export default {
 };
 </script>
 <style>
-.map-show {
-}
+.map-show {}
 
 .ol-zoom .ol-zoom-in,
 .ol-zoom .ol-zoom-out {

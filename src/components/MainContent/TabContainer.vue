@@ -1,11 +1,7 @@
 <template>
   <!--主要內容 TabControl-->
   <div class="flex-fill border mt-1 p-1">
-    <b-tabs
-      :model-value="current_tab"
-      @activate-tab="HandleTabpageChanged"
-      pills
-      style="height: 100%;">
+    <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills style="height: 100%;">
       <!-- 狀態 -->
       <b-tab :title="$t('status')" active style="height: 100%;">
         <status_card :VMSData="VMSData"></status_card>
@@ -27,6 +23,10 @@
       <b-tab :title="$t('eq-handshake-e84')">
         <EQHandshakeView></EQHandshakeView>
       </b-tab>
+      <!-- 本地任務派送 -->
+      <b-tab title="地圖顯示">
+        <TaskDeliveryVue></TaskDeliveryVue>
+      </b-tab>
       <!-- CST READER -->
       <b-tab v-if="!IsVisitor" title="CST Reader">
         <CSTReader></CSTReader>
@@ -35,10 +35,6 @@
       </b-tab>
       <b-tab v-if="IsGodMod" title="Log">
         <LogQuery></LogQuery>
-      </b-tab>
-      <!-- 本地任務派送 -->
-      <b-tab title="地圖顯示">
-        <TaskDeliveryVue></TaskDeliveryVue>
       </b-tab>
       <!-- 3D Model Display -->
       <b-tab v-if="false" :title="$t('3d_model')">
