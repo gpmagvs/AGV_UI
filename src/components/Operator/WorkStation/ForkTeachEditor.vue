@@ -4,31 +4,37 @@
       <el-button type="primary" @click="SaveHandler">儲存</el-button>
       <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
       <el-button type="info" @click="reload">重新載入</el-button>
+      <el-button @click="() => { showOffsetDialog = true }">OFFSET</el-button>
     </div>
+    <el-dialog title="OFFSET 調整" v-model="showOffsetDialog" width="30%">
+      <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+        <span>OFFSET</span>
+        <el-input-number v-model="offsetVal" size="normal" label="offsetVal" :controls="true" controls-position="both"
+          @change="">
+        </el-input-number>
+        <el-button @click="handleModifyOffsetBtnClick">修改</el-button>
+      </div>
+      <template #footer>
+        <span>
+          <!-- <el-button @click=" = false">取消</el-button>
+    <el-button type="primary" @click="">确认</el-button> -->
+        </span>
+      </template>
+    </el-dialog>
+
     <div class="text-start py-1">
       <span>設備選擇:</span>
       <el-select v-model="selected_tag" @change="HandleStationSelected" class="mx-2">
         <el-option value="all" label="ALL"></el-option>
-        <el-option
-          v-for="opt in StationOptions"
-          :key="opt.value"
-          :value="opt.value"
-          :label="opt.text"></el-option>
+        <el-option v-for="opt in StationOptions" :key="opt.value" :value="opt.value" :label="opt.text"></el-option>
       </el-select>
     </div>
-    <el-table
-      @cell-click="HandleCellClicked"
-      :data="TeachDatasShown"
-      size="small"
-      v-loading="loading"
+    <el-table @cell-click="HandleCellClicked" :data="TeachDatasShown" size="small" v-loading="loading"
       :row-class-name="GetRowClass">
       <el-table-column label="Tag" prop="Tag">
         <template #default="scope">
           <div>
-            <el-input
-              @click="TagNumberInputClicked"
-              @change="InputChanged"
-              type="number"
+            <el-input @click="TagNumberInputClicked" @change="InputChanged" type="number"
               v-model="scope.row.Tag"></el-input>
           </div>
         </template>
@@ -43,8 +49,7 @@
       <el-table-column label="需交握" prop="NeedHandshake">
         <template #default="scope">
           <div>
-            <el-checkbox
-              @change="HandleNeedHandshakeCkbChanged(scope.row)"
+            <el-checkbox @change="HandleNeedHandshakeCkbChanged(scope.row)"
               v-model="scope.row.NeedHandshake"></el-checkbox>
           </div>
         </template>
@@ -52,24 +57,14 @@
       <el-table-column v-for="index in [0, 1, 2]" :key="index" :label="'第' + (index + 1) + '層'">
         <el-table-column label="下點位(cm)" :prop="`Down_Pose:${index}`">
           <template #default="scope">
-            <el-input
-              @click="InputClicked"
-              @change="InputChanged"
-              type="number"
-              step="0.01"
-              v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Down_Pose"></el-input>
+            <el-input @click="InputClicked" @change="InputChanged" type="number" step="0.01"
+              v-if="scope.row.Layers[index] != undefined" v-model="scope.row.Layers[index].Value.Down_Pose"></el-input>
           </template>
         </el-table-column>
         <el-table-column label="上點位(cm)" :prop="`Up_Pose:${index}`">
           <template #default="scope">
-            <el-input
-              @click="InputClicked"
-              @change="InputChanged"
-              type="number"
-              step="0.01"
-              v-if="scope.row.Layers[index] != undefined"
-              v-model="scope.row.Layers[index].Value.Up_Pose"></el-input>
+            <el-input @click="InputClicked" @change="InputChanged" type="number" step="0.01"
+              v-if="scope.row.Layers[index] != undefined" v-model="scope.row.Layers[index].Value.Up_Pose"></el-input>
           </template>
         </el-table-column>
       </el-table-column>
@@ -156,7 +151,9 @@ export default {
       HasAnyChange: false,
       loading: false,
       selected_data: {},
-      selected_tag: 'all'
+      selected_tag: 'all',
+      showOffsetDialog: false,
+      offsetVal: 0
     }
   },
   watch: {
@@ -218,6 +215,30 @@ export default {
     },
   },
   methods: {
+    handleModifyOffsetBtnClick() {
+      this.$swal.fire(
+        {
+          title: 'OFFSET 調整',
+          text: `確定要將所有教點位置 OFFSET-${this.offsetVal} ?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(res => {
+          if (res.isConfirmed) {
+            // alert('cool')
+            this.TeachDatasShown.forEach(tg => {
+              tg.Layers[0].Value.Up_Pose += this.offsetVal;
+              tg.Layers[1].Value.Up_Pose += this.offsetVal;
+              tg.Layers[2].Value.Up_Pose += this.offsetVal;
+
+              tg.Layers[0].Value.Down_Pose += this.offsetVal;
+              tg.Layers[1].Value.Down_Pose += this.offsetVal;
+              tg.Layers[2].Value.Down_Pose += this.offsetVal;
+            })
+          }
+        })
+    },
     GetRowClass(data) {
       console.log(data.row)
       if (data.row.IsNewAdd || data.row.Tag == 0)

@@ -169,9 +169,6 @@ export default {
     }
   },
   watch: {
-    VehicleName(newValue, oldValue) {
-      document.title = (process.env.NODE_ENV === 'development' ? '[Dev] ' : '') + 'GPM-' + newValue;
-    }
   },
   created() {
     const deviceDetector = Vue3DeviceDetector();
@@ -239,6 +236,10 @@ __    \`--.__    \`--._  \`-._ \`-. \`. \\:/ .' .-' _.-'  _.--'    __.--'    __
 
     Start();
     document.title = "GPM AGV";
+
+    setTimeout(() => {
+      document.title = (process.env.NODE_ENV === 'development' ? '[Dev] ' : '') + 'GPM-' + this.VehicleName;
+    }, 2000)
 
     setTimeout(() => {
       this.checkConnectionStatus();
