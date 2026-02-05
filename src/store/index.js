@@ -315,7 +315,7 @@ export const AGVStatusStore = createStore({
 
       state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
       // state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
-      state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
+      state.SensorStatus.ForkFrontendObstacle.status = !DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
       // state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
 
@@ -870,8 +870,14 @@ export const DIOStore = createStore({
       const AGV_CS_0 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_0");
       const AGV_CS_1 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_1");
       return AGV_CS_0?.State || AGV_CS_1?.State;
+    },
+    IsPinFloatOuputON: state => {
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === "Fork_Floating");
+      return output?.State ?? false;
     }
-
   },
   mutations: {
     updateStatus(state, data) {

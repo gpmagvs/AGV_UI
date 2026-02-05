@@ -103,7 +103,7 @@
         </div>
       </div>
     </div>
-    <el-drawer v-model="show_teach_page" direction="btt" size="90%" @close="TeachDrawerClosingHandle"
+    <el-drawer v-model="show_teach_page" direction="btt" size="99%" @close="TeachDrawerClosingHandle"
       title="FORK TEACH">
       <forkTeachEditor ref="fork_teach"></forkTeachEditor>
     </el-drawer>
@@ -439,6 +439,12 @@ export default {
 <style scoped lang="scss">
 .z-axis-control {
   width: 100%;
+
+  :deep(.el-drawer__header) {
+    height: 30px !important;
+    padding-bottom: 0px !important;
+    margin-bottom: 0px !important;
+  }
 
   .label-item {
     width: 145px;

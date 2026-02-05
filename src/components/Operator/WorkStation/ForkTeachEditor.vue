@@ -1,11 +1,13 @@
 <template>
   <div>
-    <div class="d-flex fle-row border-bottom py-1 my-1">
-      <el-button type="primary" @click="SaveHandler">儲存</el-button>
-      <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
-      <el-button type="info" @click="reload">重新載入</el-button>
-      <el-button @click="() => { showOffsetDialog = true }">OFFSET</el-button>
-    </div>
+    <el-affix :offset="40">
+      <div class="d-flex fle-row border-bottom py-1 my-1 bg-light">
+        <el-button type="primary" @click="SaveHandler">儲存</el-button>
+        <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
+        <el-button type="info" @click="reload">重新載入</el-button>
+        <el-button @click="() => { showOffsetDialog = true }">OFFSET</el-button>
+      </div>
+    </el-affix>
     <el-dialog title="OFFSET 調整" v-model="showOffsetDialog" width="30%">
       <div class="d-flex flex-row justify-content-center align-items-center gap-2">
         <span>OFFSET</span>
@@ -31,7 +33,7 @@
     </div>
     <el-table @cell-click="HandleCellClicked" :data="TeachDatasShown" size="small" v-loading="loading"
       :row-class-name="GetRowClass">
-      <el-table-column label="Tag" prop="Tag">
+      <el-table-column label="Tag" prop="Tag" sortable>
         <template #default="scope">
           <div>
             <el-input @click="TagNumberInputClicked" @change="InputChanged" type="number"

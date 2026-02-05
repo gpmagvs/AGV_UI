@@ -194,7 +194,7 @@ export default {
   },
   computed: {
     isViewing() {
-      return UIStore.getters.CurrentTabSelected == 4;
+      return UIStore.getters.CurrentTabSelected == 2 || UIStore.getters.CurrentTabSelected == 4;
     },
     current_select_featureID() {
       if (this.selected_feature) {

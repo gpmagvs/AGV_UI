@@ -369,14 +369,14 @@
               </el-form>
             </div>
             <div v-if="selected_tab === '6'" class="tabpage border p-2">
-              <el-form label-position="left" label-width="210">
+              <el-form label-position="left" label-width="240">
                 <el-form-item label="浮動牙叉禁用">
                   <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinDisabledTemptary"></el-switch>
                 </el-form-item>
                 <el-form-item label="伸縮牙叉禁用">
-                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red"
-                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsHorizonExtendDisabledTemptary"></el-switch>
+                  <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsForkIsExtendable"></el-switch>
                 </el-form-item>
                 <el-form-item label="行程上極限(cm)">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0"
@@ -425,6 +425,10 @@
                 <el-form-item label="取貨動作牙叉下降時同步拍照">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag"></el-switch>
+                </el-form-item>
+                <el-form-item label="放貨動作牙叉在交握開始後即可動作">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.ForkStartActionEarlyWhenVALIDOuputON"></el-switch>
                 </el-form-item>
                 <el-form-item v-if="false" label="退出充電站後Z軸同步回Home">
                   <el-switch @change="HandleParamChanged"
@@ -563,7 +567,8 @@
               </el-form>
             </div>
             <div v-if="selected_tab === '10'" class="tabpage border p-2 io-setting x-2">
-              <IOSetting></IOSetting>
+              <IOSetting :inputContactTypeDefines="settings.InputContactTypeDefines"
+                @inputContactTypeDefinesChange="HandleParamChanged"></IOSetting>
             </div>
             <div v-if="selected_tab === '11'" class="tabpage border p-2">
               <EQHandshakeConfiguration :SyncFromAGVS="settings.SyncEQInfoFromAGVS" @onSyncAGVSCheckBoxChanged="(val) => {

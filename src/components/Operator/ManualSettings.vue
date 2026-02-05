@@ -7,13 +7,7 @@
     <div class="d-flex flex-row py-3">
       <div class="item-label">Current Laser Mode</div>
       <div>
-        <b-form-input
-          size="lg"
-          class="centered-text"
-          disabled
-          v-model="CurrentLaserMode"
-          min="0"
-          max="16"
+        <b-form-input size="lg" class="centered-text" disabled v-model="CurrentLaserMode" min="0" max="16"
           text-align="center"></b-form-input>
       </div>
     </div>
@@ -25,13 +19,17 @@
       <div class="battery py-1">
         <div class="d-flex flex-row py-2 my-2 border-bottom">
           <label>電池 1(近PC側)</label>
-          <b-button :disabled="!Bat1Lockable" @click="BatteryLockHandler(1, true)" squared variant="primary">Lock</b-button>
-          <b-button :disabled="Bat1Lockable" @click="BatteryLockHandler(1, false)" squared variant="danger">Unlock</b-button>
+          <b-button :disabled="!Bat1Lockable" @click="BatteryLockHandler(1, true)" squared
+            variant="primary">Lock</b-button>
+          <b-button :disabled="Bat1Lockable" @click="BatteryLockHandler(1, false)" squared
+            variant="danger">Unlock</b-button>
         </div>
         <div class="d-flex flex-row">
           <label>電池 2(近天線側)</label>
-          <b-button :disabled="!Bat2Lockable" @click="BatteryLockHandler(2, true)" squared variant="primary">Lock</b-button>
-          <b-button :disabled="Bat2Lockable" @click="BatteryLockHandler(2, false)" squared variant="danger">Unlock</b-button>
+          <b-button :disabled="!Bat2Lockable" @click="BatteryLockHandler(2, true)" squared
+            variant="primary">Lock</b-button>
+          <b-button :disabled="Bat2Lockable" @click="BatteryLockHandler(2, false)" squared
+            variant="danger">Unlock</b-button>
         </div>
       </div>
     </div>
@@ -39,16 +37,10 @@
       <div class="item-label">牙叉伸縮</div>
       <div class="battery py-1">
         <div class="d-flex flex-row mb-1">
-          <b-button
-            :disabled="!enabled || FORK_ARM_Status.IsArmAtHomePose && !FORK_ARM_Status.IsArmAtEndPose"
-            @click="ForkArmPoseControlHandler(false)"
-            squared
-            variant="primary">縮回</b-button>
-          <b-button
-            :disabled="!enabled || FORK_ARM_Status.IsArmAtEndPose && !FORK_ARM_Status.IsArmAtHomePose"
-            @click="ForkArmPoseControlHandler(true)"
-            squared
-            variant="primary">伸出</b-button>
+          <b-button :disabled="!enabled || FORK_ARM_Status.IsArmAtHomePose && !FORK_ARM_Status.IsArmAtEndPose"
+            @click="ForkArmPoseControlHandler(false)" squared variant="primary">縮回</b-button>
+          <b-button :disabled="!enabled || FORK_ARM_Status.IsArmAtEndPose && !FORK_ARM_Status.IsArmAtHomePose"
+            @click="ForkArmPoseControlHandler(true)" squared variant="primary">伸出</b-button>
           <b-button @click="ForkArmStopHandler()" squared variant="danger">停止</b-button>
         </div>
       </div>
@@ -56,54 +48,35 @@
     <div v-if="IsPinMounted" class="d-flex flex-row py-3">
       <div class="item-label">浮動牙叉</div>
       <div class="battery py-1">
-        <div class="d-flex flex-row mb-1">
-          <b-button
-            :disabled="PinState.pose == 'lock' || pin_action_running"
-            @click="ForkFloatPinDriverControlHandler(true)"
-            squared
-            variant="primary">LOCK</b-button>
-          <b-button
-            :disabled="PinState.pose == 'release' || pin_action_running"
-            @click="ForkFloatPinDriverControlHandler(false)"
-            squared
-            variant="primary">RELEASE</b-button>
+        <div v-if="IsPinMoudleRosBase" class="d-flex flex-row mb-1">
+          <b-button :disabled="PinState.pose == 'lock' || pin_action_running"
+            @click="ForkFloatPinDriverControlHandler(true)" squared variant="primary">LOCK</b-button>
+          <b-button :disabled="PinState.pose == 'release' || pin_action_running"
+            @click="ForkFloatPinDriverControlHandler(false)" squared variant="primary">RELEASE</b-button>
           <div style="font-size: smaller;">目前狀態:{{ PinState.pose.toUpperCase() }}</div>
-          <!-- {{ PinState }} -->
+        </div>
+        <div v-else class="d-flex flex-row mb-1">
+          <b-button :disabled="!IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(true)" squared
+            variant="primary">LOCK</b-button>
+          <b-button :disabled="IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(false)" squared
+            variant="primary">RELEASE</b-button>
+          <div style="font-size: smaller;">目前狀態:{{ IsPinFloatOuputON ? 'RELEASE' : 'LOCK' }}</div>
         </div>
       </div>
     </div>
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">煞車功能</div>
-      <b-button
-        :disabled="!enabled"
-        class="mx-1"
-        squared
-        variant="danger"
-        style="width:130px"
+      <b-button :disabled="!enabled" class="mx-1" squared variant="danger" style="width:130px"
         @click="Brake()">煞車</b-button>
-      <b-button
-        :disabled="!enabled"
-        class="mx-1"
-        squared
-        variant="primary"
-        style="width:130px"
+      <b-button :disabled="!enabled" class="mx-1" squared variant="primary" style="width:130px"
         @click="UnBrake()">解除煞車</b-button>
     </div>
     <div v-if="false" class="d-flex flex-row py-3">
       <div class="item-label">里程數</div>
-      <b-button
-        :disabled="!enabled"
-        class="mx-1"
-        squared
-        variant="danger"
-        style="width:130px"
+      <b-button :disabled="!enabled" class="mx-1" squared variant="danger" style="width:130px"
         @click="ResetMile()">重置里程數</b-button>
     </div>
-    <b-modal
-      v-model="modifyLaserModeDialogShow"
-      :centered="true"
-      title="Laser Mode Change"
-      @ok="ModifyLaserMode">
+    <b-modal v-model="modifyLaserModeDialogShow" :centered="true" title="Laser Mode Change" @ok="ModifyLaserMode">
       <p>Change Laser Mode to : {{ laser_mode }}</p>
       <p>Are you sure?</p>
     </b-modal>
@@ -133,6 +106,12 @@ export default {
     }
   },
   computed: {
+    IsPinFloatOuputON() {
+      return DIOStore.getters.IsPinFloatOuputON;
+    },
+    IsPinMoudleRosBase() {
+      return AGVStatusStore.state.AGVStatus.IsPinMoudleRosBase;
+    },
     IsBatteryLockControlable() {
       return AGVStatusStore.getters.IsInspectionAGV
     },

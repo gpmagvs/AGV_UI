@@ -347,11 +347,17 @@ export default {
             this.isInitializing = true;
             var result = await Initialize(result.isDenied);
             if (!result.confirm) {
+              var _message = result.message;
               var has_cargo_but_no_data = result.has_cargo_but_no_data;
+              //check _message 是否有換行
+              if (_message.includes('\n')) {
+                _message = _message.split('\n').join('<br>');
+              }
+              _message = _message.replaceAll('\n', '<br>');
 
               this.$swal.fire({
                 title: 'AGV Initialize Fail',
-                text: result.message + (result.message_eng ? `(${result.message_eng})` : ''),
+                html: _message,
                 icon: 'error',
                 showCancelButton: has_cargo_but_no_data,
                 cancelButtonText: has_cargo_but_no_data ? 'OK' : '',
@@ -473,8 +479,8 @@ export default {
       if (!this.IsAutoMode && this.VMSData.MainState != 'IDLE') {
         this.$swal.fire(
           {
-            text: '當前狀態無法切換為自動模式',
-            title: '',
+            title: '當前狀態無法切換為自動模式',
+            text: 'Cannot switch to Auto mode in current state.',
             icon: 'error',
             showCancelButton: false,
             confirmButtonText: 'OK',
@@ -506,8 +512,8 @@ export default {
 
         this.$swal.fire(
           {
-            text: `當前狀態無法上線(${this.VMSData.MainState})`,
-            title: '',
+            title: `當前狀態無法上線(${this.VMSData.MainState})`,
+            text: `Cannot switch to Online mode in current state.(${this.VMSData.MainState})`,
             icon: 'error',
             showCancelButton: false,
             confirmButtonText: 'OK',
@@ -538,10 +544,16 @@ export default {
       if (this.mode_switch_data.type == 'auto') {
         var ret = await MODESwitcher.AutoModeSwitch(this.IsAutoMode ? 0 : 1)
         if (!ret.Success) {
+          var _message = ret.Message;
+          //check _message 是否有換行
+          if (_message.includes('\n')) {
+            _message = _message.split('\n').join('<br>');
+          }
+          _message = _message.replaceAll('\n', '<br>');
           this.$swal.fire(
             {
-              text: ret.Message,
-              title: 'Auto Mode Switch Fail',
+              title: '自動模式切換失敗 Auto Mode Switch Fail',
+              html: _message,
               icon: 'error',
               showCancelButton: false,
               confirmButtonText: 'OK',
@@ -553,10 +565,16 @@ export default {
         var ret = await MODESwitcher.OnlineModeSwitch(this.IsOnlineMode ? 0 : 1)
         if (!ret.Success) {
 
+          var _message = ret.Message;
+          //check _message 是否有換行
+          if (_message.includes('\n')) {
+            _message = _message.split('\n').join('<br>');
+          }
+          _message = _message.replaceAll('\n', '<br>');
           this.$swal.fire(
             {
-              text: '',
-              title: `上線請求失敗－${ret.Message}`,
+              title: `上線請求失敗`,
+              html: _message,
               icon: 'error',
               showCancelButton: false,
               confirmButtonText: 'OK',
@@ -568,7 +586,7 @@ export default {
           this.wait_online_request_dialog_show = false;
           if (ret.Success) {
             ElMessage.success({
-              message: this.IsOnlineMode ? 'AGV已上線' : 'AGV已下線',
+              message: this.IsOnlineMode ? 'AGV已上線 | AGV is online' : 'AGV已下線 | AGV is offline',
               duration: 1500,
               grouping: true,
               plain: true,

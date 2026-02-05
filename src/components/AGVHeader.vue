@@ -81,6 +81,7 @@ import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
 import { SystemSettingsStore } from '@/store'
+import param from '@/gpm_param'
 export default {
   components: {
     uploader, jw_switch
@@ -269,7 +270,9 @@ export default {
       }
     },
     HandleSickLidarLocBtnClick() {
-      window.open('http://192.168.1.1');
+      param.backend_host//只抓 ip:port 中的 ip
+      var backend_host = param.backend_host.replace(/:\d+/, '');
+      window.open(backend_host);
     },
     async HandleRestartVCSBtnClick() {
       this.$swal.fire(

@@ -111,6 +111,7 @@ class SystemSettings {
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation: true,
             TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag: false,
+            ForkStartActionEarlyWhenVALIDOuputON: false,
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
             DownSearchSpeedWhenInitialize: 0.8,
@@ -216,6 +217,19 @@ class SystemSettings {
         };
         this.IsUIDefault = true;
         this.EditKey = 'default';
+        this.InputContactTypeDefines = {
+            "TRAY_Exist_Sensor_1": "B",
+            "TRAY_Exist_Sensor_2": "B",
+            "TRAY_Exist_Sensor_3": "B",
+            "TRAY_Exist_Sensor_4": "B",
+            "RACK_Exist_Sensor_1": "B",
+            "RACK_Exist_Sensor_2": "B",
+            "Fork_Frontend_Abstacle_Sensor": "B",
+            "Vertical_Belt_Sensor": "B",
+            "Vertical_Belt_Sensor_2": "B",
+            "Bumper_Sensor": "B",
+            "EMO": "B",
+        }
     }
 
 }
