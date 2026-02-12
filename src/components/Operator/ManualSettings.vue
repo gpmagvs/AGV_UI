@@ -49,21 +49,21 @@
       <div class="item-label">浮動牙叉</div>
       <div class="battery py-1">
         <div v-if="IsPinMoudleRosBase" class="d-flex flex-row mb-1">
-          <b-button :disabled="PinState.pose == 'lock' || pin_action_running"
+          <b-button :disabled="pin_init_running || PinState.pose == 'lock' || pin_action_running"
             @click="ForkFloatPinDriverControlHandler(true)" squared variant="primary">LOCK</b-button>
-          <b-button :disabled="PinState.pose == 'release' || pin_action_running"
+          <b-button :disabled="pin_init_running || PinState.pose == 'release' || pin_action_running"
             @click="ForkFloatPinDriverControlHandler(false)" squared variant="primary">RELEASE</b-button>
           <b-button :disabled="pin_init_running" @click="ForkFloatPinInit()" squared variant="warning">INIT</b-button>
-          <div style="font-size: smaller;">目前狀態:{{ PinState.pose.toUpperCase() }}</div>
+          <div style="font-size: smaller;">目前狀態:{{ pin_init_running ? 'INITING' : PinState.pose.toUpperCase() }}</div>
         </div>
         <div v-else class="d-flex flex-row mb-1">
-          <b-button :disabled="!IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(true)" squared
-            variant="primary">LOCK</b-button>
-          <b-button :disabled="IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(false)" squared
-            variant="primary">RELEASE</b-button>
-
+          <b-button :disabled="pin_init_running || !IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(true)"
+            squared variant="primary">LOCK</b-button>
+          <b-button :disabled="pin_init_running || IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(false)"
+            squared variant="primary">RELEASE</b-button>
           <b-button :disabled="pin_init_running" @click="ForkFloatPinInit()" squared variant="warning">INIT</b-button>
-          <div style="font-size: smaller;">目前狀態:{{ IsPinFloatOuputON ? 'RELEASE' : 'LOCK' }}</div>
+          <div style="font-size: smaller;">目前狀態:{{ pin_init_running ? 'INITING' : IsPinFloatOuputON ? 'RELEASE' : 'LOCK'
+          }}</div>
         </div>
       </div>
     </div>
@@ -92,6 +92,7 @@ import SimpleKeyboard from '@/components/Tools/SimpleKeyboard.vue'
 import LaserModeSwitcher from '@/components/LaserModeSwitcher.vue'
 import { AGVStatusStore, DIOStore, UserStore, SystemSettingsStore } from '@/store'
 import { ROS_STORE } from '@/store/ros_store';
+import { ElMessage } from 'element-plus';
 
 export default {
   components: {
@@ -208,6 +209,7 @@ export default {
     },
     async ForkFloatPinInit() {
       this.pin_init_running = true;
+      ElMessage.warning('浮動牙叉初始化中...');
       try {
         var result = { confirm: false, message: '' }
         result = await ForkAPI.PIN_INIT();
@@ -217,6 +219,17 @@ export default {
               text: '',
               title: result.message,
               icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+        else {
+          this.$swal.fire(
+            {
+              title: '浮動牙叉初始化成功',
+              text: '初始化成功',
+              icon: 'success',
               showCancelButton: false,
               confirmButtonText: 'OK',
               customClass: 'my-sweetalert'
