@@ -601,6 +601,11 @@ export const ForkAPI = {
     var ret = await axios_entity.get(`api/VMS/Fork/Pin/Release`)
     return ret.data;
   },
+  /**浮動牙叉初始化 */
+  async PIN_INIT() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Pin/Init`)
+    return ret.data;
+  },
 
   async ForkVerticalInitActionResume(resume = false) {
     var ret = await axios_entity.post(`api/FORKAGV/ForkVerticalInitActionResume?resume=${resume}`)

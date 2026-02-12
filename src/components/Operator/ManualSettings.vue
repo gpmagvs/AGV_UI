@@ -53,6 +53,7 @@
             @click="ForkFloatPinDriverControlHandler(true)" squared variant="primary">LOCK</b-button>
           <b-button :disabled="PinState.pose == 'release' || pin_action_running"
             @click="ForkFloatPinDriverControlHandler(false)" squared variant="primary">RELEASE</b-button>
+          <b-button :disabled="pin_init_running" @click="ForkFloatPinInit()" squared variant="warning">INIT</b-button>
           <div style="font-size: smaller;">目前狀態:{{ PinState.pose.toUpperCase() }}</div>
         </div>
         <div v-else class="d-flex flex-row mb-1">
@@ -60,6 +61,8 @@
             variant="primary">LOCK</b-button>
           <b-button :disabled="IsPinFloatOuputON" @click="ForkFloatPinDriverControlHandler(false)" squared
             variant="primary">RELEASE</b-button>
+
+          <b-button :disabled="pin_init_running" @click="ForkFloatPinInit()" squared variant="warning">INIT</b-button>
           <div style="font-size: smaller;">目前狀態:{{ IsPinFloatOuputON ? 'RELEASE' : 'LOCK' }}</div>
         </div>
       </div>
@@ -102,6 +105,7 @@ export default {
       modifyLaserModeDialogShow: false,
       show_keyboard: false,
       pin_action_running: false,
+      pin_init_running: false,
 
     }
   },
@@ -200,6 +204,38 @@ export default {
             confirmButtonText: 'OK',
             customClass: 'my-sweetalert'
           })
+      }
+    },
+    async ForkFloatPinInit() {
+      this.pin_init_running = true;
+      try {
+        var result = { confirm: false, message: '' }
+        result = await ForkAPI.PIN_INIT();
+        if (!result.confirm) {
+          this.$swal.fire(
+            {
+              text: '',
+              title: result.message,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            })
+        }
+      }
+      catch (error) {
+        this.$swal.fire(
+          {
+            text: error.message,
+            title: '浮動牙叉初始化失敗',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+      }
+      finally {
+        this.pin_init_running = false;
       }
     },
     async ForkFloatPinDriverControlHandler(isLock) {
