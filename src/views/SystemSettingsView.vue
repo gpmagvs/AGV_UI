@@ -50,6 +50,11 @@
                   <el-input-number @change="HandleParamChanged" size="small"
                     v-model="settings.ActionTimeout"></el-input-number>
                 </el-form-item>
+
+                <el-form-item label="貨物在席觸發時生成 UNID">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.CargoExistSensorParams.GenerateCarrierIdWhenSensorTriggered"></el-switch>
+                </el-form-item>
               </el-form>
             </div>
             <div v-if="selected_tab === '1'" class="tabpage border p-2">
@@ -429,6 +434,10 @@
                 <el-form-item label="放貨動作牙叉在交握開始後即可動作">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.ForkStartActionEarlyWhenVALIDOuputON"></el-switch>
+                </el-form-item>
+                <el-form-item label="浮動牙叉PIN與伸縮牙叉需互鎖">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.IsFloatingPinLockHorizonForkArm"></el-switch>
                 </el-form-item>
                 <el-form-item v-if="false" label="退出充電站後Z軸同步回Home">
                   <el-switch @change="HandleParamChanged"

@@ -112,6 +112,7 @@ class SystemSettings {
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation: true,
             TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag: false,
             ForkStartActionEarlyWhenVALIDOuputON: false,
+            IsFloatingPinLockHorizonForkArm: false,
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
             DownSearchSpeedWhenInitialize: 0.8,
@@ -172,7 +173,8 @@ class SystemSettings {
             RackSensorNumber: 2,
             TraySensorNumber: 4,
             SensorPointType: 1,
-            ExistSensorSimulation: false
+            ExistSensorSimulation: false,
+            GenerateCarrierIdWhenSensorTriggered: false,
         };
         this.Advance = {
             ShutDownPCWhenLowBatteryLevel: false,
