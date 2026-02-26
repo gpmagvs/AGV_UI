@@ -393,7 +393,6 @@ export default {
 
     },
     UpdateAGVState() {
-      console.log('updateagvstate');
       var _agv_state = AGVStatusStore.getters.MapUseState;
       var _agv_layer_source = this.AGV_Layer.getSource();
       var _agv_feature = _agv_layer_source.getFeatures().find(feature => feature.getId() == _agv_state.AGV_Name);
