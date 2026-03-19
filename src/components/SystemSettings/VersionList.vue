@@ -2,13 +2,17 @@
     <div>
         <div class="head-action-container pb-2 mb-2 border-bottom d-flex justify-content-start">
             <el-button plain type="primary" @click="GetVersionListFromServer">重新整理</el-button>
+            <el-button plain type="danger" class="ms-2" :disabled="selectedVersions.length === 0"
+                @click="HandleBulkDelete">刪除選取</el-button>
         </div>
-        <el-table :data="versionList" style="width: 100%" border stripe v-loading="isLoading">
+        <el-table :data="versionList" style="width: 100%" border stripe v-loading="isLoading"
+            @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55" :selectable="(row) => row.Version !== currentVersion" />
             <el-table-column prop="Version" label="版本">
                 <template #default="scope">
                     <el-tag effect="dark" type="success" style="font-size: 14px;width: 100px;padding-block: 14px;">{{
                         scope.row.Version
-                    }}</el-tag>
+                        }}</el-tag>
                     <el-tag v-if="scope.row.Version == currentVersion" type="success" round
                         class="mx-1">Current</el-tag>
                 </template>
@@ -58,6 +62,7 @@ class VersionInfo {
 }
 const isLoading = ref(false);
 const versionList = ref([new VersionInfo("1.0.0", "測試版本", "2021-01-01")]);
+const selectedVersions = ref([]);
 
 const confirmDialogVisible = ref(false);
 const confirmInput = ref('');
@@ -99,6 +104,11 @@ const GetVersionListFromServer = async () => {
             isLoading.value = false;
         }, 500);
     }
+}
+const handleSelectionChange = (rows) => {
+    selectedVersions.value = rows
+        .filter(r => r.Version !== currentVersion.value)
+        .map(r => r.Version);
 }
 const HandleChangeVersion = async (version) => {
     //Swal 確認是否要真的要變更版本
@@ -218,10 +228,11 @@ const HandleUpdeteCurrentVersionFile = async () => {
     }
     try {
         Swal.fire({
-            title: '更新檔案中...',
+            title: '車載系統版本檔案更新中...',
+            text: '您可以先暫時先關閉此對話框，待更新完成後會再通知您。',
             icon: 'warning',
             showCancelButton: false,
-            showConfirmButton: false,
+            showConfirmButton: true,
             customClass: 'my-sweetalert'
         });
 
@@ -229,19 +240,19 @@ const HandleUpdeteCurrentVersionFile = async () => {
         if (_response.confirm) {
             GetVersionListFromServer();
             Swal.fire({
-                title: '更新檔案成功',
+                title: '車載系統版本檔案更新成功',
                 icon: 'success'
             });
         } else {
             Swal.fire({
-                title: '更新檔案失敗',
+                title: '車載系統版本檔案更新失敗',
                 text: _response.message,
                 icon: 'error'
             });
         }
     } catch (err) {
         Swal.fire({
-            title: '更新檔案失敗',
+            title: '車載系統版本檔案更新失敗',
             text: err.message,
             icon: 'error'
         });
@@ -261,6 +272,77 @@ const HandleDownloadVersion = async (version) => {
 
     } catch (err) {
         console.error(err.message);
+    }
+}
+
+const HandleBulkDelete = async () => {
+    if (selectedVersions.value.length === 0) {
+        ElMessage.warning('請先選擇要刪除的版本');
+        return;
+    }
+
+    const targets = selectedVersions.value.filter(v => v !== currentVersion.value);
+    if (targets.length === 0) {
+        ElMessage.warning('沒有可刪除的版本');
+        return;
+    }
+
+    const listText = targets.join(', ');
+    const confirm = await Swal.fire({
+        title: `確定要刪除選取的 ${targets.length} 個版本嗎？`,
+        text: listText,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'rgb(64, 158, 255)',
+        backdrop: 'rgba(0, 0, 0, 0.5) url(./images/delete.png) no-repeat right bottom'
+    });
+    if (!confirm.isConfirmed) {
+        return;
+    }
+
+    try {
+        isLoading.value = true;
+        Swal.fire({
+            title: '刪除版本中...',
+            text: '請稍候...',
+            icon: 'warning',
+            showCancelButton: false,
+            showConfirmButton: true,
+            customClass: 'my-sweetalert'
+        });
+        const failures = [];
+        for (const v of targets) {
+            try {
+                const res = await SystemAPI.DeleteVersionBackupFile(v);
+                if (!res.confirm) {
+                    failures.push({ version: v, message: res.message || '未知錯誤' });
+                }
+            } catch (err) {
+                failures.push({ version: v, message: err.message || '未知錯誤' });
+            }
+        }
+
+        await GetVersionListFromServer();
+        selectedVersions.value = [];
+
+        if (failures.length === 0) {
+            Swal.fire({
+                title: '刪除完成',
+                text: `成功刪除 ${targets.length} 個版本`,
+                icon: 'success'
+            });
+        } else {
+            const failMsg = failures.map(f => `${f.version}: ${f.message}`).join('；');
+            Swal.fire({
+                title: '部分刪除失敗',
+                text: failMsg,
+                icon: 'error'
+            });
+        }
+    } finally {
+        setTimeout(() => {
+            isLoading.value = false;
+        }, 300);
     }
 }
 </script>
