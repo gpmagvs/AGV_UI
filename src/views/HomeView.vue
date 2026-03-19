@@ -172,6 +172,9 @@
             :type="VMSData.MainState == 'DOWN' ? 'error' : 'success'" :title="`派車系統任務-[${GetActionName}]`"
             :description="GetOrderDescription" :closable="false"></el-alert>
         </div>
+
+        <HostMessageDisplay class="host-message-display-home-view">
+        </HostMessageDisplay>
       </div>
       <!--對話框們-->
       <div class="modals">
@@ -852,9 +855,24 @@ export default {
 }
 </script>
 <style lang="scss">
+:root {
+  --side-menu-width: 250px;
+}
+
 .main-content {
   padding-top: 38px;
   height: 100%;
+}
+
+.host-message-display-home-view {
+  position: absolute !important;
+  top: 0px !important;
+  // left: var(--side-menu-width);
+  // width: calc(100% - var(--side-menu-width));
+  width: 100%;
+  height: 65px !important;
+  z-index: 9999;
+  // border-bottom-right-radius: 10px;
 }
 
 #waiting-go-alert {
@@ -1006,7 +1024,7 @@ export default {
 }
 
 .side {
-  width: 250px;
+  width: var(--side-menu-width);
   background: rgb(175 175 175 / 6%);
   margin-top: 3px;
 

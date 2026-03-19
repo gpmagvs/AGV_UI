@@ -227,6 +227,10 @@ function StartHubConnection() {
         AGVStatusStore.commit('setMaintainModeStatus', data)
     })
 
+    HubConnection.on('Notification', message => {
+        safeEmit('HostMessage', message);
+    })
+
     HubConnection.onclose(() => {
         console.log('SignalR  Disconnect');
         safeEmit('ws_disconnect', undefined);
