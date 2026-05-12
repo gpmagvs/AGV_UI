@@ -303,6 +303,11 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.LDULDParams.CheckCargoTypeMatchWhenUnload"></el-switch>
                 </el-form-item>
+
+                <el-form-item label="取貨後退出主幹道同時觸發 Reader 拍照">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.IsCstReaderTriggerWhenUnloadActionBackwardToMainPath"></el-switch>
+                </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>車頭設備內產品預檢知(斜上打)</b>
                 </div>

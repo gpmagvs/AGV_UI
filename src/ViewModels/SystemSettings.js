@@ -166,6 +166,7 @@ class SystemSettings {
             MaunalCheckAndResumableWhenUnloadButCargoBias: false,
             CheckCargoTypeMatchWhenUnload: false,
             IsActionFinishReportBeforeCOMPTSignalON: false,
+            IsCstReaderTriggerWhenUnloadActionBackwardToMainPath: false,
         };
         this.CargoExistSensorParams = {
             TraySensorMounted: true,
