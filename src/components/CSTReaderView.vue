@@ -1,28 +1,24 @@
 <template>
   <div class="cst-reader-view">
     <div class="opt border-bottom py-3">
-      <b-button :disabled="triggering" class="mx-1" variant="primary" @click="TriggerHandle(200)">
+      <b-button v-if="isHasTrayReader" :disabled="triggering" class="mx-1" variant="primary"
+        @click="TriggerHandle(200)">
         <span>Read Tray</span>
       </b-button>
-      <b-button
-        v-if="hasCstReader"
-        :disabled="triggering"
-        class="mx-1"
-        variant="primary"
-        @click="TriggerHandle(201)"
-      >
+      <b-button v-if="isHasRackReader" :disabled="triggering" class="mx-1" variant="primary"
+        @click="TriggerHandle(201)">
         <span>Read Rack</span>
       </b-button>
-      <b-button :disabled="!triggering" variant="danger" @click="StopHandle">STOP</b-button>
+      <b-button v-if="!isNoReader" :disabled="!triggering" variant="danger" @click="StopHandle">STOP</b-button>
     </div>
-    <div class="p-3">
+    <div v-if="!isNoReader" class="p-3">
       <img ref="image" src="/tray.jpg" height="400" alt="QR Code" />
       <!-- <div class="barcode_select"></div> -->
-      <div
-        v-loading="triggering"
-        v-bind:class="qrCodeValue"
-        class="barcode-tooltip"
-      >{{ triggering ? 'Triggering...' : cstData }}</div>
+      <div v-loading="triggering" v-bind:class="qrCodeValue" class="barcode-tooltip">{{ triggering ? 'Triggering...' :
+        cstData }}</div>
+    </div>
+    <div v-else>
+      <el-empty description="No CST Reader" />
     </div>
     <div class="image-show">
       <img :src="imageSrc" />
@@ -59,7 +55,16 @@ export default {
     },
     cstData() {
       return AGVStatusStore.state.AGVStatus.CST_Data;
-    }
+    },
+    isHasTrayReader() {
+      return this.agvSettings.HasTrayCstReader
+    },
+    isHasRackReader() {
+      return this.agvSettings.HasRackCstReader
+    },
+    isNoReader() {
+      return !this.isHasTrayReader && !this.isHasRackReader
+    },
   },
   methods: {
     async fetchImage() {
