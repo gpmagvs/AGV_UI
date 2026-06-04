@@ -474,8 +474,8 @@
                 </el-form-item>
                 <el-form-item label="Sensor 接點模式">
                   <el-select v-model="settings.ForkAGV.ObsSensorPointType" @change="HandleParamChanged">
-                    <el-option label="A 接點" :value="0"></el-option>
-                    <el-option label="B 接點" :value="1"></el-option>
+                    <el-option label="A 接點" :value="1"></el-option>
+                    <el-option label="B 接點" :value="0"></el-option>
                   </el-select>
                 </el-form-item>
                 <div v-if="settings.ForkAGV.HorizonArmConfigs" class="text-start w-100 border-bottom mb-2">

@@ -45,13 +45,13 @@
                         <el-option :key="1" label="B" :value="'B'"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="牙叉前端 Sensor">
+                <!-- <el-form-item label="牙叉前端 Sensor">
                     <el-select v-model="inputContactTypeDefinesData['Fork_Frontend_Abstacle_Sensor']"
                         @change="handleInputContactTypeDefinesChange">
                         <el-option :key="0" label="A" :value="'A'"></el-option>
                         <el-option :key="1" label="B" :value="'B'"></el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="物料在荷 Sensor">
                     <el-select v-model="inputContactTypeDefinesData['Carrier_Exist_Interupt_Sensor']"
                         @change="handleInputContactTypeDefinesChange">
