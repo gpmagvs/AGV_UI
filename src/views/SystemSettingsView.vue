@@ -647,6 +647,9 @@
                 <b-button v-if="false" variant="info" @click="HandleOTAUpdateBtnClick">系統更新</b-button>
               </div>
             </div>
+            <div v-if="selected_tab === '14'" class="tabpage border p-2">
+              <CrontabSetting></CrontabSetting>
+            </div>
           </div>
         </div>
       </div>
@@ -677,6 +680,7 @@ import SystemSettings from '@/ViewModels/SystemSettings'
 import AlarmCodeModel from '@/ViewModels/AlarmCodeModel'
 import Swal from 'sweetalert2'
 import VersionList from '@/components/SystemSettings/VersionList.vue'
+import CrontabSetting from '@/components/SystemSettings/CrontabSetting.vue'
 class ForkLifer {
   constructor() {
     this.ForkLifer_Enable = true;
@@ -701,7 +705,7 @@ class ForkLifer {
 export default {
   components: {
     uploader, IOSetting, EQHandshakeConfiguration, ManualCheckCargoStatus, SoundsSetting,
-    Setting, VersionList
+    Setting, VersionList, CrontabSetting
   },
   data() {
     return {
@@ -728,7 +732,8 @@ export default {
         { index: '10', title: 'I/O定義' },
         { index: '11', title: '設備交握設定', show: () => !this.IsInspectionAGV },
         { index: '12', title: '手動檢查貨況' },
-        { index: '13', title: '進階' }
+        { index: '13', title: '進階' },
+        { index: '14', title: '排程管理' }
       ],
       maintainModeData: {
         IsMaintainMode: false,

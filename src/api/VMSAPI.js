@@ -83,6 +83,18 @@ export var SystemAPI = {
   async DeleteVersionBackupFile(version) {
     var ret = await axios_entity.delete(`api/System/Version?version=${version}`)
     return ret.data
+  },
+  async GetCrontab(userRole) {
+    var ret = await axios_entity.get(`api/System/Crontab?userRole=${userRole}`)
+    return ret.data
+  },
+  async ValidateCrontab(payload) {
+    var ret = await axios_entity.post('api/System/Crontab/Validate', payload)
+    return ret.data
+  },
+  async SaveCrontab(payload) {
+    var ret = await axios_entity.post('api/System/Crontab', payload)
+    return ret.data
   }
 }
 
