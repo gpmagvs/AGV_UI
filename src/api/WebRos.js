@@ -6,7 +6,38 @@ var ros = new ROSLIB.Ros({
 })
 import { SystemSettingsStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store";
+import { SystemAPI } from '@/api/VMSAPI';
+
+var ros_version = 'ROS1';
+var keyboard_move_topic = '';
 console.log('ros url:' + param.ros_bridge_url);
+
+SystemAPI.GetROS_VERSION().then(version => {
+    ros_version = version;
+}).catch(error => {
+    console.error('Failed to get ROS version:', error);
+});
+
+setTimeout(() => {
+    console.log('ROS version:' + ros_version);
+
+    ros.on('connection', function () {
+        console.log('ros bridge server connected!');
+        linear_speed = 0.0
+        angular_speed = 0.0
+
+    })
+    ros.on('error', function () {
+        console.warn('ROS Connection not estimated');
+    })
+    keyboard_move_topic = new ROSLIB.Topic({
+        ros: ros,
+        name: '/cmd_vel',
+        messageType: ros_version == 'ROS1' ? 'geometry_msgs/Twist' : 'geometry_msgs/msg/Twist'
+    })
+}, 1000);
+
+
 
 var lastInput = Date.now();
 /**直線速度 */
@@ -44,20 +75,6 @@ function checkInputInterval() {
     }
 }
 
-ros.on('connection', function () {
-    console.log('ros bridge server connected!');
-    linear_speed = 0.0
-    angular_speed = 0.0
-
-})
-ros.on('error', function () {
-    console.warn('ROS Connection not estimated');
-})
-var keyboard_move_topic = new ROSLIB.Topic({
-    ros: ros,
-    name: '/cmd_vel',
-    messageType: 'geometry_msgs/Twist'
-})
 
 /**當前是否在執行曲線轉向動作 */
 function isCurrentActionIsCurving() {
@@ -75,7 +92,7 @@ export function subscribeModuleInfoAndStore() {
     var module_info_listener = new ROSLIB.Topic({
         ros: ros,
         name: '/module_information',
-        messageType: 'gpm_msgs/ModuleInformation',
+        messageType: ros_version == 'ROS1' ? 'gpm_msgs/ModuleInformation' : 'gpm_msgs/msg/ModuleInformation',
         throttle_rate: 300,
         queue_length: 1,
 

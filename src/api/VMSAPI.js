@@ -27,6 +27,16 @@ export var SoundsAPI = {
 }
 /**系統相關api */
 export var SystemAPI = {
+
+  async GetROS_VERSION() {
+    try {
+      var ret = await axios_entity.get('api/System/ROS_VERSION')
+      return ret.data
+    } catch (error) {
+      return undefined;
+    }
+  },
+
   async GetSettings() {
     try {
       var ret = await axios_entity.get('api/System/Settings')
