@@ -55,6 +55,21 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.CargoExistSensorParams.GenerateCarrierIdWhenSensorTriggered"></el-switch>
                 </el-form-item>
+
+                <div class="w-100 text-start text-dark border-bottom">
+                  <b>自動門控制</b>
+                </div>
+
+                <el-form-item label="自動門開啟狀態下持續變化開關狀態">
+                  <el-switch @change="HandleParamChanged" v-model="settings.AutoDoorSignalToggleWhenOpen"></el-switch>
+                </el-form-item>
+
+                <el-form-item label="自動門 Toggle 間隔時間(ms)">
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.AutoDoorSingalToggleIntervalMs"></el-input-number>
+                </el-form-item>
+
+
               </el-form>
             </div>
             <div v-if="selected_tab === '1'" class="tabpage border p-2">

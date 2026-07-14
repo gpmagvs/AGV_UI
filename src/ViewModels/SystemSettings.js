@@ -233,6 +233,8 @@ class SystemSettings {
             "Bumper_Sensor": "B",
             "EMO": "B",
         }
+        this.AutoDoorSignalToggleWhenOpen = false;
+        this.AutoDoorSingalToggleIntervalMs = 1000;
     }
 
 }
