@@ -5,7 +5,11 @@
         <el-button type="primary" @click="SaveHandler">儲存</el-button>
         <el-button type="info" @click="AddTagTeachHandler">新增</el-button>
         <el-button type="info" @click="reload">重新載入</el-button>
+        <el-button type="success" @click="TriggerTeachFileUpload">上傳檔案</el-button>
+        <el-button type="danger" @click="ClearTeachDataHandler">清除資料</el-button>
         <el-button @click="() => { showOffsetDialog = true }">OFFSET</el-button>
+        <input ref="teachFileInput" type="file" accept=".ini,.json" style="display: none"
+          @change="HandleTeachFileSelected" />
       </div>
     </el-affix>
     <el-dialog title="OFFSET 調整" v-model="showOffsetDialog" width="30%">
@@ -32,7 +36,7 @@
       </el-select>
     </div>
     <el-table @cell-click="HandleCellClicked" :data="TeachDatasShown" size="small" v-loading="loading"
-      :row-class-name="GetRowClass">
+      :row-key="(row) => row.Tag" :row-class-name="GetRowClass">
       <el-table-column label="Tag" prop="Tag" sortable>
         <template #default="scope">
           <div>
@@ -155,7 +159,8 @@ export default {
       selected_data: {},
       selected_tag: 'all',
       showOffsetDialog: false,
-      offsetVal: 0
+      offsetVal: 0,
+      isImportingTeachData: false
     }
   },
   watch: {
@@ -324,6 +329,8 @@ export default {
       this.InputChanged();
       var response = await ForkAPI.SaveTeachData(transformedData)
       if (response.confirm) {
+        // SaveTeachData 不含交握設定；上傳/編輯後的 NeedHandshake 需另外寫回
+        await this.SyncAllHandshakeSettings();
         this.LoadTeachDataFromServer()
         this.HasAnyChange = false;
         this.$swal.fire({
@@ -333,6 +340,12 @@ export default {
         })
       }
     },
+    async SyncAllHandshakeSettings() {
+      const tasks = this.TeachDatas.map(item =>
+        ForkAPI.WorkstationHandshakeSetting(item.Tag, !!item.NeedHandshake)
+      );
+      await Promise.all(tasks);
+    },
     InputChanged() {
       //'[{"Tag":8,"Layers":[{"Key":0,"Value":{"Name":"10-0","Up_Pose":12.42,"Down_Pose":12.03}},{"Key":1,"Value":{"Name":"10-1","Up_Pose":23.3,"Down_Pose":22.1}},{"Key":2,"Value":{"Name":"10-2","Up_Pose":123.3,"Down_Pose":121.1}}]}]'
       var currentJson = this.GetNonCommString(this.TeachDatas)
@@ -340,6 +353,7 @@ export default {
 
     },
     async HandleNeedHandshakeCkbChanged(row) {
+      if (this.isImportingTeachData) return;
       await ForkAPI.WorkstationHandshakeSetting(row.Tag, row.NeedHandshake)
     },
     InputClicked(ele) {
@@ -363,6 +377,230 @@ export default {
       }]
       this.TeachDatas = [...newAry, ...this.TeachDatas];
       this.HasAnyChange = true;
+    },
+    TriggerTeachFileUpload() {
+      this.$refs.teachFileInput.value = '';
+      this.$refs.teachFileInput.click();
+    },
+    HandleTeachFileSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target.result;
+          const fileName = (file.name || '').toLowerCase();
+          let parsed = [];
+
+          if (fileName.endsWith('.json')) {
+            parsed = this.ParseTeachPositionFromWorkStationJson(content);
+          } else if (fileName.endsWith('.ini')) {
+            parsed = this.ParseTeachPositionFromIni(content);
+          } else {
+            // fallback by content shape
+            const trimmed = String(content).trim();
+            if (trimmed.startsWith('{')) {
+              parsed = this.ParseTeachPositionFromWorkStationJson(content);
+            } else {
+              parsed = this.ParseTeachPositionFromIni(content);
+            }
+          }
+
+          if (parsed.length === 0) {
+            this.$swal.fire({
+              title: '無法解析教點資料',
+              text: '請確認為 StationSetting.ini（[TeachPosition]）或 WorkStation.json（Stations / LayerDatas）格式',
+              icon: 'warning',
+              confirmButtonText: 'OK',
+              customClass: 'my-sweetalert'
+            });
+            return;
+          }
+          this.isImportingTeachData = true;
+          this.TeachDatas = parsed;
+          this.selected_tag = 'all';
+          this.HasAnyChange = true;
+          this.$nextTick(() => {
+            this.isImportingTeachData = false;
+          });
+          this.$swal.fire({
+            icon: 'success',
+            title: '上傳成功',
+            text: `已載入 ${parsed.length} 筆 Tag 教點資料（尚未存檔）`
+          });
+        } catch (error) {
+          this.$swal.fire({
+            title: '檔案解析失敗',
+            text: error.message || String(error),
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          });
+        }
+      };
+      reader.onerror = () => {
+        this.$swal.fire({
+          title: '檔案讀取失敗',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        });
+      };
+      reader.readAsText(file);
+    },
+    /**
+     * WorkStation.json: HandShakeModeHandShakeMode 0=不需交握, 1=需交握
+     * Also accepts NeedHandshake / boolean / string forms.
+     */
+    ResolveNeedHandshake(station) {
+      if (!station || typeof station !== 'object') return false;
+
+      if (station.NeedHandshake !== undefined && station.NeedHandshake !== null) {
+        return this.CoerceToNeedHandshakeFlag(station.NeedHandshake);
+      }
+
+      // Notes key in sample file has trailing space; tolerate both
+      const mode = station.HandShakeModeHandShakeMode ??
+        station['HandShakeModeHandShakeMode '] ??
+        station.HandShakeMode;
+
+      if (mode === undefined || mode === null) return false;
+      return this.CoerceToNeedHandshakeFlag(mode);
+    },
+    CoerceToNeedHandshakeFlag(value) {
+      if (value === true || value === false) return value;
+      if (typeof value === 'string') {
+        const lower = value.trim().toLowerCase();
+        if (lower === 'true' || lower === '1' || lower === 'needhandshake' || lower === 'handshake') return true;
+        if (lower === 'false' || lower === '0' || lower === 'nohandshake' || lower === 'none') return false;
+      }
+      // 0:不需交握, 1:需交握 (Number(true)===1 also works)
+      return Number(value) === 1;
+    },
+    BuildTeachDataItem(tag, name, layerPoseMap, needHandshake = false) {
+      const layers = [0, 1, 2].map(layerKey => {
+        const pose = layerPoseMap[layerKey] || { Down_Pose: 0, Up_Pose: 0 };
+        return {
+          Key: layerKey,
+          Value: {
+            Name: `${tag}-${layerKey}`,
+            Up_Pose: pose.Up_Pose,
+            Down_Pose: pose.Down_Pose
+          }
+        };
+      });
+      return {
+        Tag: tag,
+        Name: name || '',
+        Layers: layers,
+        NeedHandshake: !!needHandshake,
+        IsNewAdd: true
+      };
+    },
+    ParseTeachPositionFromWorkStationJson(content) {
+      const data = typeof content === 'string' ? JSON.parse(content) : content;
+      const stations = data && data.Stations;
+      if (!stations || typeof stations !== 'object') return [];
+
+      return Object.keys(stations)
+        .map(key => stations[key])
+        .filter(station => station && station.Tag != null && station.LayerDatas)
+        .map(station => {
+          const tag = parseInt(station.Tag, 10);
+          const layerDatas = station.LayerDatas || {};
+          const layerPoseMap = {};
+          Object.keys(layerDatas).forEach(layerKeyStr => {
+            const layerKey = parseInt(layerKeyStr, 10);
+            if (Number.isNaN(layerKey)) return;
+            const layer = layerDatas[layerKeyStr] || {};
+            const downPose = parseFloat(layer.Down_Pose);
+            const upPose = parseFloat(layer.Up_Pose);
+            layerPoseMap[layerKey] = {
+              Down_Pose: Number.isNaN(downPose) ? 0 : downPose,
+              Up_Pose: Number.isNaN(upPose) ? 0 : upPose
+            };
+          });
+          const needHandshake = this.ResolveNeedHandshake(station);
+          return this.BuildTeachDataItem(tag, station.Name, layerPoseMap, needHandshake);
+        })
+        .filter(item => !Number.isNaN(item.Tag))
+        .sort((a, b) => a.Tag - b.Tag);
+    },
+    ParseTeachPositionFromIni(content) {
+      const lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+      let inTeachPosition = false;
+      // tag -> { layer -> { Down_Pose, Up_Pose } }
+      const tagMap = {};
+      const existingByTag = {};
+      this.TeachDatas.forEach(item => {
+        existingByTag[item.Tag] = item;
+      });
+
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) continue;
+
+        const sectionMatch = line.match(/^\[(.+)\]$/);
+        if (sectionMatch) {
+          inTeachPosition = sectionMatch[1].trim().toLowerCase() === 'teachposition';
+          continue;
+        }
+        if (!inTeachPosition) continue;
+        if (line.startsWith('#') || line.startsWith(';')) continue;
+
+        // strip inline comments (# or ;)
+        const withoutComment = line.split(/[#;]/)[0].trim();
+        if (!withoutComment) continue;
+
+        const eqIndex = withoutComment.indexOf('=');
+        if (eqIndex < 0) continue;
+
+        const key = withoutComment.slice(0, eqIndex).trim();
+        const value = withoutComment.slice(eqIndex + 1).trim();
+        const keyMatch = key.match(/^(\d+)_(\d+)$/);
+        if (!keyMatch) continue;
+
+        const poses = value.split(',').map(v => v.trim());
+        if (poses.length < 2) continue;
+
+        const tag = parseInt(keyMatch[1], 10);
+        const layer = parseInt(keyMatch[2], 10);
+        const downPose = parseFloat(poses[0]);
+        const upPose = parseFloat(poses[1]);
+        if (Number.isNaN(downPose) || Number.isNaN(upPose)) continue;
+
+        if (!tagMap[tag]) tagMap[tag] = {};
+        tagMap[tag][layer] = { Down_Pose: downPose, Up_Pose: upPose };
+      }
+
+      return Object.keys(tagMap)
+        .map(tagStr => parseInt(tagStr, 10))
+        .sort((a, b) => a - b)
+        .map(tag => {
+          const existing = existingByTag[tag];
+          // INI has no handshake field: keep existing value when possible, otherwise false
+          const needHandshake = existing ? !!existing.NeedHandshake : false;
+          const name = existing && existing.Name ? existing.Name : '';
+          return this.BuildTeachDataItem(tag, name, tagMap[tag], needHandshake);
+        });
+    },
+    ClearTeachDataHandler() {
+      this.$swal.fire({
+        title: '清除資料',
+        text: '確定要清除目前所有教點資料？',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: '取消',
+        customClass: 'my-sweetalert'
+      }).then(res => {
+        if (res.isConfirmed) {
+          this.TeachDatas = [];
+          this.selected_tag = 'all';
+          this.HasAnyChange = true;
+        }
+      });
     },
     RemoveTagTeachSetting(tagTeach) {
       var index = this.TeachDatas.indexOf(tagTeach)
