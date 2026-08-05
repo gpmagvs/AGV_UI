@@ -3,7 +3,7 @@
   <div class="flex-fill border mt-1 p-1">
     <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills style="height: 100%;">
       <!-- 狀態 -->
-      <b-tab :title="$t('status')" active style="height: 100%;">
+      <b-tab :title="$t('status')" style="height: 100%;">
         <status_card :VMSData="VMSData"></status_card>
       </b-tab>
       <!--Alarm Table-->
@@ -30,7 +30,8 @@
       <!-- CST READER -->
       <b-tab v-if="!IsVisitor" title="CST Reader">
         <CSTReader></CSTReader>
-      </b-tab>IsGodUser <b-tab v-if="!IsVisitor" title="Overview">
+      </b-tab>
+      <b-tab v-if="!IsVisitor" title="Overview">
         <AgvOverview :AsMainPageMode="false"></AgvOverview>
       </b-tab>
       <b-tab v-if="IsGodMod" title="Log">
@@ -69,6 +70,16 @@ import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
 import CamDisplay from "@/Camera/CamDisplay.vue"
+
+const TAB_STORAGE_KEY = 'main_content_tab'
+
+function loadStoredTab(defaultVal = 0) {
+  const raw = localStorage.getItem(TAB_STORAGE_KEY)
+  if (raw == null) return defaultVal
+  const n = parseInt(raw, 10)
+  return Number.isNaN(n) || n < 0 ? defaultVal : n
+}
+
 export default {
   components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery, BatteryView, CamDisplay },
   props: {
@@ -79,47 +90,79 @@ export default {
   },
   data() {
     return {
-      current_tab: 0
+      current_tab: loadStoredTab(0)
     }
   },
   mounted() {
+    this.ensureValidTab()
+    this.applyTabSideEffects(this.current_tab)
     bus.on('on-fork-height-click', () => {
-      this.current_tab = 2;
+      this.setCurrentTab(2);
+      this.applyTabSideEffects(2);
     });
     bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.current_tab = 2;
+      this.setCurrentTab(2);
+      this.applyTabSideEffects(2);
     });
   },
+  watch: {
+    IsVisitor() {
+      this.ensureValidTab()
+    },
+    IsGodMod() {
+      this.ensureValidTab()
+    }
+  },
   methods: {
-    HandleTabpageChanged(currentTabs, previousTabs) {
-      this.current_tab = currentTabs;
+    setCurrentTab(tabIndex) {
+      this.current_tab = tabIndex
+      localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
+      UIStore.commit('SetCurrentTabSelected', tabIndex)
+    },
+    /** 權限不足導致先前 tab 不存在時，回到第一個可見 tab */
+    ensureValidTab() {
+      if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
+        this.setCurrentTab(0)
+        this.applyTabSideEffects(0)
+      }
+    },
+    applyTabSideEffects(currentTabs) {
       UIStore.commit('SetCurrentTabSelected', currentTabs)
-      if (currentTabs == previousTabs)
-        return;
       if (currentTabs == 1) {
         bus.emit('/alarmtable_tab_click')
       }
-
       if (currentTabs == 6) {
         bus.emit('local-task-view-shown')
       }
-
       ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 2)
       if (currentTabs != 2) {
         ROS_STORE.dispatch('force_stop')
       }
-      this.$emit('OnTabChanged', this.currentTabs);
+    },
+    HandleTabpageChanged(currentTabs, previousTabs) {
+      this.setCurrentTab(currentTabs);
+      if (currentTabs == previousTabs)
+        return;
+      this.applyTabSideEffects(currentTabs);
+      this.$emit('OnTabChanged', currentTabs);
     },
   },
   computed: {
+    /**
+     * b-tabs 只計算實際渲染的 tab；v-if=false / 無權限的 tab 不佔 index。
+     * 固定可見：狀態、異常、操作、E84、地圖 → 5 個 (index 0~4)
+     */
+    maxVisibleTabIndex() {
+      let count = 5
+      if (!this.IsVisitor) count += 2 // CST Reader, Overview
+      if (this.IsGodMod) count += 1 // Log
+      return count - 1
+    },
     IsGodMod() {
       return UserStore.getters.IsGodUser
     },
     IsDevUser() {
       return UserStore.getters.IsDevUser
-    },
-    IsEngUser() {
-      return UserStore.getters.IsEngUser;
     },
     IsEngUser() {
       return UserStore.getters.IsEngUser;

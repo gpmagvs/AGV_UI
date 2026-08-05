@@ -6,7 +6,7 @@
       pills
       small
       @activate-tab="HandleTabpageChanged">
-      <b-tab :title="$t('agv_control')" active>
+      <b-tab :title="$t('agv_control')">
         <div class="mt-1 p-1">
           <AgvControl></AgvControl>
         </div>
@@ -63,6 +63,15 @@ import { UserStore, DIOStore, AGVStatusStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
 
+const TAB_STORAGE_KEY = 'agv_operator_tab'
+
+function loadStoredTab(defaultVal = 0) {
+  const raw = localStorage.getItem(TAB_STORAGE_KEY)
+  if (raw == null) return defaultVal
+  const n = parseInt(raw, 10)
+  return Number.isNaN(n) || n < 0 ? defaultVal : n
+}
+
 export default {
 
   components: {
@@ -75,18 +84,46 @@ export default {
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
       modal_key: '',
-      current_tab: 0
+      current_tab: loadStoredTab(0)
     }
   },
   mounted() {
+    this.ensureValidTab()
+    this.applyTabSideEffects(this.current_tab)
     bus.on('on-fork-height-click', () => {
-      this.current_tab = 1;
+      this.setCurrentTab(1);
+      this.applyTabSideEffects(1);
     });
     bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.current_tab = 4;
+      this.setCurrentTab(4);
+      this.applyTabSideEffects(4);
     });
   },
+  watch: {
+    operation_enabled_return() {
+      this.ensureValidTab()
+    },
+    isAMCAGV() {
+      this.ensureValidTab()
+    }
+  },
   methods: {
+    setCurrentTab(tabIndex) {
+      this.current_tab = tabIndex
+      localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
+    },
+    ensureValidTab() {
+      if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
+        this.setCurrentTab(0)
+        this.applyTabSideEffects(0)
+      }
+    },
+    applyTabSideEffects(currentTabs) {
+      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
+      if (currentTabs != 0) {
+        ROS_STORE.dispatch('force_stop')
+      }
+    },
     VersionTextClickHandle() {
       this.version_text_click_count += 1;
       if (this.version_text_click_count > this.trigger_admin_dialog_count) {
@@ -116,14 +153,11 @@ export default {
       }
     },
     HandleTabpageChanged(currentTabs, previousTabs) {
-      this.current_tab = currentTabs;
+      this.setCurrentTab(currentTabs);
       if (currentTabs == previousTabs)
         return;
-      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
-      if (currentTabs != 0) {
-        ROS_STORE.dispatch('force_stop')
-      }
-      this.$emit('OnTabChanged', this.currentTabs);
+      this.applyTabSideEffects(currentTabs);
+      this.$emit('OnTabChanged', currentTabs);
     },
   },
   props: {
@@ -147,6 +181,10 @@ export default {
     }
   },
   computed: {
+    /** Sensor tab 使用 v-if，無權限時不佔 index；其餘含 v-show 仍佔 index (0~4) */
+    maxVisibleTabIndex() {
+      return (this.operation_enabled_return && this.isAMCAGV) ? 5 : 4
+    },
     isGodMode() {
       return UserStore.getters.IsGodUser;
     },
