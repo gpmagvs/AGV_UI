@@ -109,6 +109,10 @@
                     <el-switch v-model="settings.SensorBypass.ForkFrontendObsSensorBypass"
                       @change="HandleParamChanged"></el-switch>
                   </el-form-item>
+                  <el-form-item label="上線後恢復 Bypass 狀態">
+                    <el-switch v-model="settings.SensorBypass.IsRestoreBypassStateWhenAgvOnline"
+                      @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
                   <div class="w-100 border-bottom">
                     <b>IMU 數據</b>
                   </div>

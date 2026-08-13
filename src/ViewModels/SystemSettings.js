@@ -73,7 +73,8 @@ class SystemSettings {
             LeftSideLaserBypass: false,
             RightSideLaserBypass: false,
             AGVBodyLimitSensorBypass: true,
-            ForkFrontendObsSensorBypass: false
+            ForkFrontendObsSensorBypass: false,
+            IsRestoreBypassStateWhenAgvOnline: false
         };
         this.EQHSTimeouts = {
             TA1_Wait_L_U_REQ_ON: 10,
