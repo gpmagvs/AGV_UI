@@ -115,6 +115,8 @@ export default {
         return 'GPM Submarine AGV';
       else if (_agv_type == 4)
         return 'GPM Parts AGV';
+      else if (_agv_type == 2330)
+        return 'UNIVERSAL AGV';
       else
         return 'GPM AGV'
     },
