@@ -173,8 +173,14 @@ export default {
     },
     LangChangeHandle(checked) {
       this.IsUseChinese = checked;
-      this.$i18n.locale = this.IsUseChinese ? 'zh-TW' : 'en-US';
-      bus.emit('/lang_changed', this.$i18n.locale);
+      const nextLocale = this.IsUseChinese ? 'zh-TW' : 'en-US';
+      // vue-i18n legacy:false 時 locale 為 Ref，需寫入 .value
+      if (this.$i18n.locale && typeof this.$i18n.locale === 'object' && 'value' in this.$i18n.locale) {
+        this.$i18n.locale.value = nextLocale;
+      } else {
+        this.$i18n.locale = nextLocale;
+      }
+      bus.emit('/lang_changed', nextLocale);
       if (this.IsUseChinese) {
         Notifier.Success("語言變更:中文", 'bottom', 800);
       } else {

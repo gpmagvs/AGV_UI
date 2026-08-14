@@ -22,6 +22,7 @@ import enUS from './locales/en-US.json'
 
 const i18n = createI18n({
   legacy: false,
+  flatJson: true,
   locale: 'zh-TW',
   fallbackLocale: 'en-US',
   messages: {

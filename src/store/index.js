@@ -898,6 +898,34 @@ export const DIOStore = createStore({
   }
 })
 
+/** Safety PLC Result 狀態 */
+export const SaftyPLCStore = createStore({
+  state: {
+    Status: {
+      Connected: false,
+      DeviceStatus: '',
+      LastUpdateTime: null,
+      Signals: []
+    }
+  },
+  getters: {
+    Status: state => state.Status,
+    Signals: state => state.Status?.Signals ?? [],
+    Connected: state => state.Status?.Connected ?? false,
+    DeviceStatus: state => state.Status?.DeviceStatus ?? ''
+  },
+  mutations: {
+    updateStatus(state, data) {
+      state.Status = data ?? {
+        Connected: false,
+        DeviceStatus: '',
+        LastUpdateTime: null,
+        Signals: []
+      }
+    }
+  }
+})
+
 export var ForkTeachStore = createStore({
   state: {
     HasAnyChanged: false

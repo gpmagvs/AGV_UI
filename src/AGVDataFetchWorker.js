@@ -1,4 +1,4 @@
-import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore, SystemMsgStore } from "./store";
+import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore, SystemMsgStore, SaftyPLCStore } from "./store";
 import { ROS_STORE } from "./store/ros_store";
 import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
@@ -170,6 +170,13 @@ function StartHubConnection() {
 
     HubConnection.on('DIOStatus', (DIOTableData) => {
         StoreDIOData(DIOTableData);
+    })
+    HubConnection.on('SaftyPLCStatus', (data) => {
+        try {
+            SaftyPLCStore.commit('updateStatus', data);
+        } catch (error) {
+            console.error(error);
+        }
     })
     HubConnection.on('ModuleInformation', moduleInformation => {
         ROS_STORE.commit('update_module_info', moduleInformation)

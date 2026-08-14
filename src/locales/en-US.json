@@ -63,5 +63,23 @@
   "VMSTask.MapShow.ReLoadMapFromAGVS": "Reload Map From AGVS",
   "ConnectionStates.AGVS": "AGVS",
   "ConnectionStates.AGVControlSys": "VCS",
-  "ConnectionStates.IOModule": "IO"
+  "ConnectionStates.IOModule": "IO",
+  "SaftyPLC": {
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "device": "Device",
+    "updated": "Updated",
+    "search_placeholder": "Search Signal / Description / Address / Raw",
+    "tab_title": "Safety PLC IO",
+    "col_address": "Address",
+    "col_signal": "Signal",
+    "col_description": "Description",
+    "col_raw": "Raw",
+    "col_logic": "Logic",
+    "col_polarity": "Polarity",
+    "no_data": "No Safety PLC data (waiting for push)",
+    "no_match": "No signal matches the search",
+    "polarity_high_hint": "ActiveHigh: Raw=1 means ON",
+    "polarity_low_hint": "ActiveLow: Raw=0 means ON"
+  }
 }

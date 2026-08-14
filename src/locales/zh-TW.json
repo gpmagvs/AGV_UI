@@ -68,5 +68,23 @@
   "VMSTask.MapShow.ReLoadMapFromAGVS": "從派車系統重新下載圖資",
   "ConnectionStates.AGVS": "派車系統",
   "ConnectionStates.AGVControlSys": "車控系統",
-  "ConnectionStates.IOModule": "IO模組"
+  "ConnectionStates.IOModule": "IO模組",
+  "SaftyPLC": {
+    "connected": "已連線",
+    "disconnected": "未連線",
+    "device": "裝置",
+    "updated": "更新時間",
+    "search_placeholder": "搜尋 Signal / Description / Address / Raw",
+    "tab_title": "Safety PLC IO",
+    "col_address": "位址",
+    "col_signal": "訊號",
+    "col_description": "說明",
+    "col_raw": "原始值",
+    "col_logic": "邏輯",
+    "col_polarity": "極性",
+    "no_data": "尚無 Safety PLC 資料（等待連線推播）",
+    "no_match": "沒有符合搜尋條件的訊號",
+    "polarity_high_hint": "ActiveHigh：原始值=1 時為 ON",
+    "polarity_low_hint": "ActiveLow：原始值=0 時為 ON"
+  }
 }
