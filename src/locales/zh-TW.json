@@ -72,6 +72,7 @@
   "SaftyPLC": {
     "connected": "已連線",
     "disconnected": "未連線",
+    "simulator": "模擬器",
     "device": "裝置",
     "updated": "更新時間",
     "search_placeholder": "搜尋 Signal / Description / Address / Raw",
@@ -85,6 +86,14 @@
     "no_data": "尚無 Safety PLC 資料（等待連線推播）",
     "no_match": "沒有符合搜尋條件的訊號",
     "polarity_high_hint": "ActiveHigh：原始值=1 時為 ON",
-    "polarity_low_hint": "ActiveLow：原始值=0 時為 ON"
+    "polarity_low_hint": "ActiveLow：原始值=0 時為 ON",
+    "polarity_click_hint": "點擊切換 ActiveHigh / ActiveLow",
+    "polarity_confirm_title": "確認修改極性",
+    "polarity_confirm_text": "確定將 {signal} 的極性改為 {polarity}？",
+    "polarity_failed": "修改極性失敗",
+    "toggle_confirm_title": "確認切換模擬輸入",
+    "toggle_confirm_text": "確定將 {signal} (B{byte}.{bit}) 的原始值改為 {value}？",
+    "toggle_failed": "切換模擬輸入失敗",
+    "toggle_busy": "正在處理中，請稍候"
   }
 }

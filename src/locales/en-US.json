@@ -67,6 +67,7 @@
   "SaftyPLC": {
     "connected": "Connected",
     "disconnected": "Disconnected",
+    "simulator": "Simulator",
     "device": "Device",
     "updated": "Updated",
     "search_placeholder": "Search Signal / Description / Address / Raw",
@@ -80,6 +81,14 @@
     "no_data": "No Safety PLC data (waiting for push)",
     "no_match": "No signal matches the search",
     "polarity_high_hint": "ActiveHigh: Raw=1 means ON",
-    "polarity_low_hint": "ActiveLow: Raw=0 means ON"
+    "polarity_low_hint": "ActiveLow: Raw=0 means ON",
+    "polarity_click_hint": "Click to toggle ActiveHigh / ActiveLow",
+    "polarity_confirm_title": "Confirm polarity change",
+    "polarity_confirm_text": "Change polarity of {signal} to {polarity}?",
+    "polarity_failed": "Failed to change polarity",
+    "toggle_confirm_title": "Confirm simulator input toggle",
+    "toggle_confirm_text": "Change raw value of {signal} (B{byte}.{bit}) to {value}?",
+    "toggle_failed": "Failed to toggle simulator input",
+    "toggle_busy": "Busy, please wait"
   }
 }

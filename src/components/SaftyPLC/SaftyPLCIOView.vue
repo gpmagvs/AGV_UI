@@ -5,6 +5,7 @@
                 <span class="status-chip" :class="connected ? 'ok' : 'ng'">
                     {{ connected ? $t('SaftyPLC.connected') : $t('SaftyPLC.disconnected') }}
                 </span>
+                <span v-if="isSimulator" class="status-chip sim">{{ $t('SaftyPLC.simulator') }}</span>
                 <span class="text-muted small">{{ $t('SaftyPLC.device') }}: {{ deviceStatus || '-' }}</span>
                 <span class="text-muted small">{{ $t('SaftyPLC.updated') }}: {{ lastUpdateText }}</span>
             </div>
@@ -45,7 +46,13 @@
                     show-overflow-tooltip />
                 <el-table-column :label="$t('SaftyPLC.col_raw')" width="88" align="center" fixed="right">
                     <template #default="scope">
-                        <span class="raw-badge" :class="scope.row.RawBit ? 'hi' : 'lo'">
+                        <span
+                            class="raw-badge"
+                            :class="[
+                                scope.row.RawBit ? 'hi' : 'lo',
+                                { clickable: canToggleRaw, busy: togglingKey === rawKey(scope.row) }
+                            ]"
+                            @click="onRawClick(scope.row)">
                             {{ scope.row.RawBit ? 1 : 0 }}
                         </span>
                     </template>
@@ -59,7 +66,11 @@
                 </el-table-column>
                 <el-table-column :label="$t('SaftyPLC.col_polarity')" width="88" align="center" fixed="right">
                     <template #default="scope">
-                        <span class="polarity" :title="polarityTitle(scope.row)">
+                        <span
+                            class="polarity"
+                            :class="{ clickable: canEditPolarity, busy: polarityKey === polarityEditKey(scope.row) }"
+                            :title="polarityTitle(scope.row)"
+                            @click="onPolarityClick(scope.row)">
                             {{ scope.row.ActiveHigh ? 'A-High' : 'A-Low' }}
                         </span>
                     </template>
@@ -70,7 +81,8 @@
 </template>
 
 <script>
-import { SaftyPLCStore } from '@/store'
+import { SaftyPLCStore, UserStore } from '@/store'
+import { SaftyPLCAPI } from '@/api/SaftyPLCAPI.js'
 
 const BOTTOM_RESERVED_PX = 24
 const MIN_TABLE_HEIGHT_PX = 240
@@ -81,7 +93,9 @@ export default {
         return {
             keyword: '',
             tableHeight: 400,
-            resizeObserver: null
+            resizeObserver: null,
+            togglingKey: null,
+            polarityKey: null
         }
     },
     computed: {
@@ -119,6 +133,15 @@ export default {
         },
         connected() {
             return SaftyPLCStore.getters.Connected
+        },
+        isSimulator() {
+            return SaftyPLCStore.getters.IsSimulator
+        },
+        canToggleRaw() {
+            return this.connected && this.isSimulator
+        },
+        canEditPolarity() {
+            return UserStore.getters.CurrentUserRole != 0
         },
         deviceStatus() {
             return SaftyPLCStore.getters.DeviceStatus
@@ -167,9 +190,97 @@ export default {
             return `${polarity} : Raw=${row.RawBit ? 1 : 0} -> Logic ${row.State ? 'ON' : 'OFF'}`
         },
         polarityTitle(row) {
-            return row.ActiveHigh
+            const base = row.ActiveHigh
                 ? this.$t('SaftyPLC.polarity_high_hint')
                 : this.$t('SaftyPLC.polarity_low_hint')
+            if (!this.canEditPolarity)
+                return base
+            return `${base}\n${this.$t('SaftyPLC.polarity_click_hint')}`
+        },
+        rawKey(row) {
+            return `${row.ByteOffset}.${row.BitInByte}`
+        },
+        polarityEditKey(row) {
+            return row.Signal
+        },
+        async onRawClick(row) {
+            if (!this.canToggleRaw)
+                return
+            if (this.togglingKey || this.polarityKey) {
+                this.$message?.warning?.(this.$t('SaftyPLC.toggle_busy'))
+                return
+            }
+
+            const nextValue = !row.RawBit
+            const confirmText = this.$t('SaftyPLC.toggle_confirm_text', {
+                signal: row.Signal,
+                byte: row.ByteOffset,
+                bit: row.BitInByte,
+                value: nextValue ? 1 : 0
+            })
+
+            const result = await this.$swal.fire({
+                title: this.$t('SaftyPLC.toggle_confirm_title'),
+                text: confirmText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+            })
+
+            if (!result.isConfirmed)
+                return
+
+            this.togglingKey = this.rawKey(row)
+            try {
+                const ret = await SaftyPLCAPI.SetSimulatorResultBit(row.ByteOffset, row.BitInByte, nextValue)
+                if (!ret?.confirm) {
+                    this.$message?.error?.(ret?.message || this.$t('SaftyPLC.toggle_failed'))
+                }
+            } catch (error) {
+                this.$message?.error?.(error?.message || this.$t('SaftyPLC.toggle_failed'))
+            } finally {
+                this.togglingKey = null
+            }
+        },
+        async onPolarityClick(row) {
+            if (!this.canEditPolarity)
+                return
+            if (this.togglingKey || this.polarityKey) {
+                this.$message?.warning?.(this.$t('SaftyPLC.toggle_busy'))
+                return
+            }
+
+            const nextActiveHigh = !row.ActiveHigh
+            const nextPolarity = nextActiveHigh ? 'ActiveHigh' : 'ActiveLow'
+            const confirmText = this.$t('SaftyPLC.polarity_confirm_text', {
+                signal: row.Signal,
+                polarity: nextPolarity
+            })
+
+            const result = await this.$swal.fire({
+                title: this.$t('SaftyPLC.polarity_confirm_title'),
+                text: confirmText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+            })
+
+            if (!result.isConfirmed)
+                return
+
+            this.polarityKey = this.polarityEditKey(row)
+            try {
+                const ret = await SaftyPLCAPI.SetActiveHigh(row.Signal, nextActiveHigh)
+                if (!ret?.confirm) {
+                    this.$message?.error?.(ret?.message || this.$t('SaftyPLC.polarity_failed'))
+                }
+            } catch (error) {
+                this.$message?.error?.(error?.message || this.$t('SaftyPLC.polarity_failed'))
+            } finally {
+                this.polarityKey = null
+            }
         }
     }
 }
@@ -220,6 +331,10 @@ export default {
     &.ng {
         background: #dc3545;
     }
+
+    &.sim {
+        background: #6f42c1;
+    }
 }
 
 .addr-cell {
@@ -250,6 +365,7 @@ export default {
     font-family: Consolas, 'Courier New', monospace;
     font-size: 16px;
     font-weight: 700;
+    user-select: none;
 
     &.hi {
         background: #2e7d32;
@@ -260,6 +376,21 @@ export default {
         background: #eceff1;
         color: #546e7a;
         border: 1px solid #cfd8dc;
+    }
+
+    &.clickable {
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+        &:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 0 2px rgba(111, 66, 193, 0.35);
+        }
+    }
+
+    &.busy {
+        opacity: 0.55;
+        pointer-events: none;
     }
 }
 
@@ -279,6 +410,27 @@ export default {
 .polarity {
     font-size: 11px;
     color: #757575;
+    user-select: none;
+
+    &.clickable {
+        cursor: pointer;
+        padding: 4px 6px;
+        border-radius: 4px;
+        border: 1px solid #cfd8dc;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+
+        &:hover {
+            transform: scale(1.05);
+            background: #eceff1;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
+            color: #37474f;
+        }
+    }
+
+    &.busy {
+        opacity: 0.55;
+        pointer-events: none;
+    }
 }
 
 :deep(.row-raw-hi) {
