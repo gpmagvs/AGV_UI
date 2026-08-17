@@ -10,6 +10,14 @@
                 <span class="text-muted small">{{ $t('SaftyPLC.updated') }}: {{ lastUpdateText }}</span>
             </div>
             <div class="d-flex align-items-center gap-2">
+                <button
+                    type="button"
+                    class="help-icon-btn"
+                    :title="$t('SaftyPLC.help_btn_title')"
+                    :aria-label="$t('SaftyPLC.help_btn_title')"
+                    @click="helpVisible = true">
+                    <el-icon :size="16"><QuestionFilled /></el-icon>
+                </button>
                 <el-input
                     v-model="keyword"
                     clearable
@@ -20,6 +28,94 @@
                 <span class="text-muted small text-nowrap">{{ filteredSignals.length }} / {{ signals.length }}</span>
             </div>
         </div>
+
+        <el-dialog
+            v-model="helpVisible"
+            :title="$t('SaftyPLC.help_title')"
+            width="720px"
+            top="8vh"
+            draggable
+            destroy-on-close
+            class="safty-plc-help-dialog"
+            append-to-body>
+            <div class="help-body">
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_overview_title') }}</h4>
+                    <p>{{ $t('SaftyPLC.help_overview_p1') }}</p>
+                    <p>{{ $t('SaftyPLC.help_overview_p2') }}</p>
+                </section>
+
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_status_title') }}</h4>
+                    <ul>
+                        <li><b>{{ $t('SaftyPLC.connected') }} / {{ $t('SaftyPLC.disconnected') }}</b> — {{ $t('SaftyPLC.help_status_conn') }}</li>
+                        <li><b>{{ $t('SaftyPLC.simulator') }}</b> — {{ $t('SaftyPLC.help_status_sim') }}</li>
+                        <li><b>{{ $t('SaftyPLC.device') }}</b> — {{ $t('SaftyPLC.help_status_device') }}</li>
+                        <li><b>{{ $t('SaftyPLC.updated') }}</b> — {{ $t('SaftyPLC.help_status_updated') }}</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_columns_title') }}</h4>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_address') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_address') }}</p>
+                    </div>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_signal') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_signal') }}</p>
+                    </div>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_description') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_description') }}</p>
+                    </div>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_raw') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_raw') }}</p>
+                    </div>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_logic') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_logic') }}</p>
+                    </div>
+                    <div class="help-col">
+                        <h5>{{ $t('SaftyPLC.col_polarity') }}</h5>
+                        <p>{{ $t('SaftyPLC.help_col_polarity') }}</p>
+                    </div>
+                </section>
+
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_relation_title') }}</h4>
+                    <p>{{ $t('SaftyPLC.help_relation_p1') }}</p>
+                    <ul>
+                        <li>{{ $t('SaftyPLC.help_relation_high') }}</li>
+                        <li>{{ $t('SaftyPLC.help_relation_low') }}</li>
+                    </ul>
+                    <p>{{ $t('SaftyPLC.help_relation_p2') }}</p>
+                </section>
+
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_usage_title') }}</h4>
+                    <ul>
+                        <li>{{ $t('SaftyPLC.help_usage_search') }}</li>
+                        <li>{{ $t('SaftyPLC.help_usage_raw') }}</li>
+                        <li>{{ $t('SaftyPLC.help_usage_polarity') }}</li>
+                        <li>{{ $t('SaftyPLC.help_usage_row_color') }}</li>
+                    </ul>
+                </section>
+
+                <section class="help-section">
+                    <h4>{{ $t('SaftyPLC.help_tips_title') }}</h4>
+                    <ul>
+                        <li>{{ $t('SaftyPLC.help_tips_xtdo') }}</li>
+                        <li>{{ $t('SaftyPLC.help_tips_persist') }}</li>
+                        <li>{{ $t('SaftyPLC.help_tips_logic_alarm') }}</li>
+                    </ul>
+                </section>
+            </div>
+            <template #footer>
+                <el-button type="primary" @click="helpVisible = false">OK</el-button>
+            </template>
+        </el-dialog>
 
         <div ref="tableWrap" class="table-wrap">
             <el-table
@@ -81,6 +177,7 @@
 </template>
 
 <script>
+import { QuestionFilled } from '@element-plus/icons-vue'
 import { SaftyPLCStore, UserStore } from '@/store'
 import { SaftyPLCAPI } from '@/api/SaftyPLCAPI.js'
 
@@ -89,13 +186,17 @@ const MIN_TABLE_HEIGHT_PX = 240
 
 export default {
     name: 'SaftyPLCIOView',
+    components: {
+        QuestionFilled
+    },
     data() {
         return {
             keyword: '',
             tableHeight: 400,
             resizeObserver: null,
             togglingKey: null,
-            polarityKey: null
+            polarityKey: null,
+            helpVisible: false
         }
     },
     computed: {
@@ -138,7 +239,7 @@ export default {
             return SaftyPLCStore.getters.IsSimulator
         },
         canToggleRaw() {
-            return this.connected && this.isSimulator
+            return this.connected && this.isSimulator && UserStore.getters.CurrentUserRole != 0
         },
         canEditPolarity() {
             return UserStore.getters.CurrentUserRole != 0
@@ -304,6 +405,85 @@ export default {
 
 .search-input {
     width: min(280px, 100%);
+}
+
+.help-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #90a4ae;
+    border-radius: 50%;
+    background: #fff;
+    color: #546e7a;
+    cursor: pointer;
+    flex: 0 0 auto;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+        color: #1565c0;
+        border-color: #1565c0;
+        background: #e3f2fd;
+        box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.18);
+    }
+
+    &:active {
+        transform: scale(0.96);
+    }
+}
+
+.help-body {
+    max-height: min(70vh, 640px);
+    overflow-y: auto;
+    padding-right: 4px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #37474f;
+}
+
+.help-section {
+    margin-bottom: 1.1rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    h4 {
+        margin: 0 0 0.45rem;
+        font-size: 15px;
+        font-weight: 700;
+        color: #263238;
+    }
+
+    h5 {
+        margin: 0.55rem 0 0.2rem;
+        font-size: 13px;
+        font-weight: 700;
+        color: #455a64;
+    }
+
+    p {
+        margin: 0 0 0.4rem;
+    }
+
+    ul {
+        margin: 0.2rem 0 0.4rem;
+        padding-left: 1.2rem;
+
+        li {
+            margin-bottom: 0.28rem;
+        }
+    }
+}
+
+.help-col {
+    padding: 0.35rem 0.55rem;
+    margin-bottom: 0.35rem;
+    border-left: 3px solid #90caf9;
+    background: #f5f9fc;
+    border-radius: 0 4px 4px 0;
 }
 
 .table-wrap {
