@@ -17,11 +17,13 @@ class VMSData {
     yValue: 0.0,
     theta: 0.0,
   }
-  BatteryStatus = new Array() < BatteryStatus > 0
+  /**@type {BatteryStatus[]} */
+  BatteryStatus = []
   CarName = 'AGV'
   CST_Data = ''
   Current_LASER_MODE = 'Bypass'
-  DriversStates = new Array() < clsDriverState > 0
+  /**@type {clsDriverState[]} */
+  DriversStates = []
   IsAGVPoseError = false
   IsInitialized = false
   IsSystemIniting = false

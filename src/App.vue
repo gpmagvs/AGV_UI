@@ -3,7 +3,7 @@
   <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV" element-loading-background="rgba(0,0,0, 0.8)">
     <div class="fixed-bottom text-right" style="bottom:40px !important;"
-      v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0" id="vcs-alarms">
+      v-if="!isTsmcHmi && CurrentAlarms != undefined && CurrentAlarms.length > 0" id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
         <el-alert @click="HandleAlarmSheetClick(code)" show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
@@ -152,6 +152,9 @@ export default {
     },
     VehicleName() {
       return AGVStatusStore.getters.AGVName;
+    },
+    isTsmcHmi() {
+      return this.$route?.name === 'tsmc-hmi' || this.$route?.path === '/tsmc'
     },
     AppBorderStyle() {
 

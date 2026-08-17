@@ -181,8 +181,19 @@ import { QuestionFilled } from '@element-plus/icons-vue'
 import { SaftyPLCStore, UserStore } from '@/store'
 import { SaftyPLCAPI } from '@/api/SaftyPLCAPI.js'
 
-const BOTTOM_RESERVED_PX = 24
+const BOTTOM_GAP_PX = 8
+const FOOTER_FALLBACK_PX = 120
 const MIN_TABLE_HEIGHT_PX = 240
+
+function getBottomReservedPx() {
+    const footer = document.querySelector('.home-view-footer')
+    if (footer) {
+        const rect = footer.getBoundingClientRect()
+        const covered = Math.max(0, Math.ceil(window.innerHeight - rect.top))
+        return covered + BOTTOM_GAP_PX
+    }
+    return FOOTER_FALLBACK_PX + BOTTOM_GAP_PX
+}
 
 export default {
     name: 'SaftyPLCIOView',
@@ -271,13 +282,13 @@ export default {
         }
     },
     methods: {
-        /** 表格高度取「視窗底部扣掉表格起始位置」，寬度由 el-table 隨容器自動計算 */
+        /** 表格高度取「視窗底部扣掉表格起始位置與 fixed footer」，避免被 footer 遮擋 */
         updateTableSize() {
             this.$nextTick(() => {
                 const wrap = this.$refs.tableWrap
                 if (wrap) {
                     const top = wrap.getBoundingClientRect().top
-                    const available = Math.floor(window.innerHeight - top - BOTTOM_RESERVED_PX)
+                    const available = Math.floor(window.innerHeight - top - getBottomReservedPx())
                     this.tableHeight = Math.max(available, MIN_TABLE_HEIGHT_PX)
                 }
                 this.$refs.table?.doLayout?.()
