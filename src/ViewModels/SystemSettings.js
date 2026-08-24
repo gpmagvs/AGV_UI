@@ -21,6 +21,10 @@ class SystemSettings {
             OrderInfoAPIPort: 5333,
             OrderInfoAPIRoute: "/api/Task/OrderInfo",
         };
+        this.PcInformation = {
+            userName: "gpm",
+            userPassword: "12345678",
+        };
         this.ActiveTrafficControl = false;
         this.EQHandshakeBypass = false;
         this.CST_READER_TRIGGER = false;
@@ -236,6 +240,7 @@ class SystemSettings {
         }
         this.AutoDoorSignalToggleWhenOpen = false;
         this.AutoDoorSingalToggleIntervalMs = 1000;
+        this.IsOnlineAtVirtualPtAllow = false;
     }
 
 }

@@ -27,6 +27,17 @@
           <div class="settings-content">
             <div v-if="selected_tab === '0'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
+
+                <el-form-item label="PC 帳號">
+                  <el-input @change="HandleParamChanged" size="small" type="text"
+                    v-model="settings.PcInformation.userName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="PC 密碼">
+                  <el-input @change="HandleParamChanged" size="small" type="password"
+                    v-model="settings.PcInformation.userPassword"></el-input>
+                </el-form-item>
+
                 <el-form-item label="蜂鳴器">
                   <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
@@ -68,6 +79,12 @@
                   <el-input-number @change="HandleParamChanged" size="small"
                     v-model="settings.AutoDoorSingalToggleIntervalMs"></el-input-number>
                 </el-form-item>
+
+                <el-form-item label="允許在虛擬點上線">
+                  <el-switch @change="HandleParamChanged" size="small"
+                    v-model="settings.IsOnlineAtVirtualPtAllow"></el-switch>
+                </el-form-item>
+
 
 
               </el-form>
