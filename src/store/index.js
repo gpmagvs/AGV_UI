@@ -315,7 +315,7 @@ export const AGVStatusStore = createStore({
 
       state.SensorStatus.VerticalWheel.status = DIOStore.getters.IsVerticalMotorAlarm ? 2 : 0;
       // state.SensorStatus.VerticalBelt.status = DIOStore.getters.IsVerticalBeltAlarm ? 2 : 0;
-      state.SensorStatus.ForkFrontendObstacle.status = DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
+      state.SensorStatus.ForkFrontendObstacle.status = !DIOStore.getters.IsForkFronendObstacle ? 2 : 0;
       // state.SensorStatus.ForkArmPosition.status = !DIOStore.getters.Fork_ARM_States.IsArmAtHomePose ? 1 : 0;
 
 
@@ -426,6 +426,12 @@ export const AGVStatusStore = createStore({
   mutations: {
     updateStatus(state, data) {
       state.AGVStatus = data
+      //將一些數據存在 localstorage, 未來可以從 localstorage 中恢復
+      localStorage.setItem('agv_basic_info', JSON.stringify({
+        appVersion: data.APPVersion,
+        agvType: data.Agv_Type,
+        agvName: data.CarName
+      }));
     },
     setMaintainModeStatus(state, data) {
       state.maintainStatus = data;
@@ -437,6 +443,15 @@ export const AGVStatusStore = createStore({
   actions: {
     async clear_alarm_with_code({ commit, getters, state }, code) {
       await ClearAlarm(code);
+    },
+    restoreAgvBasicInfo({ state }) {
+      var info = localStorage.getItem('agv_basic_info');
+      if (info) {
+        const data = JSON.parse(info)
+        state.AGVStatus.APPVersion = data.appVersion
+        state.AGVStatus.Agv_Type = data.agvType
+        state.AGVStatus.CarName = data.agvName
+      }
     }
   }
 })
@@ -556,6 +571,13 @@ export const DIOStore = createStore({
   getters: {
     DIOStates: state => {
       return state.DIOStates;
+    },
+    IsResetButtonPressing: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Address === 'X000B'); //Panel_Reset_PB
+      return input?.State ?? false;
     },
     IsE84UseEmu: state => {
       if (state.DIOStates.IsE84HsUseEmulator == undefined)
@@ -840,8 +862,22 @@ export const DIOStore = createStore({
       }
       const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Home_Pose");
       return input?.State;
+    },
+    IsBatExchangeHandshaking: state => {
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const AGV_CS_0 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_0");
+      const AGV_CS_1 = state.DIOStates.Outputs.find(reg => reg.Name === "AGV_CS_1");
+      return AGV_CS_0?.State || AGV_CS_1?.State;
+    },
+    IsPinFloatOuputON: state => {
+      if (!state.DIOStates?.Outputs) {
+        return false;
+      }
+      const output = state.DIOStates.Outputs.find(reg => reg.Name === "Fork_Floating");
+      return output?.State ?? false;
     }
-
   },
   mutations: {
     updateStatus(state, data) {
@@ -858,6 +894,37 @@ export const DIOStore = createStore({
       var vhlb = state.DIOStates.Outputs.find(reg => reg.Name == "Fork_Under_Pressing_SensorBypass");
       var address = vhlb.Address;
       DIO.DO_State_Change(address, active);
+    }
+  }
+})
+
+/** Safety PLC Result 狀態 */
+export const SaftyPLCStore = createStore({
+  state: {
+    Status: {
+      Connected: false,
+      IsSimulator: false,
+      DeviceStatus: '',
+      LastUpdateTime: null,
+      Signals: []
+    }
+  },
+  getters: {
+    Status: state => state.Status,
+    Signals: state => state.Status?.Signals ?? [],
+    Connected: state => state.Status?.Connected ?? false,
+    IsSimulator: state => state.Status?.IsSimulator ?? false,
+    DeviceStatus: state => state.Status?.DeviceStatus ?? ''
+  },
+  mutations: {
+    updateStatus(state, data) {
+      state.Status = data ?? {
+        Connected: false,
+        IsSimulator: false,
+        DeviceStatus: '',
+        LastUpdateTime: null,
+        Signals: []
+      }
     }
   }
 })

@@ -1,22 +1,26 @@
 <template>
     <transition name="el-zoom-in-center">
-        <div v-show="EQHSStatus.IsHandshaking" :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'" v-bind:style="minimize ? miniSizeStyle : {}">
+        <div v-show="showDialog" :class="IsAGVDown ? 'agv-down' : ' handshaking-notify bg-primary text-light'"
+            v-bind:style="minimize ? miniSizeStyle : {}">
             <div class="w-100">
                 <span v-bind:class="IsHandshakeFail ? 'text-danger' : ''" class="">{{ MessageTitle }}</span>
                 <span v-if="!IsAGVDown" class="mx-1">{{ dot_animation_str }}</span>
                 <div class="sub-title mx-1" v-if="IsAGVDown">
-                    <span class="text-danger" v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ showingAlarmMsg }}</span>
+                    <span class="text-danger" v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{
+                        showingAlarmMsg }}</span>
                 </div>
                 <div class="sub-title mx-1" v-if="!IsAGVDown">
-                    <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
+                    <span v-bind:style="{ fontSize: minimize ? '14px' : '2.2rem' }"> {{ EQHSStatus.HandshakingInfoText
+                        == '' ? 'Nothing...' : EQHSStatus.HandshakingInfoText }} </span>
                 </div>
             </div>
-            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{ minimize ? '▲' : '-' }}</b-button>
+            <b-button size="sm" @click="() => { minimize = !minimize }" variant="light" id="close-btn" class="my-2">{{
+                minimize ? '▲' : '-' }}</b-button>
         </div>
     </transition>
 </template>
 <script>
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, DIOStore } from '@/store'
 
 export default {
     data() {
@@ -40,6 +44,12 @@ export default {
         }
     },
     computed: {
+        showDialog() {
+            if (AGVStatusStore.state.AGVStatus.IsSystemIniting)
+                return false;
+
+            return this.IsExchangeBatteryTask || (this.EQHSStatus.IsHandshaking && this.CurrentAlarms.length != 0);
+        },
         MessageTitle() {
             if (this.IsHandshakeFail || this.IsAGVDown) {
                 const alarmCnt = this.CurrentAlarms.length;
@@ -56,13 +66,13 @@ export default {
             return this.EQHSStatus.HandshakingInfoText && this.EQHSStatus.HandshakingInfoText.includes('Handshake_Fail');
         },
         IsExchangeBatteryTask() {
-            return AGVStatusStore.getters.AGVStatus.OrderInfo.ActionName == 14;
+            return DIOStore.getters.IsBatExchangeHandshaking;
         },
         IsAGVDown() {
             return AGVStatusStore.state.AGVStatus.SubState == 'DOWN';
         },
         CurrentAlarms() {
-            return AGVStatusStore.state.AGVStatus.AlarmCodes;
+            return AGVStatusStore.state.AGVStatus.AlarmCodes.filter(a => a.Code != 0);
         }
 
     },

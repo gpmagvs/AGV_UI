@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+.tsmc-hmi {
+  --tsmc-bg: #121826;
+  --tsmc-bg-elev: #1a2333;
+  --tsmc-bg-panel: #182132;
+  --tsmc-line: #2a3a52;
+  --tsmc-text: #e8eef7;
+  --tsmc-muted: #8ea0b8;
+  --tsmc-ok: #2ee59d;
+  --tsmc-warn: #f5c542;
+  --tsmc-alarm: #ff4d6d;
+  --tsmc-info: #4cc9f0;
+  --tsmc-accent: #3d7ea6;
+  --tsmc-radius: 6px;
+  --tsmc-font: 'IBM Plex Sans', 'Noto Sans TC', sans-serif;
+  --tsmc-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  --tsmc-pad: 8px;
+  --tsmc-gap: 8px;
+  --tsmc-bottom-h: 188px;
+  --tsmc-side-min: 280px;
+  --tsmc-touch-min: 56px;
+  --tsmc-alarm-h: 48px;
+  --tsmc-kv-label: 92px;
+  --tsmc-title-pad: 8px 12px 0;
+  --tsmc-chip-h: 28px;
+  --tsmc-font-kv: 13px;
+  --tsmc-font-title: 11px;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) var(--tsmc-bottom-h);
+  gap: var(--tsmc-gap);
+  padding: var(--tsmc-pad);
+  color: var(--tsmc-text);
+  font-family: var(--tsmc-font);
+  text-align: left;
+  background:
+    radial-gradient(1200px 500px at 12% -10%, rgba(61, 126, 166, 0.18), transparent 55%),
+    radial-gradient(900px 420px at 100% 110%, rgba(46, 229, 157, 0.05), transparent 50%),
+    var(--tsmc-bg);
+}
+
+.tsmc-hmi *,
+.tsmc-hmi *::before,
+.tsmc-hmi *::after {
+  box-sizing: border-box;
+}
+
+.tsmc-hmi__main,
+.tsmc-hmi__bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(var(--tsmc-side-min), 0.9fr);
+  gap: var(--tsmc-gap);
+  min-width: 0;
+  min-height: 0;
+}
+
+.tsmc-hmi__side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--tsmc-gap);
+  min-width: 0;
+  min-height: 0;
+}
+
+.tsmc-panel {
+  background: var(--tsmc-bg-panel);
+  border: 1px solid var(--tsmc-line);
+  border-radius: var(--tsmc-radius);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tsmc-panel__title {
+  margin: 0;
+  padding: var(--tsmc-title-pad);
+  font-size: var(--tsmc-font-title);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tsmc-muted);
+}
+
+.tsmc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--tsmc-chip-h);
+  padding: 0 10px;
+  border-radius: 4px;
+  border: 1px solid var(--tsmc-line);
+  background: #101824;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tsmc-chip--ok {
+  color: var(--tsmc-ok);
+  border-color: rgba(46, 229, 157, 0.35);
+}
+
+.tsmc-chip--warn {
+  color: var(--tsmc-warn);
+  border-color: rgba(245, 197, 66, 0.4);
+}
+
+.tsmc-chip--alarm {
+  color: var(--tsmc-alarm);
+  border-color: rgba(255, 77, 109, 0.5);
+  background: rgba(255, 77, 109, 0.12);
+}
+
+.tsmc-chip--idle {
+  color: var(--tsmc-muted);
+}
+
+.tsmc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.tsmc-kv {
+  display: grid;
+  grid-template-columns: var(--tsmc-kv-label) minmax(0, 1fr);
+  gap: 4px 10px;
+  font-size: var(--tsmc-font-kv);
+}
+
+.tsmc-kv dt {
+  margin: 0;
+  color: var(--tsmc-muted);
+  font-weight: 500;
+}
+
+.tsmc-kv dd {
+  margin: 0;
+  font-family: var(--tsmc-mono);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tsmc-touch-btn {
+  min-width: 0;
+  min-height: var(--tsmc-touch-min);
+  padding: 8px 10px;
+  border: 1px solid var(--tsmc-line);
+  border-radius: var(--tsmc-radius);
+  background: #223049;
+  color: var(--tsmc-text);
+  font-family: var(--tsmc-font);
+  font-size: clamp(12px, 1.15vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.tsmc-touch-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.tsmc-touch-btn--alarm {
+  background: #4a1c28;
+  border-color: rgba(255, 77, 109, 0.55);
+  color: #ffd5dc;
+}
+
+.tsmc-touch-btn--mode {
+  background: #1d3a4a;
+  border-color: rgba(76, 201, 240, 0.4);
+}
+
+.conn-short {
+  display: none;
+}
+
+/* Compact: 1024x600 類工業面板 / 較矮螢幕 */
+@media (max-width: 1199px), (max-height: 699px) {
+  .tsmc-hmi {
+    --tsmc-pad: 6px;
+    --tsmc-gap: 6px;
+    --tsmc-bottom-h: clamp(148px, 28vh, 176px);
+    --tsmc-side-min: 220px;
+    --tsmc-touch-min: 52px;
+    --tsmc-kv-label: 76px;
+    --tsmc-title-pad: 4px 8px 0;
+    --tsmc-chip-h: 24px;
+    --tsmc-font-kv: 12px;
+    --tsmc-font-title: 10px;
+  }
+
+  .tsmc-hmi .chip-placeholder {
+    display: none !important;
+  }
+
+  .tsmc-chip {
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .conn-full {
+    display: none;
+  }
+
+  .conn-short {
+    display: inline;
+  }
+}
+
+/* Micro: 800x480 與極矮橫向螢幕，仍維持雙欄 */
+@media (max-width: 899px), (max-height: 540px) {
+  .tsmc-hmi {
+    --tsmc-pad: 4px;
+    --tsmc-gap: 4px;
+    --tsmc-bottom-h: clamp(124px, 34vh, 156px);
+    --tsmc-side-min: 168px;
+    --tsmc-touch-min: 48px;
+    --tsmc-kv-label: 62px;
+    --tsmc-title-pad: 2px 8px 0;
+    --tsmc-chip-h: 22px;
+    --tsmc-font-kv: 11px;
+    --tsmc-font-title: 9px;
+  }
+
+  .tsmc-chip {
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .tsmc-dot {
+    width: 6px;
+    height: 6px;
+  }
+}

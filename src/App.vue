@@ -1,20 +1,11 @@
 <template>
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
-  <div
-    class="appcontainer"
-    style="width:100vw;height:100vh"
-    v-loading.fullscreen.lock="loading"
-    element-loading-text="GPM AGV"
-    element-loading-background="rgba(0,0,0, 0.8)">
-    <div
-      class="fixed-bottom text-right"
-      style="bottom:40px !important;"
-      v-if="CurrentAlarms != undefined && CurrentAlarms.length > 0"
-      id="vcs-alarms">
+  <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading"
+    element-loading-text="GPM AGV" element-loading-background="rgba(0,0,0, 0.8)">
+    <div class="fixed-bottom text-right" style="bottom:40px !important;"
+      v-if="!isTsmcHmi && CurrentAlarms != undefined && CurrentAlarms.length > 0" id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
-        <el-alert
-          @click="HandleAlarmSheetClick(code)"
-          show-icon
+        <el-alert @click="HandleAlarmSheetClick(code)" show-icon
           :type="alarmObj.Alarm.ELevel == 0 ? 'warning' : 'error'"
           :title="`Alarm Code=${code} [${Timeformat(alarmObj.Alarm.Time)}]`"
           :description="`${alarmObj.Alarm.CN == '' ? alarmObj.Alarm.Description : alarmObj.Alarm.CN}(${alarmObj.Alarm.Description})`"></el-alert>
@@ -32,6 +23,7 @@
     <WaitAGVsNextMoveActionNotify></WaitAGVsNextMoveActionNotify>
     <AGVInitalizingNotify></AGVInitalizingNotify>
     <SystemErrorNotify></SystemErrorNotify>
+    <BackendExceptionMessageDisplay></BackendExceptionMessageDisplay>
   </div>
 </template>
 <script>
@@ -49,9 +41,11 @@ import { Start } from './AGVDataFetchWorker.js'
 import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 import { ForkAPI } from '@/api/VMSAPI.js'
+import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessageDisplay.vue'
+
 export default {
   components: {
-    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify
+    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify, BackendExceptionMessageDisplay
   },
   data() {
     return {
@@ -159,6 +153,9 @@ export default {
     VehicleName() {
       return AGVStatusStore.getters.AGVName;
     },
+    isTsmcHmi() {
+      return this.$route?.name === 'tsmc-hmi' || this.$route?.path === '/tsmc'
+    },
     AppBorderStyle() {
 
       if (this.AlarmCodesGroup) {
@@ -175,15 +172,55 @@ export default {
     }
   },
   watch: {
-    VehicleName(newValue, oldValue) {
-      document.title = (process.env.NODE_ENV === 'development' ? '[Dev] ' : '') + 'GPM-' + newValue;
-    }
   },
   created() {
     const deviceDetector = Vue3DeviceDetector();
     this.isMobile = deviceDetector.isMobile
+
+    console.log(`~佛祖保佑， BUG 退散~
+                           _
+                        _ooOoo_
+                       o8888888o
+                       88" . "88
+                       (| -_- |)
+                       O\\  =  /O
+                    ____/\`---'\\____
+                  .'  \\\\|     |//  \`.
+                 /  \\\\|||  :  |||//  \\
+                /  _||||| -:- |||||_  \\
+                |   | \\\\\\  -  /'| |   |
+                | \\_|  \`\\\`---'//  |_/ |
+                \\  .-\\__ \`-. -'__/-.  /
+              ___\`. .'  /--.--\\  \`. .'___
+           ."" '<  \`.___\\_<|>_/___.' _> \\\""".
+          | | :  \`- \\\`. ;\`. _/; .'/ /  .' ; |
+          \\  \\ \`-.   \\_\\_\\\`. _.'_/_/  -' _.' /
+===========\`-.\\___\`-.__\\ \\___  /__.-'_.'_.-'================
+                        \`=--=-'                    
+`);
+
+    console.log(`
+_      \`-._     \`-.     \`.   \\      :      /   .'     .-'     _.-'      _
+ \`--._     \`-._    \`-.    \`.  \`.    :    .'  .'    .-'    _.-'     _.--'
+      \`--._    \`-._   \`-.   \`.  \\   :   /  .'   .-'   _.-'    _.--'
+\`--.__     \`--._   \`-._  \`-.  \`. \`. : .' .'  .-'  _.-'   _.--'     __.--'
+__    \`--.__    \`--._  \`-._ \`-. \`. \\:/ .' .-' _.-'  _.--'    __.--'    __
+  \`--..__   \`--.__   \`--._ \`-._\`-.\`_=_\`.-'_.-' _.--'   __.--'   __..--'
+--..__   \`--..__  \`--.__  \`--._\`-q(-_-)p-'_.--'  __.--'  __..--'   __..--
+      \`\`--..__  \`--..__ \`--.__ \`-'_) (_\`-' __.--' __..--'  __..--''
+...___        \`\`--..__ \`--..__\`--/__/  \\--'__..--' __..--''        ___...
+      \`\`\`---...___    \`\`--..__\`_ (<_   _/)_'__..--''    ___...---'''
+\`\`\`-----....._____ \`\`\`---...___(__\\_\\_|_/__)___...---'''_____.....-----'''
+ ___   __  ________   _______   _       _   _______    ___   __   _______
+|| \\\\  ||     ||     ||_____))  \\\\     //  ||_____||  || \\\\  ||  ||_____||
+||  \\\\_||  ___||___  ||     \\\\   \\\\___//   ||     ||  ||  \\\\_||  ||     ||
+`);
+
+
+
   },
   async mounted() {
+    AGVStatusStore.dispatch('restoreAgvBasicInfo');
     this.loadSystemSettings();
 
     try {
@@ -202,6 +239,10 @@ export default {
 
     Start();
     document.title = "GPM AGV";
+
+    setTimeout(() => {
+      document.title = (process.env.NODE_ENV === 'development' ? '[Dev] ' : '') + 'GPM-' + this.VehicleName;
+    }, 2000)
 
     setTimeout(() => {
       this.checkConnectionStatus();
@@ -292,7 +333,11 @@ export default {
 
     });
     bus.on('DebugMessage', message => {
-      ElMessage.info(message)
+      ElMessage.info({
+        message: message,
+        showClose: true,
+        duration: 1000,
+      })
     })
     bus.on('AGV-Notify-Message-Recieved', obj => {
       const title = obj.title;

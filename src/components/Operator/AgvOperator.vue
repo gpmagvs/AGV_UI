@@ -1,12 +1,7 @@
 <template>
   <div class="agv-operator py-2">
-    <b-tabs
-      :lazy="false"
-      :model-value="current_tab"
-      pills
-      small
-      @activate-tab="HandleTabpageChanged">
-      <b-tab :title="$t('agv_control')" active>
+    <b-tabs :lazy="false" :model-value="current_tab" pills small @activate-tab="HandleTabpageChanged">
+      <b-tab :title="$t('agv_control')">
         <div class="mt-1 p-1">
           <AgvControl></AgvControl>
         </div>
@@ -23,27 +18,23 @@
       </b-tab>
       <b-tab title="Output">
         <div class="table-container-div mt-1 p-1">
-          <IOTable
-            :readonly="false"
-            digital_type="output"
-            :enabled="operation_enabled_return"
-            :super_user="isGodMode"
-            :table_data="DIOTableData.Outputs"
-            :isOutput="true"></IOTable>
+          <IOTable :readonly="false" digital_type="output" :enabled="operation_enabled_return" :super_user="isGodMode"
+            :table_data="DIOTableData.Outputs" :isOutput="true"></IOTable>
         </div>
       </b-tab>
-      <b-tab
-        v-show="operation_enabled_return"
-        :title="operation_enabled_return ? $t('manual-operation') : ''">
+      <b-tab v-show="operation_enabled_return" :title="operation_enabled_return ? $t('manual-operation') : ''">
         <div class="mt-1 p-1">
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
       </b-tab>
-      <b-tab
-        v-if="operation_enabled_return && isAMCAGV"
-        :title="operation_enabled_return ? 'Sensor/儀器控制' : ''">
+      <b-tab v-if="operation_enabled_return && isAMCAGV" :title="operation_enabled_return ? 'Sensor/儀器控制' : ''">
         <div class="mt-1 p-1">
           <SensorAndEquipmentControl></SensorAndEquipmentControl>
+        </div>
+      </b-tab>
+      <b-tab :title="$t('SaftyPLC.tab_title')">
+        <div class="mt-1 p-1">
+          <SaftyPLCIOView></SaftyPLCIOView>
         </div>
       </b-tab>
     </b-tabs>
@@ -62,11 +53,21 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserStore, DIOStore, AGVStatusStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
+import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
+
+const TAB_STORAGE_KEY = 'agv_operator_tab'
+
+function loadStoredTab(defaultVal = 0) {
+  const raw = localStorage.getItem(TAB_STORAGE_KEY)
+  if (raw == null) return defaultVal
+  const n = parseInt(raw, 10)
+  return Number.isNaN(n) || n < 0 ? defaultVal : n
+}
 
 export default {
 
   components: {
-    AgvControl, ZAxisControl, IOTable, ManualSettings, SensorAndEquipmentControl
+    AgvControl, ZAxisControl, IOTable, ManualSettings, SensorAndEquipmentControl, SaftyPLCIOView
   },
   data() {
     return {
@@ -75,18 +76,46 @@ export default {
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
       modal_key: '',
-      current_tab: 0
+      current_tab: loadStoredTab(0)
     }
   },
   mounted() {
+    this.ensureValidTab()
+    this.applyTabSideEffects(this.current_tab)
     bus.on('on-fork-height-click', () => {
-      this.current_tab = 1;
+      this.setCurrentTab(1);
+      this.applyTabSideEffects(1);
     });
     bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.current_tab = 4;
+      this.setCurrentTab(4);
+      this.applyTabSideEffects(4);
     });
   },
+  watch: {
+    operation_enabled_return() {
+      this.ensureValidTab()
+    },
+    isAMCAGV() {
+      this.ensureValidTab()
+    }
+  },
   methods: {
+    setCurrentTab(tabIndex) {
+      this.current_tab = tabIndex
+      localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
+    },
+    ensureValidTab() {
+      if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
+        this.setCurrentTab(0)
+        this.applyTabSideEffects(0)
+      }
+    },
+    applyTabSideEffects(currentTabs) {
+      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
+      if (currentTabs != 0) {
+        ROS_STORE.dispatch('force_stop')
+      }
+    },
     VersionTextClickHandle() {
       this.version_text_click_count += 1;
       if (this.version_text_click_count > this.trigger_admin_dialog_count) {
@@ -116,14 +145,11 @@ export default {
       }
     },
     HandleTabpageChanged(currentTabs, previousTabs) {
-      this.current_tab = currentTabs;
+      this.setCurrentTab(currentTabs);
       if (currentTabs == previousTabs)
         return;
-      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
-      if (currentTabs != 0) {
-        ROS_STORE.dispatch('force_stop')
-      }
-      this.$emit('OnTabChanged', this.currentTabs);
+      this.applyTabSideEffects(currentTabs);
+      this.$emit('OnTabChanged', currentTabs);
     },
   },
   props: {
@@ -147,6 +173,11 @@ export default {
     }
   },
   computed: {
+    /** Sensor tab 使用 v-if，無權限時不佔 index；其餘含 v-show 仍佔 index (0~4) */
+    maxVisibleTabIndex() {
+      // 0 AGV / 1 Z / 2 Input / 3 Output / 4 Manual / (5 Sensor optional) / last = Safty PLC
+      return (this.operation_enabled_return && this.isAMCAGV) ? 6 : 5
+    },
     isGodMode() {
       return UserStore.getters.IsGodUser;
     },

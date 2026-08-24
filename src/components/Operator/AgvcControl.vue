@@ -6,20 +6,10 @@
           <div class="row div-container mx-1 my-2">
             <label class="text-start border-bottom">Tag ID</label>
             <el-form-item class="my-2">
-              <b-form-input
-                v-if="!IsInspectionAGV"
-                size="sm"
-                disabled
-                v-model="vms_data.BCR_State_MoveBase.tagID"
-                :state="vms_data.BCR_State_MoveBase.tagID > 0"
-              ></b-form-input>
-              <b-form-input
-                v-else
-                size="sm"
-                disabled
-                v-model="vms_data.Last_Visited_Tag"
-                :state="vms_data.Last_Visited_Tag > 0"
-              ></b-form-input>
+              <b-form-input v-if="!IsInspectionAGV" size="sm" disabled v-model="vms_data.BCR_State_MoveBase.tagID"
+                :state="vms_data.BCR_State_MoveBase.tagID > 0"></b-form-input>
+              <b-form-input v-else size="sm" disabled v-model="vms_data.Last_Visited_Tag"
+                :state="vms_data.Last_Visited_Tag > 0"></b-form-input>
             </el-form-item>
           </div>
           <div class="row div-container mx-1 my-2">
@@ -57,6 +47,8 @@
         <agvc_control_panel></agvc_control_panel>
       </div>
     </div>
+
+    <TaskDeliveryVue class="mt-1 pt-2 border-top" style="height: 300px;"></TaskDeliveryVue>
   </div>
 </template>
 
@@ -66,10 +58,11 @@ import VMSData from '@/ViewModels/VMSData';
 import agvc_control_panel from './AgvcControlPanel.vue'
 import { FindTagCenter } from '@/api/VMSAPI'
 import MapAPI from '@/api/MapAPI.js'
-
+import TaskDeliveryVue from '@/components/VMSTask/TaskDelivery.vue'
 export default {
   components: {
     agvc_control_panel,
+    TaskDeliveryVue
   },
   props: {
     ModuleInformation: {

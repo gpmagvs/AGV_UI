@@ -113,6 +113,16 @@ const routes = [
     path: '/playground',
     name: 'playground',
     component: () => import('@/views/Playground.vue')
+  },
+  {
+    path: '/alarmTableEdit',
+    name: 'alarmTableEdit',
+    component: () => import('@/views/AlarmTableEditView.vue')
+  },
+  {
+    path: '/tsmc',
+    name: 'tsmc-hmi',
+    component: () => import('@/views/TSMC/TsmcHmiView.vue')
   }
 ]
 

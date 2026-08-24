@@ -5,9 +5,7 @@
     </div>
     <div class="status d-flex flex-row bg-light">
       <div v-if="maintainStatus.IsMaintainMode" class="d-flex flex-fill">
-        <div
-          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-          class="agvc-name px-5"
+        <div v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()" class="agvc-name px-5"
           @dblclick="where_r_u()">
           <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
         </div>
@@ -15,42 +13,29 @@
           <span>維護模式</span>
           <el-button @click="HandleCloseMaintainModeBtnClick">關閉</el-button>
         </div>
-        <div
-          @dblclick="VersionTextClickHandle()"
-          class="version-name px-3"
-          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
+        <div @dblclick="VersionTextClickHandle()" class="version-name px-3"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
+        </div>
       </div>
       <div v-else class="d-flex flex-fill">
-        <div
-          class="sys-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <div class="sys-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
           <div @click="() => { VersionShowUI = !VersionShowUI }">{{ AGVBrandName }}</div>
         </div>
-        <div
-          v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()"
-          class="agvc-name flex-fill"
+        <div v-bind:class="SubStatus == '' ? 'down' : SubStatus.toLowerCase()" class="agvc-name flex-fill"
           @dblclick="where_r_u()">
           <i class="bi bi-truck-front mx-1"></i> {{ AGVName == "" ? "AGV" : AGVName }}
         </div>
-        <div
-          class="account-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
+        <div class="account-name flex-fill" v-bind:class="IsBackendDisconnected ? 'backend-disconnected' : ''">
           <i class="bi bi-people mx-1"></i> {{ UserName }}
         </div>
-        <div
-          @dblclick="VersionTextClickHandle()"
-          class="version-name flex-fill"
-          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}</div>
+        <div @dblclick="VersionTextClickHandle()" class="version-name flex-fill"
+          v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
+        </div>
       </div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
-        <jw_switch
-          @switch="LangChangeHandle"
-          :default="IsUseChinese"
-          active_text="EN"
-          active_color="rgb(0, 204, 0)"
-          inactive_text="中文"
-          inactive_color="rgb(9, 76, 176)"></jw_switch>
+        <jw_switch @switch="LangChangeHandle" :default="IsUseChinese" active_text="EN" active_color="rgb(0, 204, 0)"
+          inactive_text="中文" inactive_color="rgb(9, 76, 176)"></jw_switch>
       </div>
       <!--視窗與電腦控制-->
       <div class="system-control">
@@ -61,14 +46,19 @@
             <i class="bi bi-fullscreen me-2"></i> 全螢幕切換 </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-pin-map me-2"></i>
-            <el-button @click="HandleAGVLocating" :disabled="IsAGVRunning" class="system-control-button" text>車輛定位</el-button>
+            <el-button @click="HandleAGVLocating" :disabled="IsAGVRunning" class="system-control-button"
+              text>車輛定位</el-button>
           </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser" @click="HandleSickLidarLocBtnClick">
             <i class="bi bi-pin-map me-2"></i> Sick::LidarLoc Website </b-dropdown-item>
           <b-dropdown-item v-if="IsGodUser">
             <i class="bi bi-file-arrow-up-fill me-2"></i>
-            <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button" text>車載更新</el-button>
+            <el-button @click="() => { uploadVisible = true }" :disabled="IsAGVRunning" class="system-control-button"
+              text>車載更新</el-button>
           </b-dropdown-item>
+
+          <b-dropdown-item v-if="IsGodUser" @click="HandleRestartVCSBtnClick">
+            <i class="bi bi-pin-map me-2"></i> 車載系統重啟 </b-dropdown-item>
           <b-dropdown-item @click="shutdown">
             <i class="bi bi-power me-2"></i> 關機 </b-dropdown-item>
           <b-dropdown-item v-if="false" @click="restart">
@@ -91,6 +81,7 @@ import bus from '@/event-bus.js'
 import jw_switch from "@/components/UIComponents/jw-switch.vue"
 import Notifier from "@/api/NotifyHelper.js"
 import { SystemSettingsStore } from '@/store'
+import param from '@/gpm_param'
 export default {
   components: {
     uploader, jw_switch
@@ -124,6 +115,8 @@ export default {
         return 'GPM Submarine AGV';
       else if (_agv_type == 4)
         return 'GPM Parts AGV';
+      else if (_agv_type == 2330)
+        return 'UNIVERSAL AGV';
       else
         return 'GPM AGV'
     },
@@ -180,8 +173,14 @@ export default {
     },
     LangChangeHandle(checked) {
       this.IsUseChinese = checked;
-      this.$i18n.locale = this.IsUseChinese ? 'zh-TW' : 'en-US';
-      bus.emit('/lang_changed', this.$i18n.locale);
+      const nextLocale = this.IsUseChinese ? 'zh-TW' : 'en-US';
+      // vue-i18n legacy:false 時 locale 為 Ref，需寫入 .value
+      if (this.$i18n.locale && typeof this.$i18n.locale === 'object' && 'value' in this.$i18n.locale) {
+        this.$i18n.locale.value = nextLocale;
+      } else {
+        this.$i18n.locale = nextLocale;
+      }
+      bus.emit('/lang_changed', nextLocale);
       if (this.IsUseChinese) {
         Notifier.Success("語言變更:中文", 'bottom', 800);
       } else {
@@ -279,7 +278,47 @@ export default {
       }
     },
     HandleSickLidarLocBtnClick() {
-      window.open('http://192.168.1.1');
+      param.backend_host//只抓 ip:port 中的 ip
+      var backend_host = param.backend_host.replace(/:\d+/, '');
+      window.open(backend_host);
+    },
+    async HandleRestartVCSBtnClick() {
+      this.$swal.fire(
+        {
+          title: '車載系統重啟',
+          text: '確定要重啟車載系統?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        }).then(async res => {
+          if (!res.isConfirmed)
+            return;
+          var _response = await SystemAPI.RestartSystem();
+          if (_response.confirm) {
+            this.drawer_show = false;
+            this.$swal.fire(
+              {
+                text: '',
+                title: '系統將於一秒後重新啟動...',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+              })
+          } else {
+            this.$swal.fire(
+              {
+                text: '',
+                title: _response.message,
+                icon: 'error',
+                showCancelButton: false,
+                confirmButtonText: 'OK',
+                customClass: 'my-sweetalert'
+              })
+          }
+        })
+
     },
     async HandleCloseMaintainModeBtnClick() {
       await SwitchMaintainMode(false);

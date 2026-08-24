@@ -2,11 +2,15 @@ var param = {
   /**後端Server URL */
   get backend_host() {
     if (import.meta.env.DEV) {
+      //在開發模式下，需依照要連接的機台，修改這裡的IP:PORT
+      return 'http://192.168.209.131:7025'
       return 'http://127.0.0.1:7025'
-      return 'http://192.168.0.105:7025'
+      return 'http://192.168.209.130:7025'
+      return 'http://192.168.0.103:7025'
+      return 'https://agv-dev.gwtech.org'
+      return 'http://192.168.0.59:7025'
+      return 'http://127.0.0.1:7025'
       return 'http://192.168.0.125:7025'
-      return 'http://192.168.0.125:7025'
-      return 'http://192.168.0.112:7025'
       return 'http://192.168.0.111:7025'
       return 'http://192.168.0.103:7025'
       return 'http://192.168.206.134:7025'
@@ -28,16 +32,11 @@ var param = {
   },
   /**ROS Bridge Server Weboscket URL */
   get ros_bridge_url() {
-    if (import.meta.env.DEV) {
-      return 'ws://192.168.0.126:9090'
-      return 'ws://10.22.141.218:9090'
-      return 'ws://192.168.76.128:9090'
-      return 'ws://127.0.0.1:9090'
-      return 'ws://192.168.1.100:9090'
-      return 'ws://192.168.1.100:9090'
-    } else {
-      return `ws://${window.location.hostname}:9090`
-    }
+    var _backendHost = this.backend_host;
+    //replace http to ws or https to wss , and change port to 9090
+    const _rosBridgeHost = _backendHost.replace(/http:\/\//, 'ws://').replace(/https:\/\//, 'wss://').replace(/:\d+/, ':9090');
+    return _rosBridgeHost;
+
   }
 }
 export default param

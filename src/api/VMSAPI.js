@@ -27,6 +27,16 @@ export var SoundsAPI = {
 }
 /**系統相關api */
 export var SystemAPI = {
+
+  async GetROS_VERSION() {
+    try {
+      var ret = await axios_entity.get('api/System/ROS_VERSION')
+      return ret.data
+    } catch (error) {
+      return undefined;
+    }
+  },
+
   async GetSettings() {
     try {
       var ret = await axios_entity.get('api/System/Settings')
@@ -72,8 +82,28 @@ export var SystemAPI = {
     var ret = await axios_entity.get('api/System/GetBackupedVersion')
     return ret.data
   },
+  async BackupCurrentVersionFile() {
+    var ret = await axios_entity.post(`api/System/BackupSystem`)
+    return ret.data
+  },
   async ChangeVersion(version) {
     var ret = await axios_entity.post(`api/System/RollbackSystem?version=${version}`)
+    return ret.data
+  },
+  async DeleteVersionBackupFile(version) {
+    var ret = await axios_entity.delete(`api/System/Version?version=${version}`)
+    return ret.data
+  },
+  async GetCrontab(userRole) {
+    var ret = await axios_entity.get(`api/System/Crontab?userRole=${userRole}`)
+    return ret.data
+  },
+  async ValidateCrontab(payload) {
+    var ret = await axios_entity.post('api/System/Crontab/Validate', payload)
+    return ret.data
+  },
+  async SaveCrontab(payload) {
+    var ret = await axios_entity.post('api/System/Crontab', payload)
     return ret.data
   }
 }
@@ -131,8 +161,8 @@ export async function CargoStatusManualCheckDoneWhenUnloadFailure() {
   return ret.data
 }
 
-export async function Initialize() {
-  var ret = await axios_entity.post('api/VMS/Initialize')
+export async function Initialize(isForkInitBypass = false) {
+  var ret = await axios_entity.post(`api/VMS/Initialize?isForkInitBypass=${isForkInitBypass}`)
   return ret.data
 }
 export async function CancelInitProcess() {
@@ -159,7 +189,7 @@ export async function BuzzerOff() {
 export async function RemoveCassette() {
   const ret = await axios_entity.post('api/VMS/RemoveCassette')
   const _returnCode = ret.data;
-  if (_returnCode==0)
+  if (_returnCode == 0)
     bus.emit('remove_cst')
   return _returnCode;
 }
@@ -372,6 +402,18 @@ export const AlarmTableAPI = {
   async GetAlarmTable() {
     const response = await axios_entity.get('api/AlarmTable/GetAlarmCodesTable')
     return response.data.map(item => new AlarmCodeModel(item));
+  },
+  async SaveAlarmList(alarmList) {
+    for (var i = 0; i < alarmList.length; i++) {
+      var alarm = alarmList[i]
+      alarm.Time = new Date()
+    }
+    const response = await axios_entity.post('api/AlarmTable/SaveAlarmCodesTable', alarmList)
+    return response.data
+  },
+  async GetDefaultAlarmList() {
+    const response = await axios_entity.get('api/AlarmTable/GetDefaultAlarmCodeTable')
+    return response.data
   }
 }
 
@@ -581,12 +623,27 @@ export const ForkAPI = {
     var ret = await axios_entity.get(`api/VMS/Fork/Pin/Release`)
     return ret.data;
   },
+  /**浮動牙叉初始化 */
+  async PIN_INIT() {
+    var ret = await axios_entity.get(`api/VMS/Fork/Pin/Init`)
+    return ret.data;
+  },
 
   async ForkVerticalInitActionResume(resume = false) {
     var ret = await axios_entity.post(`api/FORKAGV/ForkVerticalInitActionResume?resume=${resume}`)
     return ret.data;
   },
 
+  /**
+   /**
+    * 執行尋原點動作
+    * @param {*} name 
+    * @returns {Object} { success: Boolean, alarm: String }
+    */
+  async FindHome(name) {
+    var ret = await axios_entity.get(`api/FORKAGV/FindHome?name=${name}`)
+    return ret.data;
+  },
 }
 
 /**LOG Controller API */

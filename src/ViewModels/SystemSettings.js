@@ -15,7 +15,15 @@ class SystemSettings {
             Notes: "",
             LocalIP: "127.0.0.1",
             Protocol: 0,
-            MapUrl: "http://1.1.1.1:5216/api/Map"
+            MapUrl: "http://1.1.1.1:5216/api/Map",
+            MsgHsDuration: 200,
+            UseAPIToFetchOrderInfo: false,
+            OrderInfoAPIPort: 5333,
+            OrderInfoAPIRoute: "/api/Task/OrderInfo",
+        };
+        this.PcInformation = {
+            userName: "gpm",
+            userPassword: "12345678",
         };
         this.ActiveTrafficControl = false;
         this.EQHandshakeBypass = false;
@@ -69,7 +77,8 @@ class SystemSettings {
             LeftSideLaserBypass: false,
             RightSideLaserBypass: false,
             AGVBodyLimitSensorBypass: true,
-            ForkFrontendObsSensorBypass: false
+            ForkFrontendObsSensorBypass: false,
+            IsRestoreBypassStateWhenAgvOnline: false
         };
         this.EQHSTimeouts = {
             TA1_Wait_L_U_REQ_ON: 10,
@@ -107,6 +116,8 @@ class SystemSettings {
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondaryAtChargeStation: true,
             TriggerCstReaderWhenUnloadBackToEntryPointAndReachTag: false,
+            ForkStartActionEarlyWhenVALIDOuputON: false,
+            IsFloatingPinLockHorizonForkArm: false,
             ForkSaftyStratrgy: 1,
             SaftyPositionHeight: 20,
             DownSearchSpeedWhenInitialize: 0.8,
@@ -118,7 +129,8 @@ class SystemSettings {
                 ShortenPose: 1,
                 ExtendPose: 4999,
                 ExtendWhenStartMoveToPort: false
-            }
+            },
+            NonRotatableWhenLiftingTags: []
         };
         this.Emulator = {
             Move_Time_Mode: 1,
@@ -158,6 +170,8 @@ class SystemSettings {
             MoveActionTimeoutInSec: 60,
             MaunalCheckAndResumableWhenUnloadButCargoBias: false,
             CheckCargoTypeMatchWhenUnload: false,
+            IsActionFinishReportBeforeCOMPTSignalON: false,
+            IsCstReaderTriggerWhenUnloadActionBackwardToMainPath: false,
         };
         this.CargoExistSensorParams = {
             TraySensorMounted: true,
@@ -165,12 +179,15 @@ class SystemSettings {
             RackSensorNumber: 2,
             TraySensorNumber: 4,
             SensorPointType: 1,
-            ExistSensorSimulation: false
+            ExistSensorSimulation: false,
+            GenerateCarrierIdWhenSensorTriggered: false,
         };
         this.Advance = {
             ShutDownPCWhenLowBatteryLevel: false,
             AutoInitAndOnlineWhenMoveWithoutCargo: false,
             AutoInitAndOnlineWhenMoveWithCargo: false,
+            IsAprilTagLocateSupport: false,
+            NavigationInfoUpdateTimeoutSec: 8
         };
         this.ManualCheckCargoStatus = {
             Enabled: false,
@@ -208,6 +225,22 @@ class SystemSettings {
         };
         this.IsUIDefault = true;
         this.EditKey = 'default';
+        this.InputContactTypeDefines = {
+            "TRAY_Exist_Sensor_1": "B",
+            "TRAY_Exist_Sensor_2": "B",
+            "TRAY_Exist_Sensor_3": "B",
+            "TRAY_Exist_Sensor_4": "B",
+            "RACK_Exist_Sensor_1": "B",
+            "RACK_Exist_Sensor_2": "B",
+            "Fork_Frontend_Abstacle_Sensor": "B",
+            "Vertical_Belt_Sensor": "B",
+            "Vertical_Belt_Sensor_2": "B",
+            "Bumper_Sensor": "B",
+            "EMO": "B",
+        }
+        this.AutoDoorSignalToggleWhenOpen = false;
+        this.AutoDoorSingalToggleIntervalMs = 1000;
+        this.IsOnlineAtVirtualPtAllow = false;
     }
 
 }
