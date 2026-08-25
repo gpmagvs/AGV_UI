@@ -1,44 +1,45 @@
 <template>
   <div v-if="isShow" class="quickly-actions d-flex">
-    <div class="d-flex flex-row justify-content-between w-100">
-      <div v-if="isShowCstReaderSwitch">
-        <span># 貨物ID讀取 Cargo ID Read:</span>
-        <el-switch
-          v-model="cstIdRead"
-          class="mx-2"
-          active-text="ON"
-          inactive-color="red"
-          inactive-text="OFF"
-          inline-prompt
-          @change="(val) => { SaveReaderSettings(val); }"></el-switch>
-      </div>
-      <div class="d-flex flex-row  align-items-center ">
-        <CheckParamSettingButton />
-        <div class="d-flex flex-row  align-items-center gap-1">
-          <span>Laser</span>
-          <el-tag effect="dark" type="primary"> {{ LaserMode }}</el-tag>
+    <div class="d-flex flex-row justify-content-between w-100 align-items-center">
+      <div class="d-flex flex-row align-items-center gap-2">
+        <div v-if="isShowCstReaderSwitch" class="d-flex flex-row align-items-center">
+          <span># {{ $t('cargo_id_read') }}:</span>
+          <el-switch v-model="cstIdRead" class="mx-2" active-text="ON" inactive-color="red" inactive-text="OFF"
+            inline-prompt @change="(val) => { SaveReaderSettings(val); }"></el-switch>
         </div>
-        <el-tag effect="light" type="info"> {{ currentSpeedCommand }}</el-tag>
-        <span class="border-end px-2">CPU:{{ CPU }}%</span>
-        <span>RAM:{{ Memory }} Mb</span>
+        <SaftyPLCStatus />
+      </div>
+
+      <div class="d-flex flex-row align-items-center gap-2">
+        <CheckParamSettingButton />
+        <LaserSpeedStatus />
+        <CpuStatus />
+        <RamStatus />
         <DiskStatus />
       </div>
     </div>
   </div>
 </template>
 <script>
-import { SystemSettingsStore, UserStore, SystemMsgStore, AGVStatusStore } from '@/store';
-import { watch } from 'vue';
+import { SystemSettingsStore, UserStore } from '@/store';
 import { SystemAPI } from '@/api/VMSAPI';
-import SystemSettings from '@/ViewModels/SystemSettings';
 import { ElNotification } from 'element-plus';
 import bus from '@/event-bus';
+import CpuStatus from './CpuStatus.vue';
+import RamStatus from './RamStatus.vue';
 import DiskStatus from './DiskStatus.vue';
+import LaserSpeedStatus from './LaserSpeedStatus.vue';
 import CheckParamSettingButton from './CheckParamSettingButton.vue';
+import SaftyPLCStatus from '../SaftyPLC/SaftyPLCStatus.vue';
+
 export default {
   components: {
+    CpuStatus,
+    RamStatus,
     DiskStatus,
-    CheckParamSettingButton
+    LaserSpeedStatus,
+    CheckParamSettingButton,
+    SaftyPLCStatus
   },
   data() {
     return {
@@ -119,9 +120,6 @@ export default {
     }
   },
   computed: {
-    diskStatus() {
-      return SystemMsgStore.state.DiskStatus
-    },
     isShow() {
       if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsQuicklyActionFooterDisplay == undefined)
         return true;
@@ -131,20 +129,7 @@ export default {
       if (UserStore.state.UserState.Role > 0)
         return true;
       return SystemSettingsStore.state.Settings.UI.CstReaderSwitchDisplayWhenNotLogin;
-    },
-    currentSpeedCommand() {
-      return AGVStatusStore.state.CurrentRobotSpeedCommand;
-    },
-    Memory() {
-      return AGVStatusStore.state.AGVStatus.SysLoading.Memory;
-    },
-    CPU() {
-      return AGVStatusStore.state.AGVStatus.SysLoading.CPU;
-    },
-    LaserMode() {
-      return AGVStatusStore.state.AGVStatus.Current_LASER_MODE;
     }
-
   },
   mounted() {
     setTimeout(() => {

@@ -1,44 +1,26 @@
 <template>
-    <div class="disk-status">
+    <div class="cpu-status">
         <el-tooltip placement="top" :show-after="300" :offset="10">
             <template #content>
                 <div class="metric-tip">
-                    <div class="metric-tip-title">{{ $t('sys_disk_label') }}</div>
-                    <template v-if="hasDisk">
-                        <div class="metric-tip-row">
-                            <span>{{ $t('sys_disk_name') }}</span>
-                            <b>{{ diskStatus.Name }}</b>
-                        </div>
-                        <div class="metric-tip-row">
-                            <span>{{ $t('sys_disk_total') }}</span>
-                            <b>{{ totalText }}</b>
-                        </div>
-                        <div class="metric-tip-row">
-                            <span>{{ $t('sys_disk_used') }}</span>
-                            <b>{{ usedText }}</b>
-                        </div>
-                        <div class="metric-tip-row">
-                            <span>{{ $t('sys_disk_available') }}</span>
-                            <b>{{ availableText }}</b>
-                        </div>
-                        <div class="metric-tip-row">
-                            <span>{{ $t(`sys_metric_${level}`) }}</span>
-                            <b>{{ usagePercent }}%</b>
-                        </div>
-                    </template>
-                    <div v-else class="metric-tip-row">
-                        <span>{{ $t('sys_disk_unknown') }}</span>
+                    <div class="metric-tip-title">{{ $t('sys_cpu_label') }}</div>
+                    <div class="metric-tip-row">
+                        <span>{{ $t('sys_cpu_hint') }}</span>
+                        <b>{{ cpuText }}</b>
+                    </div>
+                    <div class="metric-tip-row">
+                        <span>{{ $t(`sys_metric_${level}`) }}</span>
                     </div>
                 </div>
             </template>
             <div class="metric-chip" :class="`is-${level}`">
                 <el-icon class="chip-icon" :size="14">
-                    <Monitor />
+                    <Cpu />
                 </el-icon>
-                <span class="chip-label">{{ $t('sys_disk_label') }}</span>
+                <span class="chip-label">{{ $t('sys_cpu_label') }}</span>
                 <span class="chip-value">
                     <i class="chip-dot"></i>
-                    {{ chipValue }}
+                    {{ cpuText }}
                 </span>
             </div>
         </el-tooltip>
@@ -46,58 +28,26 @@
 </template>
 
 <script>
-import { Monitor } from '@element-plus/icons-vue'
-import { SystemMsgStore } from '@/store'
+import { Cpu } from '@element-plus/icons-vue'
+import { AGVStatusStore } from '@/store'
 
 const WARN = 70
 const CRITICAL = 90
 
 export default {
-    name: 'DiskStatus',
-    components: {
-        Monitor
-    },
+    name: 'CpuStatus',
+    components: { Cpu },
     computed: {
-        diskStatus() {
-            return SystemMsgStore.state.DiskStatus || {}
+        cpu() {
+            return Number(AGVStatusStore.state.AGVStatus?.SysLoading?.CPU) || 0
         },
-        hasDisk() {
-            return !!this.diskStatus.Name
-        },
-        usagePercent() {
-            const total = Number(this.diskStatus.TotalSizeOfDriver) || 0
-            const used = Number(this.diskStatus.Used) || 0
-            if (!total) return 0
-            return Math.min(100, Math.round((used / total) * 100))
-        },
-        usedText() {
-            return this.formatBytes(this.diskStatus.Used)
-        },
-        totalText() {
-            return this.formatBytes(this.diskStatus.TotalSizeOfDriver)
-        },
-        availableText() {
-            return this.formatBytes(this.diskStatus.TotalAvailableSpace)
-        },
-        chipValue() {
-            if (!this.hasDisk) return this.$t('sys_disk_unknown_short')
-            return `${this.usagePercent}%`
+        cpuText() {
+            return `${this.cpu}%`
         },
         level() {
-            if (!this.hasDisk) return 'unknown'
-            if (this.usagePercent > CRITICAL) return 'critical'
-            if (this.usagePercent > WARN) return 'warn'
+            if (this.cpu >= CRITICAL) return 'critical'
+            if (this.cpu >= WARN) return 'warn'
             return 'normal'
-        }
-    },
-    methods: {
-        formatBytes(bytes) {
-            const n = Number(bytes) || 0
-            if (n === 0) return '0 MB'
-            const k = 1024
-            const sizes = ['MB', 'GB', 'TB']
-            const i = Math.min(sizes.length - 1, Math.floor(Math.log(n) / Math.log(k)))
-            return `${parseFloat((n / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
         }
     }
 }
@@ -110,7 +60,7 @@ $c-ng: #c62828;
 $c-idle: #90a4ae;
 $mono: Consolas, 'Courier New', monospace;
 
-.disk-status {
+.cpu-status {
     display: inline-flex;
     align-items: center;
 }
@@ -209,15 +159,6 @@ $mono: Consolas, 'Courier New', monospace;
             animation: metric-pulse 1.4s ease-in-out infinite;
         }
     }
-
-    &.is-unknown {
-        border-color: #cfd8dc;
-        background: #fff;
-
-        .chip-icon {
-            color: $c-idle;
-        }
-    }
 }
 
 @keyframes metric-pulse {
@@ -232,7 +173,7 @@ $mono: Consolas, 'Courier New', monospace;
 }
 
 .metric-tip {
-    min-width: 200px;
+    min-width: 180px;
     font-size: 12px;
     line-height: 1.6;
 }

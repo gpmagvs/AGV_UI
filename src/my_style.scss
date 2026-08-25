@@ -1,5 +1,6 @@
 .swal2-container {
-  z-index: 9999;
+  /* 需高於 SaftyPLCStatus dialog (1200000) 與 quickly-actions footer */
+  z-index: 1300000 !important;
 }
 .swal2-html-container {
   font-size: 2.223rem;

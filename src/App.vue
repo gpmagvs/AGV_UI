@@ -2,6 +2,29 @@
   <!--<div class="appcontainer" v-bind:style="AppBorderStyle" style="width:100vw">-->
   <div class="appcontainer" style="width:100vw;height:100vh" v-loading.fullscreen.lock="loading"
     element-loading-text="GPM AGV" element-loading-background="rgba(0,0,0, 0.8)">
+    <div v-if="connectionAlertVisible" class="connection-alert-bar">
+      <div class="connection-alert-card" role="alert">
+        <div class="connection-alert-icon" aria-hidden="true">
+          <el-icon :size="22"><WarningFilled /></el-icon>
+        </div>
+        <div class="connection-alert-body">
+          <div class="connection-alert-heading">通訊連線異常</div>
+          <ul class="connection-alert-list">
+            <li v-for="(line, idx) in connectionAlertLines" :key="idx">{{ line }}</li>
+          </ul>
+        </div>
+        <div class="connection-alert-actions">
+          <el-button type="danger" size="small" @click="reloadPage">Reload</el-button>
+          <button
+            type="button"
+            class="connection-alert-close"
+            aria-label="Close"
+            @click="connectionAlertVisible = false">
+            <el-icon :size="16"><Close /></el-icon>
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="fixed-bottom text-right" style="bottom:40px !important;"
       v-if="!isTsmcHmi && CurrentAlarms != undefined && CurrentAlarms.length > 0" id="vcs-alarms">
       <div v-for="(alarmObj, code) in AlarmCodesGroup" :key="code">
@@ -42,21 +65,35 @@ import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 import { ForkAPI } from '@/api/VMSAPI.js'
 import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessageDisplay.vue'
+import { Close, WarningFilled } from '@element-plus/icons-vue'
 
 export default {
   components: {
-    SystemErrorNotify, SideMenuDrawer, SystemSettingsView, EQHandshakingNotify, WaitAGVsNextMoveActionNotify, AGVInitalizingNotify, SystemErrorNotify, BackendExceptionMessageDisplay
+    SystemErrorNotify,
+    SideMenuDrawer,
+    SystemSettingsView,
+    EQHandshakingNotify,
+    WaitAGVsNextMoveActionNotify,
+    AGVInitalizingNotify,
+    BackendExceptionMessageDisplay,
+    Close,
+    WarningFilled
   },
   data() {
     return {
       showMenuToggleIcon: false,
       loading: true,
-      isMobile: false
+      isMobile: false,
+      connectionAlertVisible: false,
+      connectionAlertLines: []
     }
   },
   methods: {
     ToggleMenu() {
       this.$refs.side_menu.Show();
+    },
+    reloadPage() {
+      window.location.reload();
     },
     Timeformat(time, format = 'yyyy-MM-DD HH:mm:ss') {
       return moment(time).format(format)
@@ -108,34 +145,21 @@ export default {
         const agvsIP = SystemSettingsStore.state.Settings.Connections.AGVS.IP;
         const agvsPort = SystemSettingsStore.state.Settings.Connections.AGVS.Port;
 
-        let message = '';
+        const lines = [];
         if (isROSConnecting) {
-          message += `[ROS服務器]連接失敗..請確認連線 (${rosBridgeServerIP}:${rosBridgeServerPort})\n`;
+          lines.push(`[ROS服務器] 連接失敗..請確認連線 (${rosBridgeServerIP}:${rosBridgeServerPort})`);
         }
         if (isDIOConnecting) {
-          message += `[IO模組]   連接失敗..請確認連線 (${wagoIP}:${wagoPort})\n`;
+          lines.push(`[IO模組] 連接失敗..請確認連線 (${wagoIP}:${wagoPort})`);
         }
         if (isAGVSConnecting) {
-          message += `[派車系統]   連接失敗..請確認連線 (${agvsIP}:${agvsPort})`;
+          lines.push(`[派車系統] 連接失敗..請確認連線 (${agvsIP}:${agvsPort})`);
         }
-        this.$swal.fire({
-          title: '通訊連線異常',
-          html: `<ul class="border rounded-3 border-light py-3" style="font-size: 22px; color:white; list-style-type: disc; text-align: left; margin: 0; padding-left: 50px;">${message.split('\n').map(line => `<li style="margin-bottom: 10px;">${line}</li>`).join('')}</ul>`,
-          icon: 'error',
-          showCancelButton: true,
-          cancelButtonText: 'Reload',
-          confirmButtonText: 'OK',
-          customClass: {
-            popup: 'bg-danger bg-opacity-6',
-            confirmButton: 'btn btn-danger',
-            cancelButton: 'btn btn-outline-danger',
-            title: 'text-light'
-          }
-        }).then(res => {
-          if (res.dismiss === 'cancel') {
-            window.location.reload();
-          }
-        });
+        this.connectionAlertLines = lines;
+        this.connectionAlertVisible = true;
+      } else {
+        this.connectionAlertVisible = false;
+        this.connectionAlertLines = [];
       }
     }
   },
@@ -447,6 +471,102 @@ __    \`--.__    \`--._  \`-._ \`-. \`. \\:/ .' .-' _.-'  _.--'    __.--'    __
 };
 </script>
 <style lang="scss">
+.connection-alert-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1300001;
+  padding: 10px 14px;
+  pointer-events: none;
+}
+
+.connection-alert-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ef9a9a;
+  background: linear-gradient(180deg, #ffebee 0%, #ffcdd2 100%);
+  box-shadow: 0 6px 20px rgba(183, 28, 28, 0.22);
+  color: #b71c1c;
+  text-align: left;
+}
+
+.connection-alert-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #c62828;
+  color: #fff;
+}
+
+.connection-alert-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.connection-alert-heading {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #b71c1c;
+}
+
+.connection-alert-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #c62828;
+
+  li + li {
+    margin-top: 2px;
+  }
+}
+
+.connection-alert-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.connection-alert-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #ef9a9a;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  color: #c62828;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    background: #fff;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
 .menu-toggle-icon {
   position: absolute;
   left: 0;
