@@ -720,7 +720,9 @@ export default {
     },
     isBrakeSwitchRelease() {
       try {
-        return DIOStore.getters.IsBrakeSwitchRelease;
+        var isBrakeSwitchRelease = DIOStore.getters.IsBrakeSwitchRelease;
+        var _agv_type = AGVStatusStore.getters.AGVStatus.Agv_Type;
+        return isBrakeSwitchRelease && _agv_type != 2330;
       } catch {
         return false;
       }
