@@ -178,13 +178,13 @@
                                     <span class="pin" :class="andOk ? 'is-on' : 'is-off'">Release</span>
                                     <button
                                         type="button"
-                                        class="pin pin-btn"
+                                        class="pin pin-btn clickable"
                                         :class="[
                                             softwareResetPin.on || resetBusy ? 'is-on' : 'is-off',
-                                            { clickable: canSoftwareReset, busy: resetBusy }
+                                            { busy: resetBusy }
                                         ]"
-                                        :disabled="!canSoftwareReset || resetBusy"
-                                        :title="softwareResetTitle"
+                                        :disabled="resetBusy"
+                                        :title="$t('SaftyPLCOverview.reset_sw_hint')"
                                         @click="onSoftwareResetClick">
                                         {{ $t('SaftyPLCOverview.reset_sw') }}
                                         <span v-if="resetBusy" class="pin-busy">…</span>
@@ -279,8 +279,21 @@ import {
     Lightning,
     WarningFilled
 } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { DIO } from '@/api/VMSAPI'
-import { DIOStore, SaftyPLCStore, UserStore } from '@/store'
+import { SaftyPLCStore } from '@/store'
+
+function notifyResetResult(type, message) {
+    ElMessage({
+        type,
+        message,
+        showClose: true,
+        duration: 3000,
+        // EP 此版會忽略 zIndex，改靠全域 .el-message CSS；customClass 雙保險
+        customClass: 'safty-plc-msg-over-dialog',
+        offset: 24
+    })
+}
 
 const MOTOR_1 = 'CPUC200_Q1_Motor_Power_1'
 const MOTOR_2 = 'CPUC200_Q2_Motor_Power_2'
@@ -497,21 +510,6 @@ export default {
         hardwareResetPin() {
             return this.resetSignals.find(r => r.key === 'hw') || { on: false, hint: '' }
         },
-        safetyRelaysResetOutput() {
-            const outputs = DIOStore.state.DIOStates?.Outputs
-            if (!Array.isArray(outputs)) return null
-            return outputs.find(o => o.Name === 'Safety_Relays_Reset') || null
-        },
-        canSoftwareReset() {
-            return UserStore.getters.CurrentUserRole != 0 && !!this.safetyRelaysResetOutput
-        },
-        softwareResetTitle() {
-            if (UserStore.getters.CurrentUserRole == 0)
-                return this.$t('SaftyPLCOverview.reset_sw_need_login')
-            if (!this.safetyRelaysResetOutput)
-                return this.$t('SaftyPLCOverview.reset_sw_missing')
-            return this.$t('SaftyPLCOverview.reset_sw_hint')
-        },
         resetArmed() {
             return this.andOk
         },
@@ -556,30 +554,19 @@ export default {
     },
     methods: {
         async onSoftwareResetClick() {
-            if (!this.canSoftwareReset || this.resetBusy)
-                return
-
-            const result = await this.$swal.fire({
-                title: this.$t('SaftyPLCOverview.reset_sw_confirm_title'),
-                text: this.$t('SaftyPLCOverview.reset_sw_confirm_text'),
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'OK',
-                customClass: 'my-sweetalert'
-            })
-            if (!result.isConfirmed)
+            if (this.resetBusy)
                 return
 
             this.resetBusy = true
             try {
                 const ret = await DIO.SafetyRelaysReset()
                 if (ret?.confirm) {
-                    this.$message?.success?.(ret.message || this.$t('SaftyPLCOverview.reset_sw_ok'))
+                    notifyResetResult('success', ret.message || this.$t('SaftyPLCOverview.reset_sw_ok'))
                 } else {
-                    this.$message?.error?.(ret?.message || this.$t('SaftyPLCOverview.reset_sw_failed'))
+                    notifyResetResult('error', ret?.message || this.$t('SaftyPLCOverview.reset_sw_failed'))
                 }
             } catch (error) {
-                this.$message?.error?.(error?.message || this.$t('SaftyPLCOverview.reset_sw_failed'))
+                notifyResetResult('error', error?.message || this.$t('SaftyPLCOverview.reset_sw_failed'))
             } finally {
                 this.resetBusy = false
             }
@@ -1584,5 +1571,10 @@ $wire-lo: #78909c;
 
 .safty-plc-overview-dialog .el-dialog__footer {
     display: none;
+}
+
+/* 蓋過 overview dialog (z-index 1200000)；EP Message 的 inline z-index 需 !important */
+.el-message.safty-plc-msg-over-dialog {
+    z-index: 1300000 !important;
 }
 </style>
