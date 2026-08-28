@@ -472,6 +472,9 @@ export const SystemSettingsStore = createStore({
     },
     IsSettingsLoaded: state => {
       return state.IsSettingsLoaded
+    },
+    IsCstIDReadable: state => {
+      return state.Settings.HasTrayCstReader || state.Settings.HasRackCstReader;
     }
   },
   mutations: {

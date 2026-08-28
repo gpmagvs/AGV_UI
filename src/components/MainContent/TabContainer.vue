@@ -28,7 +28,7 @@
         <TaskDeliveryVue></TaskDeliveryVue>
       </b-tab>
       <!-- CST READER -->
-      <b-tab v-if="!IsVisitor" title="CST Reader">
+      <b-tab v-if="!IsVisitor && IsCstIDReadable" title="CST Reader">
         <CSTReader></CSTReader>
       </b-tab>
       <b-tab v-if="!IsVisitor" title="Overview">
@@ -60,15 +60,12 @@ import TaskDeliveryVue from '@/components/VMSTask/TaskDelivery.vue'
 import CSTReader from '@/components/CSTReaderView.vue'
 import EQHandshakeView from '@/components/E84/EQHandshakeView.vue'
 import AgvOverview from '@/components/AGVStatusOverview.vue';
-import Notifier from "@/api/NotifyHelper.js";
 import BatteryView from "@/views/BatteryView.vue"
 import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
-import { UserStore, UIStore } from '@/store'
-import EQHandshakeViewVue from '../E84/EQHandshakeView.vue'
+import { UserStore, UIStore, SystemSettingsStore } from '@/store'
 import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
-import { ElNotification } from 'element-plus'
 import CamDisplay from "@/Camera/CamDisplay.vue"
 
 const TAB_STORAGE_KEY = 'main_content_tab'
@@ -169,6 +166,9 @@ export default {
     },
     IsVisitor() {
       return UserStore.getters.IsVisitor;
+    },
+    IsCstIDReadable() {
+      return SystemSettingsStore.getters.IsCstIDReadable;
     }
   }
 }
