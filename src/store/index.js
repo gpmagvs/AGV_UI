@@ -229,6 +229,10 @@ export const AGVStatusStore = createStore({
     IsInspectionAGV: state => {
       return state.AGVStatus.Agv_Type == 2;
     },
+    IsSupportShiftMove: state => {
+      const _supportShiftAgvType = [2, 2330];
+      return _supportShiftAgvType.includes(state.AGVStatus.Agv_Type);
+    },
     /**是否為Fork AGV */
     IsForkAGV: state => {
       return state.AGVStatus.Agv_Type == 0;
