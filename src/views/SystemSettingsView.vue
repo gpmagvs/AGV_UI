@@ -110,6 +110,15 @@
                   <div class="w-100 border-bottom">
                     <b>安全Sensor防護</b>
                   </div>
+
+
+                  <el-form-item label="前方雷射 Bypass">
+                    <el-switch v-model="settings.SensorBypass.FrontLaserBypass"
+                      @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="後方雷射 Bypass">
+                    <el-switch v-model="settings.SensorBypass.BackLaserBypass" @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
                   <el-form-item label="左方雷射 Bypass">
                     <el-switch v-model="settings.SensorBypass.LeftSideLaserBypass"
                       @change="HandleParamChanged"></el-switch>
@@ -118,6 +127,16 @@
                     <el-switch v-model="settings.SensorBypass.RightSideLaserBypass"
                       @change="HandleParamChanged"></el-switch>
                   </el-form-item>
+
+                  <el-form-item label="前方地洞 Sensor Bypass">
+                    <el-switch v-model="settings.SensorBypass.FrontGroundHoldSensorBypass"
+                      @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="後方地洞 Sensor Bypass">
+                    <el-switch v-model="settings.SensorBypass.BackGroundHoldSensorBypass"
+                      @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+
                   <el-form-item label="車體限動Sensor Bypass">
                     <el-switch v-model="settings.SensorBypass.AGVBodyLimitSensorBypass"
                       @change="HandleParamChanged"></el-switch>
