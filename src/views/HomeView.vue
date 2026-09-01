@@ -54,13 +54,13 @@
                     v-if="!IsBuzzerMute && BuzzerState.isPlaying" class="bi bi-volume-up-fill"></i>
                 </b>
               </b-button>
-              <b-button v-if="VMSData.Agv_Type != 2" :disabled="back_end_server_err" @click="ShowRemoveCstDialog()"
+              <b-button v-if="IsCstIDReadable" :disabled="back_end_server_err" @click="ShowRemoveCstDialog()"
                 variant="light" class="w-100 mb-1 p-2 border" v-bind:class="rm_cst_btn_class_bind" block>
                 <b>{{ $t('cst-remove') }}</b>
               </b-button>
-              <el-badge v-if="VMSData.Agv_Type != 2" @click="ShowRemoveCstDialog()"
+              <el-badge v-if="IsCstIDReadable" @click="ShowRemoveCstDialog()"
                 style="cursor:pointer;position: relative;bottom: 25px;left: 182px;" :value="cargo_status_text">
-                <div @click="ShowRemoveCstDialog()" v-if="VMSData.Agv_Type != 2"></div>
+                <div @click="ShowRemoveCstDialog()"></div>
               </el-badge>
               <b-button :disabled="back_end_server_err" :variant="IsLogin ? 'danger' : 'light'" class="mb-1 p-2 border"
                 block @click="ShowLogin()">
@@ -619,6 +619,11 @@ export default {
     }
   },
   computed: {
+    IsCstIDReadable() {
+      if (this.VMSData.Agv_Type == 2)
+        return false;
+      return SystemSettingsStore.getters.IsCstIDReadable;
+    },
     Is_TSMC_MiniAGV() {
       return AGVStatusStore.getters.IsInspectionAGV;
     },
@@ -720,7 +725,10 @@ export default {
     },
     isBrakeSwitchRelease() {
       try {
-        return DIOStore.getters.IsBrakeSwitchRelease;
+        var isBrakeSwitchRelease = DIOStore.getters.IsBrakeSwitchRelease;
+        var _agv_type = AGVStatusStore.getters.AGVStatus.Agv_Type;
+        return isBrakeSwitchRelease;
+        // return isBrakeSwitchRelease && _agv_type != 2330;
       } catch {
         return false;
       }

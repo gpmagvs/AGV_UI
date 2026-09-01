@@ -1,15 +1,9 @@
 <template>
   <div class="agv-control-panel-container w-100">
-    <div
-      v-loading="!enabled"
-      :element-loading-spinner="false"
-      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'"
-      ref="agvc_ctrl_pnl"
-      class="agvc-control-panel keys"
-      style="width:400px">
-      <div
-        v-show="!enabled"
-        class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
+    <div v-loading="!enabled" :element-loading-spinner="false"
+      :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(202,202,202,0.4)'" ref="agvc_ctrl_pnl"
+      class="agvc-control-panel keys" style="width:400px">
+      <div v-show="!enabled" class="disable-notify text-start my-2">{{ $t('agv_control_notify_text') }}</div>
       <div v-if="speed_modifyable" class="w-100 bg-light text-start px-2 py-3">
         <div class="speed-item-container d-flex flex-row">
           <div>Linear Speed</div>
@@ -18,12 +12,7 @@
         </div>
         <div class="speed-item-container d-flex flex-row">
           <div>Rotation Speed</div>
-          <el-input-number
-            size="large"
-            v-model="rotation_speed"
-            :step="0.01"
-            :max="0.3"
-            :min="0.01"></el-input-number>
+          <el-input-number size="large" v-model="rotation_speed" :step="0.01" :max="0.3" :min="0.01"></el-input-number>
         </div>
       </div>
       <table class="w-100">
@@ -65,7 +54,7 @@
           <tr align="justify">
             <td>
               <div :class="active_state" @click="MOVE_BL()">
-                <img v-if="!IsMiniAGV" src="@/assets/images/back_left.png" alt />
+                <img v-if="!IsSupportShiftMove" src="@/assets/images/back_left.png" alt />
               </div>
             </td>
             <td>
@@ -75,16 +64,13 @@
             </td>
             <td>
               <div :class="active_state" @click="MOVE_BR()">
-                <img v-if="!IsMiniAGV" src="@/assets/images/back_right.png" alt />
+                <img v-if="!IsSupportShiftMove" src="@/assets/images/back_right.png" alt />
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div
-        @click="speed_modifyable = !speed_modifyable"
-        style="height:20px;width:100px"
-        class="bg-light"></div>
+      <div @click="speed_modifyable = !speed_modifyable" style="height:20px;width:100px" class="bg-light"></div>
     </div>
   </div>
 </template>
@@ -120,14 +106,14 @@ export default {
     },
     async MOVE_LEFT() {
 
-      if (this.IsMiniAGV) {
+      if (this.IsSupportShiftMove) {
         AGVMove_ShiftLeft();
       } else {
         AGVMoveLeft();
       }
     },
     async MOVE_RIGHT() {
-      if (this.IsMiniAGV)
+      if (this.IsSupportShiftMove)
         AGVMove_ShiftRight();
       else {
         this.rotation_action = 'right'
@@ -141,7 +127,7 @@ export default {
     async MOVE_FR() {
 
       this.linear_action = this.rotation_action = 'fr'
-      if (this.IsMiniAGV)
+      if (this.IsSupportShiftMove)
         AGVMoveRight(this.rotation_speed);
       else
         AGVMove_FordwardRight(0.2, 0.15);
@@ -149,7 +135,7 @@ export default {
     async MOVE_FL() {
 
       this.linear_action = this.rotation_action = 'fl'
-      if (this.IsMiniAGV)
+      if (this.IsSupportShiftMove)
         AGVMoveLeft(this.rotation_speed);
       else
         AGVMove_FordwardLeft(0.2, 0.15);
@@ -157,14 +143,14 @@ export default {
     async MOVE_BR() {
 
       this.linear_action = this.rotation_action = 'br'
-      if (this.IsMiniAGV)
+      if (this.IsSupportShiftMove)
         return;
       AGVMove_BackwardRight(0.2, 0.15);
     },
     async MOVE_BL() {
 
       this.linear_action = this.rotation_action = 'bl'
-      if (this.IsMiniAGV)
+      if (this.IsSupportShiftMove)
         return;
       AGVMove_BackwardLeft(0.2, 0.15);
     },
@@ -178,8 +164,8 @@ export default {
     active_state() {
       return this.enabled ? 'active' : 'inactive';
     },
-    IsMiniAGV() {
-      return AGVStatusStore.getters.IsInspectionAGV;
+    IsSupportShiftMove() {
+      return AGVStatusStore.getters.IsSupportShiftMove;
     },
     IsUserLogin() {
       return UserStore.getters.CurrentUserRole != 0;

@@ -229,6 +229,10 @@ export const AGVStatusStore = createStore({
     IsInspectionAGV: state => {
       return state.AGVStatus.Agv_Type == 2;
     },
+    IsSupportShiftMove: state => {
+      const _supportShiftAgvType = [2, 2330];
+      return _supportShiftAgvType.includes(state.AGVStatus.Agv_Type);
+    },
     /**是否為Fork AGV */
     IsForkAGV: state => {
       return state.AGVStatus.Agv_Type == 0;
@@ -468,6 +472,9 @@ export const SystemSettingsStore = createStore({
     },
     IsSettingsLoaded: state => {
       return state.IsSettingsLoaded
+    },
+    IsCstIDReadable: state => {
+      return state.Settings.HasTrayCstReader || state.Settings.HasRackCstReader;
     }
   },
   mutations: {
@@ -898,33 +905,22 @@ export const DIOStore = createStore({
   }
 })
 
-/** Safety PLC Result 狀態 */
+/** Safety PLC Result 狀態（未上報車款維持 undefined，UI 不顯示） */
 export const SaftyPLCStore = createStore({
   state: {
-    Status: {
-      Connected: false,
-      IsSimulator: false,
-      DeviceStatus: '',
-      LastUpdateTime: null,
-      Signals: []
-    }
+    Status: undefined
   },
   getters: {
     Status: state => state.Status,
     Signals: state => state.Status?.Signals ?? [],
     Connected: state => state.Status?.Connected ?? false,
     IsSimulator: state => state.Status?.IsSimulator ?? false,
-    DeviceStatus: state => state.Status?.DeviceStatus ?? ''
+    DeviceStatus: state => state.Status?.DeviceStatus ?? '',
+    HasStatus: state => state.Status != null
   },
   mutations: {
     updateStatus(state, data) {
-      state.Status = data ?? {
-        Connected: false,
-        IsSimulator: false,
-        DeviceStatus: '',
-        LastUpdateTime: null,
-        Signals: []
-      }
+      state.Status = data ?? undefined
     }
   }
 })

@@ -1,5 +1,11 @@
 .swal2-container {
-  z-index: 9999;
+  /* 需高於 SaftyPLCStatus dialog (1200000) 與 quickly-actions footer */
+  z-index: 1300000 !important;
+}
+
+/* ElMessage 實際用 inline z-index（忽略 options.zIndex），需 !important 蓋過 dialog */
+.el-message {
+  z-index: 1300000 !important;
 }
 .swal2-html-container {
   font-size: 2.223rem;

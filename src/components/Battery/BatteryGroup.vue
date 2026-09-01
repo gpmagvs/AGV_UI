@@ -1,62 +1,29 @@
 <template>
   <div class="battrey-group d-flex flex-row">
-    <div
-      class="bat d-flex flex-row"
-      v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'"
-      v-for="i in IsMiniAGV ? [2, 1] : [0]"
-      :key="i"
-    >
-      <i
-        v-if="GetBatteryStatus(i).IsCharging"
-        style="color:limegreen"
-        class="bi bi-battery-charging"
-      ></i>
+    <div class="bat d-flex flex-row" v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'" v-for="i in IsMiniAGV ? [2, 1] : [0]"
+      :key="i">
+      <i v-if="GetBatteryStatus(i).IsCharging" style="color:limegreen" class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'"></i>
-      <b-progress
-        class="flex-fill h-100"
-        :max="100"
-        :animated="!IsBackendDisconnected"
-        @click="HandleBatteryClick"
-      >
-        <b-progress-bar
-          :animated="!IsBackendDisconnected"
-          :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).BatteryLevel"
-          :label="GetLabel(GetBatteryStatus(i))"
-          v-bind:class="GetClass(GetBatteryStatus(i))"
-          style="font-size:16px;"
-        ></b-progress-bar>
+      <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
+        <b-progress-bar :animated="!IsBackendDisconnected"
+          :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).BatteryLevel" :label="GetLabel(GetBatteryStatus(i))"
+          v-bind:class="GetClass(GetBatteryStatus(i))" style="font-size:16px;"></b-progress-bar>
       </b-progress>
       <div class="d-flex px-2" style="color:grey">
         [{{ i }}]
-        {{ (GetBatteryStatus(i).Voltage/1000.0).toFixed(2) }}
-        <span
-          class="px-1"
-          style="font-size:smaller;"
-        >V</span>
+        {{ (GetBatteryStatus(i).Voltage / 1000.0).toFixed(2) }}
+        <span class="px-1" style="font-size:smaller;">V</span>
       </div>
       <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
         <label for>充電電流:</label>
-        {{ ( GetBatteryStatus(i).ChargeCurrent/1000.0).toFixed(2) }}
-        <span
-          class="px-1"
-          style="font-size:smaller;"
-        >A</span>
+        {{ (GetBatteryStatus(i).ChargeCurrent / 1000.0).toFixed(2) }}
+        <span class="px-1" style="font-size:smaller;">A</span>
       </div>
     </div>
-    <el-drawer
-      v-model="show_inspection_agv_battery_viewer"
-      direction="btt"
-      size="600px"
-      :show-close="false"
-    >
+    <el-drawer v-model="show_inspection_agv_battery_viewer" direction="btt" size="600px" :show-close="false">
       <template #header="{ close }">
-        <el-button
-          class="border-bottom"
-          style="z-index:9999"
-          type="danger"
-          size="large"
-          @click="close"
-        >Close</el-button>
+        <el-button class="border-bottom" style="z-index:9999" type="danger" size="large"
+          @click="close">Close</el-button>
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>
@@ -113,6 +80,7 @@ export default {
         else
           return new BatteryStatus(100)
       } catch (error) {
+        console.error(error);
         return new BatteryStatus(100)
       }
     },

@@ -331,6 +331,19 @@ export const DIO = {
     return ret.data
   },
 
+  /**
+   * 脈衝 Safety_Relays_Reset（軟體 Reset）
+   * @returns {Promise<{confirm:boolean, message:string}>}
+   */
+  async SafetyRelaysReset() {
+    try {
+      const ret = await axios_entity.post('api/VMS/DIO/SafetyRelaysReset')
+      return ret.data ?? { confirm: false, message: 'Empty response' }
+    } catch (error) {
+      return { confirm: false, message: error?.message || 'Network Error' }
+    }
+  },
+
   async DI_State_Change(address, state) {
     var ret = await axios_entity.get(
       `api/VMS/DIO/DI_State?address=${address}&state=${state}`,

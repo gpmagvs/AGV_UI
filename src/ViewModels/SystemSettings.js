@@ -74,11 +74,16 @@ class SystemSettings {
         };
         this.SensorBypass = {
             BeltSensorBypass: true,
+            FrontLaserBypass: false,
+            BackLaserBypass: false,
             LeftSideLaserBypass: false,
             RightSideLaserBypass: false,
+            FrontGroundHoldSensorBypass: false,
+            BackGroundHoldSensorBypass: false,
             AGVBodyLimitSensorBypass: true,
             ForkFrontendObsSensorBypass: false,
-            IsRestoreBypassStateWhenAgvOnline: false
+            IsRestoreBypassStateWhenAgvOnline: false,
+
         };
         this.EQHSTimeouts = {
             TA1_Wait_L_U_REQ_ON: 10,
