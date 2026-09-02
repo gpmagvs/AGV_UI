@@ -1,7 +1,7 @@
 <template>
   <div class="battrey-group d-flex flex-row">
     <div class="bat d-flex flex-row" v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'"
-      v-for="i in IsMiniAGV ? [2, 1] : battery_indexes" :key="i">
+      v-for="i in battery_indexes" :key="i">
       <i v-if="GetBatteryStatus(i).IsCharging" style="color:limegreen" class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'"></i>
       <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
@@ -68,7 +68,15 @@ export default {
       return this.battery_states.length
     },
     battery_indexes() {
-      return Array.from({ length: this.battery_count }, (_, index) => this.battery_count - index)
+      const ids = (this.battery_states || [])
+        .map((b) => Number(b.BatteryID))
+        .filter((id) => Number.isFinite(id))
+
+      if (ids.length > 0) {
+        return [...new Set(ids)].sort((a, b) => b - a)
+      }
+
+      return this.IsMiniAGV ? [1, 0] : [0]
     }
   },
   data() {
@@ -79,19 +87,27 @@ export default {
   },
   methods: {
     GetBatteryStatus(index) {
+      const empty = new BatteryStatus(0)
+      empty.BatteryID = index
+      empty.Voltage = 0
+      empty.ChargeCurrent = 0
+      empty.IsCharging = false
+      empty.IsError = true
+
       if (this.battery_count == 0)
-        return new BatteryStatus(0)
+        return empty
 
       try {
-        var stat = this.battery_states.find(bat => bat.BatteryID == index)
+        var stat = this.battery_states.find(bat => Number(bat.BatteryID) === Number(index))
         if (stat)
           return stat
         else {
-          return this.battery_states[0]; //因為 BatteryID 是從 0 開始，所以如果找不到，就回傳第一個電池的狀態
+          console.warn(`[BatteryGroup] BatteryID not found: ${index}`, this.battery_states)
+          return empty
         }
       } catch (error) {
         console.error(error);
-        return new BatteryStatus(100)
+        return empty
       }
     },
     GetLabel(bat_status = new BatteryStatus) {
