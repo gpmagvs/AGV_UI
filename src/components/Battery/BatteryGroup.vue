@@ -1,7 +1,7 @@
 <template>
   <div class="battrey-group d-flex flex-row">
-    <div class="bat d-flex flex-row" v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'" v-for="i in IsMiniAGV ? [2, 1] : [0]"
-      :key="i">
+    <div class="bat d-flex flex-row" v-bind:class="IsMiniAGV ? 'w-50' : 'w-100'"
+      v-for="i in IsMiniAGV ? [2, 1] : battery_indexes" :key="i">
       <i v-if="GetBatteryStatus(i).IsCharging" style="color:limegreen" class="bi bi-battery-charging"></i>
       <i v-else :class="'bi bi-battery-full'"></i>
       <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
@@ -63,6 +63,12 @@ export default {
     },
     battery_states() {
       return AGVStatusStore.getters.BatteryStatus
+    },
+    battery_count() {
+      return this.battery_states.length
+    },
+    battery_indexes() {
+      return Array.from({ length: this.battery_count }, (_, index) => this.battery_count - index)
     }
   },
   data() {
@@ -73,12 +79,16 @@ export default {
   },
   methods: {
     GetBatteryStatus(index) {
+      if (this.battery_count == 0)
+        return new BatteryStatus(0)
+
       try {
         var stat = this.battery_states.find(bat => bat.BatteryID == index)
         if (stat)
           return stat
-        else
-          return new BatteryStatus(100)
+        else {
+          return this.battery_states[0]; //因為 BatteryID 是從 0 開始，所以如果找不到，就回傳第一個電池的狀態
+        }
       } catch (error) {
         console.error(error);
         return new BatteryStatus(100)
