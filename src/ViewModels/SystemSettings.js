@@ -83,7 +83,12 @@ class SystemSettings {
             AGVBodyLimitSensorBypass: true,
             ForkFrontendObsSensorBypass: false,
             IsRestoreBypassStateWhenAgvOnline: false,
+            UltrasonicSensorBypass: false,
 
+        };
+        this.UltrasonicSensorConfig = {
+            speedDecreaseDistance: 0,
+            stopDistance: 0,
         };
         this.EQHSTimeouts = {
             TA1_Wait_L_U_REQ_ON: 10,

@@ -149,6 +149,28 @@
                     <el-switch v-model="settings.SensorBypass.IsRestoreBypassStateWhenAgvOnline"
                       @change="HandleParamChanged"></el-switch>
                   </el-form-item>
+
+                  <div class="w-100 border-bottom">
+                    <b>超音波感測</b>
+                  </div>
+
+                  <el-form-item label="超音波感測 Bypass">
+                    <el-switch v-model="settings.SensorBypass.UltrasonicSensorBypass"
+                      @change="HandleParamChanged"></el-switch>
+                  </el-form-item>
+
+                  <el-form-item label="減速距離(mm)" v-if="settings.UltrasonicSensorConfig">
+                    <el-input-number size="small" :step="1" :precision="0" :min="0" :max="1000"
+                      @change="HandleParamChanged"
+                      v-model="settings.UltrasonicSensorConfig.speedDecreaseDistance"></el-input-number>
+                  </el-form-item>
+                  <el-form-item label="停止距離(mm)" v-if="settings.UltrasonicSensorConfig">
+                    <el-input-number size="small" :step="1" :precision="0" :min="0" :max="1000"
+                      @change="HandleParamChanged"
+                      v-model="settings.UltrasonicSensorConfig.stopDistance"></el-input-number>
+                  </el-form-item>
+
+
                   <div class="w-100 border-bottom">
                     <b>IMU 數據</b>
                   </div>

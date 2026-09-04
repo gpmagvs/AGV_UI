@@ -727,7 +727,7 @@ export default {
       try {
         var isBrakeSwitchRelease = DIOStore.getters.IsBrakeSwitchRelease;
         var _agv_type = AGVStatusStore.getters.AGVStatus.Agv_Type;
-        return isBrakeSwitchRelease;
+        return isBrakeSwitchRelease && _agv_type != 2330;
         // return isBrakeSwitchRelease && _agv_type != 2330;
       } catch {
         return false;

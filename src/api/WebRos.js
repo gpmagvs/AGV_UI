@@ -33,7 +33,9 @@ setTimeout(() => {
     keyboard_move_topic = new ROSLIB.Topic({
         ros: ros,
         name: '/cmd_vel',
-        messageType: ros_version == 'ROS1' ? 'geometry_msgs/Twist' : 'geometry_msgs/msg/Twist'
+        messageType: ros_version == 'ROS1' ? 'geometry_msgs/Twist' : 'geometry_msgs/msg/Twist',
+        queue_length: 1,
+        throttle_rate: 300,
     })
 }, 1000);
 
