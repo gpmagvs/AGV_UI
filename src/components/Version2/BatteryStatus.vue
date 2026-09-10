@@ -7,7 +7,7 @@
     >
       <i style="color:limegreen" class="bi bi-battery-charging"></i>
       <div class="flex-fill">
-        <el-progress text-inside stroke-width="30" :percentage="bat.Level" status="warning"></el-progress>
+        <el-progress text-inside stroke-width="30" :percentage="bat.BatteryLevel" status="warning"></el-progress>
       </div>
     </div>
     <!-- {{ BatteryStatus }} -->
@@ -23,7 +23,7 @@ export default {
       //[
       // {  
       //    BatteryID: 1
-      //    Level: 66
+      //    BatteryLevel: 66
       //    ChargeCurrent: 0
       //    IsCharging: false
       //    Voltage: 0

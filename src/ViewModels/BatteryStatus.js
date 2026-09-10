@@ -1,12 +1,12 @@
 class BatteryStatus {
   BatteryID = 0
-  Level = 0
+  BatteryLevel = 0
   IsCharging = false
   ChargeCurrent = 0.0
   Voltage = 0.0
   SensorInfo = new BatteryPositionInfoVM()
   constructor(level) {
-    if (typeof level === 'number') this.Level = level
+    if (typeof level === 'number') this.BatteryLevel = level
   }
 }
 

@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     battery_level() {
-      return this.battery_status.Level;
+      return this.battery_status.BatteryLevel;
     },
     battery_state_bg() {
       if (this.battery_status.IsCharging)

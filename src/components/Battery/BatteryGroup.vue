@@ -6,7 +6,7 @@
       <i v-else :class="'bi bi-battery-full'"></i>
       <b-progress class="flex-fill h-100" :max="100" :animated="!IsBackendDisconnected" @click="HandleBatteryClick">
         <b-progress-bar :animated="!IsBackendDisconnected"
-          :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).Level" :label="GetLabel(GetBatteryStatus(i))"
+          :value="IsBackendDisconnected ? 100 : GetBatteryStatus(i).BatteryLevel" :label="GetLabel(GetBatteryStatus(i))"
           v-bind:class="GetClass(GetBatteryStatus(i))" style="font-size:16px;"></b-progress-bar>
       </b-progress>
       <div class="d-flex px-2" style="color:grey">
@@ -99,16 +99,16 @@ export default {
         return '電池狀態未知'
 
       if (!bat_status.IsCharging)
-        return bat_status.Level + "%";
+        return bat_status.BatteryLevel + "%";
       else {
-        return bat_status.Level + "%(充電中)";
+        return bat_status.BatteryLevel + "%(充電中)";
       }
     },
     GetClass(bat_status = new BatteryStatus) {
       if (this.IsBackendDisconnected)
         return 'bg-danger'
 
-      var batLevel = bat_status.Level;
+      var batLevel = bat_status.BatteryLevel;
       if (!bat_status.IsCharging) {
         if (batLevel < 20)
           return 'bg-danger'
