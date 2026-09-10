@@ -4,14 +4,12 @@ class VMSData {
   APPVersion = "1.0.0"
   Agv_Type = 0
   AutoMode = 0
-  AGVC_ID = -1
   AngularSpeed = 0
   Angle = 0
   AlarmCodes = []
   AGV_Direct = 'STOP'
   InitializingStatusText = ""
   BCR_State_MoveBase = {
-    state: 0,
     tagID: 0,
     xValue: 0.0,
     yValue: 0.0,
@@ -34,7 +32,7 @@ class VMSData {
   IsPinMoudleRosBase = false
   Laser_Mode = 0
   Last_Visited_Tag = 1
-  Last_Visit_MapPoint = { Name: 'UNKNOWN' }
+  Last_Visit_MapPoint = { Graph: { Display: 'UNKNOWN' } }
   LocStatus = 10
   MapComparsionRate = -1
   Mileage = 0
@@ -46,31 +44,19 @@ class VMSData {
     /**任務軌跡 */
     PathPlan: [],
     DestinationMapPoint: {
-      Name: 'UNKNOWN'
+      Graph: { Display: 'UNKNOWN' }
     },
     /**是否為分段任務 */
     IsSegmentTaskExecuting: false
   }
   NewestAlarm = undefined
   OnlineMode = 0
-  Pose = {
-    position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    orientation: {
-      x: 0,
-      y: 0,
-      z: 0,
-      w: 0,
-    },
-  }
+  Pose = { position: { x: 0, y: 0 } }
   Simulation = false
   SubState = 'DOWN'
   Tag = -1
-  ZAxisDriverState = new clsDriverState()
-  ForkHorizonDriverState = new clsDriverState()
+  ZAxisDriverState = { position: 0.0 }
+  ForkHorizonDriverState = { position: 0.0 }
   ZAxisActionName = ''
   ForkHasLoading = false
   CargoExist = false
@@ -88,7 +74,6 @@ class VMSData {
   BuzzerState = {
     isPlaying: false,
     player: 'ros-sound-play',
-    playingAudio: 'alarm',
   }
 }
 export class clsOrderInfo {

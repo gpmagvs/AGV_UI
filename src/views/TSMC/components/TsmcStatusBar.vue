@@ -96,9 +96,9 @@ export default {
       return raw && typeof raw === 'object' ? Object.values(raw) : []
     },
     batteryLevel() {
-      const list = this.batteries.filter(b => b && typeof b.BatteryLevel === 'number')
+      const list = this.batteries.filter(b => b && typeof b.Level === 'number')
       if (!list.length) return null
-      const sum = list.reduce((acc, b) => acc + (b.BatteryLevel || 0), 0)
+      const sum = list.reduce((acc, b) => acc + (b.Level || 0), 0)
       return Math.round(sum / list.length)
     },
     isCharging() {

@@ -1,21 +1,18 @@
 class BatteryStatus {
-  BatteryLevel = 3
+  BatteryID = 0
+  Level = 0
   IsCharging = false
   ChargeCurrent = 0.0
-  IsError = true
-  CircuitOpened = false
-  BatteryID = 0
+  Voltage = 0.0
   SensorInfo = new BatteryPositionInfoVM()
   constructor(level) {
-    this.BatteryLevel = level
+    if (typeof level === 'number') this.Level = level
   }
 }
 
 class BatteryPositionInfoVM {
   IsExistSensor1ON = false
-  IsExistSensor2ON = false
   IsDockingSensor1ON = false
-  IsDockingSensor2ON = false
   IsLockSensorON = false
   IsUnlockSensorON = false
 }

@@ -45,7 +45,7 @@
               class="item-val d-flex battery"
               v-for="bat in AGVStatesData.BatteryStatus"
               :key="bat.BatteryID">
-              <span>NO.{{ bat.BatteryID }}</span> {{ bat.BatteryLevel }}% <span class="mx-1"></span>
+              <span>NO.{{ bat.BatteryID }}</span> {{ bat.Level }}% <span class="mx-1"></span>
             </div>
           </div>
         </div>
