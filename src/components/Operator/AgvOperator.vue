@@ -1,8 +1,9 @@
 <template>
   <div class="agv-operator py-2">
-    <b-tabs :lazy="false" :model-value="current_tab" pills small @activate-tab="HandleTabpageChanged">
+    <b-tabs class="agv-operator-tabs" :lazy="false" :model-value="current_tab" pills small
+      @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')">
-        <div class="mt-1 p-1">
+        <div class="mt-1 p-1 agv-control-tab-pane">
           <AgvControl></AgvControl>
         </div>
       </b-tab>
@@ -89,6 +90,19 @@ export default {
     bus.on('on-manual-lsr-setting-show-invoke', () => {
       this.setCurrentTab(4);
       this.applyTabSideEffects(4);
+    });
+    bus.on('show-move-control', () => {
+      this.setCurrentTab(0);
+      this.applyTabSideEffects(0);
+    });
+    bus.on('show-manual-operation', () => {
+      this.setCurrentTab(4);
+      this.applyTabSideEffects(4);
+    });
+    bus.on('show-io-table', (ioType) => {
+      const tabIndex = ioType === 'output' ? 3 : 2;
+      this.setCurrentTab(tabIndex);
+      this.applyTabSideEffects(tabIndex);
     });
   },
   watch: {
@@ -197,8 +211,48 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.agv-operator {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .agv-operator-tabs {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :deep(.tab-content) {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  :deep(.tab-pane) {
+    height: 100%;
+  }
+
+  :deep(.tab-pane.active) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .agv-control-tab-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}
+
 :deep(.nav-pills) {
   background-color: rgb(240, 240, 240);
+  flex-shrink: 0;
 }
 
 .admin-dialog-modal {

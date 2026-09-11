@@ -1,6 +1,6 @@
 <template>
   <div class="agv-control">
-    <div class="d-flex flex-row justify-content-center">
+    <div class="agv-control-top d-flex flex-row justify-content-center">
       <div class="information" style="width:260px">
         <el-form label-position="top">
           <div class="row div-container mx-1 my-2">
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <TaskDeliveryVue class="mt-1 pt-2 border-top" style="height: 300px;"></TaskDeliveryVue>
+    <TaskDeliveryVue class="task-delivery-area mt-1 pt-2 border-top"></TaskDeliveryVue>
   </div>
 </template>
 
@@ -144,6 +144,21 @@ export default {
 
 <style scoped lang="scss">
 .agv-control {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .agv-control-top {
+    flex-shrink: 0;
+  }
+
+  .task-delivery-area {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
   .information {
     .div-container {
       // background-color: #f1f1f1;

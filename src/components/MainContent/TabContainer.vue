@@ -1,6 +1,6 @@
 <template>
   <!--主要內容 TabControl-->
-  <div class="flex-fill border mt-1 p-1">
+  <div class="main-tab-container flex-fill border mt-1 p-1">
     <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills style="height: 100%;">
       <!-- 狀態 -->
       <b-tab :title="$t('status')" style="height: 100%;">
@@ -101,6 +101,22 @@ export default {
       this.setCurrentTab(2);
       this.applyTabSideEffects(2);
     });
+    bus.on('show-move-control', () => {
+      this.setCurrentTab(2);
+      this.applyTabSideEffects(2);
+    });
+    bus.on('show-manual-operation', () => {
+      this.setCurrentTab(2);
+      this.applyTabSideEffects(2);
+    });
+    bus.on('show-io-table', () => {
+      this.setCurrentTab(2);
+      this.applyTabSideEffects(2);
+    });
+    bus.on('show-status-page', () => {
+      this.setCurrentTab(0);
+      this.applyTabSideEffects(0);
+    });
   },
   watch: {
     IsVisitor() {
@@ -174,8 +190,27 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-:deep(.tab-content) {
+.main-tab-container {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  :deep(.tabs),
+  :deep(.b-tabs) {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+:deep(.tab-content) {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
   border-top: 1px solid #e6e6e6;
 }
 

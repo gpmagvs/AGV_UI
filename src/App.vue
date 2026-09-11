@@ -47,6 +47,10 @@
     <AGVInitalizingNotify></AGVInitalizingNotify>
     <SystemErrorNotify></SystemErrorNotify>
     <BackendExceptionMessageDisplay></BackendExceptionMessageDisplay>
+    <MoveControlShortcutButton></MoveControlShortcutButton>
+    <ManualOperationShortcutButton></ManualOperationShortcutButton>
+    <IoShortcutButton></IoShortcutButton>
+    <StatusShortcutButton></StatusShortcutButton>
   </div>
 </template>
 <script>
@@ -65,6 +69,10 @@ import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 import { ForkAPI } from '@/api/VMSAPI.js'
 import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessageDisplay.vue'
+import MoveControlShortcutButton from '@/components/MoveControlShortcutButton.vue'
+import ManualOperationShortcutButton from '@/components/ManualOperationShortcutButton.vue'
+import IoShortcutButton from '@/components/IoShortcutButton.vue'
+import StatusShortcutButton from '@/components/StatusShortcutButton.vue'
 import { Close, WarningFilled } from '@element-plus/icons-vue'
 
 export default {
@@ -76,6 +84,10 @@ export default {
     WaitAGVsNextMoveActionNotify,
     AGVInitalizingNotify,
     BackendExceptionMessageDisplay,
+    MoveControlShortcutButton,
+    ManualOperationShortcutButton,
+    IoShortcutButton,
+    StatusShortcutButton,
     Close,
     WarningFilled
   },

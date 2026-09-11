@@ -954,7 +954,20 @@ export default {
 };
 </script>
 <style>
-.map-show {}
+.map-show {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.map-show > .w-100 {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 .ol-zoom .ol-zoom-in,
 .ol-zoom .ol-zoom-out {
@@ -962,7 +975,9 @@ export default {
 }
 
 .map {
-  height: 95%;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
   width: 100%;
 }
 </style>

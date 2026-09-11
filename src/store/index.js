@@ -501,12 +501,41 @@ export const SystemSettingsStore = createStore({
   }
 })
 /**用戶狀態STORE */
+const DEFAULT_USER_STATE = {
+  UserName: 'OPERATOR',
+  Role: 0
+}
+
+function loadPersistedUser() {
+  try {
+    const raw = localStorage.getItem('user')
+    if (!raw) {
+      return { ...DEFAULT_USER_STATE }
+    }
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') {
+      return { ...DEFAULT_USER_STATE }
+    }
+    if (parsed.UserName == null || parsed.Role == null) {
+      return { ...DEFAULT_USER_STATE }
+    }
+    const role = Number(parsed.Role)
+    if (Number.isNaN(role)) {
+      return { ...DEFAULT_USER_STATE }
+    }
+    return {
+      UserName: String(parsed.UserName),
+      Role: role
+    }
+  } catch (error) {
+    console.warn('[UserStore] 讀取 localStorage 用戶狀態失敗:', error)
+    return { ...DEFAULT_USER_STATE }
+  }
+}
+
 export const UserStore = createStore({
   state: {
-    UserState: {
-      UserName: 'OPERATOR',
-      Role: 0
-    }
+    UserState: loadPersistedUser()
   },
   getters: {
     CurrentUserName: state => {
@@ -530,6 +559,9 @@ export const UserStore = createStore({
     CurrentUserRole: state => {
       return state.UserState.Role;
     },
+    IsUserLogin: state => {
+      return state.UserState.Role != null && state.UserState.Role != 0;
+    },
     Operationable: (state, getters) => {
       if (getters.IsGodUser)
         return true;
@@ -539,8 +571,12 @@ export const UserStore = createStore({
   },
   mutations: {
     setUser(state, user_info) {
-      state.UserState = user_info
-      localStorage.setItem('user', JSON.stringify(user_info))
+      const normalizedUser = {
+        UserName: user_info?.UserName ?? DEFAULT_USER_STATE.UserName,
+        Role: user_info?.Role ?? DEFAULT_USER_STATE.Role
+      }
+      state.UserState = normalizedUser
+      localStorage.setItem('user', JSON.stringify(normalizedUser))
     }
   },
   actions: {
@@ -551,17 +587,13 @@ export const UserStore = createStore({
         commit('setUser', _UserInfo)
       }
       else {
-        commit('setUser', {})
+        commit('setUser', DEFAULT_USER_STATE)
       }
 
       return response_data;
     },
     Logout({ commit }) {
-      commit('setUser', {
-        UserName: 'OPERATOR',
-        Role: 0
-      }
-      )
+      commit('setUser', { ...DEFAULT_USER_STATE })
     }
   }
 })

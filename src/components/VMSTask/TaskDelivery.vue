@@ -524,8 +524,12 @@ export default {
 </script>
 <style scoped lang="scss">
 .task-delivery {
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   // Drawer 樣式
   :deep(.task-allocate-drawer) {
