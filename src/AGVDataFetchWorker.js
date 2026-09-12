@@ -4,6 +4,7 @@ import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
 import bus from "./event-bus";
 import * as signalR from "@microsoft/signalr";
+import { MessagePackHubProtocol } from "@microsoft/signalr-protocol-msgpack";
 // ElLoading.service({
 //     lock: true,
 //     text: 'Loading',
@@ -157,6 +158,7 @@ function StoreDIOData(DIOTableData) {
 function StartHubConnection() {
     HubConnection = new signalR.HubConnectionBuilder()
         .withUrl(`${param.backend_host}/FrontendHub`)
+        .withHubProtocol(new MessagePackHubProtocol())
         .withAutomaticReconnect([0, 1000, 2000, 3000])
         .build();
     HubConnection.on('ReceiveData', (user, data) => {
