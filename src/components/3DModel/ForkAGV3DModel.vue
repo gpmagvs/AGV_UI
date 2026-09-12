@@ -43,7 +43,6 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { render } from '@vue/runtime-dom';
 import bus from '@/event-bus.js'
-import clsDriverState from '@/ViewModels/clsDriverState';
 import dashboard from '../AGVDashboard/dashboard.vue';
 import { AGVStatusStore } from '@/store';
 export default {
@@ -63,7 +62,7 @@ export default {
       camera: null,
       isCarrierExist: false,
       showStatusCard: false,
-      DriverState: new clsDriverState(),
+      DriverState: { position: 0.0 },
     }
   },
   computed: {

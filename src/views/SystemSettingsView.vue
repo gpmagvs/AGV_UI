@@ -850,7 +850,6 @@ export default {
         return {
           isPlaying: false,
           player: 'ros-sound-play',
-          playingAudio: '',
         }
       }
     },
