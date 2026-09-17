@@ -1,7 +1,10 @@
 <template>
   <!--主要內容 TabControl-->
-  <div class="main-tab-container flex-fill border mt-1 p-1">
-    <b-tabs :model-value="current_tab" @activate-tab="HandleTabpageChanged" pills style="height: 100%;">
+  <div class="main-tab-container flex-fill mt-1">
+    <b-tabs
+      class="amr-main-tabs"
+      :model-value="current_tab"
+      @activate-tab="HandleTabpageChanged">
       <!-- 狀態 -->
       <b-tab :title="$t('status')" style="height: 100%;">
         <status_card :VMSData="VMSData"></status_card>
@@ -191,35 +194,100 @@ export default {
 </script>
 <style lang="scss" scoped>
 .main-tab-container {
+  --amr-tab-bg: #f5f5f5;
+  --amr-tab-surface: #ffffff;
+  --amr-tab-line: rgba(0, 0, 0, 0.12);
+  --amr-tab-text: #111111;
+  --amr-tab-muted: rgba(0, 0, 0, 0.48);
+  --amr-tab-active: #111111;
+
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--amr-tab-surface);
+  border: 1px solid var(--amr-tab-line);
 
   :deep(.tabs),
-  :deep(.b-tabs) {
+  :deep(.b-tabs),
+  :deep(.amr-main-tabs) {
     flex: 1 1 auto;
     min-height: 0;
+    height: 100%;
     display: flex;
     flex-direction: column;
   }
-}
 
-:deep(.tab-content) {
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-  border-top: 1px solid #e6e6e6;
-}
+  :deep(.nav) {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    gap: 0;
+    margin: 0;
+    padding: 0 8px;
+    background: var(--amr-tab-bg);
+    border-bottom: 1px solid var(--amr-tab-line);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 
-:deep(.tab-pane) {
-  height: 100%;
-}
+  :deep(.nav-item) {
+    margin: 0;
+  }
 
-:deep(.nav-item > .nav-link) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  :deep(.nav-link) {
+    position: relative;
+    margin: 0;
+    padding: 12px 16px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--amr-tab-muted) !important;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 0;
+      height: 2px;
+      background: transparent;
+      transition: background-color 0.15s ease;
+    }
+
+    &:hover {
+      color: var(--amr-tab-text) !important;
+    }
+
+    &:active {
+      color: var(--amr-tab-text) !important;
+    }
+
+    &.active {
+      color: var(--amr-tab-text) !important;
+
+      &::after {
+        background: var(--amr-tab-active);
+      }
+    }
+  }
+
+  :deep(.tab-content) {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--amr-tab-surface);
+  }
+
+  :deep(.tab-pane) {
+    height: 100%;
+  }
 }
 </style>

@@ -102,6 +102,11 @@
                   <el-switch v-model="settings.UI.CstReaderSwitchDisplayWhenNotLogin" @change="HandleParamChanged"
                     size="small"></el-switch>
                 </el-form-item>
+                <el-form-item v-if="settings.UI != undefined && settings.UI.IsSaftyPPLCStatusDisplay != undefined"
+                  label="安全PLC狀態顯示">
+                  <el-switch v-model="settings.UI.IsSaftyPPLCStatusDisplay" @change="HandleParamChanged"
+                    size="small"></el-switch>
+                </el-form-item>
               </el-form>
             </div>
             <div v-if="selected_tab === '2'" class="tabpage border p-2">

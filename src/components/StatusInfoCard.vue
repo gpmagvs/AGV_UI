@@ -148,10 +148,14 @@
           <el-col :span="12"></el-col>
         </el-row>
       </div>
-      <el-drawer title="Module Information" size="50%" v-model="show_module_info_drawer">
-        <pre class="w-100 border rounded bg-light text-start">
-        {{ module_information }}
-        </pre>
+      <el-drawer
+        title="Module Information"
+        size="50%"
+        v-model="show_module_info_drawer"
+        class="module-info-drawer">
+        <el-scrollbar always class="module-info-scrollbar">
+          <pre class="module-info-pre w-100 border rounded bg-light text-start">{{ module_information }}</pre>
+        </el-scrollbar>
       </el-drawer>
     </div>
   </transition>
@@ -293,6 +297,41 @@ export default {
 
   .el-tag__content {
     font-size: 20px;
+  }
+}
+
+/* drawer 會 teleport 到 body，需用獨立 class；Firefox 原生捲軸偏細，改用 el-scrollbar 加粗方便觸控 */
+.module-info-drawer {
+  .el-drawer__body {
+    height: calc(100% - 60px);
+    overflow: hidden;
+    padding-right: 4px;
+  }
+
+  .module-info-scrollbar {
+    height: 100%;
+
+    .el-scrollbar__bar.is-vertical {
+      width: 20px !important;
+      right: 2px;
+    }
+
+    .el-scrollbar__thumb {
+      background-color: rgba(90, 90, 90, 0.75) !important;
+      border-radius: 10px;
+      opacity: 1 !important;
+    }
+
+    .el-scrollbar__bar.is-horizontal {
+      height: 20px !important;
+    }
+  }
+
+  .module-info-pre {
+    margin: 0;
+    padding: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 </style>

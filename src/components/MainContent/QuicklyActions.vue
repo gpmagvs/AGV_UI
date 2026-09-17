@@ -7,7 +7,7 @@
           <el-switch v-model="cstIdRead" class="mx-2" active-text="ON" inactive-color="red" inactive-text="OFF"
             inline-prompt @change="(val) => { SaveReaderSettings(val); }"></el-switch>
         </div>
-        <SaftyPLCStatus />
+        <SaftyPLCStatus v-if="isShowSaftyPLCStatus" />
       </div>
 
       <div class="d-flex flex-row align-items-center gap-2">
@@ -129,6 +129,11 @@ export default {
       if (UserStore.state.UserState.Role > 0)
         return true;
       return SystemSettingsStore.state.Settings.UI.CstReaderSwitchDisplayWhenNotLogin;
+    },
+    isShowSaftyPLCStatus() {
+      if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsSaftyPPLCStatusDisplay == undefined)
+        return false;
+      return SystemSettingsStore.state.Settings.UI.IsSaftyPPLCStatusDisplay;
     }
   },
   mounted() {

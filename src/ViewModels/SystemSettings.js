@@ -231,7 +231,8 @@ class SystemSettings {
 
         this.UI = {
             IsQuicklyActionFooterDisplay: false,
-            CstReaderSwitchDisplayWhenNotLogin: false
+            CstReaderSwitchDisplayWhenNotLogin: false,
+            IsSaftyPPLCStatusDisplay: true
         };
         this.IsUIDefault = true;
         this.EditKey = 'default';

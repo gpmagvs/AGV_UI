@@ -33,7 +33,7 @@
           <SensorAndEquipmentControl></SensorAndEquipmentControl>
         </div>
       </b-tab>
-      <b-tab :title="$t('SaftyPLC.tab_title')">
+      <b-tab v-if="isShowSaftyPLCIO" :title="$t('SaftyPLC.tab_title')">
         <div class="mt-1 p-1">
           <SaftyPLCIOView></SaftyPLCIOView>
         </div>
@@ -51,7 +51,7 @@ import ManualSettings from './ManualSettings.vue';
 import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';
 import bus from '@/event-bus.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UserStore, DIOStore, AGVStatusStore } from '@/store'
+import { UserStore, DIOStore, AGVStatusStore, SystemSettingsStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import { ElNotification } from 'element-plus'
 import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
@@ -206,6 +206,11 @@ export default {
     },
     DIOTableData() {
       return DIOStore.getters.DIOStates
+    },
+    isShowSaftyPLCIO() {
+      if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsSaftyPPLCStatusDisplay == undefined)
+        return false;
+      return SystemSettingsStore.state.Settings.UI.IsSaftyPPLCStatusDisplay;
     }
   }
 }
