@@ -120,7 +120,7 @@ class SystemSettings {
             HomePoseUseStandyPose: true,
             IsPinMounted: true,
             IsForkIsExtendable: true,
-            IsPinDisabledTemptary: true,
+            IsPinEnable: true,
             IsHorizonExtendDisabledTemptary: true,
             NoWaitForkArmFinishAndMoveOutInWorkStation: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,

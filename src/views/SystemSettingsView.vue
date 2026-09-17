@@ -457,11 +457,11 @@
             </div>
             <div v-if="selected_tab === '6'" class="tabpage border p-2">
               <el-form label-position="left" label-width="240">
-                <el-form-item label="浮動牙叉禁用">
-                  <el-switch active-text="禁用" inactive-text="啟用" inactive-color="rgb(64, 158, 255)" active-color="red"
-                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinDisabledTemptary"></el-switch>
+                <el-form-item label="浮動牙叉功能">
+                  <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
+                    @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinEnable"></el-switch>
                 </el-form-item>
-                <el-form-item label="伸縮牙叉禁用">
+                <el-form-item label="伸縮牙叉功能">
                   <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsForkIsExtendable"></el-switch>
                 </el-form-item>

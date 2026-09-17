@@ -1,5 +1,5 @@
 <template>
-  <div class="px-1 d-flex flex-row justify-content-center">
+  <div class="io-table px-1 d-flex flex-row justify-content-center">
     <div class="mt-2">
       <jw-pagination
         @page_changed="(ev) => { pagecurrent = ev - 1 }"
@@ -194,30 +194,39 @@ export default {
 }
 </script>
 <style lang="scss">
-.el-table {
-  .on-row {
-    background-color: rgb(13, 110, 253);
-    color: white;
-    /* --el-table-tr-bg-color: var(--el-color-success-light-9); */
-  }
+// Element Plus 背景色畫在 td，需同時覆寫 cell / hover，避免 on-row 白字卻吃到表格灰底
+.io-table {
+  .el-table {
+    .on-row {
+      --el-table-tr-bg-color: rgb(13, 110, 253);
+      --el-table-row-hover-bg-color: rgb(13, 110, 253);
+      color: #fff;
 
-  .off-row {
-    background-color: rgb(245, 245, 245);
-    color: rgb(43, 43, 43);
-  }
+      > td.el-table__cell {
+        background-color: rgb(13, 110, 253) !important;
+        color: #fff !important;
+      }
+    }
 
-  .on-row,
-  .off-row {
-    font-weight: bold;
-    letter-spacing: 1px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-      sans-serif;
-  }
+    .off-row {
+      --el-table-tr-bg-color: rgb(245, 245, 245);
+      --el-table-row-hover-bg-color: rgb(245, 245, 245);
+      color: rgb(43, 43, 43);
 
-  // 移除 hover 效果
-  tr:hover>td {
-    background-color: inherit !important;
+      > td.el-table__cell {
+        background-color: rgb(245, 245, 245) !important;
+        color: rgb(43, 43, 43) !important;
+      }
+    }
+
+    .on-row,
+    .off-row {
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
+    }
   }
 }
 </style>
