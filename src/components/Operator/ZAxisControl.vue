@@ -202,7 +202,9 @@ export default {
       return DIOStore.getters.ForkHorizonHomePoseSensorState;
     },
     IsHorizonDriverBase() {
-      return SystemSettingsStore.state.Settings.ForkAGV.IsForkIsExtendable;
+      const fork = SystemSettingsStore.state.Settings?.ForkAGV;
+      return fork?.IsForkIsExtendable === true
+        && fork?.HorizonArmConfigs?.ControlType === 1; // DRIVER_BASE
     },
     controlableMap() {
       var verticalControlButtonsSet = {
