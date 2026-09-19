@@ -561,8 +561,31 @@
                   </el-select>
                 </el-form-item>
                 <div v-if="settings.ForkAGV.HorizonArmConfigs" class="text-start w-100 border-bottom mb-2">
-                  <b>伸縮牙叉(Driver base)</b>
+                  <b>伸縮牙叉</b>
                 </div>
+
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="控制方式">
+                  <el-select @change="HandleParamChanged" v-model="settings.ForkAGV.HorizonArmConfigs.ControlType">
+                    <el-option label="IO-Base" :value="0"></el-option>
+                    <el-option label="Driver-Base" :value="1"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="使用極限Sensor定位">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.IsForkExtensionPositionLimitedBySensor"></el-switch>
+                </el-form-item>
+
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="正常速度">
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.NormalSpeed"></el-input-number>
+                </el-form-item>
+                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="減速速度">
+                  <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
+                    @change="HandleParamChanged"
+                    v-model="settings.ForkAGV.HorizonArmConfigs.SlowDownSpeed"></el-input-number>
+                </el-form-item>
+
                 <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="縮回位置">
                   <el-input-number size="small" :step="1" :precision="1" @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.ShortenPose"></el-input-number>

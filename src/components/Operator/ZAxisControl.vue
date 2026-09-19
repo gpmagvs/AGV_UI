@@ -111,7 +111,7 @@
 </template>
 <script>
 import { ForkAPI } from '@/api/VMSAPI';
-import { AGVStatusStore, ForkTeachStore, UserStore, DIOStore } from '@/store'
+import { AGVStatusStore, ForkTeachStore, UserStore, DIOStore, SystemSettingsStore } from '@/store'
 import AdminFork from '@/components/Admin/AdminFork.vue'
 import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
 import bus from '@/event-bus';
@@ -202,7 +202,7 @@ export default {
       return DIOStore.getters.ForkHorizonHomePoseSensorState;
     },
     IsHorizonDriverBase() {
-      return AGVStatusStore.state.AGVStatus.IsForkExtenrDriverBase;
+      return SystemSettingsStore.state.Settings.ForkAGV.IsForkIsExtendable;
     },
     controlableMap() {
       var verticalControlButtonsSet = {

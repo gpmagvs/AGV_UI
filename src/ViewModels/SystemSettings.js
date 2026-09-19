@@ -136,9 +136,13 @@ class SystemSettings {
             AutoModeOperationSpeed: { MoveToPoseSpeed: 0.5 },
             ObsSensorPointType: 0,
             HorizonArmConfigs: {
+                ControlType: 1,//0:IO-Base,1:Driver-Base
                 ShortenPose: 1,
                 ExtendPose: 4999,
-                ExtendWhenStartMoveToPort: false
+                ExtendWhenStartMoveToPort: false,
+                IsForkExtensionPositionLimitedBySensor: false,
+                NormalSpeed: 1,
+                SlowDownSpeed: 0.3,
             },
             NonRotatableWhenLiftingTags: []
         };
