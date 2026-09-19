@@ -570,17 +570,23 @@
                     <el-option label="Driver-Base" :value="1"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="使用極限Sensor定位">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="使用極限Sensor定位">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.IsForkExtensionPositionLimitedBySensor"></el-switch>
                 </el-form-item>
 
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="正常速度">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="正常速度">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.NormalSpeed"></el-input-number>
                 </el-form-item>
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="減速速度">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="減速速度">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.SlowDownSpeed"></el-input-number>
@@ -902,6 +908,7 @@ export default {
             await SystemSettingsStore.dispatch('downloadSettings');
             if (SystemSettingsStore.state.IsSettingsLoaded) {
               this.settings = SystemSettingsStore.state.Settings;
+              this.MergeMissingHorizonArmConfigsDefaults();
               if (tabIndex)
                 this.selected_tab = tabIndex;
               this.loading = false;
@@ -1142,6 +1149,22 @@ export default {
         clearTimeout(this.saveSettingsTimeout);
       }
 
+      const horizon = this.settings?.ForkAGV?.HorizonArmConfigs;
+      if (horizon?.ControlType === 1) {
+        const normalSpeed = Number(horizon.NormalSpeed);
+        const slowDownSpeed = Number(horizon.SlowDownSpeed);
+        if (!Number.isNaN(normalSpeed) && !Number.isNaN(slowDownSpeed) && slowDownSpeed >= normalSpeed) {
+          ElNotification({
+            title: '系統參數設定',
+            message: '減速速度必須小於正常速度',
+            type: 'error',
+            duration: 1500,
+            position: 'bottom-right'
+          });
+          return;
+        }
+      }
+
       this.saveSettingsTimeout = setTimeout(async () => {
         const reuslt = await SystemAPI.SaveSettings(this.settings)
         const success = reuslt.confirm;
@@ -1176,6 +1199,18 @@ export default {
 
 
       }, 500); // Wait 500ms before making API call
+    },
+    MergeMissingHorizonArmConfigsDefaults() {
+      const defaults = new SystemSettings().ForkAGV?.HorizonArmConfigs;
+      const fork = this.settings?.ForkAGV;
+      if (!fork || !defaults) {
+        return;
+      }
+      if (!fork.HorizonArmConfigs) {
+        fork.HorizonArmConfigs = { ...defaults };
+        return;
+      }
+      fork.HorizonArmConfigs = { ...defaults, ...fork.HorizonArmConfigs };
     },
     showRestartingSwalAlert() {
       this.$swal.fire(
