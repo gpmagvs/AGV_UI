@@ -203,6 +203,8 @@ export default {
 
   height: 100%;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -466,6 +466,24 @@
                   <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinEnable"></el-switch>
                 </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>{{ $t('settings.vehicle_dimensions') }}</b>
+                </div>
+                <el-form-item :label="$t('settings.vehicle_length_retracted')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleLengthRetractedCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_height')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleHeightCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_width')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleWidthCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
                 <el-form-item label="伸縮牙叉功能">
                   <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsForkIsExtendable"></el-switch>
@@ -570,17 +588,23 @@
                     <el-option label="Driver-Base" :value="1"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="使用極限Sensor定位">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="使用極限Sensor定位">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.IsForkExtensionPositionLimitedBySensor"></el-switch>
                 </el-form-item>
 
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="正常速度">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="正常速度">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.NormalSpeed"></el-input-number>
                 </el-form-item>
-                <el-form-item v-if="settings.ForkAGV.HorizonArmConfigs" label="減速速度">
+                <el-form-item
+                  v-if="settings.ForkAGV.HorizonArmConfigs && settings.ForkAGV.HorizonArmConfigs.ControlType === 1"
+                  label="減速速度">
                   <el-input-number size="small" :step="0.1" :precision="1" :min="0.1" :max="1"
                     @change="HandleParamChanged"
                     v-model="settings.ForkAGV.HorizonArmConfigs.SlowDownSpeed"></el-input-number>
@@ -884,6 +908,38 @@ export default {
     },
     filteredMenuItems() {
       return this.menuItems.filter(item => !item.show || item.show());
+    },
+    vehicleLengthRetractedCm: {
+      get() {
+        return this.settings?.VehielLength ?? this.settings?.VehicleLength ?? this.settings?.ForkAGV?.VehielLength ?? this.settings?.ForkAGV?.VehicleLength ?? 145
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehielLength = val
+        if (Object.prototype.hasOwnProperty.call(this.settings, 'VehicleLength')) this.settings.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleLength')) this.settings.ForkAGV.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehielLength')) this.settings.ForkAGV.VehielLength = val
+      }
+    },
+    vehicleHeightCm: {
+      get() {
+        return this.settings?.VehicleHeight ?? this.settings?.ForkAGV?.VehicleHeight ?? 200
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleHeight = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleHeight')) this.settings.ForkAGV.VehicleHeight = val
+      }
+    },
+    vehicleWidthCm: {
+      get() {
+        return this.settings?.VehicleWidth ?? this.settings?.ForkAGV?.VehicleWidth ?? 90
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleWidth = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleWidth')) this.settings.ForkAGV.VehicleWidth = val
+      }
     }
   },
   mounted() {
@@ -902,6 +958,7 @@ export default {
             await SystemSettingsStore.dispatch('downloadSettings');
             if (SystemSettingsStore.state.IsSettingsLoaded) {
               this.settings = SystemSettingsStore.state.Settings;
+              this.MergeMissingHorizonArmConfigsDefaults();
               if (tabIndex)
                 this.selected_tab = tabIndex;
               this.loading = false;
@@ -1142,6 +1199,22 @@ export default {
         clearTimeout(this.saveSettingsTimeout);
       }
 
+      const horizon = this.settings?.ForkAGV?.HorizonArmConfigs;
+      if (horizon?.ControlType === 1) {
+        const normalSpeed = Number(horizon.NormalSpeed);
+        const slowDownSpeed = Number(horizon.SlowDownSpeed);
+        if (!Number.isNaN(normalSpeed) && !Number.isNaN(slowDownSpeed) && slowDownSpeed >= normalSpeed) {
+          ElNotification({
+            title: '系統參數設定',
+            message: '減速速度必須小於正常速度',
+            type: 'error',
+            duration: 1500,
+            position: 'bottom-right'
+          });
+          return;
+        }
+      }
+
       this.saveSettingsTimeout = setTimeout(async () => {
         const reuslt = await SystemAPI.SaveSettings(this.settings)
         const success = reuslt.confirm;
@@ -1176,6 +1249,18 @@ export default {
 
 
       }, 500); // Wait 500ms before making API call
+    },
+    MergeMissingHorizonArmConfigsDefaults() {
+      const defaults = new SystemSettings().ForkAGV?.HorizonArmConfigs;
+      const fork = this.settings?.ForkAGV;
+      if (!fork || !defaults) {
+        return;
+      }
+      if (!fork.HorizonArmConfigs) {
+        fork.HorizonArmConfigs = { ...defaults };
+        return;
+      }
+      fork.HorizonArmConfigs = { ...defaults, ...fork.HorizonArmConfigs };
     },
     showRestartingSwalAlert() {
       this.$swal.fire(
