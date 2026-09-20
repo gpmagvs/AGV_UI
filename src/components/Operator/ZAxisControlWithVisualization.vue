@@ -1,31 +1,18 @@
 <template>
   <div class="z-axis-control-with-visualization p-1">
-    <div class="d-flex flex-column flex-xl-row gap-2">
-      <div class="control-pane flex-fill">
-        <ZAxisControl :enabled="enabled" />
-      </div>
-      <div class="viz-pane border rounded p-2">
-        <el-tag effect="dark" class="mb-2 w-100 text-start">{{ $t('fork_side_view') }}</el-tag>
-        <ForkSideViewVisualization />
-      </div>
+    <div class="viz-pane border rounded p-2">
+      <el-tag effect="dark" class="mb-2 w-100 text-start">{{ $t('fork_side_view') }}</el-tag>
+      <ForkSideViewVisualization />
     </div>
   </div>
 </template>
 
 <script>
-import ZAxisControl from './ZAxisControl.vue'
 import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 
 export default {
   name: 'ZAxisControlWithVisualization',
-  props: {
-    enabled: {
-      type: Boolean,
-      default: false
-    }
-  },
   components: {
-    ZAxisControl,
     ForkSideViewVisualization
   }
 }

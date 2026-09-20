@@ -14,7 +14,7 @@
       </b-tab>
       <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down_viz') : ''">
         <div class="mt-1 p-1">
-          <ZAxisControlWithVisualization :enabled="operation_enabled_return"></ZAxisControlWithVisualization>
+          <ForkSideViewVisualization></ForkSideViewVisualization>
         </div>
       </b-tab>
       <b-tab title="Input">
@@ -49,7 +49,7 @@
 <script>
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
-import ZAxisControlWithVisualization from './ZAxisControlWithVisualization.vue'
+import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 import IOTable from './IOTable.vue';
 import param from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
@@ -91,7 +91,7 @@ export default {
   components: {
     AgvControl,
     ZAxisControl,
-    ZAxisControlWithVisualization,
+    ForkSideViewVisualization,
     IOTable,
     ManualSettings,
     SensorAndEquipmentControl,

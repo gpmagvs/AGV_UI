@@ -4,18 +4,18 @@
       <div class="d-flex flex-row justify-content-between align-items-center flex-wrap gap-2">
         <div class="d-flex flex-row align-items-center gap-2 flex-wrap">
           <div class="pill">
-            <span class="pill-label">升降</span>
+            <span class="pill-label">{{ $t('fork_viz_vertical') }}</span>
             <span class="pill-value">{{ formatNum(forkHeight) }}</span>
-            <span class="pill-unit">cm</span>
+            <span class="pill-unit">{{ $t('fork_viz_cm') }}</span>
           </div>
           <div v-if="isHorizonEnabled" class="pill">
-            <span class="pill-label">伸縮</span>
+            <span class="pill-label">{{ $t('fork_viz_horizon') }}</span>
             <span class="pill-value">{{ formatNum(forkExtension) }}</span>
           </div>
         </div>
         <div class="legend">
-          <span class="legend-dot on"></span><span class="legend-text">ON</span>
-          <span class="legend-dot off"></span><span class="legend-text">OFF</span>
+          <span class="legend-dot on"></span><span class="legend-text">{{ $t('fork_viz_on') }}</span>
+          <span class="legend-dot off"></span><span class="legend-text">{{ $t('fork_viz_off') }}</span>
         </div>
       </div>
 
@@ -36,13 +36,13 @@
           <!-- Mast sensor markers (fixed locations) -->
           <g>
             <circle :cx="mastSensorX" :cy="mastSensors.up.y" r="7" :class="sensorClass(verticalUpLimitOn)" />
-            <text :x="mastSensorLabelX" :y="mastSensors.up.y + 4" class="sensor-label">上極限</text>
+            <text :x="mastSensorLabelX" :y="mastSensors.up.y + 4" class="sensor-label">{{ $t('fork_viz_up_limit') }}</text>
 
             <circle :cx="mastSensorX" :cy="mastSensors.home.y" r="7" :class="sensorClass(verticalHomeOn)" />
-            <text :x="mastSensorLabelX" :y="mastSensors.home.y + 4" class="sensor-label">Home</text>
+            <text :x="mastSensorLabelX" :y="mastSensors.home.y + 4" class="sensor-label">{{ $t('fork_viz_home') }}</text>
 
             <circle :cx="mastSensorX" :cy="mastSensors.down.y" r="7" :class="sensorClass(verticalDownLimitOn)" />
-            <text :x="mastSensorLabelX" :y="mastSensors.down.y + 4" class="sensor-label">下極限</text>
+            <text :x="mastSensorLabelX" :y="mastSensors.down.y + 4" class="sensor-label">{{ $t('fork_viz_down_limit') }}</text>
           </g>
 
           <!-- Carriage + fork group -->
@@ -67,21 +67,21 @@
             <!-- Horizon sensor markers -->
             <g v-if="isHorizonEnabled">
               <circle :cx="horizonSensors.extend.x" :cy="horizonSensors.extend.y" r="7" :class="sensorClass(horizonExtendOn)" />
-              <text :x="horizonSensors.extend.x + 12" :y="horizonSensors.extend.y + 4" class="sensor-label">伸出極限</text>
+              <text :x="horizonSensors.extend.x + 12" :y="horizonSensors.extend.y + 4" class="sensor-label">{{ $t('fork_viz_extend_limit') }}</text>
 
               <circle :cx="horizonSensors.home.x" :cy="horizonSensors.home.y" r="7" :class="sensorClass(horizonHomeOn)" />
-              <text :x="horizonSensors.home.x + 12" :y="horizonSensors.home.y + 4" class="sensor-label">Home</text>
+              <text :x="horizonSensors.home.x + 12" :y="horizonSensors.home.y + 4" class="sensor-label">{{ $t('fork_viz_home') }}</text>
 
               <circle :cx="horizonSensors.retract.x" :cy="horizonSensors.retract.y" r="7" :class="sensorClass(horizonRetractOn)" />
-              <text :x="horizonSensors.retract.x + 12" :y="horizonSensors.retract.y + 4" class="sensor-label">縮回極限</text>
+              <text :x="horizonSensors.retract.x + 12" :y="horizonSensors.retract.y + 4" class="sensor-label">{{ $t('fork_viz_retract_limit') }}</text>
             </g>
           </g>
 
           <!-- Axis readouts -->
-          <text x="42" y="26" class="axis-title">側視圖</text>
+          <text x="42" y="26" class="axis-title">{{ $t('fork_viz_side_view') }}</text>
           <text x="42" y="44" class="axis-sub">
-            升降: {{ formatNum(forkHeight) }} cm
-            <tspan v-if="isHorizonEnabled">｜伸縮: {{ formatNum(forkExtension) }}</tspan>
+            {{ $t('fork_viz_vertical') }}: {{ formatNum(forkHeight) }} {{ $t('fork_viz_cm') }}
+            <tspan v-if="isHorizonEnabled">｜{{ $t('fork_viz_horizon') }}: {{ formatNum(forkExtension) }}</tspan>
           </text>
         </svg>
       </div>
