@@ -32,20 +32,11 @@
         <div class="viz-surface">
           <svg class="viz-svg" viewBox="0 0 900 420" role="img" :aria-label="$t('fork_side_panel_title')">
             <defs>
-              <linearGradient id="sceneBg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#0b1220" />
-                <stop offset="100%" stop-color="#070a10" />
-              </linearGradient>
-              <linearGradient id="agvBody" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#0b0f18" />
-                <stop offset="100%" stop-color="#111827" />
-              </linearGradient>
-              <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#a3e635" />
-                <stop offset="100%" stop-color="#65a30d" />
-              </linearGradient>
-              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+              <pattern id="dotGrid" width="18" height="18" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.2" fill="rgba(148,163,184,0.18)" />
+              </pattern>
+              <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
                 <feMerge>
                   <feMergeNode in="coloredBlur" />
                   <feMergeNode in="SourceGraphic" />
@@ -54,99 +45,50 @@
             </defs>
 
             <!-- Background -->
-            <rect x="0" y="0" width="900" height="420" rx="18" fill="url(#sceneBg)" />
+            <rect x="0" y="0" width="900" height="420" rx="18" class="schem-bg" />
+            <rect x="0" y="0" width="900" height="420" rx="18" fill="url(#dotGrid)" />
 
-            <!-- Ground -->
-            <line x1="40" y1="360" x2="860" y2="360" class="ground" />
+            <!-- Mast (vertical) -->
+            <rect :x="schem.mast.x" :y="schem.mast.y" :width="schem.mast.w" :height="schem.mast.h" rx="6" class="schem-mast" />
 
-            <!-- AGV silhouette -->
-            <g class="agv">
-              <!-- Mast -->
-              <rect :x="mast.x" :y="mast.y" :width="mast.w" :height="mast.h" rx="14" class="mast" />
-              <rect :x="mast.x + 18" :y="mast.y + 18" :width="mast.w - 36" :height="mast.h - 36" rx="10" class="mast-inner" />
+            <!-- Base (thick horizontal) -->
+            <rect :x="schem.base.x" :y="schem.base.y" :width="schem.base.w" :height="schem.base.h" rx="8" class="schem-base" />
 
-              <!-- Body -->
-              <path
-                d="M140 350
-                   C120 350 106 336 106 316
-                   L106 230
-                   C106 210 120 196 140 196
-                   L360 196
-                   C388 196 410 218 410 246
-                   L410 316
-                   C410 336 396 350 376 350
-                   Z"
-                class="body"
-              />
+            <!-- Fork + carriage (moves vertically) -->
+            <g :transform="`translate(0 ${schem.fork.translateY})`">
+              <rect :x="schem.carriage.x" :y="schem.carriage.y" :width="schem.carriage.w" :height="schem.carriage.h" rx="8" class="schem-carriage" />
+              <rect :x="schem.fork.x" :y="schem.fork.y" :width="schem.fork.w" :height="schem.fork.h" rx="6" class="schem-fork" />
 
-              <!-- Accent panel -->
-              <path
-                d="M146 332
-                   L146 220
-                   C146 214 151 209 157 209
-                   L248 209
-                   C263 209 276 219 280 233
-                   L292 270
-                   C297 286 287 303 270 307
-                   L196 326
-                   C172 332 165 336 154 338
-                   C150 339 146 336 146 332
-                   Z"
-                class="accent"
-              />
-
-              <!-- Wheels -->
-              <g class="wheels">
-                <circle cx="170" cy="358" r="18" class="wheel" />
-                <circle cx="340" cy="358" r="18" class="wheel" />
-                <circle cx="170" cy="358" r="7" class="wheel-hub" />
-                <circle cx="340" cy="358" r="7" class="wheel-hub" />
-              </g>
-
-              <!-- Carriage + forks -->
-              <g class="carriage" :transform="`translate(0 ${carriageTranslateY})`">
-                <rect :x="carriage.x" :y="carriage.y" :width="carriage.w" :height="carriage.h" rx="14" class="carriage-plate" />
-                <rect :x="carriage.x + 12" :y="carriage.y + 10" :width="carriage.w - 24" :height="carriage.h - 20" rx="10" class="carriage-plate-inner" />
-
-                <!-- Fork rails (scale by extension) -->
-                <g class="fork-rails" :transform="forkRailTransform">
-                  <rect :x="forkRails.x" :y="forkRails.y" :width="forkRails.w" :height="forkRails.h" rx="9" class="fork-rail" />
-                  <rect :x="forkRails.x + 18" :y="forkRails.y + 52" :width="forkRails.w - 18" :height="forkRails.h" rx="9" class="fork-rail" />
-                  <rect :x="forkRails.x + forkRails.w - 34" :y="forkRails.y - 2" width="34" height="18" rx="8" class="fork-tip" />
-                  <rect :x="forkRails.x + forkRails.w - 34" :y="forkRails.y + 50" width="34" height="18" rx="8" class="fork-tip" />
+              <!-- Horizon sensors embedded on fork -->
+              <g v-if="isHorizonEnabled" class="sensors">
+                <g :transform="sensorGroupTransform(schem.horizonSensors.retract)">
+                  <circle :r="schem.sensorR" :class="sensorDotClass(horizonRetractOn)" filter="url(#softGlow)" />
+                  <text x="12" y="4" class="sensor-text">{{ $t('fork_viz_retract_limit') }}</text>
                 </g>
-
-                <!-- Horizon sensors embedded on forks -->
-                <g v-if="isHorizonEnabled">
-                  <g :transform="sensorGroupTransform(horizonSensors.retract)">
-                    <circle r="10" :class="sensorDotClass(horizonRetractOn)" filter="url(#glow)" />
-                    <text x="16" y="5" class="sensor-text">{{ $t('fork_viz_retract_limit') }}</text>
-                  </g>
-                  <g :transform="sensorGroupTransform(horizonSensors.home)">
-                    <circle r="10" :class="sensorDotClass(horizonHomeOn)" filter="url(#glow)" />
-                    <text x="16" y="5" class="sensor-text">{{ $t('fork_viz_home') }}</text>
-                  </g>
-                  <g :transform="sensorGroupTransform(horizonSensors.extend)">
-                    <circle r="10" :class="sensorDotClass(horizonExtendOn)" filter="url(#glow)" />
-                    <text x="16" y="5" class="sensor-text">{{ $t('fork_viz_extend_limit') }}</text>
-                  </g>
+                <g :transform="sensorGroupTransform(schem.horizonSensors.home)">
+                  <circle :r="schem.sensorR" :class="sensorDotClass(horizonHomeOn)" filter="url(#softGlow)" />
+                  <text x="12" y="4" class="sensor-text">{{ $t('fork_viz_home') }}</text>
+                </g>
+                <g :transform="sensorGroupTransform(schem.horizonSensors.extend)">
+                  <circle :r="schem.sensorR" :class="sensorDotClass(horizonExtendOn)" filter="url(#softGlow)" />
+                  <text x="12" y="4" class="sensor-text">{{ $t('fork_viz_extend_limit') }}</text>
                 </g>
               </g>
+            </g>
 
-              <!-- Vertical sensors embedded on mast -->
-              <g>
-                <g :transform="sensorGroupTransform(mastSensors.up)">
-                  <circle r="10" :class="sensorDotClass(verticalUpLimitOn)" filter="url(#glow)" />
-                  <text x="-12" y="-14" class="sensor-text sensor-text-left">{{ $t('fork_viz_up_limit') }}</text>
-                </g>
-                <g :transform="sensorGroupTransform(mastSensors.home)">
-                  <circle r="10" :class="sensorDotClass(verticalHomeOn)" filter="url(#glow)" />
-                  <text x="-12" y="-14" class="sensor-text sensor-text-left">{{ $t('fork_viz_home') }}</text>
-                </g>
-                <g :transform="sensorGroupTransform(mastSensors.down)">
-                  <circle r="10" :class="sensorDotClass(verticalDownLimitOn)" filter="url(#glow)" />
-                  <text x="-12" y="-14" class="sensor-text sensor-text-left">{{ $t('fork_viz_down_limit') }}</text>
-                </g>
+            <!-- Vertical sensors embedded on mast -->
+            <g class="sensors">
+              <g :transform="sensorGroupTransform(schem.verticalSensors.up)">
+                <circle :r="schem.sensorR" :class="sensorDotClass(verticalUpLimitOn)" filter="url(#softGlow)" />
+                <text x="-10" y="-10" class="sensor-text sensor-text-left">{{ $t('fork_viz_up_limit') }}</text>
+              </g>
+              <g :transform="sensorGroupTransform(schem.verticalSensors.home)">
+                <circle :r="schem.sensorR" :class="sensorDotClass(verticalHomeOn)" filter="url(#softGlow)" />
+                <text x="-10" y="-10" class="sensor-text sensor-text-left">{{ $t('fork_viz_home') }}</text>
+              </g>
+              <g :transform="sensorGroupTransform(schem.verticalSensors.down)">
+                <circle :r="schem.sensorR" :class="sensorDotClass(verticalDownLimitOn)" filter="url(#softGlow)" />
+                <text x="-10" y="-10" class="sensor-text sensor-text-left">{{ $t('fork_viz_down_limit') }}</text>
               </g>
             </g>
           </svg>
@@ -379,44 +321,44 @@ export default {
       return DIOStore.getters.Vertical_Hardware_limit_bypass
     },
 
-    mast() {
-      return { x: 520, y: 60, w: 120, h: 280 }
-    },
-    mastSensors() {
-      const top = this.mast.y + 22
-      const mid = this.mast.y + this.mast.h * 0.53
-      const bot = this.mast.y + this.mast.h - 22
-      return {
-        up: { x: this.mast.x + 14, y: top },
-        home: { x: this.mast.x + 14, y: mid },
-        down: { x: this.mast.x + 14, y: bot }
+    schem() {
+      const mast = { x: 120, y: 46, w: 16, h: 286 }
+      const base = { x: mast.x - 8, y: 338, w: 640, h: 18 }
+
+      const forkThickness = 12
+      const carriage = { x: mast.x - 2, y: -24, w: 44, h: 62 }
+
+      const yTop = mast.y + 18
+      const yBottom = mast.y + mast.h - 18
+      const forkY = yBottom - this.verticalRatio * (yBottom - yTop)
+
+      const forkStartX = mast.x + mast.w + 18
+      const forkMinLen = 260
+      const forkMaxExtra = 280
+      const forkLen = forkMinLen + (this.isHorizonEnabled ? (forkMaxExtra * this.horizonRatio) : 0)
+      const fork = { x: forkStartX, y: -(forkThickness / 2), w: forkLen, h: forkThickness, translateY: forkY }
+
+      const verticalSensors = {
+        up: { x: mast.x + mast.w / 2, y: yTop },
+        home: { x: mast.x + mast.w / 2, y: mast.y + mast.h * 0.52 },
+        down: { x: mast.x + mast.w / 2, y: yBottom }
       }
-    },
-    carriage() {
-      return { x: 468, y: 0, w: 210, h: 92 }
-    },
-    carriageTranslateY() {
-      const yTop = this.mast.y + 26
-      const yBottom = this.mast.y + this.mast.h - 118
-      const y = yBottom - this.verticalRatio * (yBottom - yTop)
-      return y
-    },
-    forkRails() {
-      return { x: 640, y: 40, w: 300, h: 22 }
-    },
-    forkRailTransform() {
-      if (!this.isHorizonEnabled) return ''
-      const scaleX = 0.22 + this.horizonRatio * 0.78
-      const originX = this.forkRails.x
-      const originY = this.forkRails.y + this.forkRails.h / 2
-      return `translate(${originX} ${originY}) scale(${scaleX} 1) translate(${-originX} ${-originY})`
-    },
-    horizonSensors() {
-      const y = this.forkRails.y + 11
+
+      const horizonY = 0
+      const horizonSensors = {
+        retract: { x: forkStartX + 16, y: horizonY + 26 },
+        home: { x: forkStartX + (forkLen * 0.5), y: horizonY + 26 },
+        extend: { x: forkStartX + forkLen - 16, y: horizonY + 26 }
+      }
+
       return {
-        retract: { x: this.forkRails.x + 10, y: y + 56 },
-        home: { x: this.forkRails.x + (this.forkRails.w * 0.48), y: y + 56 },
-        extend: { x: this.forkRails.x + this.forkRails.w - 10, y: y + 56 }
+        mast,
+        base,
+        carriage,
+        fork,
+        verticalSensors,
+        horizonSensors,
+        sensorR: 6
       }
     }
   },
@@ -602,7 +544,7 @@ export default {
 }
 
 .viz-card {
-  background: linear-gradient(180deg, rgba(10, 15, 26, 0.94), rgba(6, 8, 12, 0.96));
+  background: rgba(10, 12, 18, 0.92);
 }
 
 .viz-header {
@@ -663,58 +605,32 @@ export default {
   display: block;
 }
 
-.ground {
-  stroke: rgba(255, 255, 255, 0.18);
+.schem-bg {
+  fill: rgba(8, 11, 16, 0.96);
+}
+
+.schem-mast {
+  fill: transparent;
+  stroke: rgba(226, 232, 240, 0.75);
   stroke-width: 3;
 }
 
-.mast {
-  fill: #06080e;
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 2;
-}
-.mast-inner {
-  fill: rgba(255, 255, 255, 0.04);
-}
-.body {
-  fill: url(#agvBody);
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 2;
-}
-.accent {
-  fill: url(#accent);
-  opacity: 0.95;
-}
-.wheel {
-  fill: #0a0d14;
-  stroke: rgba(255, 255, 255, 0.06);
-  stroke-width: 2;
-}
-.wheel-hub {
-  fill: rgba(255, 255, 255, 0.12);
+.schem-base {
+  fill: transparent;
+  stroke: rgba(226, 232, 240, 0.75);
+  stroke-width: 6;
 }
 
-.carriage {
-  transition: transform 140ms ease-out;
+.schem-carriage {
+  fill: transparent;
+  stroke: rgba(226, 232, 240, 0.72);
+  stroke-width: 3;
 }
-.carriage-plate {
-  fill: rgba(255, 255, 255, 0.07);
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 2;
-}
-.carriage-plate-inner {
-  fill: rgba(0, 0, 0, 0.35);
-}
-.fork-rails {
-  transition: transform 140ms ease-out;
-}
-.fork-rail {
-  fill: rgba(0, 0, 0, 0.55);
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 2;
-}
-.fork-tip {
-  fill: rgba(255, 255, 255, 0.07);
+
+.schem-fork {
+  fill: transparent;
+  stroke: rgba(226, 232, 240, 0.78);
+  stroke-width: 4;
 }
 
 .sensor-dot {
@@ -729,7 +645,7 @@ export default {
 }
 .sensor-text {
   fill: rgba(255, 255, 255, 0.86);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   paint-order: stroke;
   stroke: rgba(0, 0, 0, 0.55);
