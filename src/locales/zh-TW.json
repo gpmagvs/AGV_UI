@@ -69,6 +69,7 @@
   "fork_ctl_online_block": "ONLINE 狀態下無法手動進行尋原點動作，請先將模式變更為 OFFLINE",
   "fork_ctl_find_home_failed": "[{name}] 尋原點動作失敗: {alarm}",
   "fork_ctl_find_home_done": "[{name}] 尋原點動作完成",
+  "fork_ctl_jog_disabled_hint": "伸縮吋動功能目前停用",
   "fork_extend": "伸出",
   "fork_retract": "縮回",
   "fork_extend_jog": "伸出吋動",

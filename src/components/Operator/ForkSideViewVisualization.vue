@@ -1,7 +1,7 @@
 <template>
-  <div class="fork-side-panel" v-loading="!enabled" :element-loading-spinner="false"
-    :element-loading-background="enabled ? 'rgba(0,0,0,0)' : 'rgba(8,12,18,0.55)'">
-    <div v-show="!enabled" class="disable-hint">{{ $t('zaxis_control_notify_text') }}</div>
+  <div class="fork-side-panel" v-loading="!controlsEnabled" :element-loading-spinner="false"
+    :element-loading-background="controlsEnabled ? 'rgba(0,0,0,0)' : 'rgba(8,12,18,0.55)'">
+    <div v-show="!controlsEnabled" class="disable-hint">{{ $t('zaxis_control_notify_text') }}</div>
 
     <div class="panel-grid">
       <div class="viz-card">
@@ -233,8 +233,8 @@
             <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','up_limit')">
               <i class="bi bi-chevron-bar-up"></i><span>{{ $t('fork_extend') }}</span>
             </button>
-            <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','up')">
-              <i class="bi bi-chevron-up"></i><span>{{ $t('fork_extend_jog') }}</span>
+            <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
+              <i class="bi bi-chevron-right"></i><span>{{ $t('fork_extend_jog') }}</span>
             </button>
             <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','home')">
               <i class="bi bi-house-fill"></i><span>{{ $t('original') }}</span>
@@ -242,8 +242,8 @@
             <button class="btn ctl stop" :disabled="stopDisabled('Horizon')" @click="forkAction('Horizon','stop')">
               <i class="bi bi-stop-circle-fill"></i><span>{{ $t('stop') }}</span>
             </button>
-            <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','down')">
-              <i class="bi bi-chevron-down"></i><span>{{ $t('fork_retract_jog') }}</span>
+            <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
+              <i class="bi bi-chevron-left"></i><span>{{ $t('fork_retract_jog') }}</span>
             </button>
             <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','down_limit')">
               <i class="bi bi-chevron-bar-down"></i><span>{{ $t('fork_retract') }}</span>
@@ -263,7 +263,7 @@
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI'
-import { AGVStatusStore, DIOStore, SystemSettingsStore } from '@/store'
+import { AGVStatusStore, DIOStore, SystemSettingsStore, UserStore } from '@/store'
 import { ElMessage } from 'element-plus'
 
 function clamp01(n) {
@@ -299,6 +299,16 @@ export default {
     }
   },
   computed: {
+    isUserLogin() {
+      return UserStore.getters.CurrentUserRole != 0
+    },
+    isGodUser() {
+      return UserStore.getters.IsGodUser
+    },
+    controlsEnabled() {
+      if (this.isGodUser) return true
+      return (this.isUserLogin && !this.isAuto && !this.isOnline)
+    },
     forkHeight() {
       return AGVStatusStore.getters.ForkHeight
     },
@@ -423,15 +433,15 @@ export default {
       return `translate(${p.x} ${p.y})`
     },
     btnDisabled(dir) {
-      if (!this.enabled) return true
+      if (!this.controlsEnabled) return true
       return this.isActing(dir)
     },
     stopDisabled(dir) {
-      if (!this.enabled) return true
+      if (!this.controlsEnabled) return true
       return false
     },
     findHomeDisabled(dir) {
-      if (!this.enabled) return true
+      if (!this.controlsEnabled) return true
       if (this.isAgvRunning) return true
       return this.isFindHomeProcessing(dir)
     },
@@ -447,7 +457,8 @@ export default {
     },
     async forkAction(dir, action) {
       const isVertical = dir === 'Vertical'
-      if (!this.enabled) return
+      if (!this.controlsEnabled) return
+      if (dir === 'Horizon' && (action === 'up' || action === 'down')) return
       let canceled = false
 
       if (isVertical && action !== 'home' && action !== 'stop' && this.verticalHardwareBypass) {
@@ -486,6 +497,7 @@ export default {
     },
     async findHome(dir) {
       const actionName = dir === 'Vertical' ? this.$t('fork_ctl_lift') : this.$t('fork_ctl_telescope')
+      if (!this.controlsEnabled) return
       this.$swal.fire({
         title: this.$t('fork_ctl_find_home_confirm', { name: actionName }),
         icon: 'warning',
@@ -521,10 +533,23 @@ export default {
         if (dir === 'Vertical') this.isVerticalFindHomeProcessing = true
         else this.isHorizonFindHomeProcessing = true
 
-        const ret = await ForkAPI.FindHome(dir)
-
-        if (dir === 'Vertical') this.isVerticalFindHomeProcessing = false
-        else this.isHorizonFindHomeProcessing = false
+        let ret
+        try {
+          ret = await ForkAPI.FindHome(dir)
+        } catch (e) {
+          this.$swal.fire({
+            title: this.$t('fork_ctl_failed'),
+            text: String(e?.message ?? e),
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+          return
+        } finally {
+          if (dir === 'Vertical') this.isVerticalFindHomeProcessing = false
+          else this.isHorizonFindHomeProcessing = false
+        }
 
         if (!ret?.success) {
           this.$swal.fire({

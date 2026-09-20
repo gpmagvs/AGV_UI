@@ -69,6 +69,7 @@
   "fork_ctl_online_block": "Find Home is not allowed in ONLINE mode. Switch to OFFLINE first.",
   "fork_ctl_find_home_failed": "[{name}] Find Home failed: {alarm}",
   "fork_ctl_find_home_done": "[{name}] Find Home completed",
+  "fork_ctl_jog_disabled_hint": "Telescope jog is currently disabled",
   "fork_extend": "Extend",
   "fork_retract": "Retract",
   "fork_extend_jog": "Extend Jog",
