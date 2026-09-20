@@ -28,6 +28,24 @@
             <div v-if="selected_tab === '0'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
 
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>{{ $t('settings.vehicle_dimensions') }}</b>
+                </div>
+                <el-form-item :label="$t('settings.vehicle_length_retracted')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleLengthRetractedCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_height')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleHeightCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_width')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleWidthCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
                 <el-form-item label="PC 帳號">
                   <el-input @change="HandleParamChanged" size="small" type="text"
                     v-model="settings.PcInformation.userName"></el-input>
@@ -344,24 +362,6 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.CargoExistSensorParams.ExistSensorSimulation"></el-switch>
                   <span class="mx-3">(有貨物ID時視作有貨物)</span>
-                </el-form-item>
-                <div class="text-start w-100 border-bottom mb-2">
-                  <b>{{ $t('settings.vehicle_dimensions') }}</b>
-                </div>
-                <el-form-item :label="$t('settings.vehicle_length_retracted')">
-                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
-                    @change="HandleParamChanged" v-model="vehicleLengthRetractedCm"></el-input-number>
-                  <span class="mx-2">cm</span>
-                </el-form-item>
-                <el-form-item :label="$t('settings.vehicle_height')">
-                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
-                    @change="HandleParamChanged" v-model="vehicleHeightCm"></el-input-number>
-                  <span class="mx-2">cm</span>
-                </el-form-item>
-                <el-form-item :label="$t('settings.vehicle_width')">
-                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
-                    @change="HandleParamChanged" v-model="vehicleWidthCm"></el-input-number>
-                  <span class="mx-2">cm</span>
                 </el-form-item>
                 <div class="text-start w-100 border-bottom">
                   <b>貨物ID讀取</b>
