@@ -1,12 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import path from 'node:path'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { readFileSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 
 // 讀取 package.json
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
+
+const LEGACY_OUT_DIR = '../GPMVehicleControlSystem/GPMVehicleControlSystem/wwwroot'
+const legacyParentDir = path.resolve(process.cwd(), '../GPMVehicleControlSystem/GPMVehicleControlSystem')
+const outDir = process.env.VITE_OUT_DIR
+  ? path.resolve(process.cwd(), process.env.VITE_OUT_DIR)
+  : (existsSync(legacyParentDir) ? path.resolve(process.cwd(), LEGACY_OUT_DIR) : path.resolve(process.cwd(), 'dist'))
 
 export default defineConfig({
     plugins: [
@@ -30,7 +37,7 @@ export default defineConfig({
         port: 8080
     },
     build: {
-        outDir: '../GPMVehicleControlSystem/GPMVehicleControlSystem/wwwroot',
+        outDir,
         assetsDir: 'assets',
         emptyOutDir: true,
         rollupOptions: {
