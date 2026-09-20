@@ -48,11 +48,8 @@
             <rect x="0" y="0" width="900" height="420" rx="18" class="schem-bg" />
             <rect x="0" y="0" width="900" height="420" rx="18" fill="url(#dotGrid)" />
 
-            <!-- Mast (vertical) -->
-            <rect :x="schem.mast.x" :y="schem.mast.y" :width="schem.mast.w" :height="schem.mast.h" rx="6" class="schem-mast" />
-
-            <!-- Base (thick horizontal) -->
-            <rect :x="schem.base.x" :y="schem.base.y" :width="schem.base.w" :height="schem.base.h" rx="8" class="schem-base" />
+            <!-- Unified mast + base outline (one body) -->
+            <path :d="schem.outlinePath" class="schem-outline" />
 
             <!-- Fork + carriage (moves vertically) -->
             <g :transform="`translate(0 ${schem.fork.translateY})`">
@@ -275,6 +272,21 @@ export default {
     forkSettings() {
       return SystemSettingsStore.state.Settings?.ForkAGV
     },
+    vehicleSettings() {
+      return SystemSettingsStore.state.Settings
+    },
+    vehicleLengthCm() {
+      const s = this.vehicleSettings
+      return Number(s?.VehielLength ?? s?.VehicleLength ?? s?.ForkAGV?.VehielLength ?? s?.ForkAGV?.VehicleLength ?? 145)
+    },
+    vehicleHeightCm() {
+      const s = this.vehicleSettings
+      return Number(s?.VehicleHeight ?? s?.ForkAGV?.VehicleHeight ?? 180)
+    },
+    vehicleWidthCm() {
+      const s = this.vehicleSettings
+      return Number(s?.VehicleWidth ?? s?.ForkAGV?.VehicleWidth ?? 100)
+    },
     isHorizonEnabled() {
       const fork = this.forkSettings
       return fork?.IsForkIsExtendable === true && fork?.HorizonArmConfigs?.ControlType === 1
@@ -322,20 +334,48 @@ export default {
     },
 
     schem() {
-      const mast = { x: 120, y: 46, w: 16, h: 286 }
-      const base = { x: mast.x - 8, y: 338, w: 640, h: 18 }
+      const vLen = Number.isFinite(this.vehicleLengthCm) && this.vehicleLengthCm > 0 ? this.vehicleLengthCm : 145
+      const vH = Number.isFinite(this.vehicleHeightCm) && this.vehicleHeightCm > 0 ? this.vehicleHeightCm : 180
+      const vW = Number.isFinite(this.vehicleWidthCm) && this.vehicleWidthCm > 0 ? this.vehicleWidthCm : 100
 
-      const forkThickness = 12
-      const carriage = { x: mast.x - 2, y: -24, w: 44, h: 62 }
+      const padX = 90
+      const padY = 40
+      const availW = 900 - padX * 2
+      const availH = 420 - padY * 2
+      const scale = Math.max(0.6, Math.min(2.2, Math.min(availW / (vLen * 1.15), availH / (vH * 1.05))))
 
-      const yTop = mast.y + 18
-      const yBottom = mast.y + mast.h - 18
+      const mastH = vH * scale
+      const mastW = Math.max(12, Math.min(22, vW * 0.06 * scale))
+      const baseLen = vLen * scale
+      const baseThick = Math.max(16, Math.min(28, vW * 0.09 * scale))
+
+      const mast = { x: padX + 30, y: padY, w: mastW, h: mastH }
+      const base = { x: mast.x - Math.max(6, mastW * 0.25), y: mast.y + mast.h, w: baseLen, h: baseThick }
+
+      const outlinePath = [
+        `M ${mast.x} ${mast.y}`,
+        `L ${mast.x + mast.w} ${mast.y}`,
+        `L ${mast.x + mast.w} ${base.y}`,
+        `L ${base.x + base.w} ${base.y}`,
+        `L ${base.x + base.w} ${base.y + base.h}`,
+        `L ${base.x} ${base.y + base.h}`,
+        `L ${base.x} ${mast.y}`,
+        'Z'
+      ].join(' ')
+
+      const yTop = mast.y + mast.h * 0.08
+      const yBottom = mast.y + mast.h * 0.92
       const forkY = yBottom - this.verticalRatio * (yBottom - yTop)
 
+      const forkThickness = Math.max(10, Math.min(16, baseThick * 0.55))
+      const carriageW = mastW * 2.4
+      const carriageH = Math.max(48, Math.min(78, mastH * 0.22))
+      const carriage = { x: mast.x + mast.w - carriageW * 0.18, y: -(carriageH / 2), w: carriageW, h: carriageH }
+
       const forkStartX = mast.x + mast.w + 18
-      const forkMinLen = 260
-      const forkMaxExtra = 280
-      const forkLen = forkMinLen + (this.isHorizonEnabled ? (forkMaxExtra * this.horizonRatio) : 0)
+      const forkMinLen = baseLen * 0.62
+      const forkExtra = baseLen * 0.55
+      const forkLen = forkMinLen + (this.isHorizonEnabled ? (forkExtra * this.horizonRatio) : 0)
       const fork = { x: forkStartX, y: -(forkThickness / 2), w: forkLen, h: forkThickness, translateY: forkY }
 
       const verticalSensors = {
@@ -344,21 +384,23 @@ export default {
         down: { x: mast.x + mast.w / 2, y: yBottom }
       }
 
-      const horizonY = 0
       const horizonSensors = {
-        retract: { x: forkStartX + 16, y: horizonY + 26 },
-        home: { x: forkStartX + (forkLen * 0.5), y: horizonY + 26 },
-        extend: { x: forkStartX + forkLen - 16, y: horizonY + 26 }
+        retract: { x: forkStartX + 14, y: 26 },
+        home: { x: forkStartX + (forkLen * 0.5), y: 26 },
+        extend: { x: forkStartX + forkLen - 14, y: 26 }
       }
+
+      const sensorR = Math.max(5, Math.min(7, mastW * 0.34))
 
       return {
         mast,
         base,
+        outlinePath,
         carriage,
         fork,
         verticalSensors,
         horizonSensors,
-        sensorR: 6
+        sensorR
       }
     }
   },
@@ -609,16 +651,12 @@ export default {
   fill: rgba(8, 11, 16, 0.96);
 }
 
-.schem-mast {
-  fill: transparent;
-  stroke: rgba(226, 232, 240, 0.75);
-  stroke-width: 3;
-}
-
-.schem-base {
-  fill: transparent;
-  stroke: rgba(226, 232, 240, 0.75);
-  stroke-width: 6;
+.schem-outline {
+  fill: rgba(226, 232, 240, 0.02);
+  stroke: rgba(226, 232, 240, 0.78);
+  stroke-width: 4;
+  stroke-linejoin: miter;
+  stroke-linecap: square;
 }
 
 .schem-carriage {

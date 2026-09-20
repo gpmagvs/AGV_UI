@@ -466,6 +466,24 @@
                   <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinEnable"></el-switch>
                 </el-form-item>
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>{{ $t('settings.vehicle_dimensions') }}</b>
+                </div>
+                <el-form-item :label="$t('settings.vehicle_length_retracted')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleLengthRetractedCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_height')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleHeightCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_width')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleWidthCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
                 <el-form-item label="伸縮牙叉功能">
                   <el-switch active-text="啟用" inactive-text="禁用" active-color="rgb(64, 158, 255)" inactive-color="red"
                     @change="HandleParamChanged" v-model="settings.ForkAGV.IsForkIsExtendable"></el-switch>
@@ -890,6 +908,38 @@ export default {
     },
     filteredMenuItems() {
       return this.menuItems.filter(item => !item.show || item.show());
+    },
+    vehicleLengthRetractedCm: {
+      get() {
+        return this.settings?.VehielLength ?? this.settings?.VehicleLength ?? this.settings?.ForkAGV?.VehielLength ?? this.settings?.ForkAGV?.VehicleLength ?? 145
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehielLength = val
+        if (Object.prototype.hasOwnProperty.call(this.settings, 'VehicleLength')) this.settings.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleLength')) this.settings.ForkAGV.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehielLength')) this.settings.ForkAGV.VehielLength = val
+      }
+    },
+    vehicleHeightCm: {
+      get() {
+        return this.settings?.VehicleHeight ?? this.settings?.ForkAGV?.VehicleHeight ?? 180
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleHeight = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleHeight')) this.settings.ForkAGV.VehicleHeight = val
+      }
+    },
+    vehicleWidthCm: {
+      get() {
+        return this.settings?.VehicleWidth ?? this.settings?.ForkAGV?.VehicleWidth ?? 100
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleWidth = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleWidth')) this.settings.ForkAGV.VehicleWidth = val
+      }
     }
   },
   mounted() {

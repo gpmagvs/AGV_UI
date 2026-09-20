@@ -50,6 +50,8 @@ class SystemSettings {
         this.TagParkingTolerance = 5;
         this.ActionTimeout = 5;
         this.VehielLength = 145;
+        this.VehicleHeight = 180;
+        this.VehicleWidth = 100;
         this.ModuleInfoTopicRevHandlePeriod = 0;
         this.ModuleInfoTopicRevQueueSize = 1;
         this.AGVsMessageEncoding = "UTF-8";
