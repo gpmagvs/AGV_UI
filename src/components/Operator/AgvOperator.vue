@@ -14,7 +14,7 @@
       </b-tab>
       <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down_viz') : ''">
         <div class="mt-1 p-1">
-          <ForkSideViewVisualization></ForkSideViewVisualization>
+          <ForkSideViewVisualization :enabled="operation_enabled_return"></ForkSideViewVisualization>
         </div>
       </b-tab>
       <b-tab title="Input">
