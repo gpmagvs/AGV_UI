@@ -281,11 +281,11 @@ export default {
     },
     vehicleHeightCm() {
       const s = this.vehicleSettings
-      return Number(s?.VehicleHeight ?? s?.ForkAGV?.VehicleHeight ?? 180)
+      return Number(s?.VehicleHeight ?? s?.ForkAGV?.VehicleHeight ?? 200)
     },
     vehicleWidthCm() {
       const s = this.vehicleSettings
-      return Number(s?.VehicleWidth ?? s?.ForkAGV?.VehicleWidth ?? 100)
+      return Number(s?.VehicleWidth ?? s?.ForkAGV?.VehicleWidth ?? 90)
     },
     isHorizonEnabled() {
       const fork = this.forkSettings
@@ -335,8 +335,8 @@ export default {
 
     schem() {
       const vLen = Number.isFinite(this.vehicleLengthCm) && this.vehicleLengthCm > 0 ? this.vehicleLengthCm : 145
-      const vH = Number.isFinite(this.vehicleHeightCm) && this.vehicleHeightCm > 0 ? this.vehicleHeightCm : 180
-      const vW = Number.isFinite(this.vehicleWidthCm) && this.vehicleWidthCm > 0 ? this.vehicleWidthCm : 100
+      const vH = Number.isFinite(this.vehicleHeightCm) && this.vehicleHeightCm > 0 ? this.vehicleHeightCm : 200
+      const vW = Number.isFinite(this.vehicleWidthCm) && this.vehicleWidthCm > 0 ? this.vehicleWidthCm : 90
 
       const padX = 90
       const padY = 40
@@ -359,7 +359,9 @@ export default {
         `L ${base.x + base.w} ${base.y}`,
         `L ${base.x + base.w} ${base.y + base.h}`,
         `L ${base.x} ${base.y + base.h}`,
-        `L ${base.x} ${mast.y}`,
+        `L ${base.x} ${base.y}`,
+        `L ${mast.x} ${base.y}`,
+        `L ${mast.x} ${mast.y}`,
         'Z'
       ].join(' ')
 

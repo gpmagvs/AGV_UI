@@ -923,7 +923,7 @@ export default {
     },
     vehicleHeightCm: {
       get() {
-        return this.settings?.VehicleHeight ?? this.settings?.ForkAGV?.VehicleHeight ?? 180
+        return this.settings?.VehicleHeight ?? this.settings?.ForkAGV?.VehicleHeight ?? 200
       },
       set(val) {
         if (!this.settings) return
@@ -933,7 +933,7 @@ export default {
     },
     vehicleWidthCm: {
       get() {
-        return this.settings?.VehicleWidth ?? this.settings?.ForkAGV?.VehicleWidth ?? 100
+        return this.settings?.VehicleWidth ?? this.settings?.ForkAGV?.VehicleWidth ?? 90
       },
       set(val) {
         if (!this.settings) return
