@@ -142,6 +142,10 @@ ros.on('connection', function () {
     linear_speed = 0.0;
     angular_speed = 0.0;
     ensureKeyboardMoveTopic();
+    publishCmdVel({
+        linear: { x: 0, y: 0, z: 0 },
+        angular: { x: 0, y: 0, z: 0 },
+    });
 });
 
 ros.on('error', function (error) {
