@@ -7,12 +7,12 @@
           <AgvControl></AgvControl>
         </div>
       </b-tab>
-      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
+      <!-- <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
         <div class="mt-1 p-1">
           <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
         </div>
-      </b-tab>
-      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down_viz') : ''">
+      </b-tab> -->
+      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
         <div class="mt-1 p-1 fork-side-tab-pane">
           <ForkSideViewVisualization :enabled="operation_enabled_return"></ForkSideViewVisualization>
         </div>

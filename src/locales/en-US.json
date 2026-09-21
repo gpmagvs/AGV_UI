@@ -80,6 +80,19 @@
   "fork_ctl_find_home_failed": "[{name}] Find Home failed: {alarm}",
   "fork_ctl_find_home_done": "[{name}] Find Home completed",
   "fork_ctl_jog_disabled_hint": "Telescope jog is currently disabled",
+  "fork_ctl_advanced": "Advanced",
+  "fork_ctl_float_pin": "Floating Fork",
+  "fork_ctl_float_status": "Status",
+  "fork_ctl_float_lock": "LOCK",
+  "fork_ctl_float_release": "RELEASE",
+  "fork_ctl_float_init": "INIT",
+  "fork_ctl_float_initing": "INITING",
+  "fork_ctl_float_init_success_title": "Floating fork init succeeded",
+  "fork_ctl_float_init_success_text": "Initialization completed",
+  "fork_ctl_float_init_failed_title": "Floating fork init failed",
+  "fork_ctl_teach": "Fork Teach",
+  "fork_ctl_teach_title": "Fork Teach Data",
+  "fork_ctl_teach_unsaved_leave": "Teach data has unsaved changes. Leave anyway?",
   "fork_extend": "Extend",
   "fork_retract": "Retract",
   "fork_extend_jog": "Extend Jog",
@@ -266,5 +279,7 @@
     "reset_sw_ok": "Safety relays reset pulse sent",
     "reset_sw_failed": "Safety relays reset failed",
     "signal_details": "Signal details"
-  }
+  },
+  "jog_positive": "JOG+",
+  "jog_navigate": "JOG-"
 }

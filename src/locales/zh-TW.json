@@ -80,6 +80,19 @@
   "fork_ctl_find_home_failed": "[{name}] 尋原點動作失敗: {alarm}",
   "fork_ctl_find_home_done": "[{name}] 尋原點動作完成",
   "fork_ctl_jog_disabled_hint": "伸縮吋動功能目前停用",
+  "fork_ctl_advanced": "進階",
+  "fork_ctl_float_pin": "浮動牙叉",
+  "fork_ctl_float_status": "目前狀態",
+  "fork_ctl_float_lock": "LOCK",
+  "fork_ctl_float_release": "RELEASE",
+  "fork_ctl_float_init": "INIT",
+  "fork_ctl_float_initing": "INITING",
+  "fork_ctl_float_init_success_title": "浮動牙叉初始化成功",
+  "fork_ctl_float_init_success_text": "初始化成功",
+  "fork_ctl_float_init_failed_title": "浮動牙叉初始化失敗",
+  "fork_ctl_teach": "牙叉位置校點",
+  "fork_ctl_teach_title": "牙叉教點數據",
+  "fork_ctl_teach_unsaved_leave": "教點資料已修改但尚未儲存，確定要離開?",
   "fork_extend": "伸出",
   "fork_retract": "縮回",
   "fork_extend_jog": "伸出吋動",
@@ -271,5 +284,7 @@
     "reset_sw_ok": "Safety Relays Reset 已送出",
     "reset_sw_failed": "Safety Relays Reset 失敗",
     "signal_details": "訊號明細"
-  }
+  },
+  "jog_positive": "JOG+",
+  "jog_navigate": "JOG-"
 }

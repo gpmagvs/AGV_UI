@@ -12,7 +12,8 @@
           <div class="viz-metrics">
             <div class="metric">
               <div class="metric-label">{{ $t('fork_viz_vertical') }}</div>
-              <div class="metric-value">{{ formatNum(forkHeight) }}<span class="metric-unit">{{ $t('fork_viz_cm') }}</span></div>
+              <div class="metric-value">{{ formatNum(forkHeight) }}<span class="metric-unit">{{ $t('fork_viz_cm')
+                  }}</span></div>
             </div>
             <div v-if="isHorizonEnabled" class="metric">
               <div class="metric-label">{{ $t('fork_viz_horizon') }}</div>
@@ -30,7 +31,8 @@
         </div>
 
         <div class="viz-surface">
-          <svg class="viz-svg" :viewBox="schem.viewBox" preserveAspectRatio="xMidYMid meet" role="img" :aria-label="$t('fork_side_panel_title')">
+          <svg class="viz-svg" :viewBox="schem.viewBox" preserveAspectRatio="xMidYMid meet" role="img"
+            :aria-label="$t('fork_side_panel_title')">
             <defs>
               <pattern id="dotGrid" width="18" height="18" patternUnits="userSpaceOnUse">
                 <circle cx="1.5" cy="1.5" r="1.2" fill="rgba(100,116,139,0.22)" />
@@ -51,36 +53,26 @@
             <!-- Mast + chassis (dark gray body) -->
             <path :d="schem.outlinePath" class="schem-body" />
             <!-- 立柱與底盤交接橫線 -->
-            <line
-              :x1="schem.bodyJoint.x1"
-              :y1="schem.bodyJoint.y"
-              :x2="schem.bodyJoint.x2"
-              :y2="schem.bodyJoint.y"
-              class="schem-body-joint"
-            />
+            <line :x1="schem.bodyJoint.x1" :y1="schem.bodyJoint.y" :x2="schem.bodyJoint.x2" :y2="schem.bodyJoint.y"
+              class="schem-body-joint" />
 
             <!-- 滑架：僅隨升降移動，水平固定；牙叉+擋片為剛體水平平移 -->
             <g :transform="`translate(0 ${schem.fork.translateY})`">
               <path :d="schem.carriagePath" class="schem-fork-assembly" />
               <g :transform="`translate(${schem.fork.translateX} 0)`">
                 <path :d="schem.forkTinePath" class="schem-fork-assembly" />
-                <rect
-                  v-if="isHorizonEnabled"
-                  :x="schem.triggerPlate.x"
-                  :y="schem.triggerPlate.y"
-                  :width="schem.triggerPlate.w"
-                  :height="schem.triggerPlate.h"
-                  class="schem-trigger-plate"
-                  rx="0.5"
-                />
+                <rect v-if="isHorizonEnabled" :x="schem.triggerPlate.x" :y="schem.triggerPlate.y"
+                  :width="schem.triggerPlate.w" :height="schem.triggerPlate.h" class="schem-trigger-plate" rx="0.5" />
               </g>
 
               <!-- Horizon sensors 固定在車體座標（不隨牙叉平移） -->
               <g v-if="isHorizonEnabled" class="sensors">
                 <g v-for="mark in schem.horizonSensorMarks" :key="'h-' + mark.key">
-                  <circle :cx="mark.x" :cy="mark.y" :r="schem.horizonSensorR" :class="sensorDotClass(mark.isOn)" filter="url(#softGlow)" />
+                  <circle :cx="mark.x" :cy="mark.y" :r="schem.horizonSensorR" :class="sensorDotClass(mark.isOn)"
+                    filter="url(#softGlow)" />
                   <path v-if="mark.leader" :d="mark.leader" class="sensor-leader" />
-                  <text :x="mark.labelX" :y="mark.labelY" class="sensor-text sensor-text-center">{{ $t(mark.labelKey) }}</text>
+                  <text :x="mark.labelX" :y="mark.labelY" class="sensor-text sensor-text-center">{{ $t(mark.labelKey)
+                    }}</text>
                 </g>
               </g>
             </g>
@@ -88,226 +80,226 @@
             <!-- Vertical sensors embedded on mast (labels stagger with leaders when close) -->
             <g class="sensors">
               <g v-for="mark in schem.verticalSensorMarks" :key="mark.key">
-                <circle :cx="mark.x" :cy="mark.y" :r="schem.sensorR" :class="sensorDotClass(mark.isOn)" filter="url(#softGlow)" />
+                <circle :cx="mark.x" :cy="mark.y" :r="schem.sensorR" :class="sensorDotClass(mark.isOn)"
+                  filter="url(#softGlow)" />
                 <path v-if="mark.leader" :d="mark.leader" class="sensor-leader" />
-                <text :x="mark.labelX" :y="mark.labelY" class="sensor-text sensor-text-left">{{ $t(mark.labelKey) }}</text>
+                <text :x="mark.labelX" :y="mark.labelY" class="sensor-text sensor-text-left">{{ $t(mark.labelKey)
+                  }}</text>
               </g>
             </g>
 
             <!-- Dimension: chassis top ↔ fork tine centerline (live height) -->
             <g v-if="schem.heightDim.visible" class="height-dim" aria-hidden="true">
               <!-- Extension ticks -->
-              <line
-                :x1="schem.heightDim.tickX1"
-                :y1="schem.heightDim.yTop"
-                :x2="schem.heightDim.tickX2"
-                :y2="schem.heightDim.yTop"
-                class="height-dim-tick"
-              />
-              <line
-                :x1="schem.heightDim.tickX1"
-                :y1="schem.heightDim.yBot"
-                :x2="schem.heightDim.tickX2"
-                :y2="schem.heightDim.yBot"
-                class="height-dim-tick"
-              />
+              <line :x1="schem.heightDim.tickX1" :y1="schem.heightDim.yTop" :x2="schem.heightDim.tickX2"
+                :y2="schem.heightDim.yTop" class="height-dim-tick" />
+              <line :x1="schem.heightDim.tickX1" :y1="schem.heightDim.yBot" :x2="schem.heightDim.tickX2"
+                :y2="schem.heightDim.yBot" class="height-dim-tick" />
               <!-- Vertical dimension line -->
-              <line
-                :x1="schem.heightDim.x"
-                :y1="schem.heightDim.yTop"
-                :x2="schem.heightDim.x"
-                :y2="schem.heightDim.yBot"
-                class="height-dim-line"
-              />
+              <line :x1="schem.heightDim.x" :y1="schem.heightDim.yTop" :x2="schem.heightDim.x"
+                :y2="schem.heightDim.yBot" class="height-dim-line" />
               <!-- Arrowheads (filled triangles) -->
               <polygon :points="schem.heightDim.arrowTop" class="height-dim-arrow" />
               <polygon :points="schem.heightDim.arrowBot" class="height-dim-arrow" />
               <!-- Height label -->
-              <text
-                :x="schem.heightDim.labelX"
-                :y="schem.heightDim.labelY"
-                class="sensor-text height-dim-label"
-              >{{ formatNum(forkHeight) }} {{ $t('fork_viz_cm') }}</text>
+              <text :x="schem.heightDim.labelX" :y="schem.heightDim.labelY" class="sensor-text height-dim-label">{{
+                formatNum(forkHeight) }} {{ $t('fork_viz_cm') }}</text>
             </g>
 
             <!-- Dimension: chassis front ↔ fork tip (live extension overhang) -->
             <g v-if="schem.overhangDim.visible" class="overhang-dim" aria-hidden="true">
               <template v-if="schem.overhangDim.showLine">
                 <!-- Extension ticks -->
-                <line
-                  :x1="schem.overhangDim.xLeft"
-                  :y1="schem.overhangDim.tickY1"
-                  :x2="schem.overhangDim.xLeft"
-                  :y2="schem.overhangDim.tickY2"
-                  class="height-dim-tick"
-                />
-                <line
-                  :x1="schem.overhangDim.xRight"
-                  :y1="schem.overhangDim.tickY1"
-                  :x2="schem.overhangDim.xRight"
-                  :y2="schem.overhangDim.tickY2"
-                  class="height-dim-tick"
-                />
+                <line :x1="schem.overhangDim.xLeft" :y1="schem.overhangDim.tickY1" :x2="schem.overhangDim.xLeft"
+                  :y2="schem.overhangDim.tickY2" class="height-dim-tick" />
+                <line :x1="schem.overhangDim.xRight" :y1="schem.overhangDim.tickY1" :x2="schem.overhangDim.xRight"
+                  :y2="schem.overhangDim.tickY2" class="height-dim-tick" />
                 <!-- Horizontal dimension line -->
-                <line
-                  :x1="schem.overhangDim.xLeft"
-                  :y1="schem.overhangDim.y"
-                  :x2="schem.overhangDim.xRight"
-                  :y2="schem.overhangDim.y"
-                  class="height-dim-line"
-                />
+                <line :x1="schem.overhangDim.xLeft" :y1="schem.overhangDim.y" :x2="schem.overhangDim.xRight"
+                  :y2="schem.overhangDim.y" class="height-dim-line" />
                 <!-- Arrowheads (filled triangles) -->
                 <polygon :points="schem.overhangDim.arrowLeft" class="height-dim-arrow" />
                 <polygon :points="schem.overhangDim.arrowRight" class="height-dim-arrow" />
               </template>
               <!-- Overhang label：一律顯示，不因間距隱藏 -->
-              <text
-                :x="schem.overhangDim.labelX"
-                :y="schem.overhangDim.labelY"
-                class="sensor-text height-dim-label overhang-dim-label"
-              >{{ formatNum(schem.overhangDim.cm) }} {{ $t('fork_viz_cm') }}</text>
+              <text :x="schem.overhangDim.labelX" :y="schem.overhangDim.labelY"
+                class="sensor-text height-dim-label overhang-dim-label">{{ formatNum(schem.overhangDim.cm) }} {{
+                  $t('fork_viz_cm')
+                }}</text>
             </g>
           </svg>
         </div>
       </div>
 
       <div class="control-card">
-        <div class="control-top">
-          <div class="control-title">{{ $t('fork_ctl_controls') }}</div>
-          <div class="control-legend">
-            <span class="legend-dot on"></span><span class="legend-text">{{ $t('fork_viz_on') }}</span>
-            <span class="legend-dot off"></span><span class="legend-text">{{ $t('fork_viz_off') }}</span>
-          </div>
-        </div>
+        <div class="ctl-zones" :class="{ 'has-float-pin': isPinMounted }">
+          <!-- 升降 -->
+          <section class="ctl-zone ctl-zone--lift">
+            <header class="zone-bar">
+              <div class="zone-title">{{ $t('fork_ctl_lift') }}</div>
+              <div class="zone-bar-actions">
+                <div class="zone-safety">
+                  <span class="zone-safety__label">{{ $t('fork_ctl_safety') }}</span>
+                  <el-switch
+                    :inline-prompt="true"
+                    v-model="verticalActionSafetyProtection"
+                    :active-text="$t('fork_ctl_on')"
+                    :inactive-text="$t('fork_ctl_off')"
+                    inactive-color="#ef4444" />
+                </div>
+                <button class="btn teach" type="button" @click="ShowTeachView">
+                  <i class="bi bi-table"></i><span>{{ $t('fork_ctl_teach') }}</span>
+                </button>
+              </div>
+            </header>
 
-        <div class="ctl-group">
-          <div class="ctl-head">
-            <div class="ctl-head-left">
-              <div class="ctl-name">{{ $t('fork_ctl_lift') }}</div>
-              <div class="ctl-sub">
-                <span class="chip">{{ $t('fork_ctl_position') }}: {{ formatNum(forkHeight) }} {{ $t('fork_viz_cm') }}</span>
-                <span class="chip">{{ $t('fork_ctl_state') }}: {{ verticalDriverState?.state ?? 0 }}</span>
-                <span class="chip">{{ $t('fork_ctl_ecode') }}: {{ verticalDriverState?.errorCode ?? 0 }}</span>
+            <div class="zone-primary">
+              <div class="btn-col">
+                <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'up_limit')">
+                  <i class="bi bi-chevron-bar-up"></i><span>{{ $t('up_limit_pose') }}</span>
+                </button>
+                <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'up')">
+                  <i class="bi bi-chevron-up"></i><span>{{ $t('jog_positive') }}</span>
+                </button>
+                <div class="btn-mid-row">
+                  <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'home')">
+                    <i class="bi bi-house-fill"></i><span>{{ $t('original') }}</span>
+                  </button>
+                  <button class="btn ctl stop" :disabled="stopDisabled('Vertical')" @click="forkAction('Vertical', 'stop')">
+                    <i class="bi bi-stop-circle-fill"></i><span>{{ $t('stop') }}</span>
+                  </button>
+                </div>
+                <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'down')">
+                  <i class="bi bi-chevron-down"></i><span>{{ $t('jog_navigate') }}</span>
+                </button>
+                <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'down_limit')">
+                  <i class="bi bi-chevron-bar-down"></i><span>{{ $t('down_limit_pose') }}</span>
+                </button>
               </div>
             </div>
-            <div class="ctl-head-right">
-              <div class="safety">
-                <span class="safety-label">{{ $t('fork_ctl_safety') }}</span>
-                <el-switch :inline-prompt="true" v-model="verticalActionSafetyProtection"
-                  :active-text="$t('fork_ctl_on')" :inactive-text="$t('fork_ctl_off')" inactive-color="#ef4444" />
+
+            <div class="zone-secondary">
+              <div class="sec-label">{{ $t('fork_ctl_advanced') }}</div>
+              <div class="sec-actions">
+                <button class="btn subtle" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'up_search')">
+                  <i class="bi bi-chevron-bar-up"></i><span>{{ $t('fork_ctl_up_search') }}</span>
+                </button>
+                <button class="btn subtle" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical', 'down_search')">
+                  <i class="bi bi-chevron-bar-down"></i><span>{{ $t('fork_ctl_down_search') }}</span>
+                </button>
+                <button class="btn subtle" :disabled="findHomeDisabled('Vertical')" @click="findHome('Vertical')">
+                  <i class="bi bi-bullseye"></i><span>{{ $t('fork_ctl_find_home') }}</span>
+                </button>
+              </div>
+              <div class="sec-bypass">
+                <div class="bypass-row">
+                  <span class="bypass-label">{{ $t('fork_ctl_hw_bypass_label') }}</span>
+                  <el-tag v-if="verticalHardwareBypass" class="bypass-tag" effect="dark" type="danger" size="large"
+                    @click="ControlHardwareLimitSensor(true)">{{ $t('fork_ctl_bypass') }}</el-tag>
+                  <el-tag v-else class="bypass-tag" effect="dark" type="success" size="large"
+                    @click="ControlHardwareLimitSensor(false)">{{ $t('fork_ctl_no_bypass') }}</el-tag>
+                </div>
+                <div class="bypass-row">
+                  <span class="bypass-label">{{ $t('fork_ctl_under_press_bypass_label') }}</span>
+                  <el-tag v-if="verticalUnderPressingBypass" class="bypass-tag" effect="dark" type="danger" size="large"
+                    @click="ControlUnderPressingSensorBypass(true)">{{ $t('fork_ctl_bypass') }}</el-tag>
+                  <el-tag v-else class="bypass-tag" effect="dark" type="success" size="large"
+                    @click="ControlUnderPressingSensorBypass(false)">{{ $t('fork_ctl_no_bypass') }}</el-tag>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- 升降：直排（上→下） -->
-          <div class="btn-col">
-            <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','up_limit')">
-              <i class="bi bi-chevron-bar-up"></i><span>{{ $t('up_limit_pose') }}</span>
-            </button>
-            <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','up')">
-              <i class="bi bi-chevron-up"></i><span>{{ $t('up') }}</span>
-            </button>
-            <div class="btn-mid-row">
-              <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','home')">
-                <i class="bi bi-house-fill"></i><span>{{ $t('original') }}</span>
-              </button>
-              <button class="btn ctl stop" :disabled="stopDisabled('Vertical')" @click="forkAction('Vertical','stop')">
-                <i class="bi bi-stop-circle-fill"></i><span>{{ $t('stop') }}</span>
-              </button>
-            </div>
-            <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','down')">
-              <i class="bi bi-chevron-down"></i><span>{{ $t('down') }}</span>
-            </button>
-            <button class="btn ctl" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','down_limit')">
-              <i class="bi bi-chevron-bar-down"></i><span>{{ $t('down_limit_pose') }}</span>
-            </button>
-          </div>
-
-          <div class="group-actions">
-            <button class="btn subtle" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','up_search')">
-              <i class="bi bi-chevron-bar-up"></i><span>{{ $t('fork_ctl_up_search') }}</span>
-            </button>
-            <button class="btn subtle" :disabled="btnDisabled('Vertical')" @click="forkAction('Vertical','down_search')">
-              <i class="bi bi-chevron-bar-down"></i><span>{{ $t('fork_ctl_down_search') }}</span>
-            </button>
-            <button class="btn subtle" :disabled="findHomeDisabled('Vertical')" @click="findHome('Vertical')">
-              <i class="bi bi-bullseye"></i><span>{{ $t('fork_ctl_find_home') }}</span>
-            </button>
-            <div class="bypass-toggles">
-              <div class="bypass-row">
-                <span class="bypass-label">{{ $t('fork_ctl_hw_bypass_label') }}</span>
-                <el-tag v-if="verticalHardwareBypass" class="bypass-tag" effect="dark" type="danger" size="large"
-                  @click="ControlHardwareLimitSensor(true)">{{ $t('fork_ctl_bypass') }}</el-tag>
-                <el-tag v-else class="bypass-tag" effect="dark" type="success" size="large"
-                  @click="ControlHardwareLimitSensor(false)">{{ $t('fork_ctl_no_bypass') }}</el-tag>
-              </div>
-              <div class="bypass-row">
-                <span class="bypass-label">{{ $t('fork_ctl_under_press_bypass_label') }}</span>
-                <el-tag v-if="verticalUnderPressingBypass" class="bypass-tag" effect="dark" type="danger" size="large"
-                  @click="ControlUnderPressingSensorBypass(true)">{{ $t('fork_ctl_bypass') }}</el-tag>
-                <el-tag v-else class="bypass-tag" effect="dark" type="success" size="large"
-                  @click="ControlUnderPressingSensorBypass(false)">{{ $t('fork_ctl_no_bypass') }}</el-tag>
+          <!-- 浮動牙叉 -->
+          <section v-if="isPinMounted" class="ctl-zone ctl-zone--float">
+            <header class="zone-bar">
+              <div class="zone-title">{{ $t('fork_ctl_float_pin') }}</div>
+              <div class="zone-status">{{ floatPinStatusText }}</div>
+            </header>
+            <div class="zone-primary">
+              <div class="btn-col">
+                <button class="btn ctl" :disabled="floatPinLockDisabled" @click="ForkFloatPinDriverControlHandler(true)">
+                  <i class="bi bi-lock-fill"></i><span>{{ $t('fork_ctl_float_lock') }}</span>
+                </button>
+                <button class="btn ctl" :disabled="floatPinReleaseDisabled" @click="ForkFloatPinDriverControlHandler(false)">
+                  <i class="bi bi-unlock-fill"></i><span>{{ $t('fork_ctl_float_release') }}</span>
+                </button>
+                <button class="btn ctl warn" :disabled="floatPinInitDisabled" @click="ForkFloatPinInit()">
+                  <i class="bi bi-arrow-repeat"></i><span>{{ $t('fork_ctl_float_init') }}</span>
+                </button>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div v-if="isHorizonEnabled" class="ctl-group">
-          <div class="ctl-head">
-            <div class="ctl-head-left">
-              <div class="ctl-name">{{ $t('fork_ctl_telescope') }}</div>
-              <div class="ctl-sub">
-                <span class="chip">{{ $t('fork_ctl_position') }}: {{ formatNum(forkExtension) }} mm</span>
-                <span class="chip">{{ $t('fork_ctl_state') }}: {{ horizonDriverState?.state ?? 0 }}</span>
-                <span class="chip">{{ $t('fork_ctl_ecode') }}: {{ horizonDriverState?.errorCode ?? 0 }}</span>
+          <!-- 伸縮 -->
+          <section v-if="isHorizonEnabled" class="ctl-zone ctl-zone--telescope">
+            <header class="zone-bar">
+              <div class="zone-title">{{ $t('fork_ctl_telescope') }}</div>
+              <div class="zone-safety">
+                <span class="zone-safety__label">{{ $t('fork_ctl_safety') }}</span>
+                <el-switch
+                  :inline-prompt="true"
+                  v-model="horizonActionSafetyProtection"
+                  :active-text="$t('fork_ctl_on')"
+                  :inactive-text="$t('fork_ctl_off')"
+                  inactive-color="#ef4444" />
+              </div>
+            </header>
+
+            <div class="zone-primary">
+              <div class="btn-row">
+                <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon', 'down_limit')">
+                  <i class="bi bi-chevron-double-left"></i><span>{{ $t('fork_retract') }}</span>
+                </button>
+                <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
+                  <i class="bi bi-chevron-left"></i><span>{{ $t('jog_navigate') }}</span>
+                </button>
+                <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon', 'home')">
+                  <i class="bi bi-house-fill"></i><span>{{ $t('original') }}</span>
+                </button>
+                <button class="btn ctl stop" :disabled="stopDisabled('Horizon')" @click="forkAction('Horizon', 'stop')">
+                  <i class="bi bi-stop-circle-fill"></i><span>{{ $t('stop') }}</span>
+                </button>
+                <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
+                  <i class="bi bi-chevron-right"></i><span>{{ $t('jog_positive') }}</span>
+                </button>
+                <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon', 'up_limit')">
+                  <i class="bi bi-chevron-double-right"></i><span>{{ $t('fork_extend') }}</span>
+                </button>
               </div>
             </div>
-            <div class="ctl-head-right">
-              <div class="safety">
-                <span class="safety-label">{{ $t('fork_ctl_safety') }}</span>
-                <el-switch :inline-prompt="true" v-model="horizonActionSafetyProtection"
-                  :active-text="$t('fork_ctl_on')" :inactive-text="$t('fork_ctl_off')" inactive-color="#ef4444" />
+
+            <div class="zone-secondary zone-secondary--compact">
+              <div class="sec-label">{{ $t('fork_ctl_advanced') }}</div>
+              <div class="sec-actions">
+                <button class="btn subtle" :disabled="findHomeDisabled('Horizon')" @click="findHome('Horizon')">
+                  <i class="bi bi-bullseye"></i><span>{{ $t('fork_ctl_find_home') }}</span>
+                </button>
               </div>
             </div>
-          </div>
-
-          <!-- 伸縮：橫排（縮回← →伸出，對齊側視方向） -->
-          <div class="btn-row">
-            <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','down_limit')">
-              <i class="bi bi-chevron-double-left"></i><span>{{ $t('fork_retract') }}</span>
-            </button>
-            <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
-              <i class="bi bi-chevron-left"></i><span>{{ $t('fork_retract_jog') }}</span>
-            </button>
-            <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','home')">
-              <i class="bi bi-house-fill"></i><span>{{ $t('original') }}</span>
-            </button>
-            <button class="btn ctl stop" :disabled="stopDisabled('Horizon')" @click="forkAction('Horizon','stop')">
-              <i class="bi bi-stop-circle-fill"></i><span>{{ $t('stop') }}</span>
-            </button>
-            <button class="btn ctl" disabled :title="$t('fork_ctl_jog_disabled_hint')">
-              <i class="bi bi-chevron-right"></i><span>{{ $t('fork_extend_jog') }}</span>
-            </button>
-            <button class="btn ctl" :disabled="btnDisabled('Horizon')" @click="forkAction('Horizon','up_limit')">
-              <i class="bi bi-chevron-double-right"></i><span>{{ $t('fork_extend') }}</span>
-            </button>
-          </div>
-
-          <div class="group-actions">
-            <button class="btn subtle" :disabled="findHomeDisabled('Horizon')" @click="findHome('Horizon')">
-              <i class="bi bi-bullseye"></i><span>{{ $t('fork_ctl_find_home') }}</span>
-            </button>
-          </div>
+          </section>
         </div>
       </div>
     </div>
+
+    <el-drawer
+      v-model="show_teach_page"
+      direction="btt"
+      size="99%"
+      :title="$t('fork_ctl_teach_title')"
+      @close="TeachDrawerClosingHandle">
+      <forkTeachEditor ref="fork_teach"></forkTeachEditor>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import { ForkAPI } from '@/api/VMSAPI'
-import { AGVStatusStore, DIOStore, SystemSettingsStore, UserStore } from '@/store'
+import { AGVStatusStore, DIOStore, ForkTeachStore, SystemSettingsStore, UserStore } from '@/store'
+import { ROS_STORE } from '@/store/ros_store'
 import { ElMessage } from 'element-plus'
+import bus from '@/event-bus'
+import forkTeachEditor from './WorkStation/ForkTeachEditor.vue'
 
 function clamp01(n) {
   if (Number.isNaN(n)) return 0
@@ -316,6 +308,9 @@ function clamp01(n) {
 
 export default {
   name: 'ForkSideViewVisualization',
+  components: {
+    forkTeachEditor
+  },
   props: {
     enabled: {
       type: Boolean,
@@ -329,7 +324,10 @@ export default {
       verticalActionSafetyProtection: true,
       horizonActionSafetyProtection: true,
       isVerticalFindHomeProcessing: false,
-      isHorizonFindHomeProcessing: false
+      isHorizonFindHomeProcessing: false,
+      pinActionRunning: false,
+      pinInitRunning: false,
+      show_teach_page: false
     }
   },
   watch: {
@@ -394,6 +392,46 @@ export default {
     isHorizonEnabled() {
       const fork = this.forkSettings
       return fork?.IsForkIsExtendable === true && fork?.HorizonArmConfigs?.ControlType === 1
+    },
+    isPinMounted() {
+      if (!AGVStatusStore.getters.IsForkAGV || !SystemSettingsStore.getters.Settings) return false
+      return SystemSettingsStore.getters.Settings.ForkAGV?.IsPinMounted === true
+    },
+    isPinModuleRosBase() {
+      return AGVStatusStore.state.AGVStatus.IsPinMoudleRosBase
+    },
+    isPinFloatOutputOn() {
+      return DIOStore.getters.IsPinFloatOuputON
+    },
+    pinState() {
+      return ROS_STORE.getters.Pin_State || { pose: '' }
+    },
+    floatPinStatusText() {
+      if (this.pinInitRunning) return this.$t('fork_ctl_float_initing')
+      if (this.isPinModuleRosBase) {
+        const pose = String(this.pinState?.pose || '').toUpperCase()
+        return pose || '--'
+      }
+      return this.isPinFloatOutputOn
+        ? this.$t('fork_ctl_float_release')
+        : this.$t('fork_ctl_float_lock')
+    },
+    floatPinLockDisabled() {
+      if (!this.controlsEnabled || this.pinInitRunning) return true
+      if (this.isPinModuleRosBase) {
+        return this.pinState?.pose === 'lock' || this.pinActionRunning
+      }
+      return !this.isPinFloatOutputOn
+    },
+    floatPinReleaseDisabled() {
+      if (!this.controlsEnabled || this.pinInitRunning) return true
+      if (this.isPinModuleRosBase) {
+        return this.pinState?.pose === 'release' || this.pinActionRunning
+      }
+      return this.isPinFloatOutputOn
+    },
+    floatPinInitDisabled() {
+      return !this.controlsEnabled || this.pinInitRunning
     },
     /** 繪圖用（mm）；實際顯示用 forkExtension。position<0 時切齊車頭 */
     forkExtensionDrawMm() {
@@ -697,31 +735,31 @@ export default {
       const yStep = 12
       const horizonSensorMarks = this.isHorizonEnabled
         ? horizonRawMarks.map((m, i) => {
-            const labelAbove = m.key === 'extendSlowdown' || m.key === 'extend'
-            if (labelAbove) {
-              // 伸出側：標籤緊貼圓圈上方，僅小幅垂直錯開
-              const aboveIndex = m.key === 'extend' ? 1 : 0
-              const labelX = m.x
-              const labelY = labelAboveBaseY - aboveIndex * yStep
-              const elbowY = sensorYBelow - horizonSensorR - 4 - aboveIndex * 2
-              const leader = `M ${m.x} ${m.y - horizonSensorR - 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY + 4}`
-              return { ...m, labelX, labelY, labelAbove, leader }
-            }
-            if (m.key === 'retractSlowdown') {
-              // 縮回減速：緊貼圓圈下方
-              const labelX = m.x
-              const labelY = labelBelowBaseY
-              const elbowY = sensorYBelow + horizonSensorR + 4
-              const leader = `M ${m.x} ${m.y + horizonSensorR + 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY - 4}`
-              return { ...m, labelX, labelY, labelAbove: false, leader }
-            }
-            // 縮回極限：下方並略水平錯開
-            const labelX = labelXs[i]
-            const labelY = labelBelowBaseY + yStep
-            const elbowY = sensorYBelow + horizonSensorR + 5
-            const leader = `M ${m.x} ${m.y + horizonSensorR + 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY - 6}`
+          const labelAbove = m.key === 'extendSlowdown' || m.key === 'extend'
+          if (labelAbove) {
+            // 伸出側：標籤緊貼圓圈上方，僅小幅垂直錯開
+            const aboveIndex = m.key === 'extend' ? 1 : 0
+            const labelX = m.x
+            const labelY = labelAboveBaseY - aboveIndex * yStep
+            const elbowY = sensorYBelow - horizonSensorR - 4 - aboveIndex * 2
+            const leader = `M ${m.x} ${m.y - horizonSensorR - 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY + 4}`
+            return { ...m, labelX, labelY, labelAbove, leader }
+          }
+          if (m.key === 'retractSlowdown') {
+            // 縮回減速：緊貼圓圈下方
+            const labelX = m.x
+            const labelY = labelBelowBaseY
+            const elbowY = sensorYBelow + horizonSensorR + 4
+            const leader = `M ${m.x} ${m.y + horizonSensorR + 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY - 4}`
             return { ...m, labelX, labelY, labelAbove: false, leader }
-          })
+          }
+          // 縮回極限：下方並略水平錯開
+          const labelX = labelXs[i]
+          const labelY = labelBelowBaseY + yStep
+          const elbowY = sensorYBelow + horizonSensorR + 5
+          const leader = `M ${m.x} ${m.y + horizonSensorR + 1} L ${m.x} ${elbowY} L ${labelX} ${elbowY} L ${labelX} ${labelY - 6}`
+          return { ...m, labelX, labelY, labelAbove: false, leader }
+        })
         : []
 
       // 擋片在牙叉根部左側；完全縮回時左緣約對齊滑架左側
@@ -842,11 +880,95 @@ export default {
       }
     }
   },
+  created() {
+    bus.on('open-fork-teach-table', this.ShowTeachView)
+  },
+  beforeUnmount() {
+    bus.off('open-fork-teach-table', this.ShowTeachView)
+  },
   methods: {
     formatNum(val) {
       const n = Number(val)
       if (!Number.isFinite(n)) return '--'
       return n.toFixed(2)
+    },
+    ShowTeachView() {
+      this.show_teach_page = true
+      this.$nextTick(() => {
+        if (this.$refs.fork_teach) {
+          this.$refs.fork_teach.reload()
+        }
+      })
+    },
+    TeachDrawerClosingHandle() {
+      if (!ForkTeachStore.getters.IsAnyChanged) return
+      this.$swal.fire({
+        icon: 'warning',
+        text: this.$t('fork_ctl_teach_unsaved_leave'),
+        showConfirmButton: true,
+        showCancelButton: true
+      }).then((user_response) => {
+        if (!user_response.isConfirmed) {
+          this.show_teach_page = true
+        }
+      })
+    },
+    async ForkFloatPinInit() {
+      this.pinInitRunning = true
+      ElMessage.warning(this.$t('fork_ctl_float_initing'))
+      try {
+        const result = await ForkAPI.PIN_INIT()
+        if (!result.confirm) {
+          this.$swal.fire({
+            text: '',
+            title: result.message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        } else {
+          this.$swal.fire({
+            title: this.$t('fork_ctl_float_init_success_title'),
+            text: this.$t('fork_ctl_float_init_success_text'),
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        }
+      } catch (error) {
+        this.$swal.fire({
+          text: error?.message || String(error),
+          title: this.$t('fork_ctl_float_init_failed_title'),
+          icon: 'error',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          customClass: 'my-sweetalert'
+        })
+      } finally {
+        this.pinInitRunning = false
+      }
+    },
+    async ForkFloatPinDriverControlHandler(isLock) {
+      this.pinActionRunning = true
+      try {
+        const result = isLock
+          ? await ForkAPI.PIN_LOCK()
+          : await ForkAPI.PIN_RELEASE()
+        if (!result.confirm) {
+          this.$swal.fire({
+            text: '',
+            title: result.message,
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: 'my-sweetalert'
+          })
+        }
+      } finally {
+        this.pinActionRunning = false
+      }
     },
     sensorDotClass(isOn) {
       return isOn ? 'sensor-dot sensor-on' : 'sensor-dot sensor-off'
@@ -1112,19 +1234,23 @@ export default {
   border: 1px solid #d8dee6;
   min-width: 84px;
 }
+
 .metric.small {
   min-width: 64px;
 }
+
 .metric-label {
   font-size: 12px;
   color: #6b7280;
 }
+
 .metric-value {
   font-variant-numeric: tabular-nums;
   color: #111827;
   font-weight: 800;
   font-size: 15px;
 }
+
 .metric-unit {
   font-size: 12px;
   font-weight: 700;
@@ -1159,6 +1285,7 @@ export default {
   stroke-linejoin: miter;
   stroke-linecap: square;
 }
+
 .schem-body-joint {
   stroke: #1f2226;
   stroke-width: 3;
@@ -1170,6 +1297,7 @@ export default {
   stroke: rgba(226, 232, 240, 0.72);
   stroke-width: 3;
 }
+
 .schem-fork-assembly {
   /* 莫蘭迪藍牙叉／滑架結構 */
   fill: #7a93a8;
@@ -1178,6 +1306,7 @@ export default {
   stroke-linejoin: miter;
   stroke-linecap: square;
 }
+
 .schem-trigger-plate {
   /* 機構根部觸發薄板 — 略深於牙叉莫蘭迪藍 */
   fill: #5a7388;
@@ -1196,12 +1325,15 @@ export default {
   stroke: rgba(31, 41, 55, 0.25);
   stroke-width: 2;
 }
+
 .sensor-on {
   fill: #0ea5e9;
 }
+
 .sensor-off {
   fill: #94a3b8;
 }
+
 .sensor-text {
   fill: #1f2937;
   font-size: 8px;
@@ -1210,12 +1342,15 @@ export default {
   stroke: rgba(255, 255, 255, 0.85);
   stroke-width: 2px;
 }
+
 .sensor-text-left {
   text-anchor: end;
 }
+
 .sensor-text-center {
   text-anchor: middle;
 }
+
 .sensor-leader {
   fill: none;
   stroke: rgba(71, 85, 105, 0.45);
@@ -1231,12 +1366,14 @@ export default {
   stroke-width: 1.35;
   stroke-linecap: square;
 }
+
 .height-dim-arrow {
   fill: #475569;
   stroke: #475569;
   stroke-width: 0.5;
   stroke-linejoin: miter;
 }
+
 .height-dim-label {
   fill: #334155;
   font-size: 11px;
@@ -1244,116 +1381,187 @@ export default {
   text-anchor: start;
   font-variant-numeric: tabular-nums;
 }
+
 .overhang-dim-label {
   text-anchor: middle;
 }
 
 .control-card {
-  background: #f7f8fa;
-  padding: 6px;
+  background: #f3f4f6;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   color: #1f2937;
   width: 100%;
 }
 
-.control-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
-}
-.control-title {
-  font-weight: 900;
-  letter-spacing: 0.2px;
-}
-.control-legend {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  opacity: 0.95;
-}
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  display: inline-block;
-}
-.legend-dot.on {
-  background: #22d3ee;
-}
-.legend-dot.off {
-  background: rgba(148, 163, 184, 0.65);
-}
-.legend-text {
-  font-size: 12px;
-  margin-right: 10px;
+.ctl-zones {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+
+  &.has-float-pin {
+    grid-template-columns: minmax(0, 1fr) 156px;
+    grid-template-areas:
+      "lift float"
+      "telescope telescope";
+  }
+
+  &:not(.has-float-pin) {
+    .ctl-zone--lift,
+    .ctl-zone--telescope {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
-.ctl-group {
+.ctl-zone--lift {
+  grid-area: lift;
+}
+
+.ctl-zone--float {
+  grid-area: float;
+}
+
+.ctl-zone--telescope {
+  grid-area: telescope;
+}
+
+.ctl-zones:not(.has-float-pin) .ctl-zone--lift {
+  grid-area: auto;
+}
+
+.ctl-zones:not(.has-float-pin) .ctl-zone--telescope {
+  grid-area: auto;
+}
+
+.ctl-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  background: #ffffff;
   border: 1px solid #d8dee6;
   border-radius: 6px;
-  padding: 6px;
-  background: #ffffff;
-  width: 100%;
+  padding: 0;
+  overflow: hidden;
 }
-.ctl-head {
+
+.zone-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
 }
-.ctl-name {
-  font-weight: 900;
-  font-size: 14px;
+
+.zone-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #111827;
+  white-space: nowrap;
 }
-.ctl-sub {
-  margin-top: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.chip {
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #f3f5f7;
-  border: 1px solid #d8dee6;
-  font-size: 12px;
+
+.zone-status {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
   font-variant-numeric: tabular-nums;
-  color: #374151;
 }
-.safety {
+
+.zone-bar-actions {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-.safety-label {
-  font-size: 12px;
-  font-weight: 800;
-  opacity: 0.86;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-.btn-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.zone-safety {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
 }
-.btn-col {
+
+.zone-safety__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+:deep(.el-drawer__header) {
+  height: 30px !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.zone-primary {
+  padding: 0 10px;
+}
+
+.zone-secondary {
+  margin-top: auto;
+  padding: 8px 10px;
+  border-top: 1px solid #eef2f7;
+  background: #fafbfc;
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  &--compact {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.sec-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.sec-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sec-bypass {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.btn-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   width: 100%;
 }
-.btn-col > .btn {
+
+.btn-col>.btn {
   width: 100%;
 }
+
 .btn-mid-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 4px;
 }
+
 .btn-row {
   display: flex;
   flex-direction: row;
@@ -1362,7 +1570,8 @@ export default {
   align-items: stretch;
   width: 100%;
 }
-.btn-row > .btn {
+
+.btn-row>.btn {
   flex: 1 1 0;
   min-width: 0;
   padding: 7px 4px;
@@ -1382,66 +1591,96 @@ export default {
   transition: background 120ms ease, transform 120ms ease, border-color 120ms ease;
   user-select: none;
 }
+
 .btn i {
   font-size: 16px;
 }
+
 .btn:hover:not(:disabled) {
   background: #f0f4f8;
   border-color: #94a3b8;
 }
+
 .btn:active:not(:disabled) {
   transform: translateY(1px);
 }
+
+.btn.teach {
+  width: auto;
+  min-height: 30px;
+  padding: 0 10px;
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.btn.teach:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn.teach:active:not(:disabled) {
+  background: #1e40af;
+  border-color: #1e40af;
+}
+
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
 .btn.stop {
   background: #fef2f2;
   border-color: #fca5a5;
   color: #b91c1c;
 }
+
 .btn.stop:hover:not(:disabled) {
   background: #fee2e2;
   border-color: #f87171;
 }
-.btn.subtle {
-  padding: 6px 8px;
-  border-radius: 4px;
-  background: #f8fafc;
+
+.btn.warn {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #b45309;
 }
 
-.group-actions {
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  flex-wrap: wrap;
+.btn.warn:hover:not(:disabled) {
+  background: #fef3c7;
+  border-color: #fbbf24;
 }
-.bypass-toggles {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+
+.btn.subtle {
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 12px;
 }
+
 .bypass-row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
 }
+
 .bypass-label {
   color: #b91c1c;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
 }
+
 .bypass-tag {
   cursor: pointer;
   user-select: none;
 }
+
 .warn {
   color: #b91c1c;
   font-size: 12px;
@@ -1453,6 +1692,7 @@ export default {
   .panel-grid {
     grid-template-columns: 1fr;
   }
+
   .control-card {
     padding: 8px;
   }
@@ -1462,16 +1702,23 @@ export default {
   .panel-grid {
     grid-template-columns: 1fr;
   }
+
   .viz-metrics {
     gap: 4px;
   }
+
   .metric {
     min-width: 72px;
     padding: 3px 6px;
   }
-  .btn-row > .btn {
-    min-width: 56px;
-    padding: 6px 4px;
+
+  .ctl-zones.has-float-pin {
+    grid-template-columns: minmax(0, 1fr) 140px;
+  }
+
+  .btn-row>.btn {
+    min-width: 48px;
+    padding: 6px 3px;
     font-size: 12px;
   }
 }
@@ -1480,16 +1727,27 @@ export default {
   .fork-side-panel {
     min-height: 0;
   }
+
   .viz-surface {
     padding: 4px 6px 6px;
   }
-  .ctl-group {
-    padding: 6px;
+
+  .zone-bar {
+    padding: 6px 8px;
   }
+
+  .zone-primary {
+    padding: 0 8px;
+  }
+
+  .zone-secondary {
+    padding: 6px 8px;
+  }
+
   .btn-col,
   .btn-mid-row,
   .btn-row {
-    gap: 4px;
+    gap: 3px;
   }
 }
 </style>
