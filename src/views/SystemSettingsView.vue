@@ -28,16 +28,40 @@
             <div v-if="selected_tab === '0'" class="tabpage border p-2">
               <el-form :model="settings" label-width="250" label-position="left">
 
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>{{ $t('settings.vehicle_dimensions') }}</b>
+                </div>
+                <el-form-item :label="$t('settings.vehicle_length_retracted')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleLengthRetractedCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_height')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleHeightCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+                <el-form-item :label="$t('settings.vehicle_width')">
+                  <el-input-number size="small" :step="1" :precision="0" :min="1" :max="1000"
+                    @change="HandleParamChanged" v-model="vehicleWidthCm"></el-input-number>
+                  <span class="mx-2">cm</span>
+                </el-form-item>
+
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>PC 帳號</b>
+                </div>
                 <el-form-item label="PC 帳號">
                   <el-input @change="HandleParamChanged" size="small" type="text"
                     v-model="settings.PcInformation.userName"></el-input>
                 </el-form-item>
-
                 <el-form-item label="PC 密碼">
                   <el-input @change="HandleParamChanged" size="small" type="password"
                     v-model="settings.PcInformation.userPassword"></el-input>
                 </el-form-item>
 
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>走行與提示</b>
+                </div>
                 <el-form-item label="蜂鳴器">
                   <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
@@ -45,10 +69,18 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
                 </el-form-item>
+
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>地圖</b>
+                </div>
                 <el-form-item label="離線地圖圖資檔案路徑">
                   <el-input @change="HandleParamChanged" size="small"
                     v-model="settings.MapParam.LocalMapFileName"></el-input>
                 </el-form-item>
+
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>貨物帳籍</b>
+                </div>
                 <el-form-item v-if="!IsInspectionAGV" label="初始化時有帳無料自動清帳">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.Auto_Cleaer_CST_ID_Data_When_Has_Data_But_NO_Cargo"></el-switch>
@@ -57,35 +89,37 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.Auto_Read_CST_ID_When_No_Data_But_Has_Cargo"></el-switch>
                 </el-form-item>
-                <el-form-item label="Action任務Timeout(Sec)">
-                  <el-input-number @change="HandleParamChanged" size="small"
-                    v-model="settings.ActionTimeout"></el-input-number>
-                </el-form-item>
-
                 <el-form-item label="貨物在席觸發時生成 UNID">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.CargoExistSensorParams.GenerateCarrierIdWhenSensorTriggered"></el-switch>
                 </el-form-item>
 
-                <div class="w-100 text-start text-dark border-bottom">
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>任務</b>
+                </div>
+                <el-form-item label="Action任務Timeout(Sec)">
+                  <el-input-number @change="HandleParamChanged" size="small"
+                    v-model="settings.ActionTimeout"></el-input-number>
+                </el-form-item>
+
+                <div class="text-start w-100 border-bottom mb-2">
                   <b>自動門控制</b>
                 </div>
-
                 <el-form-item label="自動門開啟狀態下持續變化開關狀態">
                   <el-switch @change="HandleParamChanged" v-model="settings.AutoDoorSignalToggleWhenOpen"></el-switch>
                 </el-form-item>
-
                 <el-form-item label="自動門 Toggle 間隔時間(ms)">
                   <el-input-number @change="HandleParamChanged" size="small"
                     v-model="settings.AutoDoorSingalToggleIntervalMs"></el-input-number>
                 </el-form-item>
 
+                <div class="text-start w-100 border-bottom mb-2">
+                  <b>上線</b>
+                </div>
                 <el-form-item label="允許在虛擬點上線">
                   <el-switch @change="HandleParamChanged" size="small"
                     v-model="settings.IsOnlineAtVirtualPtAllow"></el-switch>
                 </el-form-item>
-
-
 
               </el-form>
             </div>
@@ -890,6 +924,38 @@ export default {
     },
     filteredMenuItems() {
       return this.menuItems.filter(item => !item.show || item.show());
+    },
+    vehicleLengthRetractedCm: {
+      get() {
+        return this.settings?.VehielLength ?? this.settings?.VehicleLength ?? this.settings?.ForkAGV?.VehielLength ?? this.settings?.ForkAGV?.VehicleLength ?? 145
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehielLength = val
+        if (Object.prototype.hasOwnProperty.call(this.settings, 'VehicleLength')) this.settings.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleLength')) this.settings.ForkAGV.VehicleLength = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehielLength')) this.settings.ForkAGV.VehielLength = val
+      }
+    },
+    vehicleHeightCm: {
+      get() {
+        return this.settings?.VehicleHeight ?? this.settings?.ForkAGV?.VehicleHeight ?? 200
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleHeight = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleHeight')) this.settings.ForkAGV.VehicleHeight = val
+      }
+    },
+    vehicleWidthCm: {
+      get() {
+        return this.settings?.VehicleWidth ?? this.settings?.ForkAGV?.VehicleWidth ?? 90
+      },
+      set(val) {
+        if (!this.settings) return
+        this.settings.VehicleWidth = val
+        if (this.settings.ForkAGV && Object.prototype.hasOwnProperty.call(this.settings.ForkAGV, 'VehicleWidth')) this.settings.ForkAGV.VehicleWidth = val
+      }
     }
   },
   mounted() {

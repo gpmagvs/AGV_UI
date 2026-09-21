@@ -12,6 +12,11 @@
           <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
         </div>
       </b-tab>
+      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down_viz') : ''">
+        <div class="mt-1 p-1 fork-side-tab-pane">
+          <ForkSideViewVisualization :enabled="operation_enabled_return"></ForkSideViewVisualization>
+        </div>
+      </b-tab>
       <b-tab title="Input">
         <div class="table-container-div mt-1 p-1">
           <IOTable digital_type="input" :table_data="DIOTableData.Inputs"></IOTable>
@@ -44,6 +49,7 @@
 <script>
 import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
+import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 import IOTable from './IOTable.vue';
 import param from '@/gpm_param';
 import clsDIOTable from '@/ViewModels/clsDIOTable';
@@ -57,18 +63,39 @@ import { ElNotification } from 'element-plus'
 import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
 
 const TAB_STORAGE_KEY = 'agv_operator_tab'
+const TAB_STORAGE_SCHEMA_KEY = 'agv_operator_tab_schema'
+const TAB_STORAGE_SCHEMA_VERSION = 2
 
 function loadStoredTab(defaultVal = 0) {
   const raw = localStorage.getItem(TAB_STORAGE_KEY)
-  if (raw == null) return defaultVal
-  const n = parseInt(raw, 10)
-  return Number.isNaN(n) || n < 0 ? defaultVal : n
+  const schemaRaw = localStorage.getItem(TAB_STORAGE_SCHEMA_KEY)
+  const schema = parseInt(schemaRaw ?? '', 10)
+  if (raw == null) {
+    localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
+    return defaultVal
+  }
+  let n = parseInt(raw, 10)
+  n = Number.isNaN(n) || n < 0 ? defaultVal : n
+
+  // Schema v2 inserted a new fork-control visualization tab at index 2
+  if (schema !== TAB_STORAGE_SCHEMA_VERSION) {
+    if (n >= 2) n = n + 1
+    localStorage.setItem(TAB_STORAGE_KEY, String(n))
+    localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
+  }
+  return n
 }
 
 export default {
 
   components: {
-    AgvControl, ZAxisControl, IOTable, ManualSettings, SensorAndEquipmentControl, SaftyPLCIOView
+    AgvControl,
+    ZAxisControl,
+    ForkSideViewVisualization,
+    IOTable,
+    ManualSettings,
+    SensorAndEquipmentControl,
+    SaftyPLCIOView
   },
   data() {
     return {
@@ -88,19 +115,19 @@ export default {
       this.applyTabSideEffects(1);
     });
     bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.setCurrentTab(4);
-      this.applyTabSideEffects(4);
+      this.setCurrentTab(5);
+      this.applyTabSideEffects(5);
     });
     bus.on('show-move-control', () => {
       this.setCurrentTab(0);
       this.applyTabSideEffects(0);
     });
     bus.on('show-manual-operation', () => {
-      this.setCurrentTab(4);
-      this.applyTabSideEffects(4);
+      this.setCurrentTab(5);
+      this.applyTabSideEffects(5);
     });
     bus.on('show-io-table', (ioType) => {
-      const tabIndex = ioType === 'output' ? 3 : 2;
+      const tabIndex = ioType === 'output' ? 4 : 3;
       this.setCurrentTab(tabIndex);
       this.applyTabSideEffects(tabIndex);
     });
@@ -117,6 +144,7 @@ export default {
     setCurrentTab(tabIndex) {
       this.current_tab = tabIndex
       localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
+      localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
     },
     ensureValidTab() {
       if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
@@ -187,10 +215,13 @@ export default {
     }
   },
   computed: {
-    /** Sensor tab 使用 v-if，無權限時不佔 index；其餘含 v-show 仍佔 index (0~4) */
+    /** Sensor / Safety PLC tab 使用 v-if，未顯示時不佔 index；其餘含 v-show 仍佔 index */
     maxVisibleTabIndex() {
-      // 0 AGV / 1 Z / 2 Input / 3 Output / 4 Manual / (5 Sensor optional) / last = Safty PLC
-      return (this.operation_enabled_return && this.isAMCAGV) ? 6 : 5
+      // 0 AGV / 1 Fork / 2 Fork+Viz / 3 Input / 4 Output / 5 Manual / (6 Sensor optional) / (7 Safety PLC optional)
+      let max = 5
+      if (this.operation_enabled_return && this.isAMCAGV) max += 1
+      if (this.isShowSaftyPLCIO) max += 1
+      return max
     },
     isGodMode() {
       return UserStore.getters.IsGodUser;
@@ -246,6 +277,15 @@ export default {
   }
 
   .agv-control-tab-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .fork-side-tab-pane {
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;

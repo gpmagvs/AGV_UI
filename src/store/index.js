@@ -902,6 +902,22 @@ export const DIOStore = createStore({
       const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Home_Pose");
       return input?.State;
     },
+    /** 伸出減速 sensor（A 接點，ON=觸發） */
+    ForkHorizonExtendSlowdownSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Extended_Slowdown_Sensor");
+      return !!input?.State;
+    },
+    /** 縮回減速 sensor（A 接點，ON=觸發） */
+    ForkHorizonRetractSlowdownSensorState: state => {
+      if (!state.DIOStates?.Inputs) {
+        return false;
+      }
+      const input = state.DIOStates.Inputs.find(reg => reg.Name === "Fork_Retract_Slowdown_Sensor");
+      return !!input?.State;
+    },
     IsBatExchangeHandshaking: state => {
       if (!state.DIOStates?.Outputs) {
         return false;

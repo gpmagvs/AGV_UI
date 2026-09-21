@@ -160,7 +160,7 @@
           </div>
         </transition>
         <!--主要內容 TabControl-->
-        <div class="w-100 d-flex flex-column">
+        <div class="d-flex flex-column main-column" style="flex: 1 1 0; min-width: 0">
           <MainContent class="flex-fill" :VMSData="VMSData"></MainContent>
           <div class="border rounded bg-light py-1 px-2 fixed-bottom" style="height:38px;">
             <QuickActions></QuickActions>
@@ -870,6 +870,11 @@ export default {
 .main-content {
   padding-top: 38px;
   height: 100%;
+  width: 100%;
+}
+
+.main-content > .d-flex.flex-row {
+  width: 100%;
 }
 
 .host-message-display-home-view {
@@ -1033,6 +1038,8 @@ export default {
 
 .side {
   width: var(--side-menu-width);
+  flex: 0 0 var(--side-menu-width);
+  flex-shrink: 0;
   background: rgb(175 175 175 / 6%);
   margin-top: 3px;
 
