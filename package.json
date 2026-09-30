@@ -36,6 +36,7 @@
     "three-css2drender": "^1.0.0",
     "three-obj-mtl-loader": "^1.0.3",
     "three-orbit-controls": "^82.1.0",
+    "uplot": "^1.6.32",
     "vant": "^4.0.11",
     "video.js": "^8.22.0",
     "vue": "^3.2.13",

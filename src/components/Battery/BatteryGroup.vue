@@ -11,7 +11,7 @@
       </b-progress>
       <div class="d-flex px-2" style="color:grey">
         [{{ i }}]
-        {{ (GetBatteryStatus(i).Voltage / 1000.0).toFixed(2) }}
+        {{ ((GetBatteryStatus(i).voltage || GetBatteryStatus(i).Voltage) / 1000.0).toFixed(2) }}
         <span class="px-1" style="font-size:smaller;">V</span>
       </div>
       <div class="d-flex px-2" v-if="GetBatteryStatus(i).IsCharging">
@@ -27,13 +27,15 @@
       </template>
       <MiniAGVBatteryViewer style="position:absolute;top:-50px;z-index: 1;"></MiniAGVBatteryViewer>
     </el-drawer>
-    <el-drawer v-model="show_battery_info" direction="rtl" size="660px">
+    <el-drawer v-model="show_battery_info" direction="rtl" size="760px">
       <template #header>
         <div class="w-100 text-start">
           <h3>電池資訊</h3>
         </div>
       </template>
-      <Battery_Detail ref="battery_detail" style="position: absolute; width:100%;top:80px"></Battery_Detail>
+      <div class="battery-info-host">
+        <Battery_Detail ref="battery_detail"></Battery_Detail>
+      </div>
     </el-drawer>
   </div>
 </template>
@@ -139,6 +141,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.battery-info-host {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  bottom: 8px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .battrey-group {
   height: 22px;
   margin-top: 2px;
