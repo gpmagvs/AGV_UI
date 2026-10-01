@@ -135,6 +135,12 @@ export default {
       showNoPointSelectedMenu: false,
       showAGVMenu: false,
       reloadMapRequesting: false,
+      mapRendered: false,
+      mapLoadingInProgress: false,
+      mapLoadRetryTimer: null,
+      agvUpdateIntervalId: null,
+      mapLoadMaxRetry: 15,
+      mapLoadRetryIntervalMs: 2000,
       path_plan_tags: [],
       contextMenu: {},
       agv_color_set: [
@@ -187,10 +193,16 @@ export default {
   },
   mounted() {
     this.loading = true;
+    this._mapLoadCancelled = false;
     console.info('MapShow mounted');
-    setTimeout(() => {
-      this.FetchMap();
-    }, 2000);
+    this.ensureMapLoaded();
+    bus.on('hub-connected', this.handleHubConnected);
+  },
+  beforeUnmount() {
+    this._mapLoadCancelled = true;
+    bus.off('hub-connected', this.handleHubConnected);
+    this.clearMapLoadRetryTimer();
+    this.clearAgvUpdateInterval();
   },
   computed: {
     isViewing() {
@@ -243,61 +255,149 @@ export default {
     Reload() {
       //TODO RELOAD MAP
     },
+    isMapDataValid(map) {
+      return map != undefined && map.Points != undefined;
+    },
+    clearMapLoadRetryTimer() {
+      if (this.mapLoadRetryTimer) {
+        clearTimeout(this.mapLoadRetryTimer);
+        this.mapLoadRetryTimer = null;
+      }
+      if (this._mapLoadRetryResolve) {
+        const resolve = this._mapLoadRetryResolve;
+        this._mapLoadRetryResolve = null;
+        resolve();
+      }
+    },
+    clearAgvUpdateInterval() {
+      if (this.agvUpdateIntervalId) {
+        clearInterval(this.agvUpdateIntervalId);
+        this.agvUpdateIntervalId = null;
+      }
+    },
+    handleHubConnected() {
+      if (!this.mapRendered) {
+        this.ensureMapLoaded();
+      }
+    },
+    async ensureMapLoaded() {
+      if (this.mapRendered || this._mapLoadCancelled) {
+        return true;
+      }
+      if (this.mapLoadingInProgress) {
+        return false;
+      }
+
+      this.mapLoadingInProgress = true;
+      this.loading = true;
+      this.clearMapLoadRetryTimer();
+
+      let attempt = 0;
+      const maxRetry = this.mapLoadMaxRetry;
+
+      while (attempt < maxRetry && !this.mapRendered && !this._mapLoadCancelled) {
+        attempt += 1;
+        try {
+          const mapFromApi = await MapAPI.GetMapFromServer();
+          if (this._mapLoadCancelled) {
+            break;
+          }
+          const map = this.isMapDataValid(mapFromApi)
+            ? mapFromApi
+            : (this.isMapDataValid(map_store.state.MapData) ? map_store.state.MapData : undefined);
+
+          if (this.isMapDataValid(map)) {
+            this.applyMapData(map, { showSuccessNotify: attempt === 1 });
+            this.mapLoadingInProgress = false;
+            this.loading = false;
+            return true;
+          }
+        } catch (error) {
+          console.warn(`[MapShow] 圖資載入失敗 (attempt ${attempt}/${maxRetry})`, error);
+        }
+
+        if (attempt < maxRetry && !this.mapRendered && !this._mapLoadCancelled) {
+          await new Promise((resolve) => {
+            this._mapLoadRetryResolve = resolve;
+            this.mapLoadRetryTimer = setTimeout(() => {
+              this.mapLoadRetryTimer = null;
+              this._mapLoadRetryResolve = null;
+              resolve();
+            }, this.mapLoadRetryIntervalMs);
+          });
+        }
+      }
+
+      this.mapLoadingInProgress = false;
+      this.loading = false;
+      if (!this.mapRendered && !this._mapLoadCancelled) {
+        Notifier.Danger('圖資取得失敗(後端伺服器異常)', 'bottom', 3000);
+      }
+      return this.mapRendered;
+    },
+    applyMapData(map, { showSuccessNotify = true } = {}) {
+      if (!this.isMapDataValid(map)) {
+        return false;
+      }
+
+      if (showSuccessNotify) {
+        Notifier.Success('Success Fetch Map Data From Server.', 'bottom', 2000);
+      }
+
+      this.map_data = map;
+      this.map_name = map.Name;
+
+      this.stations = [];
+      Object.keys(map.Points).forEach(index => {
+        var _tagID = map.Points[index].TagNumber;
+        var _x = map.Points[index].X;
+        var _y = map.Points[index].Y;
+        var _IsVirtual = map.Points[index].IsVirtualPoint;
+        var _name = map.Points[index].Graph.Display;
+        if (_name == "" | _name == undefined) {
+          _name = map.Points[index].Name;
+        }
+        var _is_eq_station = map.Points[index].IsEquipment;
+        var _is_charge_station = map.Points[index].IsCharge;
+        var _feature = new Feature({
+          geometry: new Point([_x, _y]),
+          name: index,
+        });
+        _feature.setId(_tagID);
+        _feature.set('data', map.Points[index]);
+        _feature.set('name', _name)
+        _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
+        _feature.set('isVirtual', _IsVirtual)
+
+        this.stations.push(
+          {
+            index: parseInt(index),
+            tag: _tagID,
+            feature: _feature
+          }
+        );
+      })
+
+      this.MapInitializeRender();
+      this.CreateAGVFeature();
+      this.clearAgvUpdateInterval();
+      this.agvUpdateIntervalId = setInterval(() => {
+        if (this.isViewing)
+          this.UpdateAGVState();
+      }, 100);
+      this.mapRendered = true;
+      return true;
+    },
     FetchMap() {
       var map = map_store.state.MapData;
       this.loading = false;
-      if (map == undefined || map.Points == undefined) {
+      if (!this.isMapDataValid(map)) {
         Notifier.Danger('圖資取得失敗(後端伺服器異常)', 'bottom', 3000);
+        this.mapRendered = false;
+        return;
       }
-      else {
-        Notifier.Success('Success Fetch Map Data From Server.', 'bottom', 2000);
-
-        this.map_data = map;
-        this.map_name = map.Name;
-
-        this.stations = [];
-        Object.keys(map.Points).forEach(index => {
-          var Graph = map.Points[index].Graph
-          var _tagID = map.Points[index].TagNumber;
-          var _x = map.Points[index].X;
-          var _y = map.Points[index].Y;
-          var _IsVirtual = map.Points[index].IsVirtualPoint;
-          var _name = map.Points[index].Graph.Display;
-          if (_name == "" | _name == undefined) {
-            _name = map.Points[index].Name;
-          }
-          var _station_type = map.Points[index].StationType;
-          var _is_eq_station = map.Points[index].IsEquipment;
-          var _is_charge_station = map.Points[index].IsCharge;
-          var _feature = new Feature({
-            geometry: new Point([_x, _y]),
-            name: index,
-          });
-          _feature.setId(_tagID);
-          _feature.set('data', map.Points[index]);
-          _feature.set('name', _name)
-          _feature.set('station_type', _is_eq_station ? 'eq' : (_is_charge_station ? 'charge' : 'normal'))
-          _feature.set('isVirtual', _IsVirtual)
-
-          this.stations.push(
-            {
-              index: parseInt(index),
-              tag: _tagID,
-              feature: _feature
-            }
-
-          );
-        })
-
-        this.MapInitializeRender();
-        this.CreateAGVFeature();
-
-        setInterval(() => {
-          if (this.isViewing)
-            this.UpdateAGVState();
-        }, 100)
-
-      }
+      this.mapRendered = false;
+      this.applyMapData(map);
     },
     CreateAGVFeature() {
       var _agv_state = AGVStatusStore.getters.MapUseState;

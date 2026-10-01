@@ -7,6 +7,10 @@ const MapAPI = {
       .get('api/map/GetMapFromServer')
       .then((ret) => {
         var _data = ret.data;
+        if (!_data || _data.Points == undefined) {
+          console.warn('download map data invalid, skip store commit');
+          return undefined
+        }
         map_store.commit('SetMapData', _data)
         console.info('download map data from server ..');
         return _data

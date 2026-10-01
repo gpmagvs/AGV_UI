@@ -1032,6 +1032,10 @@ export var map_store = createStore({
   },
   mutations: {
     SetMapData(state, data) {
+      if (!data || data.Points == undefined) {
+        console.warn('SetMapData skipped: invalid map data');
+        return;
+      }
       var keys = Object.keys(data.Points);
       keys.forEach(key => {
         var point = data.Points[key];

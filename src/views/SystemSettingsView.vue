@@ -556,6 +556,9 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.ForkStartActionEarlyWhenVALIDOuputON"></el-switch>
                 </el-form-item>
+                <el-form-item label="浮動牙叉串聯 STO 迴路">
+                  <el-switch @change="HandleParamChanged" v-model="settings.ForkAGV.IsPinPowerOffBySTO"></el-switch>
+                </el-form-item>
                 <el-form-item label="浮動牙叉PIN與伸縮牙叉需互鎖">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.ForkAGV.IsFloatingPinLockHorizonForkArm"></el-switch>

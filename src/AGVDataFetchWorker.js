@@ -265,14 +265,38 @@ function StartHubConnection() {
     }
 }
 
-export function Start() {
+export async function Start() {
     StartHubConnection();
-    MapAPI.GetMapFromServer();
+    ensureMapDataLoaded();
 
     // 監聽頁面可見性變化
     if (typeof document !== 'undefined') {
         document.addEventListener('visibilitychange', handleVisibilityChange);
     }
+}
+
+async function ensureMapDataLoaded() {
+    const maxRetry = 15;
+    const retryIntervalMs = 2000;
+
+    for (let attempt = 1; attempt <= maxRetry; attempt++) {
+        try {
+            const map = await MapAPI.GetMapFromServer();
+            if (map && map.Points != undefined) {
+                console.info(`[AGVDataFetchWorker] 圖資載入成功 (attempt ${attempt})`);
+                return map;
+            }
+        } catch (error) {
+            console.warn(`[AGVDataFetchWorker] 圖資載入失敗 (attempt ${attempt}/${maxRetry})`, error);
+        }
+
+        if (attempt < maxRetry) {
+            await new Promise((resolve) => setTimeout(resolve, retryIntervalMs));
+        }
+    }
+
+    console.error('[AGVDataFetchWorker] 圖資載入重試耗盡，後端可能尚未就緒');
+    return undefined;
 }
 
 
