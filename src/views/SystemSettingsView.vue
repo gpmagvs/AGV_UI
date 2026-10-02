@@ -980,6 +980,7 @@ export default {
             if (SystemSettingsStore.state.IsSettingsLoaded) {
               this.settings = SystemSettingsStore.state.Settings;
               this.MergeMissingHorizonArmConfigsDefaults();
+              this.MergeMissingForkAgvDefaults();
               if (tabIndex)
                 this.selected_tab = tabIndex;
               this.loading = false;
@@ -1256,6 +1257,8 @@ export default {
             await SystemSettingsStore.dispatch('downloadSettings');
             if (SystemSettingsStore.state.IsSettingsLoaded) {
               this.settings = SystemSettingsStore.state.Settings;
+              this.MergeMissingHorizonArmConfigsDefaults();
+              this.MergeMissingForkAgvDefaults();
             }
           }, 500);
           this.$swal.fire({
@@ -1282,6 +1285,17 @@ export default {
         return;
       }
       fork.HorizonArmConfigs = { ...defaults, ...fork.HorizonArmConfigs };
+    },
+    MergeMissingForkAgvDefaults() {
+      const defaults = new SystemSettings().ForkAGV;
+      const fork = this.settings?.ForkAGV;
+      if (!fork || !defaults) {
+        return;
+      }
+      // Ensure STO toggle exists for Vue2 reactivity / save round-trip when backend JSON omits it
+      if (!Object.prototype.hasOwnProperty.call(fork, 'IsPinPowerOffBySTO')) {
+        this.$set(fork, 'IsPinPowerOffBySTO', defaults.IsPinPowerOffBySTO);
+      }
     },
     showRestartingSwalAlert() {
       this.$swal.fire(
