@@ -299,12 +299,14 @@
                     v-model="settings.BatteryModule.WaitChargeStartDelayTimeWhenReachChargeTaskFinish"></el-input-number>
                 </el-form-item>
                 <el-form-item label="斷開充電回路電壓閥值(mV)">
-                  <el-input-number @change="HandleParamChanged" size="small"
+                  <el-input-number disabled @change="HandleParamChanged" size="small"
                     v-model="settings.BatteryModule.CutOffChargeRelayVoltageThreshodlval"></el-input-number>
+                  <span class="mx-2 text-danger">已改成電池存在異常碼-32(電池過壓) 時斷開迴路。</span>
                 </el-form-item>
                 <el-form-item label="僅電量低於閥值才開啟充電迴路">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.BatteryModule.ChargeWhenLevelLowerThanThreshold"></el-switch>
+                  <span class="mx-2 text-danger">實驗性功能，一般情況下請勿開啟。</span>
                 </el-form-item>
                 <el-form-item label="充電迴路開啟閥值">
                   <el-input-number size="small" :step="1" :precision="0" :min="1" :max="100"

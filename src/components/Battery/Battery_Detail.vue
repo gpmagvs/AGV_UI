@@ -148,8 +148,10 @@
             </el-form>
             <div class="query-actions">
               <div class="query-submit">
-                <b-button @click="HandleQueryButtonClick" variant="primary" :disabled="historyQuerying">{{ historyQuerying ? '查詢中' : '查詢' }}</b-button>
-                <el-switch v-model="query_options.downsample" inline-prompt active-text="降取樣" inactive-text="原始"></el-switch>
+                <b-button @click="HandleQueryButtonClick" variant="primary" :disabled="historyQuerying">{{
+                  historyQuerying ? '查詢中' : '查詢' }}</b-button>
+                <el-switch v-model="query_options.downsample" inline-prompt active-text="降取樣"
+                  inactive-text="原始"></el-switch>
               </div>
               <div class="legend">
                 <span><i class="dot dot-idle"></i>待機</span>
@@ -165,6 +167,49 @@
           </div>
         </div>
       </b-tab>
+
+      <b-tab v-if="isAdmin" title="假電池設定">
+        <div class="panel">
+          <div class="query-card">
+            <div class="fake-hint">啟用後會覆寫實際電池回報的電量與電壓，僅供測試使用。</div>
+            <el-form label-position="left" label-width="90px">
+              <el-form-item label="啟用假資料">
+                <el-switch v-model="fake_battery.enable" inline-prompt active-text="啟用" inactive-text="關閉"></el-switch>
+              </el-form-item>
+              <el-form-item label="電量 (%)">
+                <el-input-number v-model="fake_battery.level" :min="0" :max="100" :step="1" controls-position="right"
+                  class="query-control" :disabled="!fake_battery.enable"></el-input-number>
+              </el-form-item>
+              <el-form-item label="電壓 (mV)">
+                <el-input-number v-model="fake_battery.voltage_mv" :min="0" :max="30000" :step="1" :precision="0"
+                  controls-position="right" class="query-control" :disabled="!fake_battery.enable"></el-input-number>
+              </el-form-item>
+              <el-form-item label="異常碼">
+                <div class="fake-error-row">
+                  <el-input-number v-model="fake_battery.errorCode" :min="0" :max="255" :step="1" :precision="0"
+                    controls-position="right" class="fake-error-input" :disabled="!fake_battery.enable"></el-input-number>
+                  <el-select :model-value="matchedFakeErrorPreset" clearable placeholder="常用異常碼"
+                    class="fake-error-preset" :disabled="!fake_battery.enable" @change="ApplyFakeErrorPreset">
+                    <el-option :value="0" label="0 — 無異常"></el-option>
+                    <el-option v-for="flag in batteryErrorFlags" :key="flag.value" :value="flag.value"
+                      :label="`${flag.value} — ${flag.label}`"></el-option>
+                  </el-select>
+                </div>
+              </el-form-item>
+            </el-form>
+            <div class="query-actions">
+              <div class="query-submit">
+                <b-button @click="HandleSetupFakeBattery" variant="primary" :disabled="fakeBatterySubmitting">
+                  {{ fakeBatterySubmitting ? '套用中' : '套用設定' }}
+                </b-button>
+              </div>
+              <div class="fake-status" :class="fake_battery.enable ? 'is-on' : 'is-off'">
+                {{ fake_battery.enable ? '假資料已啟用（送出後生效）' : '假資料已關閉（送出後恢復真實值）' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -172,14 +217,26 @@
 <script>
 import { ROS_STORE } from '@/store/ros_store';
 import { BatteryAPI } from '@/api/VMSAPI.js'
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, UserStore } from '@/store'
 import moment from 'moment'
 import bus from '@/event-bus';
 import BatteryHistoryChart from './BatteryHistoryChart.vue'
+import { ElMessage } from 'element-plus'
 
 const CHARGE_CURRENT_THRESHOLD_MA = 650
 const CELL_BODY_TOP = 36
 const CELL_BODY_HEIGHT = 68
+
+const BATTERY_ERROR_FLAGS = [
+  { value: 1, label: '在席異常' },
+  { value: 2, label: '充電過電流' },
+  { value: 4, label: '放電過電流' },
+  { value: 8, label: '欠壓' },
+  { value: 16, label: '低溫' },
+  { value: 32, label: '過壓' },
+  { value: 64, label: '短路' },
+  { value: 128, label: '過溫' },
+]
 
 export default {
   components: { BatteryHistoryChart },
@@ -190,6 +247,14 @@ export default {
       batteryPollTimer: null,
       onChargeCircuitChanged: null,
       historyQuerying: false,
+      fakeBatterySubmitting: false,
+      batteryErrorFlags: BATTERY_ERROR_FLAGS,
+      fake_battery: {
+        enable: false,
+        level: 100,
+        voltage_mv: 24000,
+        errorCode: 0
+      },
       query_options: {
         id: 0,
         item: 'Level',
@@ -224,9 +289,25 @@ export default {
     },
     batteryCount() {
       return AGVStatusStore.getters.BatteryCount
+    },
+    matchedFakeErrorPreset() {
+      const code = Number(this.fake_battery.errorCode)
+      if (code === 0)
+        return 0
+      return this.batteryErrorFlags.some(flag => flag.value === code) ? code : undefined
+    },
+    isAdmin() {
+      return UserStore.getters.IsGodUser;
     }
   },
   methods: {
+    ApplyFakeErrorPreset(value) {
+      if (value === undefined || value === null || value === '') {
+        this.fake_battery.errorCode = 0
+        return
+      }
+      this.fake_battery.errorCode = Number(value)
+    },
     clipId(bat) {
       return `bat-clip-${bat.batteryID}`
     },
@@ -340,6 +421,33 @@ export default {
     async UpdateChargeCircuitState() {
       this.charge_circuit_state = await BatteryAPI.GetChargeCicuitState()
     },
+    async HandleSetupFakeBattery() {
+      if (this.fakeBatterySubmitting)
+        return
+      const level = Math.min(100, Math.max(0, Math.round(Number(this.fake_battery.level) || 0)))
+      const voltageMv = Math.min(65535, Math.max(0, Math.round(Number(this.fake_battery.voltage_mv) || 0)))
+      const errorCode = Math.min(255, Math.max(0, Math.round(Number(this.fake_battery.errorCode) || 0)))
+      this.fakeBatterySubmitting = true
+      try {
+        await BatteryAPI.SetupFakeBattery({
+          enable: !!this.fake_battery.enable,
+          level,
+          voltage: voltageMv,
+          errorCode
+        })
+        this.fake_battery.level = level
+        this.fake_battery.voltage_mv = voltageMv
+        this.fake_battery.errorCode = errorCode
+        ElMessage.success('假電池設定已套用')
+      }
+      catch (error) {
+        console.error(error)
+        ElMessage.error('假電池設定失敗')
+      }
+      finally {
+        this.fakeBatterySubmitting = false
+      }
+    },
     captureBatterySnapshot() {
       var battery = this.battery_info
       try {
@@ -402,6 +510,46 @@ export default {
   background: #ffffff;
   border: 1px solid #d8dee6;
   border-radius: 8px;
+}
+
+.fake-hint {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+}
+
+.fake-error-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.fake-error-input {
+  width: 140px;
+  flex: 0 0 auto;
+}
+
+.fake-error-preset {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fake-status {
+  font-size: 12px;
+  font-weight: 700;
+
+  &.is-on {
+    color: #b45309;
+  }
+
+  &.is-off {
+    color: #64748b;
+  }
 }
 
 .circuit-bar {

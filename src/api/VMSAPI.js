@@ -705,6 +705,12 @@ export const BatteryAPI = {
   async ChargeCicuitSwitch(enabled = false) {
     var ret = await axios_entity.get(`api/Battery/RechargeSwitch?enabled=${enabled}`)
     return ret.data;
+  },
+
+  /** 設定假電池資料（覆寫電量與電壓） */
+  async SetupFakeBattery(fakeBatteryData) {
+    var ret = await axios_entity.post(`api/Battery/SetupFakeBattery`, fakeBatteryData)
+    return ret.data;
   }
 }
 
