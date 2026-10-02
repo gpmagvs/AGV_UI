@@ -123,6 +123,7 @@ class SystemSettings {
             IsPinMounted: true,
             IsForkIsExtendable: true,
             IsPinEnable: true,
+            IsPinPowerOffBySTO: false,
             IsHorizonExtendDisabledTemptary: true,
             NoWaitForkArmFinishAndMoveOutInWorkStation: true,
             NoWaitParkingFinishAndForkGoHomeWhenBackToSecondary: true,
