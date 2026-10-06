@@ -281,6 +281,31 @@ export const MOVEControl = {
     return ret
   },
 
+  /**取得四輪手動控制模式狀態 */
+  async GetWheelsManualControlState() {
+    var ret = await axios_entity.get('api/ManualOperator/WheelsManualControlState')
+    return ret.data
+  },
+
+  /**設定四輪手動控制模式 */
+  async WheelsOptManualModeSwitch(isManualMode) {
+    var ret = await axios_entity.get(
+      `api/ManualOperator/WheelsOptManualModeSwitch?isManualMode=${isManualMode}`,
+    )
+    return ret.data
+  },
+
+  /**
+   * 一次下發四輪角度設定
+   * @param {{ fl: number, fr: number, rl: number, rr: number }} desireWheelsAngles
+   */
+  async AdjustWheelsAngles(desireWheelsAngles) {
+    var ret = await axios_entity.post(
+      'api/ManualOperator/AdjustWheelsAngles',
+      desireWheelsAngles,
+    )
+    return ret.data
+  },
 }
 
 export const MODESwitcher = {

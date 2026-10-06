@@ -30,6 +30,11 @@ export var ROS_STORE = createStore({
                     }
                 ]
             }
+        },
+        /** DesireMotorValue：ang/rpm 順序為 [FL, FR, RL, RR] */
+        currentMotorValue: {
+            rpm: [0, 0, 0, 0],
+            ang: [0, 0, 0, 0],
         }
     },
     getters: {
@@ -55,6 +60,18 @@ export var ROS_STORE = createStore({
         },
         Pin_State: state => {
             return state.module_info.PinsState.PinState[0]
+        },
+        CurrentWheelAngles: state => {
+            const ang = state.currentMotorValue?.ang ?? []
+            return {
+                fl: Number(ang[0] ?? 0),
+                fr: Number(ang[1] ?? 0),
+                rl: Number(ang[2] ?? 0),
+                rr: Number(ang[3] ?? 0),
+            }
+        },
+        CurrentMotorValue: state => {
+            return state.currentMotorValue
         }
     },
     mutations: {
@@ -64,6 +81,12 @@ export var ROS_STORE = createStore({
         },
         update_module_info(state, module_info) {
             state.module_info = module_info
+        },
+        update_current_motor_value(state, motorValue) {
+            state.currentMotorValue = {
+                rpm: Array.isArray(motorValue?.rpm) ? motorValue.rpm : [0, 0, 0, 0],
+                ang: Array.isArray(motorValue?.ang) ? motorValue.ang : [0, 0, 0, 0],
+            }
         }
     },
     actions: {

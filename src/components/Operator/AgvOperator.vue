@@ -43,6 +43,11 @@
           <SaftyPLCIOView></SaftyPLCIOView>
         </div>
       </b-tab>
+      <b-tab v-if="isGodMode && isUniversalAGV" title="四輪姿態調整">
+        <div class="mt-1 p-1">
+          <WheelsAngleAdjust></WheelsAngleAdjust>
+        </div>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -51,17 +56,13 @@ import AgvControl from './AgvcControl.vue'
 import ZAxisControl from './ZAxisControl.vue'
 import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 import IOTable from './IOTable.vue';
-import param from '@/gpm_param';
-import clsDIOTable from '@/ViewModels/clsDIOTable';
 import ManualSettings from './ManualSettings.vue';
 import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';
 import bus from '@/event-bus.js'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserStore, DIOStore, AGVStatusStore, SystemSettingsStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
-import { ElNotification } from 'element-plus'
 import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
-
+import WheelsAngleAdjust from './WheelsAngleAdjust.vue'
 const TAB_STORAGE_KEY = 'agv_operator_tab'
 const TAB_STORAGE_SCHEMA_KEY = 'agv_operator_tab_schema'
 const TAB_STORAGE_SCHEMA_VERSION = 2
@@ -95,7 +96,8 @@ export default {
     IOTable,
     ManualSettings,
     SensorAndEquipmentControl,
-    SaftyPLCIOView
+    SaftyPLCIOView,
+    WheelsAngleAdjust
   },
   data() {
     return {
@@ -234,6 +236,9 @@ export default {
     },
     isAMCAGV() {
       return AGVStatusStore.getters.IsInspectionAGV
+    },
+    isUniversalAGV() {
+      return AGVStatusStore.getters.IsUniversalAGV
     },
     DIOTableData() {
       return DIOStore.getters.DIOStates

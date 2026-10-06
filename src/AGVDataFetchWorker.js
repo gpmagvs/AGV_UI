@@ -181,6 +181,18 @@ function StartHubConnection() {
     HubConnection.on('ModuleInformation', moduleInformation => {
         ROS_STORE.commit('update_module_info', moduleInformation)
     })
+    HubConnection.on('ReceiveCurrentMotorValue', (motorValue) => {
+        // 頁面隱藏時不寫入，避免背景高頻推播造成多餘渲染
+        if (isPageHidden()) {
+            logPageHiddenIfNeeded();
+            return;
+        }
+        try {
+            ROS_STORE.commit('update_current_motor_value', motorValue)
+        } catch (error) {
+            console.error(error);
+        }
+    })
     HubConnection.on('VehicleError', message => {
         safeEmit('VehicleError', message)
     })
