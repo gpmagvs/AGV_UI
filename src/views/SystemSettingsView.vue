@@ -69,6 +69,10 @@
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
                 </el-form-item>
+                <el-form-item label="當輪子有異常時，是否自動重置">
+                  <el-switch @change="HandleParamChanged" size="small"
+                    v-model="settings.AutoResetWhenWheelAlarmHappend"></el-switch>
+                </el-form-item>
 
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>地圖</b>
@@ -120,7 +124,6 @@
                   <el-switch @change="HandleParamChanged" size="small"
                     v-model="settings.IsOnlineAtVirtualPtAllow"></el-switch>
                 </el-form-item>
-
               </el-form>
             </div>
             <div v-if="selected_tab === '1'" class="tabpage border p-2">

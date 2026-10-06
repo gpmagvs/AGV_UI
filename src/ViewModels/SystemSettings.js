@@ -259,6 +259,8 @@ class SystemSettings {
         this.AutoDoorSignalToggleWhenOpen = false;
         this.AutoDoorSingalToggleIntervalMs = 1000;
         this.IsOnlineAtVirtualPtAllow = false;
+        /** 當輪子有異常時，是否自動重置 */
+        this.AutoResetWhenWheelAlarmHappend = false;
     }
 
 }
