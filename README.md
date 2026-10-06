@@ -45,12 +45,44 @@ npm config set ssl-strict=false
 
 ### 2) 設定後端位址（開發模式）
 
-開發模式下，後端位址由 `src/gpm_param.js` 決定：
+開發模式下，後端位址由環境變數 **`VITE_BACKEND_HOST`** 決定（讀取邏輯在 `src/gpm_param.js`）：
 
 - **`backend_host`**：SignalR 與 REST API 的 base URL
 - **`ros_bridge_url`**：由 `backend_host` 推導為 ws/wss 並固定成 `:9090`
 
-> 目前 `src/gpm_param.js` 在 `import.meta.env.DEV` 分支內有多組 `return`（僅第一個 return 會生效）。請依要連線的機台/IP 修改第一個 return。
+**請改本機檔案 `.env.local`（已列入 `.gitignore`，不會進 Git）：**
+
+```bash
+cp .env.example .env.local
+```
+
+編輯 `.env.local`：
+
+```env
+VITE_BACKEND_HOST=http://192.168.0.100:7025
+```
+
+常用場區位址清單見 `.env.example` 註解。改完後需**重啟** `npm run dev` 才會生效。
+
+啟動時 Console 會印出 `[gpm_param] 開發模式後端設定`，方便確認實際連線位址。
+
+| 檔案 | 用途 | 是否進 Git |
+| --- | --- | --- |
+| `.env.local` | **個人開發後端位址**（請改這個） | 否 |
+| `.env.example` | 範本與常用 IP 參考 | 是 |
+| `.env.development` | 開發模式共用設定（勿在此寫 `VITE_BACKEND_HOST`） | 是 |
+
+> Vite 載入優先順序：`.env.development.local` > `.env.development` > `.env.local` > `.env`  
+> 因此**不要**在 `.env.development` 設定 `VITE_BACKEND_HOST`，否則會蓋過 `.env.local`。
+
+臨時覆寫（不改檔）：
+
+```bash
+VITE_BACKEND_HOST=http://192.168.0.100:7025 npm run dev
+```
+
+**正式環境（`npm run build`）**：不讀 `VITE_BACKEND_HOST`，改用瀏覽器目前網址  
+`${window.location.protocol}//${window.location.host}`（與後端同源部署）。
 
 ### 3) 啟動開發伺服器
 
@@ -288,7 +320,7 @@ REST API 通常透過 `src/axios.js` 的 `axios.create({ baseURL: param.backend_
 
 ### SignalR 連不上 / 無資料
 
-- 確認 `src/gpm_param.js` 的 `backend_host` 是否指到正確機台（開發模式）
+- 開發模式：確認 `.env.local` 的 `VITE_BACKEND_HOST` 是否正確，並已重啟 `npm run dev`；可看 Console 的 `[gpm_param]` log
 - 確認後端有啟動並暴露 `FrontendHub`：`${backend_host}/FrontendHub`
 - 若分頁切到背景超過 10 秒，本專案會主動斷線並在回到前景後重連（見 `src/AGVDataFetchWorker.js`）
 
@@ -296,7 +328,7 @@ REST API 通常透過 `src/axios.js` 的 `axios.create({ baseURL: param.backend_
 
 `src/axios.js` 會在 response error 時提示 `請求 /{config.url}回應失敗`。請檢查：
 
-- `backend_host`（同上）
+- 開發模式的 `VITE_BACKEND_HOST` / `.env.local`（同上）
 - 後端 API 路徑是否變更（例如 `api/System/*`、`api/VMS/*`）
 - CORS / 反向代理設定（若在跨網域開發）
 

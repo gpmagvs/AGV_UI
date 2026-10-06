@@ -1,31 +1,12 @@
+const DEFAULT_DEV_BACKEND_HOST = 'http://127.0.0.1:7025'
+
 var param = {
   /**後端Server URL */
   get backend_host() {
     if (import.meta.env.DEV) {
-      //在開發模式下，需依照要連接的機台，修改這裡的IP:PORT
-      return 'http://192.168.0.100:7025'
-      return 'http://192.168.209.131:7025'
-      return 'http://127.0.0.1:7025'
-      return 'http://192.168.209.130:7025'
-      return 'http://192.168.0.103:7025'
-      return 'https://agv-dev.gwtech.org'
-      return 'http://192.168.0.59:7025'
-      return 'http://127.0.0.1:7025'
-      return 'http://192.168.0.125:7025'
-      return 'http://192.168.0.111:7025'
-      return 'http://192.168.0.103:7025'
-      return 'http://192.168.206.134:7025'
-      return 'http://10.22.141.223:7025'
-      return 'http://10.22.141.218:7025'
-      return 'http://172.20.10.2:7025'
-      return 'http://192.168.0.55:7025'
-      return 'http://192.168.0.101:7025'
-      return 'http://192.168.0.106:7025'
-      return 'http://192.168.1.100:7025'
-      return 'http://192.168.0.200:7000'
-    } else {
-      return `${window.location.protocol}//${window.location.host}`
+      return import.meta.env.VITE_BACKEND_HOST || DEFAULT_DEV_BACKEND_HOST
     }
+    return `${window.location.protocol}//${window.location.host}`
   },
 
   get OTA_Update_URL() {
@@ -40,4 +21,17 @@ var param = {
 
   }
 }
+
+if (import.meta.env.DEV) {
+  const envBackendHost = import.meta.env.VITE_BACKEND_HOST
+  console.info('[gpm_param] 開發模式後端設定', {
+    VITE_BACKEND_HOST: envBackendHost ?? '(未設定)',
+    resolved_backend_host: param.backend_host,
+    using_default: !envBackendHost,
+    ros_bridge_url: param.ros_bridge_url,
+    OTA_Update_URL: param.OTA_Update_URL,
+    MODE: import.meta.env.MODE,
+  })
+}
+
 export default param
