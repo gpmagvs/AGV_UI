@@ -424,6 +424,17 @@ export const AlarmTableAPI = {
     const response = await axios_entity.post('api/AlarmTable/SaveAlarmCodesTable', alarmList)
     return response.data
   },
+  /**
+   * 上傳 AlarmList.json 由後端驗證解析（不寫檔）
+   * @param {File} file
+   * @returns {Promise<AlarmCodeModel[]>}
+   */
+  async ImportAlarmList(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await axios_entity.post('api/AlarmTable/ImportAlarmCodesTable', formData)
+    return response.data.map(item => new AlarmCodeModel(item))
+  },
   async GetDefaultAlarmList() {
     const response = await axios_entity.get('api/AlarmTable/GetDefaultAlarmCodeTable')
     return response.data

@@ -9,6 +9,11 @@
                 <el-button type="success" @click="handleAdd" :icon="Plus">
                     新增
                 </el-button>
+                <el-button type="warning" @click="triggerImportFileSelect" :loading="importing" :icon="Upload">
+                    匯入
+                </el-button>
+                <input ref="importFileInputRef" type="file" accept=".json,application/json" class="import-file-input"
+                    @change="handleImportFileSelected" />
                 <el-button type="info" @click="handleReload" :loading="loading" :icon="Refresh">
                     重新載入
                 </el-button>
@@ -98,8 +103,8 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { AlarmTableAPI } from '@/api/VMSAPI.js'
-import { ElMessage } from 'element-plus'
-import { Refresh, Check, ArrowLeft, Search, Plus, Warning } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Refresh, Check, ArrowLeft, Search, Plus, Warning, Upload } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -108,6 +113,8 @@ const alarmList = ref([])
 const originalAlarmList = ref([]) // 原始數據快照，用於檢測修改
 const loading = ref(false)
 const saving = ref(false)
+const importing = ref(false)
+const importFileInputRef = ref(null)
 const searchQuery = ref('')
 
 // 新增對話框相關
@@ -231,6 +238,55 @@ const fetchAlarmList = async () => {
 const handleReload = async () => {
     await fetchAlarmList()
     ElMessage.success('數據已重新載入')
+}
+
+const triggerImportFileSelect = () => {
+    if (importing.value) return
+    if (importFileInputRef.value) {
+        importFileInputRef.value.value = ''
+        importFileInputRef.value.click()
+    }
+}
+
+const handleImportFileSelected = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+        await ElMessageBox.confirm(
+            '將以檔案內容完整覆寫目前表格，且尚未寫入後端，需再按「儲存」才會生效。是否繼續？',
+            '匯入 Alarm Table',
+            {
+                confirmButtonText: '確認匯入',
+                cancelButtonText: '取消',
+                type: 'warning',
+            },
+        )
+    } catch {
+        if (importFileInputRef.value) importFileInputRef.value.value = ''
+        return
+    }
+
+    try {
+        importing.value = true
+        loading.value = true
+        const importedList = await AlarmTableAPI.ImportAlarmList(file)
+        const deepCopy = (item) => JSON.parse(JSON.stringify(item))
+        // 覆寫畫面資料，但不更新 originalAlarmList，以維持未儲存狀態
+        alarmList.value = importedList.map(deepCopy)
+        ElMessage.success(`匯入成功，共 ${importedList.length} 筆（尚未儲存）`)
+    } catch (error) {
+        console.error('匯入失敗:', error)
+        const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            '匯入失敗，請確認檔案格式後再試'
+        ElMessage.error(message)
+    } finally {
+        importing.value = false
+        loading.value = false
+        if (importFileInputRef.value) importFileInputRef.value.value = ''
+    }
 }
 
 // 保存數據
@@ -417,6 +473,10 @@ onMounted(() => {
         display: flex;
         gap: 12px;
     }
+}
+
+.import-file-input {
+    display: none;
 }
 
 .table-section {
