@@ -47,6 +47,7 @@
     <AGVInitalizingNotify></AGVInitalizingNotify>
     <SystemErrorNotify></SystemErrorNotify>
     <BackendExceptionMessageDisplay></BackendExceptionMessageDisplay>
+    <NotificationHistoryDialog></NotificationHistoryDialog>
     <MoveControlShortcutButton></MoveControlShortcutButton>
     <ManualOperationShortcutButton></ManualOperationShortcutButton>
     <IoShortcutButton></IoShortcutButton>
@@ -73,6 +74,7 @@ import MoveControlShortcutButton from '@/components/MoveControlShortcutButton.vu
 import ManualOperationShortcutButton from '@/components/ManualOperationShortcutButton.vue'
 import IoShortcutButton from '@/components/IoShortcutButton.vue'
 import StatusShortcutButton from '@/components/StatusShortcutButton.vue'
+import NotificationHistoryDialog from '@/components/NotificationHistoryDialog.vue'
 import { Close, WarningFilled } from '@element-plus/icons-vue'
 
 export default {
@@ -88,6 +90,7 @@ export default {
     ManualOperationShortcutButton,
     IoShortcutButton,
     StatusShortcutButton,
+    NotificationHistoryDialog,
     Close,
     WarningFilled
   },

@@ -1,53 +1,62 @@
 <template>
-    <Transition name="host-banner">
-        <div v-if="visible" class="host-message-display px-3" role="status" aria-live="polite">
+    <Transition name="host-banner" mode="out-in">
+        <div v-if="current" :key="current.MsgID" class="host-message-display px-3" role="status" aria-live="polite">
 
             <div class="left">
                 <div class="d-flex flex-column align-items-start">
                     <div class="d-flex align-items-center">
                         <span class="icon bi bi-clock-fill me-2" aria-hidden="true"></span>
-                        <div class="time-container">{{ moment(hostMessageReceivedTime).format('YYYY/MM/DD HH:mm:ss')
-                        }}
+                        <div class="time-container">{{ formatTime(current.ReceivedTime) }}</div>
+                        <div v-if="current.Title" class="title-container ms-3" :title="current.Title">{{ current.Title }}
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
                         <span class="icon bi bi-chat-left-text-fill me-2" aria-hidden="true"></span>
-                        <div class="message-container" :title="hostMessage">{{ hostMessage }}</div>
+                        <div class="message-container" :title="current.Message">{{ current.Message }}</div>
                     </div>
                 </div>
             </div>
 
-            <!-- close button -->
-            <button class="close-btn" type="button" @click="close" aria-label="關閉提示">
-                <span class="bi bi-x-lg" aria-hidden="true"></span>
-            </button>
+            <div class="right">
+                <!-- 其他未讀數量 -->
+                <button v-if="unreadCount > 1" class="more-btn" type="button" @click="openHistory"
+                    :aria-label="`還有 ${unreadCount - 1} 則未讀`">
+                    +{{ unreadCount - 1 }} 則未讀
+                </button>
+                <!-- 訊息紀錄 -->
+                <button class="action-btn" type="button" @click="openHistory" aria-label="訊息紀錄" title="訊息紀錄">
+                    <span class="bi bi-clock-history" aria-hidden="true"></span>
+                </button>
+                <!-- close button：標為已讀 -->
+                <button class="close-btn" type="button" @click="close" aria-label="關閉提示" title="關閉（標為已讀）">
+                    <span class="bi bi-x-lg" aria-hidden="true"></span>
+                </button>
+            </div>
         </div>
     </Transition>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import bus from '@/event-bus.js';
+import { computed } from 'vue';
 import moment from 'moment';
+import { NotificationStore } from '@/store';
 
-const hostMessage = ref('');
-const hostMessageReceivedTime = ref(0);
-const visible = computed(() => Boolean(hostMessage.value && String(hostMessage.value).trim()));
+/** 顯示最新一筆未讀訊息；關閉後由後端標為已讀並顯示下一筆未讀 */
+const current = computed(() => NotificationStore.getters.LatestUnread);
+const unreadCount = computed(() => NotificationStore.getters.UnreadCount);
 
-const onHostMessage = (message) => {
-    hostMessage.value = typeof message === 'string' ? message : String(message ?? '');
-    hostMessageReceivedTime.value = Date.now();
+const formatTime = (time) => {
+    const m = moment(time);
+    return m.isValid() ? m.format('YYYY/MM/DD HH:mm:ss') : '';
 };
 
-onMounted(() => {
-    bus.on('HostMessage', onHostMessage);
-});
-onUnmounted(() => {
-    bus.off?.('HostMessage', onHostMessage);
-});
-
 const close = () => {
-    hostMessage.value = '';
+    if (current.value)
+        NotificationStore.dispatch('markRead', current.value.MsgID);
+};
+
+const openHistory = () => {
+    NotificationStore.commit('setHistoryVisible', true);
 };
 </script>
 
@@ -127,6 +136,59 @@ const close = () => {
         text-overflow: ellipsis;
         min-width: 0;
         letter-spacing: 2px;
+    }
+
+    .right {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .title-container {
+        font-weight: bold;
+        max-width: 40vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .more-btn {
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 214, 0, 0.75);
+        background: rgba(255, 193, 7, 0.22);
+        color: #fff;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .more-btn:hover {
+        background: rgba(255, 193, 7, 0.35);
+    }
+
+    .action-btn,
+    .close-btn {
+        flex: 0 0 auto;
+        height: 40px;
+        width: 40px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.32);
+        transform: translateY(-1px);
     }
 
     .close-btn {
