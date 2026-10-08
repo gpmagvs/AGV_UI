@@ -1,8 +1,13 @@
-import { UserStore } from './store';
+import { UserStore, NotificationStore } from './store';
 var idleTime = 0
 var interval = setInterval(() => {
     // 用戶不在當前分頁時暫停閒置偵測
     if (typeof document !== 'undefined' && (document.hidden || document.visibilityState === 'hidden')) {
+        return;
+    }
+    // 即時提示顯示中不累計閒置、不重新載入，避免提示被刷掉
+    if (NotificationStore.getters.LatestUnread) {
+        resetTimer();
         return;
     }
     idleTime += 1;
