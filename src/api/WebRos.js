@@ -127,11 +127,63 @@ function ensureRosConnectedAndTopic() {
     return true;
 }
 
+/** 手動控制速度上限預設值，與 SystemSettings.ManualControl 一致 */
+var DEFAULT_MAX_LINEAR_SPEED = 0.5;
+var DEFAULT_MAX_ANGULAR_SPEED = 0.5;
+
+function readPositiveSpeed(value, fallback) {
+    var speed = Number(value);
+    if (!Number.isFinite(speed) || speed <= 0) {
+        return fallback;
+    }
+    return speed;
+}
+
+/** 讀取系統參數 ManualControl 的最大線速度 */
+function getMaxLinearSpeed() {
+    return readPositiveSpeed(
+        SystemSettingsStore.getters.Settings?.ManualControl?.MaxLinearSpeed,
+        DEFAULT_MAX_LINEAR_SPEED
+    );
+}
+
+/** 讀取系統參數 ManualControl 的最大角速度 */
+function getMaxAngularSpeed() {
+    return readPositiveSpeed(
+        SystemSettingsStore.getters.Settings?.ManualControl?.MaxAngularSpeed,
+        DEFAULT_MAX_ANGULAR_SPEED
+    );
+}
+
+function clampSpeed(speed, maxSpeed) {
+    if (speed > maxSpeed) {
+        return maxSpeed;
+    }
+    if (speed < -maxSpeed) {
+        return -maxSpeed;
+    }
+    return speed;
+}
+
+/** 依 ManualControl 限制即將發布的 cmd_vel */
+function applyManualControlSpeedLimit(message) {
+    var maxLinearSpeed = getMaxLinearSpeed();
+    var maxAngularSpeed = getMaxAngularSpeed();
+    if (message.linear) {
+        message.linear.x = clampSpeed(message.linear.x, maxLinearSpeed);
+        message.linear.y = clampSpeed(message.linear.y, maxLinearSpeed);
+    }
+    if (message.angular) {
+        message.angular.z = clampSpeed(message.angular.z, maxAngularSpeed);
+    }
+    return message;
+}
+
 function publishCmdVel(message) {
     if (!ensureRosConnectedAndTopic()) {
         return;
     }
-    keyboard_move_topic.publish(new ROSLIB.Message(message));
+    keyboard_move_topic.publish(new ROSLIB.Message(applyManualControlSpeedLimit(message)));
 }
 
 ros.on('connection', function () {
@@ -199,9 +251,6 @@ export var angular_speed = 0.0
 var _ls_delta = 0.05;
 var _as_delta = 0.05;
 
-var _max_linear_speed = 0.8;
-var _max_angular_speed = 0.5;
-
 var _keyboardControlEnable = false;
 
 var current_action = 'stop';
@@ -262,9 +311,10 @@ export function AGVMoveUp() {
         return;
 
     current_action = 'up';
-    if (Math.abs(linear_speed) >= _max_linear_speed)
+    var maxLinearSpeed = getMaxLinearSpeed();
+    if (Math.abs(linear_speed) >= maxLinearSpeed)
         return;
-    linear_speed = linear_speed + 0.05;
+    linear_speed = clampSpeed(linear_speed + 0.05, maxLinearSpeed);
     publishCmdVel({
         linear: {
             x: linear_speed,
@@ -287,9 +337,10 @@ export function AGVMoveDown() {
     if (!checkInputInterval())
         return;
     current_action = 'down';
-    if (Math.abs(linear_speed) >= _max_linear_speed)
+    var maxLinearSpeed = getMaxLinearSpeed();
+    if (Math.abs(linear_speed) >= maxLinearSpeed)
         return;
-    linear_speed = linear_speed - 0.05;
+    linear_speed = clampSpeed(linear_speed - 0.05, maxLinearSpeed);
     publishCmdVel({
         linear: {
             x: linear_speed,
@@ -313,9 +364,10 @@ export function AGVMoveRight() {
     if (!checkInputInterval())
         return;
     current_action = 'right';
-    if (Math.abs(angular_speed) >= _max_angular_speed)
+    var maxAngularSpeed = getMaxAngularSpeed();
+    if (Math.abs(angular_speed) >= maxAngularSpeed)
         return;
-    angular_speed = angular_speed - 0.05;
+    angular_speed = clampSpeed(angular_speed - 0.05, maxAngularSpeed);
     publishCmdVel({
         linear: {
             x: 0,
@@ -339,9 +391,10 @@ export function AGVMoveLeft() {
     if (!checkInputInterval())
         return;
     current_action = 'left';
-    if (Math.abs(angular_speed) >= _max_angular_speed)
+    var maxAngularSpeed = getMaxAngularSpeed();
+    if (Math.abs(angular_speed) >= maxAngularSpeed)
         return;
-    angular_speed = angular_speed + 0.05;
+    angular_speed = clampSpeed(angular_speed + 0.05, maxAngularSpeed);
     publishCmdVel({
         linear: {
             x: 0,
@@ -428,9 +481,10 @@ export function AGVMove_ShiftLeft() {
     if (!checkInputInterval())
         return;
     current_action = 'shift_left';
-    if (Math.abs(linear_speed) >= _max_linear_speed)
+    var maxLinearSpeed = getMaxLinearSpeed();
+    if (Math.abs(linear_speed) >= maxLinearSpeed)
         return;
-    linear_speed = linear_speed + 0.05;
+    linear_speed = clampSpeed(linear_speed + 0.05, maxLinearSpeed);
 
     publishCmdVel({
         linear: {
@@ -451,9 +505,10 @@ export function AGVMove_ShiftRight() {
     if (!checkInputInterval())
         return;
     current_action = 'shift_right';
-    if (Math.abs(linear_speed) >= _max_linear_speed)
+    var maxLinearSpeed = getMaxLinearSpeed();
+    if (Math.abs(linear_speed) >= maxLinearSpeed)
         return;
-    linear_speed = linear_speed - 0.05;
+    linear_speed = clampSpeed(linear_speed - 0.05, maxLinearSpeed);
 
     publishCmdVel({
         linear: {
@@ -492,20 +547,20 @@ document.addEventListener('keydown', (event) => {
         return;
 
     if (code == 'KeyW') {
-        linear_speed += _ls_delta
+        linear_speed = clampSpeed(linear_speed + _ls_delta, getMaxLinearSpeed())
     }
     if (code == 'KeyX') {
-        linear_speed -= _ls_delta
+        linear_speed = clampSpeed(linear_speed - _ls_delta, getMaxLinearSpeed())
     }
     if (code == 'KeyS' || code == 'Space') {
         linear_speed = 0.0
         angular_speed = 0.0
     }
     if (code == 'KeyD') {
-        angular_speed += _as_delta
+        angular_speed = clampSpeed(angular_speed + _as_delta, getMaxAngularSpeed())
     }
     if (code == 'KeyA') {
-        angular_speed -= _as_delta
+        angular_speed = clampSpeed(angular_speed - _as_delta, getMaxAngularSpeed())
     }
     // console.log('linear speed:' + linear_speed);
     // console.log('angular speed:' + angular_speed);

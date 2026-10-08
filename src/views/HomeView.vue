@@ -873,7 +873,7 @@ export default {
   width: 100%;
 }
 
-.main-content > .d-flex.flex-row {
+.main-content>.d-flex.flex-row {
   width: 100%;
 }
 

@@ -214,6 +214,12 @@ class SystemSettings {
                 { Enabled: true, CheckPointTag: 91, Timeout: 30, TriggerMoment: 0 }
             ]
         };
+
+        this.ManualControl = {
+            MaxLinearSpeed: 0.5,
+            MaxAngularSpeed: 0.5,
+        };
+
         this.SoundsParams = {
             audioPathes: {
                 move: "/home/gpm/param/sounds/move.wav",

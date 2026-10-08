@@ -73,6 +73,18 @@
                   <el-switch @change="HandleParamChanged" v-model="settings.AutoResetWhenWheelAlarmHappend"></el-switch>
                 </el-form-item>
 
+                <div v-if="settings.ManualControl" class="text-start w-100 border-bottom mb-2">
+                  <b>手動控制</b>
+                </div>
+                <el-form-item v-if="settings.ManualControl" label="最大線速度(m/s)">
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="2"
+                    @change="HandleParamChanged" v-model="settings.ManualControl.MaxLinearSpeed"></el-input-number>
+                </el-form-item>
+                <el-form-item v-if="settings.ManualControl" label="最大角速度(rad/s)">
+                  <el-input-number size="small" :step="0.01" :precision="2" :min="0.01" :max="2"
+                    @change="HandleParamChanged" v-model="settings.ManualControl.MaxAngularSpeed"></el-input-number>
+                </el-form-item>
+
                 <div class="text-start w-100 border-bottom mb-2">
                   <b>地圖</b>
                 </div>
@@ -983,6 +995,7 @@ export default {
               this.settings = SystemSettingsStore.state.Settings;
               this.MergeMissingHorizonArmConfigsDefaults();
               this.MergeMissingForkAgvDefaults();
+              this.MergeMissingManualControlDefaults();
               if (tabIndex)
                 this.selected_tab = tabIndex;
               this.loading = false;
@@ -1261,6 +1274,7 @@ export default {
               this.settings = SystemSettingsStore.state.Settings;
               this.MergeMissingHorizonArmConfigsDefaults();
               this.MergeMissingForkAgvDefaults();
+              this.MergeMissingManualControlDefaults();
             }
           }, 500);
           this.$swal.fire({
@@ -1287,6 +1301,17 @@ export default {
         return;
       }
       fork.HorizonArmConfigs = { ...defaults, ...fork.HorizonArmConfigs };
+    },
+    MergeMissingManualControlDefaults() {
+      const defaults = new SystemSettings().ManualControl;
+      if (!this.settings || !defaults) {
+        return;
+      }
+      if (!this.settings.ManualControl) {
+        this.settings.ManualControl = { ...defaults };
+        return;
+      }
+      this.settings.ManualControl = { ...defaults, ...this.settings.ManualControl };
     },
     MergeMissingForkAgvDefaults() {
       const defaults = new SystemSettings().ForkAGV;
