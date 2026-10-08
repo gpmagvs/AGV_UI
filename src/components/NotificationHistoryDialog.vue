@@ -1,6 +1,6 @@
 <template>
-    <el-dialog v-model="visible" title="提示訊息紀錄" width="72%" top="8vh" append-to-body draggable
-        class="notification-history-dialog" @open="onOpen">
+    <el-dialog v-model="visible" title="提示訊息紀錄" width="90%" top="8vh" append-to-body draggable
+        :z-index="10100" class="notification-history-dialog" @open="onOpen">
         <div class="toolbar d-flex align-items-center mb-2">
             <el-radio-group v-model="filter" size="large">
                 <el-radio-button label="all">全部 ({{ items.length }})</el-radio-button>
@@ -82,7 +82,8 @@ const clearAll = async () => {
         await ElMessageBox.confirm('確定要清除全部提示訊息紀錄？', '清除訊息', {
             confirmButtonText: '清除',
             cancelButtonText: '取消',
-            type: 'warning'
+            type: 'warning',
+            modalClass: 'notification-history-confirm'
         });
     } catch {
         return;
@@ -90,6 +91,13 @@ const clearAll = async () => {
     NotificationStore.dispatch('clearAll');
 };
 </script>
+
+<style lang="scss">
+/* 高於即時提示橫幅 (z-index: 10000) 與紀錄視窗 (10100) */
+.notification-history-confirm {
+    z-index: 10200 !important;
+}
+</style>
 
 <style lang="scss" scoped>
 .toolbar {

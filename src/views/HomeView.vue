@@ -878,14 +878,13 @@ export default {
 }
 
 .host-message-display-home-view {
-  position: absolute !important;
-  top: 0px !important;
-  // left: var(--side-menu-width);
-  // width: calc(100% - var(--side-menu-width));
-  width: 100%;
-  height: 65px !important;
-  z-index: 9999;
-  // border-bottom-right-radius: 10px;
+  position: fixed !important;
+  top: 32vh !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 36vh !important;
+  z-index: 10000;
+  box-sizing: border-box;
 }
 
 #waiting-go-alert {
