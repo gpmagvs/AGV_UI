@@ -9,6 +9,7 @@ import { ROS_STORE } from './ros_store';
 import SystemSettings from '@/ViewModels/SystemSettings'
 import { SystemAPI } from '@/api/VMSAPI';
 import _ from 'lodash'
+import { NotificationAPI, IsNotificationListResponse } from '@/api/NotificationAPI'
 
 export const store = createStore({
   state: {
@@ -1066,6 +1067,271 @@ export var map_store = createStore({
       }
 
       return res;
+    }
+  }
+})
+
+/**
+ * 車控提示訊息（Notification API）
+ * Items 欄位與後端 NotificationMessage 完全一致：MsgID, Title, Message, Source, ReceivedTime, IsRead, ReadTime
+ * - 頁面載入 / SignalR 連線、重連時以 fetch 從後端補拉
+ * - SignalR NotificationAdded 推播以 MsgID 去重合併
+ * - NotificationStateChanged（Read / ReadAll / Clear）同步多個分頁
+ */
+const NOTIFICATION_STATE_ACTIONS = { Read: 'Read', ReadAll: 'ReadAll', Clear: 'Clear' }
+/** 補拉失敗（非「不支援」）時的重試間隔（ms） */
+export const NOTIFICATION_FETCH_RETRY_DELAYS = [2000, 5000, 10000]
+let _notificationRetryTimer = null
+
+/** 判斷補拉錯誤是否代表後端不支援 api/Notification（舊版車控） */
+function _isNotificationUnsupportedError(error) {
+  if (error?.unsupported)
+    return true
+  const status = error?.response?.status
+  return status === 404 || status === 405
+}
+
+function _notificationTime(item) {
+  const t = new Date(item?.ReceivedTime).getTime()
+  return isNaN(t) ? 0 : t
+}
+
+function _sortAndTrimNotifications(state) {
+  state.Items.sort((a, b) => _notificationTime(b) - _notificationTime(a))
+  const cap = state.Capacity > 0 ? state.Capacity : 100
+  if (state.Items.length > cap)
+    state.Items.splice(cap)
+}
+
+function _upsertNotification(state, item) {
+  if (!item || !item.MsgID)
+    return
+  const idx = state.Items.findIndex(m => m.MsgID === item.MsgID)
+  if (idx >= 0) {
+    // 已讀狀態只會由未讀變已讀，避免舊資料把已讀蓋回未讀
+    const old = state.Items[idx]
+    const merged = { ...old, ...item }
+    if (old.IsRead && !item.IsRead) {
+      merged.IsRead = true
+      merged.ReadTime = old.ReadTime
+    }
+    state.Items.splice(idx, 1, merged)
+  } else {
+    state.Items.push({ ...item })
+  }
+}
+
+function _applyNotificationStateChanged(state, evt) {
+  if (!evt)
+    return
+  const ids = new Set(Array.isArray(evt.MsgIDs) ? evt.MsgIDs : [])
+  if (evt.Action === NOTIFICATION_STATE_ACTIONS.Clear) {
+    state.Items = state.Items.filter(m => !ids.has(m.MsgID))
+    return
+  }
+  if (evt.Action === NOTIFICATION_STATE_ACTIONS.Read || evt.Action === NOTIFICATION_STATE_ACTIONS.ReadAll) {
+    state.Items.forEach(m => {
+      if (ids.has(m.MsgID) && !m.IsRead) {
+        m.IsRead = true
+        m.ReadTime = evt.Time ?? new Date().toISOString()
+      }
+    })
+  }
+}
+
+export const NotificationStore = createStore({
+  state: {
+    Items: [],
+    Capacity: 100,
+    /** null: 尚未確認；true: 後端支援 api/Notification；false: 舊版後端（只有字串推播） */
+    ServerSupported: null,
+    HistoryVisible: false,
+    fetching: false,
+    /** 每次 fetchStart 遞增；只有最新一次的回應會被套用 */
+    fetchSeq: 0,
+    pendingDuringFetch: []
+  },
+  getters: {
+    Items: state => state.Items,
+    UnreadItems: state => state.Items.filter(m => !m.IsRead),
+    UnreadCount: state => state.Items.filter(m => !m.IsRead).length,
+    /** 最新一筆未讀（提示條顯示用） */
+    LatestUnread: state => state.Items.find(m => !m.IsRead),
+    HistoryVisible: state => state.HistoryVisible,
+    ServerSupported: state => state.ServerSupported
+  },
+  mutations: {
+    /** 開始補拉；已在補拉中時不清空 pendingDuringFetch（重疊的補拉共用） */
+    fetchStart(state) {
+      state.fetchSeq += 1
+      if (!state.fetching)
+        state.pendingDuringFetch = []
+      state.fetching = true
+    },
+    /** payload: { seq, notSupported }；非最新 seq 的失敗忽略 */
+    fetchFail(state, payload = {}) {
+      const { seq, notSupported = false } = payload
+      if (seq !== undefined && seq !== state.fetchSeq)
+        return
+      state.fetching = false
+      state.pendingDuringFetch = []
+      if (notSupported)
+        state.ServerSupported = false
+    },
+    /**
+     * payload: { seq, resp }。以後端清單為準，再套用 fetch 期間收到的推播。
+     * 非最新 seq 的回應忽略；格式不符時視為後端不支援。
+     */
+    setList(state, payload = {}) {
+      const { seq, resp } = payload
+      if (seq !== undefined && seq !== state.fetchSeq)
+        return
+      if (!IsNotificationListResponse(resp)) {
+        state.fetching = false
+        state.pendingDuringFetch = []
+        state.ServerSupported = false
+        return
+      }
+      const pending = state.pendingDuringFetch
+      state.fetching = false
+      state.pendingDuringFetch = []
+      state.ServerSupported = true
+      if (resp && resp.Capacity > 0)
+        state.Capacity = resp.Capacity
+      state.Items = resp.Items.filter(m => m && m.MsgID).map(m => ({ ...m }))
+      pending.forEach(p => {
+        if (p.type === 'added')
+          _upsertNotification(state, p.payload)
+        else if (p.type === 'state')
+          _applyNotificationStateChanged(state, p.payload)
+      })
+      _sortAndTrimNotifications(state)
+    },
+    /** SignalR NotificationAdded */
+    upsert(state, item) {
+      if (!item || !item.MsgID)
+        return
+      state.ServerSupported = true
+      if (state.fetching)
+        state.pendingDuringFetch.push({ type: 'added', payload: item })
+      _upsertNotification(state, item)
+      _sortAndTrimNotifications(state)
+    },
+    /** SignalR NotificationStateChanged */
+    applyStateChanged(state, evt) {
+      if (state.fetching)
+        state.pendingDuringFetch.push({ type: 'state', payload: evt })
+      _applyNotificationStateChanged(state, evt)
+    },
+    markReadLocal(state, msgID) {
+      _applyNotificationStateChanged(state, { Action: NOTIFICATION_STATE_ACTIONS.Read, MsgIDs: [msgID] })
+    },
+    markAllReadLocal(state) {
+      _applyNotificationStateChanged(state, { Action: NOTIFICATION_STATE_ACTIONS.ReadAll, MsgIDs: state.Items.map(m => m.MsgID) })
+    },
+    clearLocal(state) {
+      state.Items = []
+    },
+    setHistoryVisible(state, visible) {
+      state.HistoryVisible = !!visible
+    },
+    /**
+     * 舊版後端相容：只有字串推播（SignalR "Notification"），空字串代表清除。
+     * 新版後端會先送 NotificationAdded（upsert 會把 ServerSupported 設為 true），之後的同內容字串推播即被忽略；
+     * 尚未確認（null，例如補拉失敗重試中）時也接受，避免舊版車控的提示被吃掉。
+     */
+    legacyMessage(state, message) {
+      if (state.ServerSupported === true)
+        return
+      const text = typeof message === 'string' ? message : String(message ?? '')
+      if (!text.trim()) {
+        _applyNotificationStateChanged(state, { Action: NOTIFICATION_STATE_ACTIONS.ReadAll, MsgIDs: state.Items.map(m => m.MsgID) })
+        return
+      }
+      _upsertNotification(state, {
+        MsgID: `local-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+        Title: '',
+        Message: text,
+        Source: 'Host',
+        ReceivedTime: new Date().toISOString(),
+        IsRead: false,
+        ReadTime: null
+      })
+      _sortAndTrimNotifications(state)
+    }
+  },
+  actions: {
+    /**
+     * 補拉清單。payload.attempt 為重試次數（內部使用）。
+     * 回應非 JSON / 非 { Items: [] } / 404 / 405 → 視為舊版後端（不重試）；
+     * 其他失敗依 NOTIFICATION_FETCH_RETRY_DELAYS（2s / 5s / 10s）重試。
+     */
+    async fetch({ commit, state, dispatch }, payload = {}) {
+      const attempt = payload?.attempt ?? 0
+      if (_notificationRetryTimer) {
+        clearTimeout(_notificationRetryTimer)
+        _notificationRetryTimer = null
+      }
+      commit('fetchStart')
+      const seq = state.fetchSeq
+      let resp
+      try {
+        resp = await NotificationAPI.List(false)
+      } catch (error) {
+        const notSupported = _isNotificationUnsupportedError(error)
+        const isLatest = seq === state.fetchSeq
+        commit('fetchFail', { seq, notSupported })
+        console.warn('[NotificationStore] 取得提示訊息清單失敗', error?.message ?? error)
+        if (isLatest && !notSupported && attempt < NOTIFICATION_FETCH_RETRY_DELAYS.length) {
+          const delay = NOTIFICATION_FETCH_RETRY_DELAYS[attempt]
+          _notificationRetryTimer = setTimeout(() => {
+            _notificationRetryTimer = null
+            dispatch('fetch', { attempt: attempt + 1 })
+          }, delay)
+        }
+        return
+      }
+      if (!IsNotificationListResponse(resp)) {
+        commit('fetchFail', { seq, notSupported: true })
+        console.warn('[NotificationStore] 提示訊息清單格式不符，視為舊版後端')
+        return
+      }
+      commit('setList', { seq, resp })
+    },
+    async markRead({ commit, state, dispatch }, msgID) {
+      if (!msgID)
+        return
+      commit('markReadLocal', msgID)
+      if (state.ServerSupported !== true || String(msgID).startsWith('local-'))
+        return
+      try {
+        await NotificationAPI.Read(msgID)
+      } catch (error) {
+        console.warn('[NotificationStore] 標記已讀失敗，重新同步', error?.message ?? error)
+        dispatch('fetch')
+      }
+    },
+    async markAllRead({ commit, state, dispatch }) {
+      commit('markAllReadLocal')
+      if (state.ServerSupported !== true)
+        return
+      try {
+        await NotificationAPI.ReadAll()
+      } catch (error) {
+        console.warn('[NotificationStore] 全部已讀失敗，重新同步', error?.message ?? error)
+        dispatch('fetch')
+      }
+    },
+    async clearAll({ commit, state, dispatch }) {
+      commit('clearLocal')
+      if (state.ServerSupported !== true)
+        return
+      try {
+        await NotificationAPI.Clear()
+      } catch (error) {
+        console.warn('[NotificationStore] 清除訊息失敗，重新同步', error?.message ?? error)
+        dispatch('fetch')
+      }
     }
   }
 })

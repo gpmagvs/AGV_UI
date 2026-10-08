@@ -1,4 +1,4 @@
-import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore, SystemMsgStore, SaftyPLCStore } from "./store";
+import { AGVStatusStore, DIOStore, RDTestDataStore, UIStore, SystemSettingsStore, SystemMsgStore, SaftyPLCStore, NotificationStore } from "./store";
 import { ROS_STORE } from "./store/ros_store";
 import param from "./gpm_param";
 import MapAPI from './api/MapAPI'
@@ -246,8 +246,32 @@ function StartHubConnection() {
         AGVStatusStore.commit('setMaintainModeStatus', data)
     })
 
+    // 提示訊息：直接寫入 store（不受頁面隱藏影響），以 MsgID 去重
+    HubConnection.on('NotificationAdded', (item) => {
+        try {
+            NotificationStore.commit('upsert', item);
+        } catch (error) {
+            console.error(error);
+        }
+    })
+    HubConnection.on('NotificationStateChanged', (evt) => {
+        try {
+            NotificationStore.commit('applyStateChanged', evt);
+        } catch (error) {
+            console.error(error);
+        }
+    })
+    // 舊版後端相容（只有字串推播）；新版後端時 store 會忽略
     HubConnection.on('Notification', message => {
-        safeEmit('HostMessage', message);
+        try {
+            NotificationStore.commit('legacyMessage', message);
+        } catch (error) {
+            console.error(error);
+        }
+    })
+
+    HubConnection.onreconnected(() => {
+        NotificationStore.dispatch('fetch');
     })
 
     HubConnection.onclose(() => {
@@ -265,6 +289,7 @@ function StartHubConnection() {
             .then(() => {
                 console.info('SignalR Connected!');
                 isDisconnectedByHidden = false; // 重置標誌
+                NotificationStore.dispatch('fetch'); // 補拉提示訊息（重新整理 / 重連後仍可顯示）
                 safeEmit('hub-connected');
             })
             .catch(er => {

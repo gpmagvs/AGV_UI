@@ -1,132 +1,288 @@
 <template>
-    <Transition name="host-banner">
-        <div v-if="visible" class="host-message-display px-3" role="status" aria-live="polite">
+    <Transition name="host-banner" mode="out-in">
+        <div v-if="current" :key="current.MsgID" class="host-message-display px-3">
 
-            <div class="left">
-                <div class="d-flex flex-column align-items-start">
-                    <div class="d-flex align-items-center">
-                        <span class="icon bi bi-clock-fill me-2" aria-hidden="true"></span>
-                        <div class="time-container">{{ moment(hostMessageReceivedTime).format('YYYY/MM/DD HH:mm:ss')
-                        }}
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <span class="icon bi bi-chat-left-text-fill me-2" aria-hidden="true"></span>
-                        <div class="message-container" :title="hostMessage">{{ hostMessage }}</div>
-                    </div>
+            <div class="content">
+                <div class="meta">
+                    <time class="time-container" :datetime="current.ReceivedTime">{{ formatTime(current.ReceivedTime) }}</time>
+                    <span class="meta-dot" aria-hidden="true"></span>
+                    <span class="elapsed-container">{{ elapsedText }}</span>
+                    <template v-if="current.Title">
+                        <span class="meta-dot" aria-hidden="true"></span>
+                        <div class="title-container" :title="current.Title">{{ current.Title }}</div>
+                    </template>
                 </div>
+                <div class="meta-rule" aria-hidden="true"></div>
+                <div class="message-container" role="status" :title="current.Message">{{ current.Message }}</div>
             </div>
 
-            <!-- close button -->
-            <button class="close-btn" type="button" @click="close" aria-label="關閉提示">
-                <span class="bi bi-x-lg" aria-hidden="true"></span>
-            </button>
+            <div class="right">
+                <!-- 其他未讀數量 -->
+                <button v-if="unreadCount > 1" class="more-btn" type="button" @click="openHistory"
+                    :aria-label="`還有 ${unreadCount - 1} 則未讀`">
+                    +{{ unreadCount - 1 }} 則未讀
+                </button>
+                <!-- 訊息紀錄 -->
+                <button class="action-btn" type="button" @click="openHistory" aria-label="訊息紀錄" title="訊息紀錄">
+                    <span class="bi bi-clock-history" aria-hidden="true"></span>
+                </button>
+                <!-- close button：標為已讀 -->
+                <button class="close-btn" type="button" @click="close" aria-label="關閉提示" title="關閉（標為已讀）">
+                    <span class="bi bi-x-lg" aria-hidden="true"></span>
+                </button>
+            </div>
         </div>
     </Transition>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import bus from '@/event-bus.js';
+import { computed, onUnmounted, ref, watch } from 'vue';
 import moment from 'moment';
+import { NotificationStore } from '@/store';
 
-const hostMessage = ref('');
-const hostMessageReceivedTime = ref(0);
-const visible = computed(() => Boolean(hostMessage.value && String(hostMessage.value).trim()));
+/** 顯示最新一筆未讀訊息；關閉後由後端標為已讀並顯示下一筆未讀 */
+const current = computed(() => NotificationStore.getters.LatestUnread);
+const unreadCount = computed(() => NotificationStore.getters.UnreadCount);
+const now = ref(Date.now());
+let elapsedTimer = null;
 
-const onHostMessage = (message) => {
-    hostMessage.value = typeof message === 'string' ? message : String(message ?? '');
-    hostMessageReceivedTime.value = Date.now();
+const formatTime = (time) => {
+    const m = moment(time);
+    return m.isValid() ? m.format('YYYY/MM/DD HH:mm:ss') : '';
 };
 
-onMounted(() => {
-    bus.on('HostMessage', onHostMessage);
-});
-onUnmounted(() => {
-    bus.off?.('HostMessage', onHostMessage);
+const formatElapsed = (totalSeconds) => {
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts = [];
+    if (days > 0)
+        parts.push(`${days} 天`);
+    if (hours > 0 || days > 0)
+        parts.push(`${hours} 小時`);
+    if (minutes > 0 || hours > 0 || days > 0)
+        parts.push(`${minutes} 分`);
+    parts.push(`${seconds} 秒`);
+    return `已過 ${parts.join(' ')}`;
+};
+
+const elapsedText = computed(() => {
+    const receivedTime = current.value?.ReceivedTime;
+    if (!receivedTime)
+        return '';
+    const start = moment(receivedTime);
+    if (!start.isValid())
+        return '';
+    const elapsedSeconds = Math.max(0, Math.floor((now.value - start.valueOf()) / 1000));
+    return formatElapsed(elapsedSeconds);
 });
 
+const stopElapsedTimer = () => {
+    if (elapsedTimer == null)
+        return;
+    clearTimeout(elapsedTimer);
+    elapsedTimer = null;
+};
+
+const scheduleElapsedTick = () => {
+    const delay = 1000 - (Date.now() % 1000);
+    elapsedTimer = setTimeout(() => {
+        now.value = Date.now();
+        scheduleElapsedTick();
+    }, delay);
+};
+
+const startElapsedTimer = () => {
+    stopElapsedTimer();
+    now.value = Date.now();
+    scheduleElapsedTick();
+};
+
+watch(current, (item) => {
+    if (item)
+        startElapsedTimer();
+    else
+        stopElapsedTimer();
+}, { immediate: true });
+
+onUnmounted(stopElapsedTimer);
+
 const close = () => {
-    hostMessage.value = '';
+    if (current.value)
+        NotificationStore.dispatch('markRead', current.value.MsgID);
+};
+
+const openHistory = () => {
+    NotificationStore.commit('setHistoryVisible', true);
 };
 </script>
 
 <style lang="scss" scoped>
 .host-message-display {
-    min-height: 68px;
+    height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 12px;
+    box-sizing: border-box;
 
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-radius: 0;
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
 
     color: #ffffff;
-    background: linear-gradient(135deg, rgba(26, 139, 173, 0.699), rgba(13, 72, 161, 0.87));
+    background: rgba(13, 72, 161, 0.92);
     position: relative;
     overflow: hidden;
 
     /* 專業醒目但不刺眼：輕微呼吸＋發光 */
     animation: host-pulse 1.8s ease-in-out infinite;
 
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(600px 160px at 10% 50%, rgba(255, 255, 255, 0.18), transparent 55%);
-        pointer-events: none;
+    .content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: min(92vw, 1280px);
+        max-height: 100%;
+        padding: 28px 24px;
+        text-align: center;
     }
 
-    &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 6px;
-        background: linear-gradient(180deg, rgba(255, 214, 0, 0.95), rgba(255, 109, 0, 0.95));
-        box-shadow: 0 0 18px rgba(255, 193, 7, 0.55);
-        pointer-events: none;
-    }
-
-    .left {
+    .meta {
         display: flex;
         align-items: center;
-        gap: 12px;
-        min-width: 0;
-        padding: 16px 0 16px 10px;
+        justify-content: center;
+        gap: 10px;
+        max-width: 100%;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: clamp(15px, 1.8vh, 20px);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        line-height: 1.2;
     }
 
-    .icon {
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.98);
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
-        // animation: host-wiggle 1.8s ease-in-out infinite;
+    .meta-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
         flex: 0 0 auto;
     }
 
-    .time-container {
-        font-weight: bold;
-        // color: black;
+    .meta-rule {
+        width: 40px;
+        height: 2px;
+        margin: 14px 0 18px;
+        border-radius: 1px;
+        background: rgba(255, 255, 255, 0.45);
+        flex: 0 0 auto;
+    }
+
+    .time-container,
+    .elapsed-container {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .elapsed-container {
+        color: #ffffff;
     }
 
     .message-container {
-        font-size: 24px;
+        max-width: 100%;
+        max-height: 18vh;
+        overflow: auto;
+        padding-left: 20px;
+        padding-right: 20px;
+        scrollbar-width: auto;
+        scrollbar-color: rgba(255, 255, 255, 0.85) rgba(8, 40, 96, 0.35);
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        // font-size: clamp(16px, 2.1vw, 34px);
-        font-weight: 800;
-        letter-spacing: 0.2px;
-        line-height: 1.15;
-        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.28);
-        white-space: nowrap;
+        font-size: clamp(32px, 5.2vh, 68px);
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: 0;
+        text-align: center;
+        text-wrap: balance;
+        overflow-wrap: break-word;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.22);
+
+        &::-webkit-scrollbar {
+            width: 22px;
+        }
+
+        &::-webkit-scrollbar-track {
+            margin: 8px 0;
+            background: rgba(8, 40, 96, 0.35);
+            border-radius: 999px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.82);
+            border-radius: 999px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #ffffff;
+        }
+    }
+
+    .right {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 1;
+    }
+
+    .title-container {
+        max-width: 42vw;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-width: 0;
-        letter-spacing: 2px;
+        white-space: nowrap;
+    }
+
+    .more-btn {
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 214, 0, 0.75);
+        background: rgba(255, 193, 7, 0.22);
+        color: #fff;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .more-btn:hover {
+        background: rgba(255, 193, 7, 0.35);
+    }
+
+    .action-btn,
+    .close-btn {
+        flex: 0 0 auto;
+        height: 40px;
+        width: 40px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.32);
+        transform: translateY(-1px);
     }
 
     .close-btn {
@@ -204,15 +360,4 @@ const close = () => {
     }
 }
 
-@keyframes host-wiggle {
-
-    0%,
-    100% {
-        transform: rotate(0deg) translateY(0);
-    }
-
-    50% {
-        transform: rotate(-6deg) translateY(-1px);
-    }
-}
 </style>

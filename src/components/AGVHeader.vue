@@ -32,6 +32,14 @@
           v-bind:class="IsBackendDisconnected ? 'bg-danger' : ''">{{ VersionShowUI ? UIVersion + "(UI)" : APPVersion }}
         </div>
       </div>
+      <!--提示訊息紀錄（未讀數）-->
+      <div class="notification-bell" :class="{ 'has-unread': NotificationUnreadCount > 0 }" role="button"
+        :title="`提示訊息紀錄${NotificationUnreadCount > 0 ? `（未讀 ${NotificationUnreadCount}）` : ''}`"
+        @click="OpenNotificationHistory">
+        <i :class="NotificationUnreadCount > 0 ? 'bi bi-bell-fill' : 'bi bi-bell'"></i>
+        <span v-if="NotificationUnreadCount > 0" class="notification-badge">{{ NotificationUnreadCount > 99 ? '99+' :
+          NotificationUnreadCount }}</span>
+      </div>
       <!--語系切換按鈕-->
       <div class="lang-switch">
         <jw_switch @switch="LangChangeHandle" :default="IsUseChinese" active_text="EN" active_color="rgb(0, 204, 0)"
@@ -74,7 +82,7 @@
   </div>
 </template>
 <script>
-import { AGVStatusStore, UserStore, UIStore } from '@/store'
+import { AGVStatusStore, UserStore, UIStore, NotificationStore } from '@/store'
 import { Localization, Where_r_u, SystemAPI, SwitchMaintainMode } from '@/api/VMSAPI'
 import uploader from '@/components/Upload/index.vue'
 import bus from '@/event-bus.js'
@@ -96,6 +104,9 @@ export default {
     }
   },
   computed: {
+    NotificationUnreadCount() {
+      return NotificationStore.getters.UnreadCount;
+    },
     maintainStatus() {
       return AGVStatusStore.state.maintainStatus;
     },
@@ -140,6 +151,9 @@ export default {
     }
   },
   methods: {
+    OpenNotificationHistory() {
+      NotificationStore.commit('setHistoryVisible', true);
+    },
     async where_r_u() {
       await Where_r_u();
     },
@@ -348,6 +362,41 @@ export default {
 
 .status {
   height: 37px;
+
+  .notification-bell {
+    position: relative;
+    width: 46px;
+    height: 37px;
+    margin-left: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0, 123, 255);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+
+    &.has-unread i {
+      color: rgb(255, 214, 0);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border-radius: 9px;
+      background: rgb(220, 53, 69);
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 18px;
+      text-align: center;
+    }
+  }
 
   .sys-name,
   .agvc-name,
