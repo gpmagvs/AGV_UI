@@ -25,9 +25,8 @@ export default {
       //    BatteryID: 1
       //    BatteryLevel: 66
       //    ChargeCurrent: 0
-      //    CircuitOpened: false
       //    IsCharging: false
-      //    IsError: false 
+      //    Voltage: 0
       //    }
       // ]
       return batstates
