@@ -887,6 +887,14 @@ export default {
   box-sizing: border-box;
 }
 
+.host-message-display-home-view.is-apocalypse {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 100000 !important;
+}
+
 #waiting-go-alert {
   .el-alert__title {
     font-size: 25px;
