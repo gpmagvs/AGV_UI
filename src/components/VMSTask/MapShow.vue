@@ -98,7 +98,7 @@ import MapAPI from '@/api/MapAPI'
 import bus from '@/event-bus'
 import Notifier from '@/api/NotifyHelper';
 import { map_store, AGVStatusStore, UIStore } from '@/store'
-import { MAIN_TAB } from '@/constants/tabPages'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 // import MapPointSettingDrawer from '@/components/MapPointSettingDrawer.vue'
 
 export default {
@@ -207,7 +207,13 @@ export default {
   },
   computed: {
     isViewing() {
-      return UIStore.getters.mainTabId === MAIN_TAB.MAP;
+      const mainTabId = UIStore.getters.mainTabId;
+      if (mainTabId === MAIN_TAB.MAP) {
+        return true;
+      }
+      // 操作分頁 > 走行控制內嵌的 TaskDelivery 地圖也需更新 AGV 狀態／位置
+      return mainTabId === MAIN_TAB.OPERATION
+        && UIStore.getters.operatorTabId === OPERATOR_TAB.MOVE_CONTROL;
     },
     current_select_featureID() {
       if (this.selected_feature) {
