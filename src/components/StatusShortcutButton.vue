@@ -53,10 +53,6 @@ export default {
 
 <style scoped lang="scss">
 .status-shortcut-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 192px;
-  z-index: 2100;
   width: 56px;
   height: 56px;
   border: 1px solid rgba(108, 117, 125, 0.4);

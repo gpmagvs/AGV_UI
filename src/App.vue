@@ -5,7 +5,9 @@
     <div v-if="connectionAlertVisible" class="connection-alert-bar">
       <div class="connection-alert-card" role="alert">
         <div class="connection-alert-icon" aria-hidden="true">
-          <el-icon :size="22"><WarningFilled /></el-icon>
+          <el-icon :size="22">
+            <WarningFilled />
+          </el-icon>
         </div>
         <div class="connection-alert-body">
           <div class="connection-alert-heading">通訊連線異常</div>
@@ -15,12 +17,11 @@
         </div>
         <div class="connection-alert-actions">
           <el-button type="danger" size="small" @click="reloadPage">Reload</el-button>
-          <button
-            type="button"
-            class="connection-alert-close"
-            aria-label="Close"
+          <button type="button" class="connection-alert-close" aria-label="Close"
             @click="connectionAlertVisible = false">
-            <el-icon :size="16"><Close /></el-icon>
+            <el-icon :size="16">
+              <Close />
+            </el-icon>
           </button>
         </div>
       </div>
@@ -48,10 +49,7 @@
     <SystemErrorNotify></SystemErrorNotify>
     <BackendExceptionMessageDisplay></BackendExceptionMessageDisplay>
     <NotificationHistoryDialog></NotificationHistoryDialog>
-    <MoveControlShortcutButton></MoveControlShortcutButton>
-    <ManualOperationShortcutButton></ManualOperationShortcutButton>
-    <IoShortcutButton></IoShortcutButton>
-    <StatusShortcutButton></StatusShortcutButton>
+    <ShortcutButtonsContainer></ShortcutButtonsContainer>
   </div>
 </template>
 <script>
@@ -70,10 +68,7 @@ import Vue3DeviceDetector from 'vue3-device-detector';
 import { CargoStatusManualCheckDone, CargoStatusManualCheckDoneWhenUnloadFailure, GetMaintainModeStatus } from '@/api/VMSAPI.js'
 import { ForkAPI } from '@/api/VMSAPI.js'
 import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessageDisplay.vue'
-import MoveControlShortcutButton from '@/components/MoveControlShortcutButton.vue'
-import ManualOperationShortcutButton from '@/components/ManualOperationShortcutButton.vue'
-import IoShortcutButton from '@/components/IoShortcutButton.vue'
-import StatusShortcutButton from '@/components/StatusShortcutButton.vue'
+import ShortcutButtonsContainer from '@/components/ShortcutButtonsContainer.vue'
 import NotificationHistoryDialog from '@/components/NotificationHistoryDialog.vue'
 import { Close, WarningFilled } from '@element-plus/icons-vue'
 
@@ -86,10 +81,7 @@ export default {
     WaitAGVsNextMoveActionNotify,
     AGVInitalizingNotify,
     BackendExceptionMessageDisplay,
-    MoveControlShortcutButton,
-    ManualOperationShortcutButton,
-    IoShortcutButton,
-    StatusShortcutButton,
+    ShortcutButtonsContainer,
     NotificationHistoryDialog,
     Close,
     WarningFilled
@@ -545,7 +537,7 @@ __    \`--.__    \`--._  \`-._ \`-. \`. \\:/ .' .-' _.-'  _.--'    __.--'    __
   line-height: 1.55;
   color: #c62828;
 
-  li + li {
+  li+li {
     margin-top: 2px;
   }
 }

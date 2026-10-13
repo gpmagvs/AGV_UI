@@ -46,10 +46,6 @@ export default {
 
 <style scoped lang="scss">
 .manual-operation-shortcut-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 124px;
-  z-index: 2100;
   width: 56px;
   height: 56px;
   border: 1px solid rgba(25, 135, 84, 0.35);

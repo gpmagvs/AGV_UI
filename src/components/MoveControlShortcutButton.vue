@@ -55,10 +55,6 @@ export default {
 
 <style scoped lang="scss">
 .move-control-shortcut-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 56px;
-  z-index: 2100;
   width: 56px;
   height: 56px;
   border: 1px solid rgba(13, 110, 253, 0.35);

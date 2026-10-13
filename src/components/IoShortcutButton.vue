@@ -89,10 +89,7 @@ export default {
 
 <style scoped lang="scss">
 .io-shortcut-wrap {
-  position: fixed;
-  right: 20px;
-  bottom: 124px;
-  z-index: 2100;
+  position: relative;
   width: 56px;
   height: 56px;
 }
