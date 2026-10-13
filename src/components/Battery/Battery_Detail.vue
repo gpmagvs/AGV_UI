@@ -3,7 +3,7 @@
     <b-tabs>
       <b-tab title="電池狀態">
         <div class="panel">
-          <div class="circuit-bar">
+          <div v-if="hasChargeCircuit" class="circuit-bar">
             <span class="lamp" :class="charge_circuit_state ? 'is-on' : 'is-off'"></span>
             <div class="circuit-text">
               <div class="circuit-title">充電迴路</div>
@@ -42,9 +42,12 @@
 
               <div class="power-flow">
                 <div class="pf-node">
-                  <div class="pf-title">充電迴路</div>
-                  <div class="pf-state" :class="charge_circuit_state ? 'is-on' : 'is-off'">
+                  <div class="pf-title">{{ hasChargeCircuit ? '充電迴路' : '充電電流' }}</div>
+                  <div v-if="hasChargeCircuit" class="pf-state" :class="charge_circuit_state ? 'is-on' : 'is-off'">
                     {{ charge_circuit_state ? '接通' : '斷開' }}
+                  </div>
+                  <div v-else class="pf-state" :class="isCharging(bat) ? 'is-on' : 'is-idle'">
+                    {{ isCharging(bat) ? '充電中' : '無充電' }}
                   </div>
                   <div class="pf-read">{{ toAmp(bat.chargeCurrent) }}<span>A</span></div>
                 </div>
@@ -298,6 +301,10 @@ export default {
     },
     isAdmin() {
       return UserStore.getters.IsGodUser;
+    },
+    /** 2330 通用底車無充電迴路硬體 */
+    hasChargeCircuit() {
+      return !AGVStatusStore.getters.IsUniversalAGV
     }
   },
   methods: {
@@ -325,11 +332,11 @@ export default {
       return Number(bat?.dischargeCurrent || 0) > 100
     },
     chargePathClass(bat) {
-      if (!this.charge_circuit_state)
+      if (this.hasChargeCircuit && !this.charge_circuit_state)
         return 'is-open'
       if (this.isCharging(bat))
         return 'is-flow'
-      return 'is-closed'
+      return this.hasChargeCircuit ? 'is-closed' : 'is-idle'
     },
     dischargePathClass(bat) {
       return this.isDischarging(bat) ? 'is-flow' : 'is-idle'
@@ -462,10 +469,12 @@ export default {
     }
   },
   mounted() {
-    this.onChargeCircuitChanged = (isOpened) => {
-      this.charge_circuit_state = isOpened
+    if (this.hasChargeCircuit) {
+      this.onChargeCircuitChanged = (isOpened) => {
+        this.charge_circuit_state = isOpened
+      }
+      bus.on('ReChargeCircuitChanged', this.onChargeCircuitChanged)
     }
-    bus.on('ReChargeCircuitChanged', this.onChargeCircuitChanged)
     var timeNow = Date.now();
     var timeStart = moment(timeNow).add(-1, "day")
     this.query_options.time_range = [timeStart, timeNow];

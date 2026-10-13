@@ -6,7 +6,7 @@
         <div class="viz-header">
           <div class="viz-title">
             <span class="viz-title-text">四輪姿態調整</span>
-            <span class="viz-subtitle">TOP 俯瞰視角 · 顯示實際姿態</span>
+            <span class="viz-subtitle">TOP 俯瞰視角 · 右前/左後與左前/右後鏡像對稱（數字為馬達回授）</span>
           </div>
           <div class="manual-mode-switch">
             <span class="manual-mode-label">手動控制模式</span>
@@ -144,7 +144,7 @@
                 class="wheel-angle"
                 :text-anchor="wheel.labelAnchor"
               >
-                {{ formatAngle(wheel.angle) }}°
+                {{ formatAngle(wheel.displayAngle) }}°
               </text>
             </g>
           </svg>
@@ -288,8 +288,19 @@ const anglePresets = [0, 45, 90, -45, -90]
 const ANGLE_SUBMIT_DEBOUNCE_MS = 500
 
 /**
- * 四輪目標角度（度）— 手動控制下發用
- * 0° = 朝前；正值 = 俯視逆時針
+ * 俯瞰圖旋轉符號：右前+左後同組，左前+右後安裝鏡像（符號相反）
+ * 四輪馬達角相同時呈 X 型對稱，0° 時四輪皆朝前
+ */
+const WHEEL_VIZ_ROTATION_SIGN = {
+  fr: -1,
+  rl: -1,
+  fl: 1,
+  rr: 1,
+}
+
+/**
+ * 四輪目標角度（度）— 與馬達回授相同座標，直接下發
+ * 0° = 朝前；正值 = 俯視逆時針（右前/左後基準）
  */
 const wheelAngles = ref({
   fl: 0,
@@ -298,14 +309,28 @@ const wheelAngles = ref({
   rr: 0,
 })
 
-/** 四輪實際角度（來自 SignalR ReceiveCurrentMotorValue） */
+/** 將角度正規化至 [-180, 180] */
+function normalizeAngle(value) {
+  const n = Number(value)
+  if (Number.isNaN(n)) return 0
+  return ((((n + 180) % 360) + 360) % 360) - 180
+}
+
+/** 馬達回授角 → SVG 旋轉角（0° 朝前 · 正值逆時針） */
+function motorToSvgRotationDeg(wheelId, motorAngle) {
+  const motor = normalizeAngle(motorAngle)
+  const sign = WHEEL_VIZ_ROTATION_SIGN[wheelId] ?? -1
+  return sign * motor
+}
+
+/** 四輪實際角度（馬達回授原值，四輪可相同） */
 const actualWheelAngles = computed(() => {
   const ang = ROS_STORE.state.currentMotorValue?.ang ?? []
   return {
-    fl: Number(ang[0] ?? 0),
-    fr: Number(ang[1] ?? 0),
-    rl: Number(ang[2] ?? 0),
-    rr: Number(ang[3] ?? 0),
+    fl: normalizeAngle(ang[0] ?? 0),
+    fr: normalizeAngle(ang[1] ?? 0),
+    rl: normalizeAngle(ang[2] ?? 0),
+    rr: normalizeAngle(ang[3] ?? 0),
   }
 })
 
@@ -333,12 +358,12 @@ function clampAngle(value) {
   return Math.min(angleMax, Math.max(angleMin, n))
 }
 
-function buildAnglesPayload() {
+function buildMotorAnglesPayload() {
   return {
-    fl: wheelAngles.value.fl,
-    fr: wheelAngles.value.fr,
-    rl: wheelAngles.value.rl,
-    rr: wheelAngles.value.rr,
+    fl: normalizeAngle(wheelAngles.value.fl),
+    fr: normalizeAngle(wheelAngles.value.fr),
+    rl: normalizeAngle(wheelAngles.value.rl),
+    rr: normalizeAngle(wheelAngles.value.rr),
   }
 }
 
@@ -388,16 +413,16 @@ async function beforeManualModeChange() {
 async function submitWheelAngles() {
   if (!isManualControlEnabled.value || isSubmittingAngles.value) return
 
-  const payload = buildAnglesPayload()
+  const motorPayload = buildMotorAnglesPayload()
   isSubmittingAngles.value = true
 
   try {
-    const isSuccess = await MOVEControl.AdjustWheelsAngles(payload)
+    const isSuccess = await MOVEControl.AdjustWheelsAngles(motorPayload)
     if (!isSuccess) {
       ElMessage.error('四輪角度下發失敗')
       return
     }
-    ElMessage.success(`四輪角度已下發：${formatAnglesMessage(payload)}`)
+    ElMessage.success(`四輪角度已下發：${formatAnglesMessage(wheelAngles.value)}`)
   } catch (error) {
     console.error(error)
     ElMessage.error('四輪角度下發失敗，請稍後再試')
@@ -493,14 +518,21 @@ const wheelMeta = [
   { id: 'rr', label: '右後', side: 'right' },
 ]
 
+function wheelMotorAngle(wheelId) {
+  if (isManualControlEnabled.value) {
+    return wheelAngles.value[wheelId]
+  }
+  return actualWheelAngles.value[wheelId]
+}
+
 const wheels = computed(() =>
   wheelMeta.map((meta) => {
     const pos = layout.positions[meta.id]
     const isLeft = meta.side === 'left'
+    const motorAngle = wheelMotorAngle(meta.id)
     return {
       ...meta,
-      // 俯瞰圖一律顯示實際姿態
-      angle: actualWheelAngles.value[meta.id],
+      displayAngle: motorAngle,
       x: pos.x,
       y: pos.y,
       labelPos: {
@@ -512,9 +544,9 @@ const wheels = computed(() =>
   }),
 )
 
-/** SVG rotate：正角度為順時針，故取負號對應俯視逆時針為正 */
 function wheelTransform(wheel) {
-  return `translate(${wheel.x} ${wheel.y}) rotate(${-wheel.angle})`
+  const svgDeg = motorToSvgRotationDeg(wheel.id, wheel.displayAngle)
+  return `translate(${wheel.x} ${wheel.y}) rotate(${svgDeg})`
 }
 
 function formatAngle(angle) {
