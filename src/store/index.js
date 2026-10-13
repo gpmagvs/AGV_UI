@@ -226,9 +226,12 @@ export const AGVStatusStore = createStore({
         Theta: 0
       }
     },
-    CurrentRobotSpeedCommand: 'Stop'
+    CurrentRobotSpeedCommand: 'Stop',
+    /** 是否已收到第一筆車況（分頁校正需等車型等資料到齊） */
+    IsFirstStatusReceived: false
   },
   getters: {
+    IsFirstStatusReceived: state => state.IsFirstStatusReceived,
     AGVStatus: state => {
       return state.AGVStatus;
     },
@@ -468,6 +471,7 @@ export const AGVStatusStore = createStore({
   mutations: {
     updateStatus(state, data) {
       state.AGVStatus = data
+      if (data) state.IsFirstStatusReceived = true
       //將一些數據存在 localstorage, 未來可以從 localstorage 中恢復
       localStorage.setItem('agv_basic_info', JSON.stringify({
         appVersion: data.APPVersion,

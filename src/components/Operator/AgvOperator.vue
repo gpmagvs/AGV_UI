@@ -81,7 +81,6 @@ export default {
   },
   mounted() {
     this.ensureValidTab()
-    this.applyTabSideEffects(UIStore.getters.operatorTabId)
   },
   watch: {
     agv_type() {
@@ -102,7 +101,10 @@ export default {
     isUniversalAGV() {
       this.ensureValidTab()
     },
-    storeOperatorTabId(tabId, previousTabId) {
+    IsTabDataReady() {
+      this.ensureValidTab()
+    },
+    displayOperatorTabId(tabId, previousTabId) {
       if (tabId === previousTabId) return
       this.applyTabSideEffects(tabId)
     }
@@ -111,14 +113,13 @@ export default {
     setOperatorTabId(tabId) {
       UIStore.dispatch('navigateTabPage', { operator: tabId })
     },
+    /**
+     * 儲存的子分頁目前不可見時，畫面暫時顯示第一個可見子分頁（displayOperatorTabId）。
+     * 不寫回 store/localStorage；設定與第一筆車況到齊前不校正。
+     */
     ensureValidTab() {
-      const ids = this.visibleOperatorTabIds
-      const currentId = UIStore.getters.operatorTabId
-      if (!ids.includes(currentId)) {
-        const fallback = ids[0] || OPERATOR_TAB.MOVE_CONTROL
-        this.setOperatorTabId(fallback)
-        this.applyTabSideEffects(fallback)
-      }
+      if (!this.IsTabDataReady) return
+      this.applyTabSideEffects(this.displayOperatorTabId)
     },
     applyTabSideEffects(tabId) {
       // 僅在主分頁為操作時才調整鍵盤；離開操作分頁由 TabContainer 負責關閉
@@ -162,6 +163,8 @@ export default {
     HandleTabpageChanged(currentTabs, previousTabs) {
       const tabId = resolveTabId(this.visibleOperatorTabIds, currentTabs)
       if (!tabId) return
+      // 顯示的是校正後的 fallback 時（非使用者點擊切換），不覆寫儲存的選擇
+      if (tabId === this.displayOperatorTabId) return
       this.setOperatorTabId(tabId)
       if (currentTabs == previousTabs) return
       this.$emit('OnTabChanged', tabId)
@@ -215,8 +218,18 @@ export default {
       }
       return ids
     },
+    /** 設定與第一筆車況都到了，可見子分頁列表才可信 */
+    IsTabDataReady() {
+      return SystemSettingsStore.getters.IsSettingsLoaded && AGVStatusStore.getters.IsFirstStatusReceived
+    },
+    /** 實際顯示的子分頁：儲存的 tab 可見就顯示，否則暫時顯示第一個可見子分頁 */
+    displayOperatorTabId() {
+      const ids = this.visibleOperatorTabIds
+      if (ids.includes(this.storeOperatorTabId)) return this.storeOperatorTabId
+      return ids[0] || OPERATOR_TAB.MOVE_CONTROL
+    },
     currentTabIndex() {
-      return resolveTabIndex(this.visibleOperatorTabIds, this.storeOperatorTabId, 0)
+      return resolveTabIndex(this.visibleOperatorTabIds, this.displayOperatorTabId, 0)
     },
     isGodMode() {
       return UserStore.getters.IsGodUser;
