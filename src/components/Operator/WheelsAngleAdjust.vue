@@ -4,33 +4,22 @@
       <!-- 俯瞰可視化 -->
       <div class="viz-card">
         <div class="viz-header">
-          <div class="viz-title">
+          <!-- <div class="viz-title">
             <span class="viz-title-text">四輪姿態調整</span>
             <span class="viz-subtitle">TOP 俯瞰視角 · 右前/左後與左前/右後鏡像對稱（數字為馬達回授）</span>
-          </div>
+          </div> -->
           <div class="manual-mode-switch">
             <span class="manual-mode-label">手動控制模式</span>
-            <el-switch
-              v-model="isManualControlEnabled"
-              :loading="isManualModeSyncing"
-              :before-change="beforeManualModeChange"
-              inline-prompt
-              active-text="開"
-              inactive-text="關"
-              inactive-color="#ef4444"
-            />
+            <el-switch v-model="isManualControlEnabled" :loading="isManualModeSyncing"
+              :before-change="beforeManualModeChange" inline-prompt active-text="開" inactive-text="關"
+              inactive-color="#ef4444" />
           </div>
         </div>
 
         <div class="viz-surface" :class="{ 'is-manual-off': !isManualControlEnabled }">
           <div v-if="!isManualControlEnabled" class="manual-off-hint">手動控制模式已關閉</div>
-          <svg
-            class="viz-svg"
-            :viewBox="layout.viewBox"
-            preserveAspectRatio="xMidYMid meet"
-            role="img"
-            aria-label="四輪姿態俯瞰圖"
-          >
+          <svg class="viz-svg" :viewBox="layout.viewBox" preserveAspectRatio="xMidYMid meet" role="img"
+            aria-label="四輪姿態俯瞰圖">
             <defs>
               <pattern id="wheelsDotGrid" width="18" height="18" patternUnits="userSpaceOnUse">
                 <circle cx="1.5" cy="1.5" r="1.2" fill="rgba(100,116,139,0.22)" />
@@ -40,110 +29,43 @@
               </marker>
             </defs>
 
-            <rect
-              :x="layout.bg.x"
-              :y="layout.bg.y"
-              :width="layout.bg.w"
-              :height="layout.bg.h"
-              rx="10"
-              class="schem-bg"
-            />
-            <rect
-              :x="layout.bg.x"
-              :y="layout.bg.y"
-              :width="layout.bg.w"
-              :height="layout.bg.h"
-              rx="10"
-              fill="url(#wheelsDotGrid)"
-            />
+            <rect :x="layout.bg.x" :y="layout.bg.y" :width="layout.bg.w" :height="layout.bg.h" rx="10"
+              class="schem-bg" />
+            <rect :x="layout.bg.x" :y="layout.bg.y" :width="layout.bg.w" :height="layout.bg.h" rx="10"
+              fill="url(#wheelsDotGrid)" />
 
             <g class="chassis">
-              <rect
-                :x="layout.chassis.x"
-                :y="layout.chassis.y"
-                :width="layout.chassis.w"
-                :height="layout.chassis.h"
-                :rx="layout.chassis.rx"
-                class="chassis-body"
-              />
-              <rect
-                :x="layout.chassis.x + 10"
-                :y="layout.chassis.y + 14"
-                :width="layout.chassis.w - 20"
-                :height="layout.chassis.h - 28"
-                :rx="layout.chassis.rx - 4"
-                class="chassis-inner"
-              />
+              <rect :x="layout.chassis.x" :y="layout.chassis.y" :width="layout.chassis.w" :height="layout.chassis.h"
+                :rx="layout.chassis.rx" class="chassis-body" />
+              <rect :x="layout.chassis.x + 10" :y="layout.chassis.y + 14" :width="layout.chassis.w - 20"
+                :height="layout.chassis.h - 28" :rx="layout.chassis.rx - 4" class="chassis-inner" />
               <g class="front-marker">
-                <line
-                  :x1="layout.centerX"
-                  :y1="layout.chassis.y + 28"
-                  :x2="layout.centerX"
-                  :y2="layout.chassis.y + 8"
-                  class="front-line"
-                  marker-end="url(#frontArrow)"
-                />
+                <line :x1="layout.centerX" :y1="layout.chassis.y + 28" :x2="layout.centerX" :y2="layout.chassis.y + 8"
+                  class="front-line" marker-end="url(#frontArrow)" />
                 <text :x="layout.centerX" :y="layout.chassis.y + 48" class="front-text">FRONT</text>
               </g>
-              <line
-                :x1="layout.centerX - 18"
-                :y1="layout.centerY"
-                :x2="layout.centerX + 18"
-                :y2="layout.centerY"
-                class="center-cross"
-              />
-              <line
-                :x1="layout.centerX"
-                :y1="layout.centerY - 18"
-                :x2="layout.centerX"
-                :y2="layout.centerY + 18"
-                class="center-cross"
-              />
+              <line :x1="layout.centerX - 18" :y1="layout.centerY" :x2="layout.centerX + 18" :y2="layout.centerY"
+                class="center-cross" />
+              <line :x1="layout.centerX" :y1="layout.centerY - 18" :x2="layout.centerX" :y2="layout.centerY + 18"
+                class="center-cross" />
             </g>
 
-            <g
-              v-for="wheel in wheels"
-              :key="wheel.id"
-              class="wheel-group"
-              :class="{
-                'is-selected': isManualControlEnabled && selectedWheelId === wheel.id,
-                'is-disabled': !isManualControlEnabled,
-              }"
-              @click="handleWheelClick(wheel.id)"
-            >
+            <g v-for="wheel in wheels" :key="wheel.id" class="wheel-group" :class="{
+              'is-selected': isManualControlEnabled && selectedWheelId === wheel.id,
+              'is-disabled': !isManualControlEnabled,
+            }" @click="handleWheelClick(wheel.id)">
               <g :transform="wheelTransform(wheel)">
-                <rect
-                  :x="-layout.wheel.w / 2"
-                  :y="-layout.wheel.h / 2"
-                  :width="layout.wheel.w"
-                  :height="layout.wheel.h"
-                  :rx="layout.wheel.rx"
-                  class="wheel-body"
-                />
+                <rect :x="-layout.wheel.w / 2" :y="-layout.wheel.h / 2" :width="layout.wheel.w" :height="layout.wheel.h"
+                  :rx="layout.wheel.rx" class="wheel-body" />
                 <circle cx="0" cy="0" r="4.2" class="wheel-hub-outer" />
                 <circle cx="0" cy="0" r="2.4" class="wheel-pivot" />
-                <line
-                  x1="0"
-                  :y1="-layout.wheel.h / 2 + 5"
-                  x2="0"
-                  :y2="-layout.wheel.h / 2 + 11"
-                  class="wheel-dir"
-                />
+                <line x1="0" :y1="-layout.wheel.h / 2 + 5" x2="0" :y2="-layout.wheel.h / 2 + 11" class="wheel-dir" />
               </g>
-              <text
-                :x="wheel.labelPos.x"
-                :y="wheel.labelPos.y"
-                class="wheel-label"
-                :text-anchor="wheel.labelAnchor"
-              >
+              <text :x="wheel.labelPos.x" :y="wheel.labelPos.y" class="wheel-label" :text-anchor="wheel.labelAnchor">
                 {{ wheel.label }}
               </text>
-              <text
-                :x="wheel.labelPos.x"
-                :y="wheel.labelPos.y + 14"
-                class="wheel-angle"
-                :text-anchor="wheel.labelAnchor"
-              >
+              <text :x="wheel.labelPos.x" :y="wheel.labelPos.y + 14" class="wheel-angle"
+                :text-anchor="wheel.labelAnchor">
                 {{ formatAngle(wheel.displayAngle) }}°
               </text>
             </g>
@@ -160,93 +82,50 @@
 
         <div class="ctl-presets">
           <span class="ctl-presets-label">全部套用</span>
-          <button
-            v-for="preset in anglePresets"
-            :key="'all-' + preset"
-            type="button"
-            class="btn-preset"
-            :disabled="!isManualControlEnabled"
-            @click="applyAngleToAll(preset)"
-          >
+          <button v-for="preset in anglePresets" :key="'all-' + preset" type="button" class="btn-preset"
+            :disabled="!isManualControlEnabled" @click="applyAngleToAll(preset)">
             {{ preset }}°
           </button>
-          <button
-            type="button"
-            class="btn-preset btn-preset--muted"
-            :disabled="!isManualControlEnabled"
-            @click="resetAllWheels"
-          >
+          <button type="button" class="btn-preset btn-preset--muted" :disabled="!isManualControlEnabled"
+            @click="resetAllWheels">
             歸零
           </button>
         </div>
 
         <div class="ctl-list">
-          <div
-            v-for="wheel in wheels"
-            :key="'ctl-' + wheel.id"
-            class="wheel-ctl"
-            :class="{ 'is-active': selectedWheelId === wheel.id }"
-            @click="handleWheelClick(wheel.id)"
-          >
+          <div v-for="wheel in wheels" :key="'ctl-' + wheel.id" class="wheel-ctl"
+            :class="{ 'is-active': selectedWheelId === wheel.id }" @click="handleWheelClick(wheel.id)">
             <div class="wheel-ctl-head">
               <div class="wheel-ctl-name">
                 <span>{{ wheel.label }}</span>
                 <span class="wheel-ctl-actual">實際 {{ formatAngle(actualWheelAngles[wheel.id]) }}°</span>
               </div>
               <div class="wheel-ctl-value">
-                <el-input-number
-                  :model-value="wheelAngles[wheel.id]"
-                  :min="angleMin"
-                  :max="angleMax"
-                  :step="1"
-                  :precision="1"
-                  :disabled="!isManualControlEnabled"
-                  size="small"
-                  controls-position="right"
-                  @update:model-value="(v) => setWheelAngle(wheel.id, v)"
-                  @click.stop
-                />
+                <el-input-number :model-value="wheelAngles[wheel.id]" :min="angleMin" :max="angleMax" :step="1"
+                  :precision="1" :disabled="!isManualControlEnabled" size="small" controls-position="right"
+                  @update:model-value="(v) => setWheelAngle(wheel.id, v)" @click.stop />
                 <span class="wheel-ctl-unit">°</span>
               </div>
             </div>
 
             <div class="wheel-ctl-slider" @click.stop>
-              <el-slider
-                :model-value="wheelAngles[wheel.id]"
-                :min="angleMin"
-                :max="angleMax"
-                :step="1"
-                :disabled="!isManualControlEnabled"
-                :show-tooltip="true"
-                @update:model-value="(v) => setWheelAngle(wheel.id, v)"
-              />
+              <el-slider :model-value="wheelAngles[wheel.id]" :min="angleMin" :max="angleMax" :step="1"
+                :disabled="!isManualControlEnabled" :show-tooltip="true"
+                @update:model-value="(v) => setWheelAngle(wheel.id, v)" />
             </div>
 
             <div class="wheel-ctl-actions" @click.stop>
-              <button
-                type="button"
-                class="btn-jog"
-                :disabled="!isManualControlEnabled"
-                @click="nudgeWheel(wheel.id, -jogStep)"
-              >
+              <button type="button" class="btn-jog" :disabled="!isManualControlEnabled"
+                @click="nudgeWheel(wheel.id, -jogStep)">
                 −{{ jogStep }}°
               </button>
-              <button
-                v-for="preset in anglePresets"
-                :key="wheel.id + '-' + preset"
-                type="button"
-                class="btn-jog btn-jog--preset"
-                :disabled="!isManualControlEnabled"
-                @click="setWheelAngle(wheel.id, preset)"
-              >
+              <button v-for="preset in anglePresets" :key="wheel.id + '-' + preset" type="button"
+                class="btn-jog btn-jog--preset" :disabled="!isManualControlEnabled"
+                @click="setWheelAngle(wheel.id, preset)">
                 {{ preset }}°
               </button>
-              <button
-                type="button"
-                class="btn-jog"
-                :disabled="!isManualControlEnabled"
-                @click="nudgeWheel(wheel.id, jogStep)"
-              >
+              <button type="button" class="btn-jog" :disabled="!isManualControlEnabled"
+                @click="nudgeWheel(wheel.id, jogStep)">
                 +{{ jogStep }}°
               </button>
             </div>
@@ -262,12 +141,7 @@
               <el-radio-button :label="15">15°</el-radio-button>
             </el-radio-group>
           </div>
-          <button
-            type="button"
-            class="btn-sync"
-            :disabled="!isManualControlEnabled"
-            @click="syncSelectedToAll"
-          >
+          <button type="button" class="btn-sync" :disabled="!isManualControlEnabled" @click="syncSelectedToAll">
             選取輪角度套用全部
           </button>
         </div>

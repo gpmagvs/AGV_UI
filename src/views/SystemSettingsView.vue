@@ -485,7 +485,7 @@
                     <el-option label="Alarm" :value="1"></el-option>
                   </el-select>
                 </el-form-item>
-                <div class="text-start w-100 border-bottom">
+                <div id="eq-hs-timeout" class="text-start w-100 border-bottom">
                   <b>交握TIMEOUT</b>
                 </div>
                 <el-form-item label="TA1_Wait_L_U_REQ_ON">
@@ -978,9 +978,9 @@ export default {
     }
   },
   mounted() {
-    bus.on('show-settings', async (tabIndex) => {
-
-
+    bus.on('show-settings', async (payload) => {
+      const tabIndex = typeof payload === 'object' && payload !== null ? payload.tab : payload
+      const scrollTo = typeof payload === 'object' && payload !== null ? payload.scrollTo : null
 
       this.loading = true;
       this.drawer_show = true
@@ -996,8 +996,8 @@ export default {
               this.MergeMissingHorizonArmConfigsDefaults();
               this.MergeMissingForkAgvDefaults();
               this.MergeMissingManualControlDefaults();
-              if (tabIndex)
-                this.selected_tab = tabIndex;
+              if (tabIndex != null && tabIndex !== '')
+                this.selected_tab = String(tabIndex);
               this.loading = false;
               success = true;
               break;
@@ -1025,6 +1025,13 @@ export default {
           this.forbidden_auto_reset_alarm_codes = this.settings.Advance.ForbidAutoInitialzeAlarmCodes;
           this.forbidden_auto_reset_alarm_codes.sort()
           this.NonRotatableWhenLiftingTagsWithComma = this.settings.ForkAGV.NonRotatableWhenLiftingTags.join(','); //將 tag集合以逗號分隔
+          if (scrollTo) {
+            this.$nextTick(() => {
+              setTimeout(() => {
+                document.getElementById(scrollTo)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }, 50)
+            })
+          }
         } else {
 
           this.$swal.fire({

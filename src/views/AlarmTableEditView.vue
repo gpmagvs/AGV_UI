@@ -14,6 +14,9 @@
                 </el-button>
                 <input ref="importFileInputRef" type="file" accept=".json,application/json" class="import-file-input"
                     @change="handleImportFileSelected" />
+                <el-button type="success" plain @click="handleDownload" :icon="Download" :disabled="alarmList.length === 0">
+                    下載
+                </el-button>
                 <el-button type="info" @click="handleReload" :loading="loading" :icon="Refresh">
                     重新載入
                 </el-button>
@@ -104,7 +107,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { AlarmTableAPI } from '@/api/VMSAPI.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Refresh, Check, ArrowLeft, Search, Plus, Warning, Upload } from '@element-plus/icons-vue'
+import { Refresh, Check, ArrowLeft, Search, Plus, Warning, Upload, Download } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -245,6 +248,40 @@ const triggerImportFileSelect = () => {
     if (importFileInputRef.value) {
         importFileInputRef.value.value = ''
         importFileInputRef.value.click()
+    }
+}
+
+/** 下載目前表格為 JSON（格式與匯入相容：Code / Description / CN 陣列） */
+const handleDownload = () => {
+    try {
+        if (!alarmList.value.length) {
+            ElMessage.warning('目前沒有可下載的資料')
+            return
+        }
+
+        const exportList = [...alarmList.value]
+            .map(item => ({
+                Code: Number(item.Code),
+                Description: item.Description ?? '',
+                CN: item.CN ?? '',
+            }))
+            .sort((a, b) => a.Code - b.Code)
+
+        const jsonContent = JSON.stringify(exportList, null, 2)
+        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+        link.href = url
+        link.setAttribute('download', `AlarmList_${stamp}.json`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        ElMessage.success(`已下載 ${exportList.length} 筆 Alarm 資料`)
+    } catch (error) {
+        console.error('下載失敗:', error)
+        ElMessage.error('下載失敗，請稍後再試')
     }
 }
 
