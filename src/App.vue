@@ -71,6 +71,7 @@ import BackendExceptionMessageDisplay from '@/components/BackendExceptionMessage
 import ShortcutButtonsContainer from '@/components/ShortcutButtonsContainer.vue'
 import NotificationHistoryDialog from '@/components/NotificationHistoryDialog.vue'
 import { Close, WarningFilled } from '@element-plus/icons-vue'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 
 export default {
   components: {
@@ -387,7 +388,10 @@ __    \`--.__    \`--._  \`-._ \`-. \`. \\:/ .' .-' _.-'  _.--'    __.--'    __
           }).then(res => {
             if (!res.isConfirmed) {
               //show teach tools
-              bus.emit('on-fork-height-click')
+              UIStore.dispatch('navigateTabPage', {
+                main: MAIN_TAB.OPERATION,
+                operator: OPERATOR_TAB.FORK
+              })
               bus.emit('open-fork-teach-table');
             }
           })

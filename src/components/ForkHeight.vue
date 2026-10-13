@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import bus from '@/event-bus.js'
-import { AGVStatusStore } from '@/store'
+import { AGVStatusStore, UIStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 export default {
   data() {
     return {
@@ -25,7 +25,10 @@ export default {
   },
   methods: {
     HandleClicked() {
-      bus.emit('on-fork-height-click');
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: OPERATOR_TAB.FORK
+      })
     }
   },
   mounted() {

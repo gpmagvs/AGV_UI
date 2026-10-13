@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import bus from '@/event-bus.js'
+import { UIStore } from '@/store'
+import { MAIN_TAB } from '@/constants/tabPages'
 
 export default {
   name: 'StatusShortcutButton',
@@ -37,15 +38,13 @@ export default {
         || this.$route?.name === 'overview'
         || this.$route?.path === '/'
 
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.STATUS
+      })
+
       if (!isHomeRoute) {
         await this.$router.push('/')
-        await this.$nextTick()
       }
-
-      bus.emit('show-status-page')
-      setTimeout(() => {
-        bus.emit('show-status-page')
-      }, 150)
     }
   }
 }

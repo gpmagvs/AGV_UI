@@ -1,18 +1,13 @@
 <template>
   <div class="agv-operator py-2">
-    <b-tabs class="agv-operator-tabs" :lazy="false" :model-value="current_tab" pills small
+    <b-tabs class="agv-operator-tabs" :lazy="false" :model-value="currentTabIndex" pills small
       @activate-tab="HandleTabpageChanged">
       <b-tab :title="$t('agv_control')">
         <div class="mt-1 p-1 agv-control-tab-pane">
           <AgvControl></AgvControl>
         </div>
       </b-tab>
-      <!-- <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
-        <div class="mt-1 p-1">
-          <ZAxisControl :enabled="operation_enabled_return"></ZAxisControl>
-        </div>
-      </b-tab> -->
-      <b-tab v-show="agv_type == 0" :title="agv_type == 0 ? $t('zaxis_up_down') : ''">
+      <b-tab v-if="agv_type == 0" :title="$t('zaxis_up_down')">
         <div class="mt-1 p-1 fork-side-tab-pane">
           <ForkSideViewVisualization :enabled="operation_enabled_return"></ForkSideViewVisualization>
         </div>
@@ -28,12 +23,12 @@
             :table_data="DIOTableData.Outputs" :isOutput="true"></IOTable>
         </div>
       </b-tab>
-      <b-tab v-show="operation_enabled_return" :title="operation_enabled_return ? $t('manual-operation') : ''">
+      <b-tab v-if="operation_enabled_return" :title="$t('manual-operation')">
         <div class="mt-1 p-1">
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
       </b-tab>
-      <b-tab v-if="operation_enabled_return && isAMCAGV" :title="operation_enabled_return ? 'Sensor/儀器控制' : ''">
+      <b-tab v-if="operation_enabled_return && isAMCAGV" title="Sensor/儀器控制">
         <div class="mt-1 p-1">
           <SensorAndEquipmentControl></SensorAndEquipmentControl>
         </div>
@@ -58,34 +53,11 @@ import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 import IOTable from './IOTable.vue';
 import ManualSettings from './ManualSettings.vue';
 import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';
-import bus from '@/event-bus.js'
-import { UserStore, DIOStore, AGVStatusStore, SystemSettingsStore } from '@/store'
+import { UserStore, DIOStore, AGVStatusStore, SystemSettingsStore, UIStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
 import WheelsAngleAdjust from './WheelsAngleAdjust.vue'
-const TAB_STORAGE_KEY = 'agv_operator_tab'
-const TAB_STORAGE_SCHEMA_KEY = 'agv_operator_tab_schema'
-const TAB_STORAGE_SCHEMA_VERSION = 2
-
-function loadStoredTab(defaultVal = 0) {
-  const raw = localStorage.getItem(TAB_STORAGE_KEY)
-  const schemaRaw = localStorage.getItem(TAB_STORAGE_SCHEMA_KEY)
-  const schema = parseInt(schemaRaw ?? '', 10)
-  if (raw == null) {
-    localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
-    return defaultVal
-  }
-  let n = parseInt(raw, 10)
-  n = Number.isNaN(n) || n < 0 ? defaultVal : n
-
-  // Schema v2 inserted a new fork-control visualization tab at index 2
-  if (schema !== TAB_STORAGE_SCHEMA_VERSION) {
-    if (n >= 2) n = n + 1
-    localStorage.setItem(TAB_STORAGE_KEY, String(n))
-    localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
-  }
-  return n
-}
+import { MAIN_TAB, OPERATOR_TAB, resolveTabIndex, resolveTabId } from '@/constants/tabPages'
 
 export default {
 
@@ -102,61 +74,60 @@ export default {
   data() {
     return {
       type: '',
-
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
       modal_key: '',
-      current_tab: loadStoredTab(0)
     }
   },
   mounted() {
     this.ensureValidTab()
-    this.applyTabSideEffects(this.current_tab)
-    bus.on('on-fork-height-click', () => {
-      this.setCurrentTab(1);
-      this.applyTabSideEffects(1);
-    });
-    bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.setCurrentTab(5);
-      this.applyTabSideEffects(5);
-    });
-    bus.on('show-move-control', () => {
-      this.setCurrentTab(0);
-      this.applyTabSideEffects(0);
-    });
-    bus.on('show-manual-operation', () => {
-      this.setCurrentTab(5);
-      this.applyTabSideEffects(5);
-    });
-    bus.on('show-io-table', (ioType) => {
-      const tabIndex = ioType === 'output' ? 4 : 3;
-      this.setCurrentTab(tabIndex);
-      this.applyTabSideEffects(tabIndex);
-    });
+    this.applyTabSideEffects(UIStore.getters.operatorTabId)
   },
   watch: {
+    agv_type() {
+      this.ensureValidTab()
+    },
     operation_enabled_return() {
       this.ensureValidTab()
     },
     isAMCAGV() {
       this.ensureValidTab()
+    },
+    isShowSaftyPLCIO() {
+      this.ensureValidTab()
+    },
+    isGodMode() {
+      this.ensureValidTab()
+    },
+    isUniversalAGV() {
+      this.ensureValidTab()
+    },
+    storeOperatorTabId(tabId, previousTabId) {
+      if (tabId === previousTabId) return
+      this.applyTabSideEffects(tabId)
     }
   },
   methods: {
-    setCurrentTab(tabIndex) {
-      this.current_tab = tabIndex
-      localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
-      localStorage.setItem(TAB_STORAGE_SCHEMA_KEY, String(TAB_STORAGE_SCHEMA_VERSION))
+    setOperatorTabId(tabId) {
+      UIStore.dispatch('navigateTabPage', { operator: tabId })
     },
     ensureValidTab() {
-      if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
-        this.setCurrentTab(0)
-        this.applyTabSideEffects(0)
+      const ids = this.visibleOperatorTabIds
+      const currentId = UIStore.getters.operatorTabId
+      if (!ids.includes(currentId)) {
+        const fallback = ids[0] || OPERATOR_TAB.MOVE_CONTROL
+        this.setOperatorTabId(fallback)
+        this.applyTabSideEffects(fallback)
       }
     },
-    applyTabSideEffects(currentTabs) {
-      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 0)
-      if (currentTabs != 0) {
+    applyTabSideEffects(tabId) {
+      // 僅在主分頁為操作時才調整鍵盤；離開操作分頁由 TabContainer 負責關閉
+      if (UIStore.getters.mainTabId !== MAIN_TAB.OPERATION) {
+        return
+      }
+      const isMoveControl = tabId === OPERATOR_TAB.MOVE_CONTROL
+      ROS_STORE.dispatch('keyboard_move_enable', isMoveControl)
+      if (!isMoveControl) {
         ROS_STORE.dispatch('force_stop')
       }
     },
@@ -189,11 +160,11 @@ export default {
       }
     },
     HandleTabpageChanged(currentTabs, previousTabs) {
-      this.setCurrentTab(currentTabs);
-      if (currentTabs == previousTabs)
-        return;
-      this.applyTabSideEffects(currentTabs);
-      this.$emit('OnTabChanged', currentTabs);
+      const tabId = resolveTabId(this.visibleOperatorTabIds, currentTabs)
+      if (!tabId) return
+      this.setOperatorTabId(tabId)
+      if (currentTabs == previousTabs) return
+      this.$emit('OnTabChanged', tabId)
     },
   },
   props: {
@@ -217,13 +188,35 @@ export default {
     }
   },
   computed: {
-    /** Sensor / Safety PLC tab 使用 v-if，未顯示時不佔 index；其餘含 v-show 仍佔 index */
-    maxVisibleTabIndex() {
-      // 0 AGV / 1 Fork / 2 Fork+Viz / 3 Input / 4 Output / 5 Manual / (6 Sensor optional) / (7 Safety PLC optional)
-      let max = 5
-      if (this.operation_enabled_return && this.isAMCAGV) max += 1
-      if (this.isShowSaftyPLCIO) max += 1
-      return max
+    storeOperatorTabId() {
+      return UIStore.getters.operatorTabId
+    },
+    /**
+     * 全部條件 tab 使用 v-if，未顯示時不佔 index、不留空白。
+     * visibleOperatorTabIds 必須與模板渲染條件一致。
+     */
+    visibleOperatorTabIds() {
+      const ids = [OPERATOR_TAB.MOVE_CONTROL]
+      if (this.agv_type == 0) {
+        ids.push(OPERATOR_TAB.FORK)
+      }
+      ids.push(OPERATOR_TAB.INPUT, OPERATOR_TAB.OUTPUT)
+      if (this.operation_enabled_return) {
+        ids.push(OPERATOR_TAB.MANUAL)
+      }
+      if (this.operation_enabled_return && this.isAMCAGV) {
+        ids.push(OPERATOR_TAB.SENSOR)
+      }
+      if (this.isShowSaftyPLCIO) {
+        ids.push(OPERATOR_TAB.SAFETY_PLC)
+      }
+      if (this.isGodMode && this.isUniversalAGV) {
+        ids.push(OPERATOR_TAB.WHEELS)
+      }
+      return ids
+    },
+    currentTabIndex() {
+      return resolveTabIndex(this.visibleOperatorTabIds, this.storeOperatorTabId, 0)
     },
     isGodMode() {
       return UserStore.getters.IsGodUser;

@@ -10,6 +10,17 @@ import SystemSettings from '@/ViewModels/SystemSettings'
 import { SystemAPI } from '@/api/VMSAPI';
 import _ from 'lodash'
 import { NotificationAPI, IsNotificationListResponse } from '@/api/NotificationAPI'
+import {
+  MAIN_TAB,
+  OPERATOR_TAB,
+  MAIN_TAB_STORAGE_KEY,
+  OPERATOR_TAB_STORAGE_KEY,
+  loadStoredTabId,
+  saveStoredTabId,
+  clearLegacyTabStorage
+} from '@/constants/tabPages'
+
+clearLegacyTabStorage()
 
 export const store = createStore({
   state: {
@@ -43,7 +54,8 @@ export const UIStore = createStore({
   state: {
     UI_Version: "01.25.0",
     PreviousControllRoute: 'move',
-    CurrentTabSelected: 0,
+    mainTabId: loadStoredTabId(MAIN_TAB_STORAGE_KEY, MAIN_TAB.STATUS),
+    operatorTabId: loadStoredTabId(OPERATOR_TAB_STORAGE_KEY, OPERATOR_TAB.MOVE_CONTROL),
     ConnectionStateData: {
       RosbridgeServer: 2,
       WAGO: 2,
@@ -61,15 +73,23 @@ export const UIStore = createStore({
     PreviousControllRoute: state => {
       return state.PreviousControllRoute;
     },
-    CurrentTabSelected: state => state.CurrentTabSelected,
+    mainTabId: state => state.mainTabId,
+    operatorTabId: state => state.operatorTabId,
     ConnectionState: state => state.ConnectionStateData
   },
   mutations: {
     SetPreviousControllerRoute(state, route) {
       state.PreviousControllRoute = route;
     },
-    SetCurrentTabSelected(state, tab) {
-      state.CurrentTabSelected = tab;
+    SetMainTabId(state, tabId) {
+      if (!tabId) return
+      state.mainTabId = tabId
+      saveStoredTabId(MAIN_TAB_STORAGE_KEY, tabId)
+    },
+    SetOperatorTabId(state, tabId) {
+      if (!tabId) return
+      state.operatorTabId = tabId
+      saveStoredTabId(OPERATOR_TAB_STORAGE_KEY, tabId)
     },
     StoreConnectionState(state, payload) {
       state.ConnectionStateData = payload;
@@ -85,6 +105,19 @@ export const UIStore = createStore({
     async GetConnectionState({ commit }) {
       var ret = await SystemAPI.GetConnectionState();
       commit('StoreConnectionState', ret);
+    },
+    /**
+     * 以語意化 page id 導航主分頁／操作子分頁。
+     * @param {{ main?: string, operator?: string }} payload
+     */
+    navigateTabPage({ commit }, payload = {}) {
+      const { main, operator } = payload
+      if (main) {
+        commit('SetMainTabId', main)
+      }
+      if (operator) {
+        commit('SetOperatorTabId', operator)
+      }
     }
   }
 })

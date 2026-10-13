@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import bus from '@/event-bus.js'
+import { UIStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 
 export default {
   name: 'MoveControlShortcutButton',
@@ -37,17 +38,14 @@ export default {
         || this.$route?.name === 'overview'
         || this.$route?.path === '/'
 
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: OPERATOR_TAB.MOVE_CONTROL
+      })
+
       if (!isHomeRoute) {
         await this.$router.push('/')
-        await this.$nextTick()
       }
-
-      // 與既有 on-fork-height-click 相同模式：主分頁 + 操作子分頁同步切換
-      bus.emit('show-move-control')
-      // 若剛進入首頁，操作分頁元件可能尚未掛載，稍後再送一次
-      setTimeout(() => {
-        bus.emit('show-move-control')
-      }, 150)
     }
   }
 }

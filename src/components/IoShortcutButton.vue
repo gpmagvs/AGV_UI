@@ -26,7 +26,8 @@
 </template>
 
 <script>
-import bus from '@/event-bus.js'
+import { UIStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 
 export default {
   name: 'IoShortcutButton',
@@ -73,15 +74,14 @@ export default {
         || this.$route?.name === 'overview'
         || this.$route?.path === '/'
 
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: ioType === 'output' ? OPERATOR_TAB.OUTPUT : OPERATOR_TAB.INPUT
+      })
+
       if (!isHomeRoute) {
         await this.$router.push('/')
-        await this.$nextTick()
       }
-
-      bus.emit('show-io-table', ioType)
-      setTimeout(() => {
-        bus.emit('show-io-table', ioType)
-      }, 150)
     }
   }
 }

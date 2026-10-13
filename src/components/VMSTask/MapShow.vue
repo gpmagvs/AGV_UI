@@ -98,6 +98,7 @@ import MapAPI from '@/api/MapAPI'
 import bus from '@/event-bus'
 import Notifier from '@/api/NotifyHelper';
 import { map_store, AGVStatusStore, UIStore } from '@/store'
+import { MAIN_TAB } from '@/constants/tabPages'
 // import MapPointSettingDrawer from '@/components/MapPointSettingDrawer.vue'
 
 export default {
@@ -206,7 +207,7 @@ export default {
   },
   computed: {
     isViewing() {
-      return UIStore.getters.CurrentTabSelected == 2 || UIStore.getters.CurrentTabSelected == 4;
+      return UIStore.getters.mainTabId === MAIN_TAB.MAP;
     },
     current_select_featureID() {
       if (this.selected_feature) {

@@ -161,10 +161,10 @@
   </transition>
 </template>
 <script>
-import bus from '@/event-bus.js'
 import VMSData from '@/ViewModels/VMSData.js'
 import { ROS_STORE } from '@/store/ros_store'
-import { UserStore } from '@/store'
+import { UserStore, UIStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 export default {
   props: {
     VMSData: {
@@ -262,7 +262,10 @@ export default {
     HandleLsrModeTagClick() {
       if (!this.IsGodUser)
         return;
-      bus.emit('on-manual-lsr-setting-show-invoke')
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: OPERATOR_TAB.MANUAL
+      })
     }
   },
   mounted() {

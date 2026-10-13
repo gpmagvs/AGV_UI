@@ -3,7 +3,7 @@
   <div class="main-tab-container flex-fill mt-1">
     <b-tabs
       class="amr-main-tabs"
-      :model-value="current_tab"
+      :model-value="currentTabIndex"
       @activate-tab="HandleTabpageChanged">
       <!-- 狀態 -->
       <b-tab :title="$t('status')" style="height: 100%;">
@@ -70,15 +70,7 @@ import { UserStore, UIStore, SystemSettingsStore } from '@/store'
 import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
 import CamDisplay from "@/Camera/CamDisplay.vue"
-
-const TAB_STORAGE_KEY = 'main_content_tab'
-
-function loadStoredTab(defaultVal = 0) {
-  const raw = localStorage.getItem(TAB_STORAGE_KEY)
-  if (raw == null) return defaultVal
-  const n = parseInt(raw, 10)
-  return Number.isNaN(n) || n < 0 ? defaultVal : n
-}
+import { MAIN_TAB, OPERATOR_TAB, resolveTabIndex, resolveTabId } from '@/constants/tabPages'
 
 export default {
   components: { status_card, alarm_warn_table, agv_operator, ForkAGV3D, AGVSMsgDisplay, TaskDeliveryVue, CSTReader, EQHandshakeView, AgvOverview, LogQuery, BatteryView, CamDisplay },
@@ -88,38 +80,9 @@ export default {
       required: true
     },
   },
-  data() {
-    return {
-      current_tab: loadStoredTab(0)
-    }
-  },
   mounted() {
     this.ensureValidTab()
-    this.applyTabSideEffects(this.current_tab)
-    bus.on('on-fork-height-click', () => {
-      this.setCurrentTab(2);
-      this.applyTabSideEffects(2);
-    });
-    bus.on('on-manual-lsr-setting-show-invoke', () => {
-      this.setCurrentTab(2);
-      this.applyTabSideEffects(2);
-    });
-    bus.on('show-move-control', () => {
-      this.setCurrentTab(2);
-      this.applyTabSideEffects(2);
-    });
-    bus.on('show-manual-operation', () => {
-      this.setCurrentTab(2);
-      this.applyTabSideEffects(2);
-    });
-    bus.on('show-io-table', () => {
-      this.setCurrentTab(2);
-      this.applyTabSideEffects(2);
-    });
-    bus.on('show-status-page', () => {
-      this.setCurrentTab(0);
-      this.applyTabSideEffects(0);
-    });
+    this.applyTabSideEffects(UIStore.getters.mainTabId)
   },
   watch: {
     IsVisitor() {
@@ -127,52 +90,86 @@ export default {
     },
     IsGodMod() {
       this.ensureValidTab()
+    },
+    IsCstIDReadable() {
+      this.ensureValidTab()
+    },
+    storeMainTabId(tabId, previousTabId) {
+      if (tabId === previousTabId) return
+      this.applyTabSideEffects(tabId)
     }
   },
   methods: {
-    setCurrentTab(tabIndex) {
-      this.current_tab = tabIndex
-      localStorage.setItem(TAB_STORAGE_KEY, String(tabIndex))
-      UIStore.commit('SetCurrentTabSelected', tabIndex)
+    setMainTabId(tabId) {
+      UIStore.dispatch('navigateTabPage', { main: tabId })
     },
     /** 權限不足導致先前 tab 不存在時，回到第一個可見 tab */
     ensureValidTab() {
-      if (this.current_tab < 0 || this.current_tab > this.maxVisibleTabIndex) {
-        this.setCurrentTab(0)
-        this.applyTabSideEffects(0)
+      const ids = this.visibleMainTabIds
+      const currentId = UIStore.getters.mainTabId
+      if (!ids.includes(currentId)) {
+        const fallback = ids[0] || MAIN_TAB.STATUS
+        this.setMainTabId(fallback)
+        this.applyTabSideEffects(fallback)
       }
     },
-    applyTabSideEffects(currentTabs) {
-      UIStore.commit('SetCurrentTabSelected', currentTabs)
-      if (currentTabs == 1) {
+    applyTabSideEffects(tabId) {
+      if (tabId === MAIN_TAB.ALARM) {
         bus.emit('/alarmtable_tab_click')
       }
-      if (currentTabs == 6) {
+      if (tabId === MAIN_TAB.MAP) {
         bus.emit('local-task-view-shown')
       }
-      ROS_STORE.dispatch('keyboard_move_enable', currentTabs == 2)
-      if (currentTabs != 2) {
+      const isOperation = tabId === MAIN_TAB.OPERATION
+      if (!isOperation) {
+        ROS_STORE.dispatch('keyboard_move_enable', false)
+        ROS_STORE.dispatch('force_stop')
+        return
+      }
+      // 進入操作分頁時依子分頁決定，避免與 AgvOperator 導航競態
+      const isMoveControl = UIStore.getters.operatorTabId === OPERATOR_TAB.MOVE_CONTROL
+      ROS_STORE.dispatch('keyboard_move_enable', isMoveControl)
+      if (!isMoveControl) {
         ROS_STORE.dispatch('force_stop')
       }
     },
     HandleTabpageChanged(currentTabs, previousTabs) {
-      this.setCurrentTab(currentTabs);
-      if (currentTabs == previousTabs)
-        return;
-      this.applyTabSideEffects(currentTabs);
-      this.$emit('OnTabChanged', currentTabs);
+      const tabId = resolveTabId(this.visibleMainTabIds, currentTabs)
+      if (!tabId) return
+      this.setMainTabId(tabId)
+      if (currentTabs == previousTabs) return
+      this.$emit('OnTabChanged', tabId)
     },
   },
   computed: {
+    storeMainTabId() {
+      return UIStore.getters.mainTabId
+    },
     /**
      * b-tabs 只計算實際渲染的 tab；v-if=false / 無權限的 tab 不佔 index。
-     * 固定可見：狀態、異常、操作、E84、地圖 → 5 個 (index 0~4)
+     * 固定可見：狀態、異常、操作、E84、地圖
      */
-    maxVisibleTabIndex() {
-      let count = 5
-      if (!this.IsVisitor) count += 2 // CST Reader, Overview
-      if (this.IsGodMod) count += 1 // Log
-      return count - 1
+    visibleMainTabIds() {
+      const ids = [
+        MAIN_TAB.STATUS,
+        MAIN_TAB.ALARM,
+        MAIN_TAB.OPERATION,
+        MAIN_TAB.E84,
+        MAIN_TAB.MAP
+      ]
+      if (!this.IsVisitor && this.IsCstIDReadable) {
+        ids.push(MAIN_TAB.CST_READER)
+      }
+      if (!this.IsVisitor) {
+        ids.push(MAIN_TAB.OVERVIEW)
+      }
+      if (this.IsGodMod) {
+        ids.push(MAIN_TAB.LOG)
+      }
+      return ids
+    },
+    currentTabIndex() {
+      return resolveTabIndex(this.visibleMainTabIds, this.storeMainTabId, 0)
     },
     IsGodMod() {
       return UserStore.getters.IsGodUser

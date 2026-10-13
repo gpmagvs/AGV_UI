@@ -207,6 +207,7 @@ import VMSData from '@/ViewModels/VMSData.js'
 import Notifier from "@/api/NotifyHelper.js"
 import { ElNotification, ElMessage } from 'element-plus'
 import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore, DIOStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 import moment from 'moment'
 import MainContent from '@/components/MainContent/TabContainer.vue'
 import AGVLocalization from '@/components/AGVLocalization.vue'
@@ -615,7 +616,10 @@ export default {
 
     },
     HandleForkHeightTitleClick() {
-      bus.emit('on-fork-height-click')
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: OPERATOR_TAB.FORK
+      })
     }
   },
   computed: {
@@ -782,7 +786,7 @@ export default {
     orderInfoContinerStyle() {
       //position:absolute;right: 9px;bottom: 0;
       var isAlarmShow = AGVStatusStore.getters.AlarmCodes.length > 0;
-      var isHomeViewShow = UIStore.getters.CurrentTabSelected == 0;
+      var isHomeViewShow = UIStore.getters.mainTabId === MAIN_TAB.STATUS;
       if (isAlarmShow) {
         return {
           position: 'absolute',

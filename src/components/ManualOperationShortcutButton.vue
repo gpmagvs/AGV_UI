@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import bus from '@/event-bus.js'
+import { UIStore } from '@/store'
+import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 
 export default {
   name: 'ManualOperationShortcutButton',
@@ -30,15 +31,14 @@ export default {
         || this.$route?.name === 'overview'
         || this.$route?.path === '/'
 
+      UIStore.dispatch('navigateTabPage', {
+        main: MAIN_TAB.OPERATION,
+        operator: OPERATOR_TAB.MANUAL
+      })
+
       if (!isHomeRoute) {
         await this.$router.push('/')
-        await this.$nextTick()
       }
-
-      bus.emit('show-manual-operation')
-      setTimeout(() => {
-        bus.emit('show-manual-operation')
-      }, 150)
     }
   }
 }
