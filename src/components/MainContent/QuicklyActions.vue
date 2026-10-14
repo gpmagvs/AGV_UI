@@ -1,21 +1,74 @@
 <template>
-  <div v-if="isShow" class="quickly-actions d-flex">
-    <div class="d-flex flex-row justify-content-between w-100 align-items-center">
-      <div class="d-flex flex-row align-items-center gap-2">
-        <div v-if="isShowCstReaderSwitch" class="d-flex flex-row align-items-center">
-          <span># {{ $t('cargo_id_read') }}:</span>
-          <el-switch v-model="cstIdRead" class="mx-2" active-text="ON" inactive-color="red" inactive-text="OFF"
-            inline-prompt @change="(val) => { SaveReaderSettings(val); }"></el-switch>
+  <div v-if="isShow" class="quickly-actions">
+    <div class="qa-bar">
+      <div class="qa-left">
+        <div v-if="isShowCstReaderSwitch && !isOverflow('cst')" class="qa-item qa-cst">
+          <span class="qa-cst-label"># {{ $t('cargo_id_read') }}:</span>
+          <el-switch
+            v-model="cstIdRead"
+            class="mx-2"
+            active-text="ON"
+            inactive-color="red"
+            inactive-text="OFF"
+            inline-prompt
+            @change="(val) => { SaveReaderSettings(val); }"
+          />
         </div>
         <SaftyPLCStatus v-if="isShowSaftyPLCStatus" />
       </div>
 
-      <div class="d-flex flex-row align-items-center gap-2">
-        <CheckParamSettingButton />
-        <LaserSpeedStatus />
-        <CpuStatus />
-        <RamStatus />
-        <DiskStatus />
+      <div class="qa-right">
+        <CheckParamSettingButton v-if="!isOverflow('checkParam')" />
+        <LaserSpeedStatus v-if="!isOverflow('laser')" />
+        <CpuStatus v-if="!isOverflow('cpu')" />
+        <RamStatus v-if="!isOverflow('ram')" />
+        <DiskStatus v-if="!isOverflow('disk')" />
+
+        <el-popover
+          v-if="hasOverflow"
+          placement="top-end"
+          :width="320"
+          trigger="click"
+          :teleported="true"
+          popper-class="qa-more-popper"
+        >
+          <template #reference>
+            <button type="button" class="qa-more-btn">
+              {{ $t('quickly_actions.more') }}
+              <i class="bi bi-chevron-up ms-1" aria-hidden="true"></i>
+            </button>
+          </template>
+          <div class="qa-more-panel">
+            <div class="qa-more-title">{{ $t('quickly_actions.more_title') }}</div>
+            <div v-if="isShowCstReaderSwitch && isOverflow('cst')" class="qa-more-row qa-cst">
+              <span class="qa-cst-label"># {{ $t('cargo_id_read') }}:</span>
+              <el-switch
+                v-model="cstIdRead"
+                class="mx-2"
+                active-text="ON"
+                inactive-color="red"
+                inactive-text="OFF"
+                inline-prompt
+                @change="(val) => { SaveReaderSettings(val); }"
+              />
+            </div>
+            <div v-if="isOverflow('checkParam')" class="qa-more-row">
+              <CheckParamSettingButton />
+            </div>
+            <div v-if="isOverflow('laser')" class="qa-more-row">
+              <LaserSpeedStatus />
+            </div>
+            <div v-if="isOverflow('cpu')" class="qa-more-row">
+              <CpuStatus />
+            </div>
+            <div v-if="isOverflow('ram')" class="qa-more-row">
+              <RamStatus />
+            </div>
+            <div v-if="isOverflow('disk')" class="qa-more-row">
+              <DiskStatus />
+            </div>
+          </div>
+        </el-popover>
       </div>
     </div>
   </div>
@@ -32,6 +85,16 @@ import LaserSpeedStatus from './LaserSpeedStatus.vue';
 import CheckParamSettingButton from './CheckParamSettingButton.vue';
 import SaftyPLCStatus from '../SaftyPLC/SaftyPLCStatus.vue';
 
+/** 寬度越窄，overflowLevel 越高；數字越大越先藏進「更多」 */
+const OVERFLOW_BY_KEY = {
+  disk: 1,
+  ram: 1,
+  cpu: 2,
+  laser: 3,
+  checkParam: 4,
+  cst: 4,
+}
+
 export default {
   components: {
     CpuStatus,
@@ -46,9 +109,22 @@ export default {
       cstIdRead: false,
       settingsStored: undefined,
       saveSettingsTimeout: undefined,
+      overflowLevel: 0,
     }
   },
   methods: {
+    isOverflow(key) {
+      const need = OVERFLOW_BY_KEY[key] || 0
+      return this.overflowLevel >= need
+    },
+    updateOverflowLevel() {
+      const width = window.innerWidth
+      if (width >= 1280) this.overflowLevel = 0
+      else if (width >= 1080) this.overflowLevel = 1
+      else if (width >= 900) this.overflowLevel = 2
+      else if (width >= 720) this.overflowLevel = 3
+      else this.overflowLevel = 4
+    },
     async SaveReaderSettings(val) {
       // Debounce the save operation
       if (this.saveSettingsTimeout) {
@@ -120,6 +196,9 @@ export default {
     }
   },
   computed: {
+    hasOverflow() {
+      return this.overflowLevel > 0
+    },
     isShow() {
       if (SystemSettingsStore.state.Settings.UI == undefined || SystemSettingsStore.state.Settings.UI.IsQuicklyActionFooterDisplay == undefined)
         return true;
@@ -137,6 +216,9 @@ export default {
     }
   },
   mounted() {
+    this.updateOverflowLevel()
+    window.addEventListener('resize', this.updateOverflowLevel)
+
     setTimeout(() => {
       if (!SystemSettingsStore.state.IsSettingsLoaded) {
         this.$swal.fire(
@@ -166,17 +248,98 @@ export default {
       }
     })
   },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateOverflowLevel)
+    if (this.saveSettingsTimeout) {
+      clearTimeout(this.saveSettingsTimeout)
+    }
+  },
 }
 </script>
 <style lang="scss" scoped>
 .quickly-actions {
   z-index: 1099999;
+  width: 100%;
+  min-width: 0;
   font-size: 14px;
   color: rgb(92, 94, 98) !important;
   font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans', 'Arial', 'sans-serif' !important;
+}
 
+.qa-bar {
   display: flex;
-  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.qa-left,
+.qa-right {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.qa-right {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.qa-item,
+.qa-cst {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.qa-cst-label {
+  white-space: nowrap;
+}
+
+.qa-more-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid #cfd8dc;
+  border-radius: 13px;
+  background: #fff;
+  color: #455a64;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #90a4ae;
+    background: #f5f7fa;
+  }
+}
+
+.qa-more-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qa-more-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #607d8b;
+  letter-spacing: 0.04em;
+}
+
+.qa-more-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 </style>
