@@ -66,7 +66,7 @@ import AgvOverview from '@/components/AGVStatusOverview.vue';
 import BatteryView from "@/views/BatteryView.vue"
 import VMSData from '@/ViewModels/VMSData.js';
 import bus from '@/event-bus.js'
-import { UserStore, UIStore, SystemSettingsStore } from '@/store'
+import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore } from '@/store'
 import LogQuery from '@/components/Log/LogQuery.vue'
 import { ROS_STORE } from "@/store/ros_store"
 import CamDisplay from "@/Camera/CamDisplay.vue"
@@ -82,7 +82,6 @@ export default {
   },
   mounted() {
     this.ensureValidTab()
-    this.applyTabSideEffects(UIStore.getters.mainTabId)
   },
   watch: {
     IsVisitor() {
@@ -94,7 +93,10 @@ export default {
     IsCstIDReadable() {
       this.ensureValidTab()
     },
-    storeMainTabId(tabId, previousTabId) {
+    IsTabDataReady() {
+      this.ensureValidTab()
+    },
+    displayMainTabId(tabId, previousTabId) {
       if (tabId === previousTabId) return
       this.applyTabSideEffects(tabId)
     }
@@ -103,15 +105,14 @@ export default {
     setMainTabId(tabId) {
       UIStore.dispatch('navigateTabPage', { main: tabId })
     },
-    /** 權限不足導致先前 tab 不存在時，回到第一個可見 tab */
+    /**
+     * 權限不足導致先前 tab 不存在時，畫面暫時顯示第一個可見 tab（displayMainTabId）。
+     * 不寫回 store/localStorage，使用者儲存的選擇保留；之後該 tab 變為可見時會再顯示。
+     * 設定與第一筆車況到齊前不校正（可見 tab 列表尚未確定）。
+     */
     ensureValidTab() {
-      const ids = this.visibleMainTabIds
-      const currentId = UIStore.getters.mainTabId
-      if (!ids.includes(currentId)) {
-        const fallback = ids[0] || MAIN_TAB.STATUS
-        this.setMainTabId(fallback)
-        this.applyTabSideEffects(fallback)
-      }
+      if (!this.IsTabDataReady) return
+      this.applyTabSideEffects(this.displayMainTabId)
     },
     applyTabSideEffects(tabId) {
       if (tabId === MAIN_TAB.ALARM) {
@@ -136,6 +137,8 @@ export default {
     HandleTabpageChanged(currentTabs, previousTabs) {
       const tabId = resolveTabId(this.visibleMainTabIds, currentTabs)
       if (!tabId) return
+      // 顯示的是校正後的 fallback 時（非使用者點擊切換），不覆寫儲存的選擇
+      if (tabId === this.displayMainTabId) return
       this.setMainTabId(tabId)
       if (currentTabs == previousTabs) return
       this.$emit('OnTabChanged', tabId)
@@ -168,8 +171,18 @@ export default {
       }
       return ids
     },
+    /** 設定與第一筆車況都到了，可見 tab 列表才可信 */
+    IsTabDataReady() {
+      return SystemSettingsStore.getters.IsSettingsLoaded && AGVStatusStore.getters.IsFirstStatusReceived
+    },
+    /** 實際顯示的主分頁：儲存的 tab 可見就顯示，否則暫時顯示第一個可見 tab */
+    displayMainTabId() {
+      const ids = this.visibleMainTabIds
+      if (ids.includes(this.storeMainTabId)) return this.storeMainTabId
+      return ids[0] || MAIN_TAB.STATUS
+    },
     currentTabIndex() {
-      return resolveTabIndex(this.visibleMainTabIds, this.storeMainTabId, 0)
+      return resolveTabIndex(this.visibleMainTabIds, this.displayMainTabId, 0)
     },
     IsGodMod() {
       return UserStore.getters.IsGodUser
