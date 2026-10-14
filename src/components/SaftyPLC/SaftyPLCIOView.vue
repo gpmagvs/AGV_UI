@@ -180,20 +180,9 @@
 import { QuestionFilled } from '@element-plus/icons-vue'
 import { SaftyPLCStore, UserStore } from '@/store'
 import { SaftyPLCAPI } from '@/api/SaftyPLCAPI.js'
+import { getAppBottomReservedPx } from '@/utils/layoutInsets'
 
-const BOTTOM_GAP_PX = 8
-const FOOTER_FALLBACK_PX = 120
 const MIN_TABLE_HEIGHT_PX = 240
-
-function getBottomReservedPx() {
-    const footer = document.querySelector('.home-view-footer')
-    if (footer) {
-        const rect = footer.getBoundingClientRect()
-        const covered = Math.max(0, Math.ceil(window.innerHeight - rect.top))
-        return covered + BOTTOM_GAP_PX
-    }
-    return FOOTER_FALLBACK_PX + BOTTOM_GAP_PX
-}
 
 export default {
     name: 'SaftyPLCIOView',
@@ -288,7 +277,7 @@ export default {
                 const wrap = this.$refs.tableWrap
                 if (wrap) {
                     const top = wrap.getBoundingClientRect().top
-                    const available = Math.floor(window.innerHeight - top - getBottomReservedPx())
+                    const available = Math.floor(window.innerHeight - top - getAppBottomReservedPx())
                     this.tableHeight = Math.max(available, MIN_TABLE_HEIGHT_PX)
                 }
                 this.$refs.table?.doLayout?.()

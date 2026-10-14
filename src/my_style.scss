@@ -1,3 +1,8 @@
+/* 主頁底部 fixed footer 高度（與 HomeView --app-bottom-footer-height 對齊） */
+:root {
+  --app-bottom-footer-height: 38px;
+}
+
 .swal2-container {
   /* 需高於 SaftyPLCStatus dialog (1200000) 與 quickly-actions footer */
   z-index: 1300000 !important;

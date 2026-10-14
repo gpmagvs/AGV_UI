@@ -11,7 +11,7 @@
       </b-tab>
       <!--Alarm Table-->
       <b-tab :title="$t('abnormal-record')">
-        <div class="table-container-div p-1">
+        <div class="table-container-div alarm-tab-pane p-1">
           <alarm_warn_table></alarm_warn_table>
         </div>
       </b-tab>
@@ -205,6 +205,9 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* 避開主頁 fixed-bottom QuickActions，避免分頁／底部操作被遮擋 */
+  padding-bottom: calc(var(--app-bottom-footer-height, 38px) + 8px);
+  box-sizing: border-box;
   background: var(--amr-tab-surface);
   border: 1px solid var(--amr-tab-line);
 
@@ -287,6 +290,26 @@ export default {
 
   :deep(.tab-pane) {
     height: 100%;
+  }
+
+  :deep(.tab-pane.active) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .alarm-tab-pane {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    :deep(.alarm-history) {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="shortcut-buttons-container">
+  <div v-if="visible" class="shortcut-buttons-container">
     <StatusShortcutButton></StatusShortcutButton>
     <ManualOperationShortcutButton></ManualOperationShortcutButton>
     <IoShortcutButton></IoShortcutButton>
@@ -20,6 +20,17 @@ export default {
     ManualOperationShortcutButton,
     IoShortcutButton,
     StatusShortcutButton
+  },
+  computed: {
+    visible() {
+      const routeName = this.$route?.name
+      const routePath = this.$route?.path || ''
+      // 全頁編輯／特殊頁面不顯示快捷鈕，避免蓋住內容
+      if (routeName === 'alarmTableEdit' || routePath === '/alarmTableEdit') return false
+      if (routeName === 'tsmc-hmi' || routePath === '/tsmc') return false
+      if (routeName === 'idle' || routePath === '/idle') return false
+      return true
+    }
   }
 }
 </script>

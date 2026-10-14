@@ -162,7 +162,7 @@
         <!--主要內容 TabControl-->
         <div class="d-flex flex-column main-column" style="flex: 1 1 0; min-width: 0">
           <MainContent class="flex-fill" :VMSData="VMSData"></MainContent>
-          <div class="border rounded bg-light py-1 px-2 fixed-bottom" style="height:38px;">
+          <div class="app-bottom-footer border rounded bg-light py-1 px-2 fixed-bottom">
             <QuickActions></QuickActions>
           </div>
         </div>
@@ -869,6 +869,13 @@ export default {
 <style lang="scss">
 :root {
   --side-menu-width: 250px;
+  /* 主頁底部 QuickActions fixed footer；內容區與表格高度計算需預留 */
+  --app-bottom-footer-height: 38px;
+}
+
+.app-bottom-footer {
+  height: var(--app-bottom-footer-height);
+  z-index: 1030;
 }
 
 .main-content {
