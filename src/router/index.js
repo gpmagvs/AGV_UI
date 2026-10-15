@@ -43,6 +43,11 @@ const routes = [
             path: 'fork',
             name: 'fork-control',
             component: () => import('@/components/Controller/ForkController.vue')
+          },
+          {
+            path: 'robot',
+            name: 'robot-control',
+            component: () => import('@/components/Operator/RobotControl.vue')
           }
         ]
       }
@@ -77,6 +82,10 @@ const routes = [
           {
             path: 'fork',
             component: () => import('../components/Controller/ForkController.vue')
+          },
+          {
+            path: 'robot',
+            component: () => import('../components/Operator/RobotControl.vue')
           }
         ]
       },

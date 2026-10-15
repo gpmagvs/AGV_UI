@@ -1,24 +1,37 @@
 <template>
   <div class="py-5" style="height:680px;width:100%;padding-inline:5px">
     <div class="d-flex flex-row">
-      <div class="switch-btn">
-        <div v-if="currentRoute=='/v2/controller/fork'">
+      <div class="switch-btn d-flex flex-column gap-2">
+        <div v-if="!isMoveRoute">
           <img
             @click="controllSwitch('move')"
             class="border bg-dark"
             src="/images/move.png"
             width="90"
             alt
+            title="Move"
           />
         </div>
-        <div v-if="isForkAGV&&currentRoute=='/v2/controller/move'">
+        <div v-if="isForkAGV&&!isForkRoute">
           <img
             @click="controllSwitch('fork')"
             class="border bg-dark"
             src="/images/lift.png"
             width="90"
             alt
+            title="Fork"
           />
+        </div>
+        <div v-if="!isRobotRoute">
+          <el-button
+            class="robot-switch-btn"
+            type="primary"
+            circle
+            @click="controllSwitch('robot')"
+            title="Robot"
+          >
+            R
+          </el-button>
         </div>
       </div>
       <div
@@ -67,6 +80,15 @@ export default {
       var route = this.$route.path;
       return route
     },
+    isMoveRoute() {
+      return this.currentRoute.endsWith('/move') || this.currentRoute.endsWith('/controller')
+    },
+    isForkRoute() {
+      return this.currentRoute.endsWith('/fork')
+    },
+    isRobotRoute() {
+      return this.currentRoute.endsWith('/robot')
+    },
     isForkAGV() {
       return AGVStatusStore.getters.IsForkAGV;
     },
@@ -99,6 +121,13 @@ img {
 .switch-btn {
   img {
     border-radius: 100px;
+  }
+
+  .robot-switch-btn {
+    width: 90px;
+    height: 90px;
+    font-size: 28px;
+    font-weight: 700;
   }
 }
 </style>

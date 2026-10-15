@@ -17,6 +17,7 @@ export const OPERATOR_TAB = Object.freeze({
   INPUT: 'input',
   OUTPUT: 'output',
   MANUAL: 'manual',
+  ROBOT: 'robot',
   SENSOR: 'sensor',
   SAFETY_PLC: 'safety-plc',
   WHEELS: 'wheels'

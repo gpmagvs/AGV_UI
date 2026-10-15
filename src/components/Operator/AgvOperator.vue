@@ -28,6 +28,14 @@
           <ManualSettings :enabled="operation_enabled_return"></ManualSettings>
         </div>
       </b-tab>
+      <b-tab v-if="operation_enabled_return && hasRobotArm" :title="$t('robot.tab_title')">
+        <div class="mt-1 p-1 robot-tab-pane">
+          <RobotControl
+            :enabled="operation_enabled_return"
+            :active="isRobotTabActive"
+          ></RobotControl>
+        </div>
+      </b-tab>
       <b-tab v-if="operation_enabled_return && isAMCAGV" title="Sensor/儀器控制">
         <div class="mt-1 p-1">
           <SensorAndEquipmentControl></SensorAndEquipmentControl>
@@ -53,11 +61,13 @@ import ForkSideViewVisualization from './ForkSideViewVisualization.vue'
 import IOTable from './IOTable.vue';
 import ManualSettings from './ManualSettings.vue';
 import SensorAndEquipmentControl from './SensorAndEquipmentControl.vue';
+import RobotControl from './RobotControl.vue'
 import { UserStore, DIOStore, AGVStatusStore, SystemSettingsStore, UIStore } from '@/store'
 import { ROS_STORE } from "@/store/ros_store"
 import SaftyPLCIOView from '@/components/SaftyPLC/SaftyPLCIOView.vue'
 import WheelsAngleAdjust from './WheelsAngleAdjust.vue'
 import { MAIN_TAB, OPERATOR_TAB, resolveTabIndex, resolveTabId } from '@/constants/tabPages'
+import { RobotAPI } from '@/api/RobotAPI'
 
 export default {
 
@@ -68,6 +78,7 @@ export default {
     IOTable,
     ManualSettings,
     SensorAndEquipmentControl,
+    RobotControl,
     SaftyPLCIOView,
     WheelsAngleAdjust
   },
@@ -77,9 +88,11 @@ export default {
       trigger_admin_dialog_count: 5,
       version_text_click_count: 0,
       modal_key: '',
+      hasRobotArm: false,
     }
   },
   mounted() {
+    this.ProbeRobotArm()
     this.ensureValidTab()
     this.applyTabSideEffects(UIStore.getters.operatorTabId)
   },
@@ -102,12 +115,24 @@ export default {
     isUniversalAGV() {
       this.ensureValidTab()
     },
+    hasRobotArm() {
+      this.ensureValidTab()
+    },
     storeOperatorTabId(tabId, previousTabId) {
       if (tabId === previousTabId) return
       this.applyTabSideEffects(tabId)
     }
   },
   methods: {
+    async ProbeRobotArm() {
+      try {
+        const info = await RobotAPI.HasRobot()
+        this.hasRobotArm = !!(info?.hasRobot ?? info?.HasRobot)
+      } catch {
+        this.hasRobotArm = false
+      }
+      this.ensureValidTab()
+    },
     setOperatorTabId(tabId) {
       UIStore.dispatch('navigateTabPage', { operator: tabId })
     },
@@ -204,6 +229,9 @@ export default {
       if (this.operation_enabled_return) {
         ids.push(OPERATOR_TAB.MANUAL)
       }
+      if (this.operation_enabled_return && this.hasRobotArm) {
+        ids.push(OPERATOR_TAB.ROBOT)
+      }
       if (this.operation_enabled_return && this.isAMCAGV) {
         ids.push(OPERATOR_TAB.SENSOR)
       }
@@ -232,6 +260,10 @@ export default {
     },
     isUniversalAGV() {
       return AGVStatusStore.getters.IsUniversalAGV
+    },
+    isRobotTabActive() {
+      return UIStore.getters.mainTabId === MAIN_TAB.OPERATION
+        && UIStore.getters.operatorTabId === OPERATOR_TAB.ROBOT
     },
     DIOTableData() {
       return DIOStore.getters.DIOStates
@@ -284,6 +316,15 @@ export default {
   }
 
   .fork-side-tab-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .robot-tab-pane {
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;
