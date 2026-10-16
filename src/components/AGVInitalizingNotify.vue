@@ -2,7 +2,7 @@
     <transition name="el-zoom-in-center">
         <div v-show="IsAGVInitializing" ref="notifyPanel" class="init-notify"
             :class="{ 'is-dragging': isDragging, 'is-minimized': minimize }" :style="panelStyle"
-            @mousedown="onDragStart">
+            @mousedown="!minimize && onDragStart($event)">
             <div class="init-notify__icon" aria-hidden="true">
                 <i class="bi bi-arrow-repeat init-notify__spinner"></i>
             </div>
@@ -53,7 +53,9 @@ export default {
         },
         panelStyle() {
             const style = {}
-            if (this.hasCustomPosition) {
+            // 縮小時不套用拖曳座標，讓 .is-minimized 的右下角停靠 CSS 生效；
+            // position 仍保留，展開後會還原使用者拖曳過的位置
+            if (this.hasCustomPosition && !this.minimize) {
                 style.left = `${this.position.left}px`
                 style.top = `${this.position.top}px`
                 style.right = 'auto'
