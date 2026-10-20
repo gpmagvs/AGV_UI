@@ -37,10 +37,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-/* 與 Mileage 共用 .side-metric-value；警示僅改顏色，不改變盒模型 */
-.side-metric-value.is-warning > div {
-  color: #b45309;
-}
-</style>

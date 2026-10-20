@@ -35,7 +35,9 @@ export default {
 /* 側欄計量數值共用樣式（里程數、牙叉高度） */
 .side-metric-value {
   font-size: 20px;
+  font-weight: 700;
   line-height: 1.2;
+  color: var(--side-text, #0f172a);
 
   > div {
     display: inline-flex;
@@ -46,8 +48,15 @@ export default {
 
   span {
     font-size: 0.65em;
+    font-weight: 500;
     line-height: 1;
-    opacity: 0.75;
+    color: var(--side-muted, #64748b);
+    opacity: 0.85;
+  }
+
+  /* 警示僅改顏色，不改變盒模型（牙叉超高、Tag／定位異常等） */
+  &.is-warning > div {
+    color: #b45309;
   }
 }
 </style>

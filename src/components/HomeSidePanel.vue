@@ -64,52 +64,19 @@
           </div>
         </div>
 
-        <div class="side-section side-section-meter coordination">
-          <div v-if="IOConnected && isBrakeSwitchRelease && !Is_TSMC_MiniAGV" class="coord-rich">
-            <div class="tag-block">
-              <div class="section-label is-center">Tag</div>
-              <el-tag class="tag-display" :type="VMSData.BCR_State_MoveBase.tagID == 0 ? 'danger' : 'success'">
-                {{ VMSData.BCR_State_MoveBase.tagID }}
-              </el-tag>
+        <div class="side-section side-section-meter telemetry">
+          <div class="telemetry-body">
+            <TagCoordinationSection
+              :vms-data="VMSData"
+              :io-connected="IOConnected"
+              :is-brake-switch-release="isBrakeSwitchRelease"
+              :is-inspection-agv="Is_TSMC_MiniAGV"
+              @localize="HandleLocalizationClick"
+            />
+            <div class="side-metrics__row">
+              <ForkHeightSection v-if="Is_Fork_AGV" />
+              <MileageSection />
             </div>
-            <div class="offset-block">
-              <div class="section-label is-center">偏移量</div>
-              <el-form-item class="coord-field" label="X">
-                <b-form-input class="text-center" size="sm" disabled
-                  v-model.number="VMSData.BCR_State_MoveBase.xValue"></b-form-input>
-              </el-form-item>
-              <el-form-item class="coord-field" label="Y">
-                <b-form-input class="text-center" size="sm" disabled
-                  v-model.number="VMSData.BCR_State_MoveBase.yValue"></b-form-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div v-else class="coord-compact">
-            <div class="coord-field-wrap" v-if="!Is_TSMC_MiniAGV">
-              <div class="section-label">Tag</div>
-              <b-form-input class="coord-input-sm text-center" size="sm" disabled
-                v-model="VMSData.BCR_State_MoveBase.tagID" :state="VMSData.BCR_State_MoveBase.tagID > 0"></b-form-input>
-            </div>
-            <div class="coord-field-wrap" v-else>
-              <div class="section-label">Location</div>
-              <b-form-input class="coord-input-sm text-center" size="sm" disabled
-                v-model="VMSData.Last_Visited_Tag"></b-form-input>
-            </div>
-            <div class="coord-field-wrap">
-              <div class="section-label">{{ $t('coordination') }}</div>
-              <b-form-input class="coord-input-md text-center" size="sm" disabled :state="VMSData.LocStatus == 10"
-                v-model="Coordination"></b-form-input>
-            </div>
-          </div>
-          <el-button v-if="Is_TSMC_MiniAGV" class="loc-btn" effect="dark" size="small" @click="HandleLocalizationClick">
-            定位
-          </el-button>
-        </div>
-
-        <div class="side-section side-section-meter side-metrics">
-          <div class="side-metrics__row">
-            <ForkHeightSection v-if="Is_Fork_AGV" />
-            <MileageSection />
           </div>
         </div>
       </div>
@@ -132,6 +99,7 @@
 <script>
 import ForkHeightSection from '@/components/ForkHeightSection.vue'
 import MileageSection from '@/components/MileageSection.vue'
+import TagCoordinationSection from '@/components/TagCoordinationSection.vue'
 import emo from '@/components/EMOButton.vue'
 import login from '@/components/Login.vue'
 import connection_state from '@/components/ConnectionStates.vue'
@@ -156,6 +124,7 @@ export default {
     AGVLocalization,
     ForkHeightSection,
     MileageSection,
+    TagCoordinationSection,
   },
   props: {
     backEndServerErr: {
@@ -213,9 +182,6 @@ export default {
     },
     UserName() {
       return UserStore.getters.CurrentUserName
-    },
-    Coordination() {
-      return `(${this.VMSData.Pose.position.x.toFixed(2)},${this.VMSData.Pose.position.y.toFixed(2)})`
     },
     IsBuzzerMute() {
       return !SystemSettingsStore.getters.Settings?.BuzzerOn
@@ -706,9 +672,9 @@ export default {
 .mode-item-label {
   flex: 1 1 auto;
   min-width: 0;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
-  color: var(--side-muted);
+  color: var(--side-text);
   letter-spacing: 0.01em;
 }
 
@@ -785,100 +751,16 @@ export default {
   }
 }
 
-.coord-rich {
-  display: flex;
-  width: 100%;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.tag-block {
-  flex: 0 0 auto;
-}
-
-.tag-display {
-  width: 100px !important;
-  height: 85px !important;
-  font-size: 58px !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px !important;
-  font-weight: 700 !important;
-  font-variant-numeric: tabular-nums !important;
-  line-height: 1 !important;
-}
-
-.offset-block {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.coord-field {
-  margin-bottom: 4px !important;
-
-  &:last-child {
-    margin-bottom: 0 !important;
+/* Tag／座標／牙叉／里程：共用一個遙測淺底，不各自套框 */
+.telemetry {
+  .telemetry-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 8px;
+    background: var(--side-well);
+    border-radius: 4px;
   }
-
-  :deep(.el-form-item__label) {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--side-muted);
-  }
-
-  :deep(.form-control),
-  :deep(input) {
-    background: #fff;
-    border-color: var(--side-line);
-    text-align: center !important;
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-.coord-compact {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  padding: 0;
-}
-
-.coord-field-wrap {
-  min-width: 0;
-
-  :deep(.form-control),
-  :deep(input) {
-    background: #fff;
-    border-color: var(--side-line);
-    text-align: center !important;
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-.coordination {
-
-  :deep(.form-control),
-  :deep(input.form-control),
-  :deep(input) {
-    text-align: center !important;
-  }
-}
-
-.coord-input-sm {
-  width: 70px;
-  text-align: center !important;
-}
-
-.coord-input-md {
-  width: 120px;
-  text-align: center !important;
-}
-
-.loc-btn {
-  margin-top: 4px;
 }
 
 .side-metrics__row {

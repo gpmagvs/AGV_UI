@@ -1,6 +1,6 @@
 <template>
   <SideMetricSection
-    title="牙叉高度"
+    :title="titleText"
     icon-class="bi bi-arrow-down-up"
     clickable
     @label-click="NavigateToForkPage"
@@ -20,6 +20,11 @@ export default {
   components: {
     SideMetricSection,
     ForkHeight,
+  },
+  computed: {
+    titleText() {
+      return this.$t('StatusInfo.fork_height')
+    },
   },
   methods: {
     NavigateToForkPage() {

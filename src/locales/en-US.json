@@ -37,7 +37,7 @@
     "loc_hint_bad": "Localization fault — check vehicle",
     "match_ok": "Map match valid",
     "match_bad": "Match rate abnormal",
-    "fork_height": "Fork Height",
+    "fork_height": "Height",
     "fork_safe": "Safe",
     "fork_above_safe": "Above safe height",
     "show_module_info": "Show Module Information",
