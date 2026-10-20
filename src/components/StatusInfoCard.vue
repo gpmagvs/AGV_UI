@@ -241,9 +241,7 @@ export default {
     /** 危險項置頂摘要（不含主狀態，已由 hero 大字顯示） */
     alertItems() {
       const items = []
-      if (!this.IsInspectionAGV && this.tagTone === 'tone-danger') {
-        items.push({ key: 'tag', text: this.$t('StatusInfo.tag_missing') })
-      }
+      // 「未讀到 Tag」不列入異常摘要；Tag 狀態仍可在下方 metrics 查看
       if (this.locTone === 'tone-danger') {
         items.push({ key: 'loc', text: this.$t('StatusInfo.loc_hint_bad') })
       }

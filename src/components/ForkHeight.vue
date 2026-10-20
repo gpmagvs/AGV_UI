@@ -1,48 +1,46 @@
 <template>
-  <div @click="HandleClicked" class="fork-height">
-    <div v-bind:class="IsForkHeightAboveSafty ? 'bg-warning text-light border' : ''"> {{ height }} <span>cm</span>
+  <div
+    class="side-metric-value"
+    :class="{ 'is-warning': IsForkHeightAboveSafty }"
+    @click="NavigateToForkPage"
+  >
+    <div>
+      {{ height }}
+      <span>cm</span>
     </div>
-    <!-- <div>{{ time }}</div> -->
   </div>
 </template>
 
 <script>
 import { AGVStatusStore, UIStore } from '@/store'
 import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
+
 export default {
-  data() {
-    return {
-    }
-  },
+  name: 'ForkHeight',
   computed: {
     height() {
-      return AGVStatusStore.getters.AGVStatus.ZAxisDriverState.position.toFixed(3);
+      const position = AGVStatusStore.getters.AGVStatus?.ZAxisDriverState?.position
+      const value = Number(position)
+      return Number.isFinite(value) ? value.toFixed(2) : '0.00'
     },
     IsForkHeightAboveSafty() {
-      return AGVStatusStore.getters.AGVStatus.IsForkHeightAboveSafty;
+      return !!AGVStatusStore.getters.AGVStatus?.IsForkHeightAboveSafty
     },
-
   },
   methods: {
-    HandleClicked() {
+    NavigateToForkPage() {
       UIStore.dispatch('navigateTabPage', {
         main: MAIN_TAB.OPERATION,
-        operator: OPERATOR_TAB.FORK
+        operator: OPERATOR_TAB.FORK,
       })
-    }
-  },
-  mounted() {
-
+    },
   },
 }
 </script>
 
 <style lang="scss">
-.fork-height {
-  font-size: 20px;
-
-  span {
-    font-size: smaller;
-  }
+/* 與 Mileage 共用 .side-metric-value；警示僅改顏色，不改變盒模型 */
+.side-metric-value.is-warning > div {
+  color: #b45309;
 }
 </style>

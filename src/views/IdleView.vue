@@ -5,7 +5,7 @@
     <div class>{{ AGVStatus.SubState }}</div>
     <div class>{{ AGVStatus.OnlineMode }}</div>
     <div class>{{ AGVStatus.AutoMode }}</div>
-    <div class>{{ AGVStatus.Mileage }}</div>
+    <div class>{{ formattedMileage }}</div>
     <div class>{{ AGVStatus.Laser_Mode }}</div>
   </div>
 </template>
@@ -20,7 +20,11 @@ export default {
   },
   computed: {
     AGVName: () => { return AGVStatusStore.getters.AGVName },
-    AGVStatus: () => { return AGVStatusStore.getters.AGVStatus }
+    AGVStatus: () => { return AGVStatusStore.getters.AGVStatus },
+    formattedMileage() {
+      const mileage = Number(this.AGVStatus?.Mileage)
+      return Number.isFinite(mileage) ? mileage.toFixed(2) : '0.00'
+    }
   }
 }
 </script>

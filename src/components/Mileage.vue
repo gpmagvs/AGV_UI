@@ -1,44 +1,53 @@
 <template>
-  <div class="mileage">
+  <div class="side-metric-value">
     <div>
-      {{mileage}}
+      {{ mileage }}
       <span>km</span>
     </div>
-    <!-- <div>{{ time }}</div> -->
   </div>
 </template>
 
 <script>
-import moment from 'moment'
 import bus from '@/event-bus.js'
+
 export default {
+  name: 'Mileage',
   data() {
     return {
-      val: 1.23,
-      time: '2022/12/12 19:00:09'
+      val: 0,
     }
   },
   computed: {
     mileage() {
-      return this.val.toFixed(3)
-    }
+      const value = Number(this.val)
+      return Number.isFinite(value) ? value.toFixed(2) : '0.00'
+    },
   },
   mounted() {
     bus.on('/mileage', (data) => {
-      this.val = data;
-    });
-    setInterval(() => {
-      this.time = moment(Date.now()).format('yyyy/MM/DD HH:mm:ss');
-    }, 1000);
+      this.val = data
+    })
   },
 }
 </script>
 
 <style lang="scss">
-.mileage {
+/* 側欄計量數值共用樣式（里程數、牙叉高度） */
+.side-metric-value {
   font-size: 20px;
+  line-height: 1.2;
+
+  > div {
+    display: inline-flex;
+    align-items: baseline;
+    line-height: 1.2;
+    min-height: 24px;
+  }
+
   span {
-    font-size: smaller;
+    font-size: 0.65em;
+    line-height: 1;
+    opacity: 0.75;
   }
 }
 </style>

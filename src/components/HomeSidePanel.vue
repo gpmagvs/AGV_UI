@@ -67,13 +67,13 @@
         <div class="side-section side-section-meter coordination">
           <div v-if="IOConnected && isBrakeSwitchRelease && !Is_TSMC_MiniAGV" class="coord-rich">
             <div class="tag-block">
-              <div class="state-title is-center">Tag</div>
+              <div class="section-label is-center">Tag</div>
               <el-tag class="tag-display" :type="VMSData.BCR_State_MoveBase.tagID == 0 ? 'danger' : 'success'">
                 {{ VMSData.BCR_State_MoveBase.tagID }}
               </el-tag>
             </div>
             <div class="offset-block">
-              <div class="state-title is-center">偏移量</div>
+              <div class="section-label is-center">偏移量</div>
               <el-form-item class="coord-field" label="X">
                 <b-form-input class="text-center" size="sm" disabled
                   v-model.number="VMSData.BCR_State_MoveBase.xValue"></b-form-input>
@@ -86,17 +86,17 @@
           </div>
           <div v-else class="coord-compact">
             <div class="coord-field-wrap" v-if="!Is_TSMC_MiniAGV">
-              <div class="state-title">Tag</div>
+              <div class="section-label">Tag</div>
               <b-form-input class="coord-input-sm text-center" size="sm" disabled
                 v-model="VMSData.BCR_State_MoveBase.tagID" :state="VMSData.BCR_State_MoveBase.tagID > 0"></b-form-input>
             </div>
             <div class="coord-field-wrap" v-else>
-              <div class="state-title">Location</div>
+              <div class="section-label">Location</div>
               <b-form-input class="coord-input-sm text-center" size="sm" disabled
                 v-model="VMSData.Last_Visited_Tag"></b-form-input>
             </div>
             <div class="coord-field-wrap">
-              <div class="state-title">{{ $t('coordination') }}</div>
+              <div class="section-label">{{ $t('coordination') }}</div>
               <b-form-input class="coord-input-md text-center" size="sm" disabled :state="VMSData.LocStatus == 10"
                 v-model="Coordination"></b-form-input>
             </div>
@@ -106,22 +106,10 @@
           </el-button>
         </div>
 
-        <div class="side-section side-section-meter mileage-section">
-          <div class="mileage-row">
-            <div class="mileage-col" v-if="Is_Fork_AGV">
-              <div class="section-label is-clickable" @click="HandleForkHeightTitleClick">
-                <i class="bi bi-arrow-down-up"></i>
-                <span>牙叉高度</span>
-              </div>
-              <fork_height></fork_height>
-            </div>
-            <div class="mileage-col">
-              <div class="section-label">
-                <i class="bi bi-mastodon"></i>
-                <span>{{ $t('mileage') }}</span>
-              </div>
-              <mileage></mileage>
-            </div>
+        <div class="side-section side-section-meter side-metrics">
+          <div class="side-metrics__row">
+            <ForkHeightSection v-if="Is_Fork_AGV" />
+            <MileageSection />
           </div>
         </div>
       </div>
@@ -142,8 +130,8 @@
 </template>
 
 <script>
-import mileage from '@/components/Mileage.vue'
-import fork_height from '@/components/ForkHeight.vue'
+import ForkHeightSection from '@/components/ForkHeightSection.vue'
+import MileageSection from '@/components/MileageSection.vue'
 import emo from '@/components/EMOButton.vue'
 import login from '@/components/Login.vue'
 import connection_state from '@/components/ConnectionStates.vue'
@@ -158,17 +146,16 @@ import {
 } from '@/api/VMSAPI'
 import { ElMessage } from 'element-plus'
 import { UserStore, UIStore, SystemSettingsStore, AGVStatusStore, DIOStore } from '@/store'
-import { MAIN_TAB, OPERATOR_TAB } from '@/constants/tabPages'
 
 export default {
   name: 'HomeSidePanel',
   components: {
-    mileage,
     emo,
     login,
     connection_state,
     AGVLocalization,
-    fork_height,
+    ForkHeightSection,
+    MileageSection,
   },
   props: {
     backEndServerErr: {
@@ -520,12 +507,6 @@ export default {
     HandleLocalizationClick() {
       this.$refs.localization_dialog.Show()
     },
-    HandleForkHeightTitleClick() {
-      UIStore.dispatch('navigateTabPage', {
-        main: MAIN_TAB.OPERATION,
-        operator: OPERATOR_TAB.FORK,
-      })
-    },
   },
 }
 </script>
@@ -564,6 +545,27 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 6px 10px 4px;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(100, 116, 139, 0.08) transparent; /* Firefox */
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.06);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.12);
+  }
 }
 
 .side-emo-dock {
@@ -714,40 +716,6 @@ export default {
   background: transparent;
 }
 
-.state-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 3px;
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.01em;
-  color: var(--side-text);
-  line-height: 1.2;
-
-  &.is-center {
-    justify-content: center;
-    width: 100%;
-  }
-
-  &.is-clickable {
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 2px 4px;
-    margin-left: -4px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.7);
-      color: #0f766e;
-    }
-  }
-
-  >i {
-    color: var(--side-muted);
-    font-size: 0.95em;
-  }
-}
-
 .section-label {
   display: inline-flex;
   align-items: center;
@@ -759,6 +727,11 @@ export default {
   text-transform: uppercase;
   color: var(--side-muted);
   line-height: 1.2;
+
+  &.is-center {
+    justify-content: center;
+    width: 100%;
+  }
 
   >i {
     font-size: 0.95em;
@@ -789,10 +762,15 @@ export default {
     border-radius: 4px;
 
     :deep(.connection-states) {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--side-text);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--side-muted);
       line-height: 1.3;
+
+      td div {
+        font-weight: 500;
+        color: var(--side-muted);
+      }
     }
 
     :deep(td) {
@@ -903,24 +881,9 @@ export default {
   margin-top: 4px;
 }
 
-.mileage-row {
+.side-metrics__row {
   display: flex;
   width: 100%;
   gap: 6px;
-}
-
-.mileage-col {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-}
-
-.mileage-section {
-  :deep(.mileage) {
-    font-size: 22px;
-    line-height: 1.2;
-  }
 }
 </style>
