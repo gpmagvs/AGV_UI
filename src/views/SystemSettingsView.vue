@@ -383,6 +383,10 @@
                   <el-input-number @change="HandleParamChanged" size="small"
                     v-model="settings.TagParkingTolerance"></el-input-number>
                 </el-form-item>
+                <el-form-item label="進入設備時 Bypass 前方雷射">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.LDULDParams.BypassFrontLaserWhenEntryEQ"></el-switch>
+                </el-form-item>
                 <el-form-item v-if="false" label="退出設備須需要詢問派車">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.LDULDParams.LeaveWorkStationNeedSendRequestToAGVS"></el-switch>
