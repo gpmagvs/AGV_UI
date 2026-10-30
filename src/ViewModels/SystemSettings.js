@@ -239,7 +239,12 @@ class SystemSettings {
                 Enable: false,
                 SoundPlayType: 1
             },
-
+            /** 閒置過久後任務延遲（讓提示音先播放） */
+            ActionMusicDelay: {
+                Enabled: false,
+                IdleThresholdSec: 2,
+                DelayMs: 3000,
+            },
         };
 
         this.UI = {

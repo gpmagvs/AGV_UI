@@ -65,6 +65,20 @@
                 <el-form-item label="蜂鳴器">
                   <el-switch @change="HandleParamChanged" v-model="settings.BuzzerOn"></el-switch>
                 </el-form-item>
+                <el-form-item v-if="settings.SoundsParams?.ActionMusicDelay" label="閒置過久後延遲下發動作">
+                  <el-switch @change="HandleParamChanged"
+                    v-model="settings.SoundsParams.ActionMusicDelay.Enabled"></el-switch>
+                  <span class="mx-2 text-secondary" style="font-size: 12px;">（讓提示音先播放）</span>
+                </el-form-item>
+                <el-form-item v-if="settings.SoundsParams?.ActionMusicDelay?.Enabled" label="閒置門檻(秒)">
+                  <el-input-number @change="HandleParamChanged" size="small" :min="0.1" :step="0.5" :precision="1"
+                    v-model="settings.SoundsParams.ActionMusicDelay.IdleThresholdSec"></el-input-number>
+                  <span class="mx-2 text-secondary" style="font-size: 12px;">距上次非 RUN 超過此時間才延遲</span>
+                </el-form-item>
+                <el-form-item v-if="settings.SoundsParams?.ActionMusicDelay?.Enabled" label="延遲時間(ms)">
+                  <el-input-number @change="HandleParamChanged" size="small" :min="0" :step="100" :max="60000"
+                    v-model="settings.SoundsParams.ActionMusicDelay.DelayMs"></el-input-number>
+                </el-form-item>
                 <el-form-item label="一般走行開啟車頭燈">
                   <el-switch @change="HandleParamChanged"
                     v-model="settings.FrontLighterFlashWhenNormalMove"></el-switch>
@@ -1000,6 +1014,7 @@ export default {
               this.MergeMissingHorizonArmConfigsDefaults();
               this.MergeMissingForkAgvDefaults();
               this.MergeMissingManualControlDefaults();
+              this.MergeMissingActionMusicDelayDefaults();
               if (tabIndex != null && tabIndex !== '')
                 this.selected_tab = String(tabIndex);
               this.loading = false;
@@ -1286,6 +1301,7 @@ export default {
               this.MergeMissingHorizonArmConfigsDefaults();
               this.MergeMissingForkAgvDefaults();
               this.MergeMissingManualControlDefaults();
+              this.MergeMissingActionMusicDelayDefaults();
             }
           }, 500);
           this.$swal.fire({
@@ -1323,6 +1339,24 @@ export default {
         return;
       }
       this.settings.ManualControl = { ...defaults, ...this.settings.ManualControl };
+    },
+    MergeMissingActionMusicDelayDefaults() {
+      const defaults = new SystemSettings().SoundsParams?.ActionMusicDelay;
+      if (!this.settings || !defaults) {
+        return;
+      }
+      if (!this.settings.SoundsParams) {
+        this.settings.SoundsParams = new SystemSettings().SoundsParams;
+        return;
+      }
+      if (!this.settings.SoundsParams.ActionMusicDelay) {
+        this.settings.SoundsParams.ActionMusicDelay = { ...defaults };
+        return;
+      }
+      this.settings.SoundsParams.ActionMusicDelay = {
+        ...defaults,
+        ...this.settings.SoundsParams.ActionMusicDelay,
+      };
     },
     MergeMissingForkAgvDefaults() {
       const defaults = new SystemSettings().ForkAGV;
